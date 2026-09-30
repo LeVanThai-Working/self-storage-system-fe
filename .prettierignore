@@ -1,0 +1,19 @@
+# Package manager & dependencies
+node_modules
+.pnpm-store
+pnpm-lock.yaml
+
+# Build & cache artifacts
+.next
+.expo
+.turbo
+dist
+build
+out
+coverage
+*.tsbuildinfo
+
+# Git & CI/CD
+.git
+.husky
+AGENTS.md

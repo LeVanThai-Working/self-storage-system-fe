@@ -25,7 +25,7 @@ export class AppApiError extends Error {
     message: string,
     statusCode: number = 500,
     response?: AxiosError<ApiErrorResponse>["response"],
-    data?: ApiErrorResponse,
+    data?: ApiErrorResponse
   ) {
     super(message);
     this.name = "AppApiError";
@@ -96,7 +96,7 @@ api.interceptors.request.use(
     // Additional dynamic headers (Accept-Language, Trace-Id, etc.) can be added here
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 // 4. Response Interceptor
@@ -115,8 +115,8 @@ api.interceptors.response.use(
             ? "Unable to connect to the server. Please check your network connection."
             : error.message || "An unknown error occurred.",
           0,
-          undefined,
-        ),
+          undefined
+        )
       );
     }
 
@@ -158,14 +158,10 @@ api.interceptors.response.use(
 
     // Extract the error message from the backend payload
     const serverMessage =
-      errorData?.message ||
-      error.message ||
-      "An error occurred. Please try again.";
+      errorData?.message || error.message || "An error occurred. Please try again.";
 
-    return Promise.reject(
-      new AppApiError(serverMessage, status, error.response, errorData),
-    );
-  },
+    return Promise.reject(new AppApiError(serverMessage, status, error.response, errorData));
+  }
 );
 
 export default api;

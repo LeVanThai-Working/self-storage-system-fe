@@ -1,0 +1,43 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "search": "Search",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "auth": {
+    "login": "Sign In",
+    "logout": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "loginTitle": "Welcome back",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?"
+  },
+  "status": {
+    "active": "Active",
+    "expiringSoon": "Expiring Soon",
+    "maintenance": "Maintenance",
+    "done": "Completed",
+    "new": "New",
+    "inProgress": "In Progress"
+  },
+  "api": {
+    "MESSAGE_CODE_001": "Operation Successful",
+    "MESSAGE_CODE_002": "{0} Created Successfully",
+    "MESSAGE_CODE_003": "{0} Updated Successfully",
+    "MESSAGE_CODE_004": "{0} Deleted Successfully",
+    "MESSAGE_CODE_101": "Invalid Request",
+    "MESSAGE_CODE_102": "Unauthorized Access",
+    "MESSAGE_CODE_103": "Access Denied",
+    "MESSAGE_CODE_104": "{0} Not Found",
+    "MESSAGE_CODE_105": "{0} Already Exists",
+    "MESSAGE_CODE_106": "Internal Server Error",
+    "MESSAGE_CODE_107": "Invalid Email Or Password",
+    "MESSAGE_CODE_200": "{0} Is Required",
+    "MESSAGE_CODE_201": "Invalid Token"
+  }
+}

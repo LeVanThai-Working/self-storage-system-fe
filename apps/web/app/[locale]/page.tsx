@@ -12,8 +12,7 @@ export default function HomePage() {
           Storage<span className="text-brand">Hub</span>
         </h1>
         <p className="text-lg text-neutral-muted">
-          Safe Space, More Possibilities — Lưu trữ dễ dàng, Cuộc sống nhẹ nhàng
-          hơn.
+          Safe Space, More Possibilities — Lưu trữ dễ dàng, Cuộc sống nhẹ nhàng hơn.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">

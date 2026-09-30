@@ -3,7 +3,16 @@ packages:
   - "packages/*"
 
 allowBuilds:
-  '@parcel/watcher': true
-  '@swc/core': true
+  "@parcel/watcher": true
+  "@swc/core": true
   sharp: false
   unrs-resolver: false
+
+minimumReleaseAgeExclude:
+  - "@expo/ui@57.0.21"
+  - expo-camera@57.0.6
+  - expo-constants@57.0.20
+  - expo-modules-core@57.0.20
+  - expo-router@57.0.24
+  - expo@57.0.26
+  - lucide-react-native@1.49.0
