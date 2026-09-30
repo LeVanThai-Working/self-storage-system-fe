@@ -1,159 +1,153 @@
-# Turborepo starter
+# 📦 StorageHub — Frontend Monorepo
 
-This Turborepo starter is maintained by the Turborepo core team.
+StorageHub is a modern, full-featured Self-Storage Management System frontend built with **Turborepo**, **pnpm workspaces**, **Next.js (App Router)**, and **Expo (React Native)**.
 
-## Using this example
+---
 
-Run the following command:
+## 🏛️ System Architecture
 
-```sh
-npx create-turbo@latest
+The project is structured as a monorepo containing web management portals, customer & staff mobile apps, and shared logic/types.
+
+```text
+self-storage-system-fe/
+├── apps/
+│   ├── web/                    # Next.js App Router (Web Portal)
+│   └── mobile/                 # Expo React Native App (Customer & Staff)
+├── packages/
+│   └── shared/                 # Shared TypeScript models, schemas, constants & utilities
+├── package.json                # Root package workspace scripts
+├── pnpm-workspace.yaml         # Workspace configuration
+└── turbo.json                  # Turborepo task pipeline configuration
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## 👥 Roles & Target Platforms
 
-### Apps and Packages
+| Role                     | Target Platform            | Primary Capabilities                                                                    |
+| :----------------------- | :------------------------- | :-------------------------------------------------------------------------------------- |
+| **Customer**             | **Mobile** (`apps/mobile`) | Search facilities, reserve units, online payments, digital contracts, view access codes |
+| **Facility Staff**       | **Mobile** (`apps/mobile`) | QR code scanning, check-in/check-out, unit inspections, incident reports                |
+| **Facility Manager**     | **Web** (`apps/web`)       | Facility unit grid, occupancy tracking, pricing configuration, contract approvals       |
+| **Business Ops Manager** | **Web** (`apps/web`)       | Revenue analytics, cross-branch reporting, occupancy forecasting, marketing metrics     |
+| **System Admin**         | **Web** (`apps/web`)       | User management, RBAC, branch setup, audit logs, system configurations                  |
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## 📂 Folder Roles & Responsibilities
 
-### Utilities
+### `apps/web` (Web Portal)
 
-This Turborepo has some additional tools already setup for you:
+- **Framework**: Next.js App Router (Turbopack, TypeScript, Tailwind CSS).
+- **Architecture**: **Feature-based architecture** under `features/`:
+  - `features/auth/`: Authentication views, login form, password reset, session hooks.
+  - `features/landing/`: Public marketing landing page, service highlights, unit calculator.
+  - `features/facility-manager/`: Unit grid management, occupancy status, contract handling.
+  - `features/business-ops/`: Performance dashboard, financial KPIs, analytics charts.
+  - `features/system-admin/`: User accounts, facility configuration, permission matrix.
+- **Routing**: `app/[locale]/` handles internationalized routing (`vi` and `en`) with `next-intl`.
+- **UI Components**: `components/ui/` with Shadcn UI and Base UI primitives, styled with custom brand tokens.
+- **State & Data Fetching**: TanStack Query v5 (server-state caching) and Zustand (client-state).
+- **Networking**: Axios instance with automatic HttpOnly token refresh interceptors.
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### `apps/mobile` (Mobile Application)
 
-### Build
+- **Framework**: Expo (SDK 52+), React Native, TypeScript.
+- **Styling**: NativeWind v4 (Tailwind CSS for React Native).
+- **Features**: Customer unit reservation flow, payment gateway integration, camera scanner for staff QR verification (`expo-camera`), secure storage with `expo-secure-store`.
 
-To build all apps and packages, run the following command:
+### `packages/shared` (`@self-storage-system-fe/shared`)
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+- **Role**: Shared library consumed by both `apps/web` and `apps/mobile`.
+- **Contents**:
+  - `src/constants/`: Role definitions (`USER_ROLE`), standard API base URLs, backend `MESSAGE_CODE` mappings.
+  - `src/types/`: Standard API response formats (`ApiResponse<T>`, `ApiErrorResponse`).
+  - `src/schemas/`: Zod validation schemas for forms and payloads.
+  - `src/utils/`: Common helpers such as currency formatting (`formatCurrency` - VND) and date formatting (`formatDate`).
 
-```sh
-cd my-turborepo
-turbo build
+---
+
+## 🛠️ Tech Stack
+
+- **Monorepo Engine**: Turborepo & pnpm Workspaces
+- **Web**: Next.js (App Router), React, Tailwind CSS, Lucide Icons, Shadcn UI / Base UI, Victory Charts
+- **Mobile**: React Native, Expo, NativeWind v4, Victory Native
+- **State Management**: TanStack Query v5 + Zustand
+- **Internationalization**: `next-intl` (Web), `i18n-js` (Mobile)
+- **Validation & Forms**: Zod + React Hook Form
+- **Language**: TypeScript 5+
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js**: `>= 20.0.0`
+- **pnpm**: `>= 9.0.0` (Recommended: `11.x`)
+- **Git**
+
+```bash
+# Verify versions
+node -v
+pnpm -v
 ```
 
-Without global `turbo`, use your package manager:
+### Installation
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm exec turbo build
-pnpm exec turbo build
+Clone the repository and install all monorepo dependencies:
+
+```bash
+# Install dependencies across all workspaces
+pnpm install
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Environment Configuration
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Configure environment variables in `apps/web/.env.local`:
 
-```sh
-turbo build --filter=docs
+```bash
+# apps/web/.env.local
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/
+NEXT_PUBLIC_DEFAULT_LOCALE=vi
 ```
 
-Without global `turbo`:
+### Running in Development
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```bash
+# Run all applications simultaneously
+pnpm dev
+
+# Run only the Web portal
+pnpm dev:web
+
+# Run only the Mobile app
+pnpm dev:mobile
 ```
 
-### Develop
+The Web portal will be accessible at: `http://localhost:3000`
 
-To develop all apps and packages, run the following command:
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+## 🧪 Build & Quality Assurance Scripts
 
-```sh
-cd my-turborepo
-turbo dev
-```
+All tasks are orchestrated via Turborepo caching:
 
-Without global `turbo`, use your package manager:
+| Command           | Action                                              |
+| :---------------- | :-------------------------------------------------- |
+| `pnpm build`      | Compiles and builds all apps and packages           |
+| `pnpm type-check` | Runs TypeScript type checking across all workspaces |
+| `pnpm lint`       | Runs ESLint analysis                                |
+| `pnpm format`     | Formats codebase using Prettier                     |
+| `pnpm clean`      | Cleans build caches (`.next`, `dist`, `.turbo`)     |
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
+---
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## 🎨 Design System Summary
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+StorageHub uses a brand palette optimized for clarity and professional storage operations:
 
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+- **Primary (Brand Teal)**: `#0B927E` (Dark: `#064E4B`, Light: `#DDF4ED`, Background: `#F0FAF7`)
+- **CTA (Action Orange)**: `#FF702E` (Hover: `#E85D1B`, Dark: `#D34D0F`)
+- **Page Background**: `#F8FAF9`
+- **Typography**: `Plus Jakarta Sans` (Primary UI), `Kalam` (Handwriting / Accents)

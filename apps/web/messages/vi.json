@@ -1,0 +1,43 @@
+{
+  "common": {
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "loading": "Đang tải...",
+    "error": "Đã có lỗi xảy ra",
+    "search": "Tìm kiếm",
+    "confirm": "Xác nhận",
+    "back": "Quay lại"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "loginTitle": "Chào mừng trở lại",
+    "rememberMe": "Ghi nhớ đăng nhập",
+    "forgotPassword": "Quên mật khẩu?"
+  },
+  "status": {
+    "active": "Đang thuê",
+    "expiringSoon": "Sắp hết hạn",
+    "maintenance": "Bảo trì",
+    "done": "Đã xử lý",
+    "new": "Mới",
+    "inProgress": "Đang xử lý"
+  },
+  "api": {
+    "MESSAGE_CODE_001": "Thao tác thành công",
+    "MESSAGE_CODE_002": "{0} đã được tạo thành công",
+    "MESSAGE_CODE_003": "{0} đã được cập nhật thành công",
+    "MESSAGE_CODE_004": "{0} đã được xóa thành công",
+    "MESSAGE_CODE_101": "Yêu cầu không hợp lệ",
+    "MESSAGE_CODE_102": "Chưa được xác thực danh tính",
+    "MESSAGE_CODE_103": "Bạn không có quyền truy cập",
+    "MESSAGE_CODE_104": "{0} không tìm thấy",
+    "MESSAGE_CODE_105": "{0} đã tồn tại trong hệ thống",
+    "MESSAGE_CODE_106": "Lỗi hệ thống máy chủ",
+    "MESSAGE_CODE_107": "Email hoặc mật khẩu không chính xác",
+    "MESSAGE_CODE_200": "{0} không được để trống",
+    "MESSAGE_CODE_201": "Mã token không hợp lệ hoặc đã hết hạn"
+  }
+}
