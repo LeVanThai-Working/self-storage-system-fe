@@ -1,9 +1,13 @@
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
+import { LogIn, UserPlus } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function HomePage() {
   const tCommon = useTranslations("common");
   const tAuth = useTranslations("auth");
+  const locale = useLocale();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] p-6 text-center">
@@ -25,6 +29,23 @@ export default function HomePage() {
           <Button variant="outline" size="lg">
             {tCommon("cancel")} (Outline Button)
           </Button>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Link
+            href={`/${locale}/login`}
+            className={cn(buttonVariants({ variant: "cta", size: "lg" }), "px-4")}
+          >
+            <LogIn />
+            {tAuth("login")}
+          </Link>
+          <Link
+            href={`/${locale}/register`}
+            className={cn(buttonVariants({ variant: "primary", size: "lg" }), "px-4")}
+          >
+            <UserPlus />
+            {tAuth("register")}
+          </Link>
         </div>
       </div>
     </div>
