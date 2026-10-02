@@ -2,36 +2,7 @@ import api from "@/lib/api/axios";
 import { User, UserQueryParams, CreateUserPayload } from "./types";
 import { USER_ROLE } from "@self-storage-system-fe/shared";
 
-// Mock Data as requested if API is failing
-const mockUsers: User[] = [
-  {
-    id: "1",
-    name: "Nguyễn Văn Admin",
-    email: "admin@storagehub.vn",
-    role: USER_ROLE.SYSTEM_ADMIN,
-    assignedFacility: "Tất cả cơ sở",
-    status: "active",
-    createdAt: "2024-01-01T00:00:00Z",
-  },
-  {
-    id: "2",
-    name: "Trần Thị Quản Lý",
-    email: "manager.q1@storagehub.vn",
-    role: USER_ROLE.FACILITY_MANAGER,
-    assignedFacility: "Cơ sở Quận 1",
-    status: "active",
-    createdAt: "2024-02-15T00:00:00Z",
-  },
-  {
-    id: "3",
-    name: "Lê Văn Nhân Viên",
-    email: "staff.q1@storagehub.vn",
-    role: USER_ROLE.FACILITY_STAFF,
-    assignedFacility: "Cơ sở Quận 1",
-    status: "inactive",
-    createdAt: "2024-03-10T00:00:00Z",
-  },
-];
+// Removed mockUsers
 
 export const fetchUsers = async (
   params?: UserQueryParams

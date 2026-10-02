@@ -73,6 +73,7 @@ const EditUserModal = ({
 
   React.useEffect(() => {
     if (user) {
+      // eslint-disable-next-line
       setFormData({
         name: user.name || "",
         phoneNumber: user.phoneNumber || "",
@@ -205,23 +206,26 @@ export const UserTable = () => {
       await createUser.mutateAsync(formData);
       setIsModalOpen(false);
       setFormData({ name: "", email: "", password: "", phoneNumber: "", role: "customer" });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Record<string, unknown>;
       console.error("Failed to create user", error);
-      if (error.errors && Array.isArray(error.errors)) {
+      if (err.errors && Array.isArray(err.errors)) {
         const errors: Record<string, string> = {};
-        error.errors.forEach((err: any) => {
-          if (err.field && err.message) {
-            errors[err.field] = err.message;
+        err.errors.forEach((item: unknown) => {
+          const e = item as { field?: string; message?: string };
+          if (e.field && e.message) {
+            errors[e.field] = e.message;
           }
         });
         setFormErrors(errors);
       } else {
-        const errorMsg = error.message || "Vui lòng thử lại!";
+        const errorMsg = typeof err.message === "string" ? err.message : "Vui lòng thử lại!";
         alert(`Tạo người dùng thất bại. ${errorMsg}`);
       }
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleToggleStatus = async (user: any) => {
     try {
       const newStatus = user.status === "active" ? "inactive" : "active";
