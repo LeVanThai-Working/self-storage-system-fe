@@ -1,69 +1,57 @@
-import { SymbolView } from "expo-symbols";
-import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
+import { Tabs } from "expo-router";
+import { LayoutGrid, PencilLine, Layers } from "lucide-react-native";
 
-import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+const BRAND = "#0B927E";
+const MUTED = "#647B80";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+        tabBarActiveTintColor: BRAND,
+        tabBarInactiveTintColor: MUTED,
+        tabBarStyle: {
+          backgroundColor: "#FFFFFF",
+          borderTopColor: "#E1E8E8",
+          borderTopWidth: 1,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: "600",
+        },
+        headerStyle: {
+          backgroundColor: "#F8FAF9",
+          borderBottomColor: "#E1E8E8",
+          borderBottomWidth: 1,
+        },
+        headerTitleStyle: {
+          fontWeight: "700",
+          color: "#173A3A",
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Tab One",
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: "chevron.left.forwardslash.chevron.right",
-                android: "code",
-                web: "code",
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable style={{ marginRight: 15 }}>
-                {({ pressed }) => (
-                  <SymbolView
-                    name={{ ios: "info.circle", android: "info", web: "info" }}
-                    size={25}
-                    tintColor={Colors[colorScheme].text}
-                    style={{ opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          title: "Buttons & Badges",
+          tabBarLabel: "Buttons",
+          tabBarIcon: ({ color, size }) => <LayoutGrid size={size} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="forms"
         options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: "chevron.left.forwardslash.chevron.right",
-                android: "code",
-                web: "code",
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
+          title: "Form Controls",
+          tabBarLabel: "Forms",
+          tabBarIcon: ({ color, size }) => <PencilLine size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="layout"
+        options={{
+          title: "Layout & Data",
+          tabBarLabel: "Layout",
+          tabBarIcon: ({ color, size }) => <Layers size={size} color={color} />,
         }}
       />
     </Tabs>
