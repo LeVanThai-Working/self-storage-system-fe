@@ -1,3 +1,86 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+  CSS custom properties for RNR / NativeWind semantic color system.
+  These mirror the web app's globals.css design tokens so both platforms
+  share the exact same brand palette.
+
+  NativeWind v4 reads these at build time via the hsl() references in
+  tailwind.config.js → theme.extend.colors.
+*/
+
+@layer base {
+  :root {
+    /* ── Base ──────────────────────────────────────── */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    /* ── Card ──────────────────────────────────────── */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    /* ── Popover ────────────────────────────────────── */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* ── Primary — Teal brand (#0B927E) ─────────────── */
+    --primary: 170 80% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    /* ── Secondary ──────────────────────────────────── */
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    /* ── Muted ──────────────────────────────────────── */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    /* ── Accent ─────────────────────────────────────── */
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    /* ── Destructive ────────────────────────────────── */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* ── Border / Input / Ring ──────────────────────── */
+    --border: 195 30% 91%;
+    --input: 195 30% 91%;
+    --ring: 170 80% 30%;
+
+    /* ── Border radius ──────────────────────────────── */
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 170 80% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 170 80% 30%;
+  }
+}
