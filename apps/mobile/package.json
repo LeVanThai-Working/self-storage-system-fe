@@ -14,9 +14,13 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
+    "@rn-primitives/portal": "^1.5.3",
+    "@rn-primitives/types": "^1.5.2",
     "@self-storage-system-fe/shared": "workspace:*",
     "@tanstack/react-query": "^5.104.0",
     "axios": "^1.20.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "expo": "~57.0.26",
     "expo-camera": "~57.0.6",
     "expo-constants": "~57.0.20",
@@ -43,6 +47,8 @@
     "react-native-svg": "15.15.5",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.1",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss-animate": "^1.0.7",
     "victory-native": "^37.3.6",
     "zod": "^3.25.76",
     "zustand": "^5.0.15"
