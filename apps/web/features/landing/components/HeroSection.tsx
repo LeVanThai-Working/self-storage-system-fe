@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { StorageSearchPanel } from "@/features/landing/components/storage-search-panel";
-import { TrustIndicators } from "@/features/landing/components/trust-indicators";
+import { StorageSearchPanel } from "@/features/landing/components/StorageSearchPanel";
+import { TrustIndicators } from "@/features/landing/components/TrustIndicators";
 
 const HERO_IMAGE = "/images/landing/hero-facility.jpg";
 

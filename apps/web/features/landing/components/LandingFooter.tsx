@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Award, Clock, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
-import { Logo } from "@/components/common/logo";
+import { Logo } from "@/components/common/Logo";
 import {
   FOOTER_LEGAL_ITEMS,
   FOOTER_SERVICE_LINKS,

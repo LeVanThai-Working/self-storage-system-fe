@@ -12,7 +12,7 @@ import {
   SEARCH_PANEL_ID,
   type SearchFieldId,
 } from "@/features/landing/constants";
-import { useClickOutside } from "@/features/landing/hooks/use-click-outside";
+import { useClickOutside } from "@/features/landing/hooks/useClickOutside";
 
 type SearchFilters = Record<SearchFieldId, string>;
 
