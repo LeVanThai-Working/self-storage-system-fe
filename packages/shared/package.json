@@ -14,12 +14,9 @@
     "./enums": "./src/enums/index.ts",
     "./utils": "./src/utils/index.ts",
     "./constants": "./src/constants/index.ts",
-    "./schemas": "./src/schemas/index.ts",
-    "./api": "./src/api/index.ts",
-    "./services": "./src/services/index.ts"
+    "./schemas": "./src/schemas/index.ts"
   },
   "dependencies": {
-    "axios": "^1.20.0",
     "zod": "^3"
   },
   "devDependencies": {
