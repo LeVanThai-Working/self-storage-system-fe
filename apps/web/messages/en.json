@@ -39,5 +39,76 @@
     "MESSAGE_CODE_107": "Invalid Email Or Password",
     "MESSAGE_CODE_200": "{0} Is Required",
     "MESSAGE_CODE_201": "Invalid Token"
+  },
+  "systemAdmin": {
+    "nav": {
+      "overview": "Overview",
+      "userManagement": "User Management",
+      "facilityManagement": "Facility Management",
+      "settings": "System Settings"
+    },
+    "search": "Search...",
+    "userTable": {
+      "title": "User Management",
+      "createAccount": "+ Create New Account",
+      "searchPlaceholder": "Search users...",
+      "columns": {
+        "user": "User",
+        "role": "Role",
+        "facility": "Assigned Facility",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Locked"
+      },
+      "roles": {
+        "systemAdmin": "System Admin",
+        "facilityManager": "Facility Manager",
+        "facilityStaff": "Staff",
+        "customer": "Customer"
+      },
+      "loading": "Loading data...",
+      "empty": "No users found.",
+      "edit": "Edit",
+      "lockAccount": "Lock account",
+      "unlockAccount": "Unlock account",
+      "deleteAccount": "Delete account",
+      "createModal": {
+        "title": "Create New Account",
+        "name": "Full Name *",
+        "email": "Email *",
+        "phone": "Phone Number *",
+        "password": "Password *",
+        "role": "Role *",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "confirm": "Create Account"
+      },
+      "editModal": {
+        "title": "Edit User",
+        "name": "Full Name *",
+        "phone": "Phone Number *",
+        "role": "Role *",
+        "status": "Status",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "save": "Save Changes",
+        "updateFailed": "Update failed!"
+      },
+      "deleteModal": {
+        "title": "Confirm Delete User",
+        "message": "Are you sure you want to delete the account",
+        "warning": "This action cannot be undone.",
+        "cancel": "Cancel",
+        "deleting": "Deleting...",
+        "confirm": "Delete Account",
+        "failed": "Failed to delete user. Please try again!"
+      },
+      "createFailed": "Failed to create user.",
+      "retryMessage": "Please try again!",
+      "updateStatusFailed": "Failed to update status!"
+    }
   }
 }

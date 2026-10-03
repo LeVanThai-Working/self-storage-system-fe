@@ -1,7 +1,9 @@
+"use client";
+
 import React from "react";
 import { Bell, Search, Users, Settings, Home, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface SystemAdminLayoutProps {
   children: React.ReactNode;
@@ -9,6 +11,7 @@ interface SystemAdminLayoutProps {
 
 export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
   const locale = useLocale();
+  const t = useTranslations("systemAdmin");
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans flex">
@@ -28,28 +31,28 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium"
           >
             <LayoutDashboard className="w-5 h-5" />
-            Tổng quan
+            {t("nav.overview")}
           </Link>
           <Link
             href={`/${locale}/system-admin/users`}
             className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 text-emerald-600 font-semibold transition-colors"
           >
             <Users className="w-5 h-5" />
-            Quản lý Người dùng
+            {t("nav.userManagement")}
           </Link>
           <Link
             href={`/${locale}/system-admin/facilities`}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium"
           >
             <Home className="w-5 h-5" />
-            Quản lý Cơ sở
+            {t("nav.facilityManagement")}
           </Link>
           <Link
             href={`/${locale}/system-admin/settings`}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium"
           >
             <Settings className="w-5 h-5" />
-            Cài đặt hệ thống
+            {t("nav.settings")}
           </Link>
         </nav>
       </aside>
@@ -63,7 +66,7 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Tìm kiếm..."
+                placeholder={t("search")}
                 className="w-full bg-slate-100 border-none rounded-full py-2.5 pl-12 pr-4 text-sm text-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-shadow"
               />
             </div>

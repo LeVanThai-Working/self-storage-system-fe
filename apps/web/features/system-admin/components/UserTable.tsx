@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useUsers, useCreateUser, useUpdateUser, useUser, useDeleteUser } from "../hooks";
 import { USER_ROLE } from "@self-storage-system-fe/shared";
 import { Edit2, Lock, Unlock, Search, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogTrigger,
@@ -14,34 +15,34 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-const getRoleBadge = (role: USER_ROLE | string) => {
+const getRoleBadge = (role: USER_ROLE | string, t: ReturnType<typeof useTranslations>) => {
   switch (role) {
     case USER_ROLE.SYSTEM_ADMIN:
     case "system_admin":
       return (
         <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium">
-          Quản trị HT
+          {t("userTable.roles.systemAdmin")}
         </span>
       );
     case USER_ROLE.FACILITY_MANAGER:
     case "facility_manager":
       return (
         <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
-          Quản lý cơ sở
+          {t("userTable.roles.facilityManager")}
         </span>
       );
     case USER_ROLE.FACILITY_STAFF:
     case "facility_staff":
       return (
         <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium">
-          Nhân viên
+          {t("userTable.roles.facilityStaff")}
         </span>
       );
     case USER_ROLE.CUSTOMER:
     case "customer":
       return (
         <span className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-medium">
-          Khách hàng
+          {t("userTable.roles.customer")}
         </span>
       );
     default:
@@ -62,6 +63,7 @@ const EditUserModal = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
+  const t = useTranslations("systemAdmin");
   const { data: user, isLoading } = useUser(userId || "", { enabled: !!userId });
   const updateUser = useUpdateUser();
   const [formData, setFormData] = useState({
@@ -94,7 +96,7 @@ const EditUserModal = ({
       onClose();
     } catch (error) {
       console.error("Failed to update user", error);
-      alert("Cập nhật thất bại!");
+      alert(t("userTable.editModal.updateFailed"));
     }
   };
 
@@ -102,14 +104,16 @@ const EditUserModal = ({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Chỉnh sửa người dùng</DialogTitle>
+          <DialogTitle>{t("userTable.editModal.title")}</DialogTitle>
         </DialogHeader>
         {isLoading ? (
-          <div className="py-8 text-center text-slate-500">Đang tải dữ liệu...</div>
+          <div className="py-8 text-center text-slate-500">{t("userTable.loading")}</div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-slate-700">Tên người dùng *</label>
+              <label className="text-sm font-medium text-slate-700">
+                {t("userTable.editModal.name")}
+              </label>
               <input
                 required
                 type="text"
@@ -120,7 +124,9 @@ const EditUserModal = ({
               />
             </div>
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-slate-700">Số điện thoại *</label>
+              <label className="text-sm font-medium text-slate-700">
+                {t("userTable.editModal.phone")}
+              </label>
               <input
                 required
                 type="text"
@@ -131,20 +137,24 @@ const EditUserModal = ({
               />
             </div>
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-slate-700">Vai trò *</label>
+              <label className="text-sm font-medium text-slate-700">
+                {t("userTable.editModal.role")}
+              </label>
               <select
                 className="flex h-9 w-full rounded-md border border-slate-300 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
               >
-                <option value="customer">Khách hàng</option>
-                <option value="facility_staff">Nhân viên cơ sở</option>
-                <option value="facility_manager">Quản lý cơ sở</option>
-                <option value="system_admin">Quản trị hệ thống</option>
+                <option value="customer">{t("userTable.roles.customer")}</option>
+                <option value="facility_staff">{t("userTable.roles.facilityStaff")}</option>
+                <option value="facility_manager">{t("userTable.roles.facilityManager")}</option>
+                <option value="system_admin">{t("userTable.roles.systemAdmin")}</option>
               </select>
             </div>
             <div className="grid gap-2">
-              <label className="text-sm font-medium text-slate-700">Trạng thái</label>
+              <label className="text-sm font-medium text-slate-700">
+                {t("userTable.editModal.status")}
+              </label>
               <select
                 className="flex h-9 w-full rounded-md border border-slate-300 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                 value={formData.status}
@@ -152,8 +162,8 @@ const EditUserModal = ({
                   setFormData({ ...formData, status: e.target.value as "active" | "inactive" })
                 }
               >
-                <option value="active">Hoạt động</option>
-                <option value="inactive">Đã khóa</option>
+                <option value="active">{t("userTable.status.active")}</option>
+                <option value="inactive">{t("userTable.status.inactive")}</option>
               </select>
             </div>
             <DialogFooter className="mt-4">
@@ -162,14 +172,16 @@ const EditUserModal = ({
                 onClick={onClose}
                 className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
               >
-                Hủy
+                {t("userTable.editModal.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={updateUser.isPending}
                 className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
               >
-                {updateUser.isPending ? "Đang lưu..." : "Lưu thay đổi"}
+                {updateUser.isPending
+                  ? t("userTable.editModal.saving")
+                  : t("userTable.editModal.save")}
               </button>
             </DialogFooter>
           </form>
@@ -180,6 +192,7 @@ const EditUserModal = ({
 };
 
 export const UserTable = () => {
+  const t = useTranslations("systemAdmin");
   const [search, setSearch] = useState("");
   const { data, isLoading } = useUsers({ search });
   const createUser = useCreateUser();
@@ -219,8 +232,9 @@ export const UserTable = () => {
         });
         setFormErrors(errors);
       } else {
-        const errorMsg = typeof err.message === "string" ? err.message : "Vui lòng thử lại!";
-        alert(`Tạo người dùng thất bại. ${errorMsg}`);
+        const errorMsg =
+          typeof err.message === "string" ? err.message : t("userTable.retryMessage");
+        alert(`${t("userTable.createFailed")} ${errorMsg}`);
       }
     }
   };
@@ -235,7 +249,7 @@ export const UserTable = () => {
       });
     } catch (error) {
       console.error("Failed to update status", error);
-      alert("Cập nhật trạng thái thất bại!");
+      alert(t("userTable.updateStatusFailed"));
     }
   };
 
@@ -246,7 +260,7 @@ export const UserTable = () => {
       setDeletingUser(null);
     } catch (error) {
       console.error("Failed to delete user", error);
-      alert("Xóa người dùng thất bại. Vui lòng thử lại!");
+      alert(t("userTable.deleteModal.failed"));
     }
   };
 
@@ -254,19 +268,21 @@ export const UserTable = () => {
     <div className="w-full">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h1 className="text-2xl font-bold text-slate-800 font-sans">Quản lý Người dùng</h1>
+        <h1 className="text-2xl font-bold text-slate-800 font-sans">{t("userTable.title")}</h1>
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-full font-medium transition-colors shadow-sm flex items-center gap-2">
-            <span>+ Tạo tài khoản mới</span>
+            <span>{t("userTable.createAccount")}</span>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Tạo tài khoản mới</DialogTitle>
+              <DialogTitle>{t("userTable.createModal.title")}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreateUser} className="flex flex-col gap-4 mt-4">
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-slate-700">Tên người dùng *</label>
+                <label className="text-sm font-medium text-slate-700">
+                  {t("userTable.createModal.name")}
+                </label>
                 <input
                   required
                   type="text"
@@ -278,7 +294,9 @@ export const UserTable = () => {
                 {formErrors.name && <span className="text-xs text-red-500">{formErrors.name}</span>}
               </div>
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-slate-700">Email *</label>
+                <label className="text-sm font-medium text-slate-700">
+                  {t("userTable.createModal.email")}
+                </label>
                 <input
                   required
                   type="email"
@@ -292,7 +310,9 @@ export const UserTable = () => {
                 )}
               </div>
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-slate-700">Số điện thoại *</label>
+                <label className="text-sm font-medium text-slate-700">
+                  {t("userTable.createModal.phone")}
+                </label>
                 <input
                   required
                   type="text"
@@ -306,7 +326,9 @@ export const UserTable = () => {
                 )}
               </div>
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-slate-700">Mật khẩu *</label>
+                <label className="text-sm font-medium text-slate-700">
+                  {t("userTable.createModal.password")}
+                </label>
                 <input
                   required
                   type="password"
@@ -320,28 +342,32 @@ export const UserTable = () => {
                 )}
               </div>
               <div className="grid gap-2">
-                <label className="text-sm font-medium text-slate-700">Vai trò *</label>
+                <label className="text-sm font-medium text-slate-700">
+                  {t("userTable.createModal.role")}
+                </label>
                 <select
                   className="flex h-9 w-full rounded-md border border-slate-300 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                 >
-                  <option value="customer">Khách hàng</option>
-                  <option value="facility_staff">Nhân viên cơ sở</option>
-                  <option value="facility_manager">Quản lý cơ sở</option>
-                  <option value="system_admin">Quản trị hệ thống</option>
+                  <option value="customer">{t("userTable.roles.customer")}</option>
+                  <option value="facility_staff">{t("userTable.roles.facilityStaff")}</option>
+                  <option value="facility_manager">{t("userTable.roles.facilityManager")}</option>
+                  <option value="system_admin">{t("userTable.roles.systemAdmin")}</option>
                 </select>
               </div>
               <DialogFooter className="mt-4">
                 <DialogClose className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-                  Hủy
+                  {t("userTable.createModal.cancel")}
                 </DialogClose>
                 <button
                   type="submit"
                   disabled={createUser.isPending}
                   className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
-                  {createUser.isPending ? "Đang lưu..." : "Xác nhận tạo"}
+                  {createUser.isPending
+                    ? t("userTable.createModal.saving")
+                    : t("userTable.createModal.confirm")}
                 </button>
               </DialogFooter>
             </form>
@@ -360,12 +386,12 @@ export const UserTable = () => {
       <Dialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Xác nhận xóa người dùng</DialogTitle>
+            <DialogTitle>{t("userTable.deleteModal.title")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-slate-600 mt-2">
-            Bạn có chắc chắn muốn xóa tài khoản{" "}
-            <span className="font-semibold text-slate-800">{deletingUser?.name}</span>? Hành động
-            này không thể hoàn tác.
+            {t("userTable.deleteModal.message")}{" "}
+            <span className="font-semibold text-slate-800">{deletingUser?.name}</span>?{" "}
+            {t("userTable.deleteModal.warning")}
           </p>
           <DialogFooter className="mt-6">
             <button
@@ -373,7 +399,7 @@ export const UserTable = () => {
               onClick={() => setDeletingUser(null)}
               className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
             >
-              Hủy
+              {t("userTable.deleteModal.cancel")}
             </button>
             <button
               type="button"
@@ -381,7 +407,9 @@ export const UserTable = () => {
               disabled={deleteUser.isPending}
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
             >
-              {deleteUser.isPending ? "Đang xóa..." : "Xóa tài khoản"}
+              {deleteUser.isPending
+                ? t("userTable.deleteModal.deleting")
+                : t("userTable.deleteModal.confirm")}
             </button>
           </DialogFooter>
         </DialogContent>
@@ -395,7 +423,7 @@ export const UserTable = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Tìm kiếm người dùng..."
+              placeholder={t("userTable.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-slate-50 border-none rounded-full py-2 pl-10 pr-4 text-sm text-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none"
@@ -409,19 +437,19 @@ export const UserTable = () => {
             <thead>
               <tr className="bg-slate-50/50">
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Người dùng
+                  {t("userTable.columns.user")}
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Vai trò
+                  {t("userTable.columns.role")}
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Cơ sở được gán
+                  {t("userTable.columns.facility")}
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Trạng thái
+                  {t("userTable.columns.status")}
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">
-                  Thao tác
+                  {t("userTable.columns.actions")}
                 </th>
               </tr>
             </thead>
@@ -429,18 +457,17 @@ export const UserTable = () => {
               {isLoading ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
-                    Đang tải dữ liệu...
+                    {t("userTable.loading")}
                   </td>
                 </tr>
               ) : data?.data.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
-                    Không tìm thấy người dùng nào.
+                    {t("userTable.empty")}
                   </td>
                 </tr>
               ) : (
                 data?.data.map((user) => {
-                  console.log("User data:", user);
                   return (
                     <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4">
@@ -459,7 +486,7 @@ export const UserTable = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">{getRoleBadge(user.role)}</td>
+                      <td className="px-6 py-4">{getRoleBadge(user.role, t)}</td>
                       <td className="px-6 py-4">
                         <span className="text-slate-600 text-sm">
                           {user.assignedFacility || "-"}
@@ -473,7 +500,9 @@ export const UserTable = () => {
                           <span
                             className={`text-sm font-medium ${user.status === "active" ? "text-emerald-600" : "text-red-600"}`}
                           >
-                            {user.status === "active" ? "Hoạt động" : "Đã khóa"}
+                            {user.status === "active"
+                              ? t("userTable.status.active")
+                              : t("userTable.status.inactive")}
                           </span>
                         </div>
                       </td>
@@ -482,7 +511,7 @@ export const UserTable = () => {
                           <button
                             onClick={() => setEditingUserId(user.id)}
                             className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                            title="Chỉnh sửa"
+                            title={t("userTable.edit")}
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
@@ -491,7 +520,9 @@ export const UserTable = () => {
                             disabled={updateUser.isPending}
                             className={`p-2 transition-colors rounded-lg ${user.status === "active" ? "text-slate-400 hover:text-red-600 hover:bg-red-50" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"} disabled:opacity-50`}
                             title={
-                              user.status === "active" ? "Khóa tài khoản" : "Mở khóa tài khoản"
+                              user.status === "active"
+                                ? t("userTable.lockAccount")
+                                : t("userTable.unlockAccount")
                             }
                           >
                             {user.status === "active" ? (
@@ -503,7 +534,7 @@ export const UserTable = () => {
                           <button
                             onClick={() => setDeletingUser({ id: user.id, name: user.name })}
                             className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Xóa tài khoản"
+                            title={t("userTable.deleteAccount")}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
