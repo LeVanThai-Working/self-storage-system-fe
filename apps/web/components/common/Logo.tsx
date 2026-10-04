@@ -20,9 +20,18 @@ interface LogoProps {
   size?: keyof typeof iconSizes;
   /** Use light text for dark backgrounds */
   inverted?: boolean;
+  /** Extra classes for the tagline, e.g. to hide it on very narrow screens */
+  taglineClassName?: string;
 }
 
-export function Logo({ className, href, showTagline = true, size = "md", inverted }: LogoProps) {
+export function Logo({
+  className,
+  href,
+  showTagline = true,
+  size = "md",
+  inverted,
+  taglineClassName,
+}: LogoProps) {
   const content = (
     <div className={cn("group inline-flex items-center gap-3 select-none", className)}>
       <div
@@ -51,8 +60,9 @@ export function Logo({ className, href, showTagline = true, size = "md", inverte
         {showTagline && (
           <span
             className={cn(
-              "mt-0.5 text-[10px] leading-none font-medium tracking-wide sm:text-[11px]",
-              inverted ? "text-white/70" : "text-neutral-muted"
+              "mt-0.5 text-[10px] leading-none font-medium tracking-wide whitespace-nowrap sm:text-[11px]",
+              inverted ? "text-white/70" : "text-neutral-muted",
+              taglineClassName
             )}
           >
             Safe Space, More Possibilities

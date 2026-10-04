@@ -7,7 +7,7 @@
     "search": "Search",
     "confirm": "Confirm",
     "back": "Back",
-    "networkError": "Unable to connect to the server. Please check your network connection."
+    "language": "Language"
   },
   "auth": {
     "login": "Sign In",
@@ -118,5 +118,416 @@
     "MESSAGE_CODE_122": "You Do Not Have Permission To Manage {0}",
     "MESSAGE_CODE_200": "{0} Is Required",
     "MESSAGE_CODE_201": "Invalid Token"
+  },
+  "systemAdmin": {
+    "nav": {
+      "overview": "Overview",
+      "userManagement": "User Management",
+      "facilityManagement": "Facility Management",
+      "settings": "System Settings"
+    },
+    "search": "Search...",
+    "userTable": {
+      "title": "User Management",
+      "createAccount": "+ Create New Account",
+      "searchPlaceholder": "Search users...",
+      "columns": {
+        "user": "User",
+        "role": "Role",
+        "facility": "Assigned Facility",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Locked"
+      },
+      "roles": {
+        "systemAdmin": "System Admin",
+        "facilityManager": "Facility Manager",
+        "facilityStaff": "Staff",
+        "customer": "Customer"
+      },
+      "loading": "Loading data...",
+      "empty": "No users found.",
+      "edit": "Edit",
+      "lockAccount": "Lock account",
+      "unlockAccount": "Unlock account",
+      "deleteAccount": "Delete account",
+      "createModal": {
+        "title": "Create New Account",
+        "name": "Full Name *",
+        "email": "Email *",
+        "phone": "Phone Number *",
+        "password": "Password *",
+        "role": "Role *",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "confirm": "Create Account"
+      },
+      "editModal": {
+        "title": "Edit User",
+        "name": "Full Name *",
+        "phone": "Phone Number *",
+        "role": "Role *",
+        "status": "Status",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "save": "Save Changes",
+        "updateFailed": "Update failed!"
+      },
+      "deleteModal": {
+        "title": "Confirm Delete User",
+        "message": "Are you sure you want to delete the account",
+        "warning": "This action cannot be undone.",
+        "cancel": "Cancel",
+        "deleting": "Deleting...",
+        "confirm": "Delete Account",
+        "failed": "Failed to delete user. Please try again!"
+      },
+      "createFailed": "Failed to create user.",
+      "retryMessage": "Please try again!",
+      "updateStatusFailed": "Failed to update status!"
+    }
+  },
+  "landing": {
+    "meta": {
+      "title": "StorageHub - Safe storage space for every need",
+      "description": "StorageHub - Smart, secure and flexible self-storage rental for individuals and businesses."
+    },
+    "nav": {
+      "home": "Home",
+      "storage": "Storage",
+      "pricing": "Pricing",
+      "about": "About us",
+      "support": "Support"
+    },
+    "header": {
+      "login": "Log in",
+      "register": "Sign up",
+      "quickSearch": "Quick search",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "mainNav": "Main navigation"
+    },
+    "hero": {
+      "badge": "Self-service • Secure • Flexible",
+      "title": "Safe storage space <br></br>for <highlight>every need</highlight>",
+      "description": "Find and rent self-storage units quickly and easily. <br></br>Flexible solutions for individuals, families and businesses.",
+      "imageAlt": "Modern StorageHub storage facility hallway",
+      "annotationLine1": "Easy storage",
+      "annotationLine2": "Lighter living"
+    },
+    "search": {
+      "fields": {
+        "location": "Location",
+        "type": "Storage type",
+        "size": "Size",
+        "price": "Price range"
+      },
+      "locationPlaceholder": "Select a facility",
+      "submit": "Find available units",
+      "options": {
+        "location": {
+          "all": {
+            "label": "All facilities",
+            "sublabel": "Nationwide network"
+          },
+          "hcm-q7": {
+            "label": "HCMC - District 7 (Phu My Hung)",
+            "sublabel": "10 Nguyen Van Linh, District 7"
+          },
+          "hcm-bt": {
+            "label": "HCMC - Binh Thanh (Dien Bien Phu)",
+            "sublabel": "Landmark Tower, Binh Thanh"
+          },
+          "hcm-td": {
+            "label": "HCMC - Thu Duc City (Thao Dien)",
+            "sublabel": "24 Song Hanh Street, Thao Dien"
+          },
+          "hn-cg": {
+            "label": "Hanoi - Cau Giay (Duy Tan)",
+            "sublabel": "Duy Tan Hi-tech Zone, Cau Giay"
+          },
+          "hn-tx": {
+            "label": "Hanoi - Thanh Xuan (Nguyen Trai)",
+            "sublabel": "229 Nguyen Trai, Thanh Xuan"
+          },
+          "dn-hc": {
+            "label": "Da Nang - Hai Chau (Bach Dang)",
+            "sublabel": "150 Bach Dang, Hai Chau"
+          }
+        },
+        "type": {
+          "all": {
+            "label": "All types",
+            "sublabel": "Every storage type"
+          },
+          "locker": {
+            "label": "Personal locker",
+            "sublabel": "Documents, suitcases, small items"
+          },
+          "standard": {
+            "label": "Standard dry storage",
+            "sublabel": "Household items, furniture"
+          },
+          "climate_controlled": {
+            "label": "Climate-controlled storage",
+            "sublabel": "Antiques, electronics, wine"
+          },
+          "commercial": {
+            "label": "Business storage",
+            "sublabel": "Inventory, long-term records"
+          }
+        },
+        "size": {
+          "all": {
+            "label": "All sizes",
+            "sublabel": "Any area"
+          },
+          "small": {
+            "label": "Small (1m² - 3m²)",
+            "sublabel": "Fits 10 - 20 cardboard boxes"
+          },
+          "medium": {
+            "label": "Medium (4m² - 8m²)",
+            "sublabel": "Living room or bedroom furniture"
+          },
+          "large": {
+            "label": "Large (9m² - 15m²)",
+            "sublabel": "A whole 2-3 bedroom apartment"
+          },
+          "extra_large": {
+            "label": "Extra large (over 15m²)",
+            "sublabel": "Businesses, small workshops"
+          }
+        },
+        "price": {
+          "all": {
+            "label": "All prices",
+            "sublabel": "Any budget"
+          },
+          "under_1m": {
+            "label": "Under 1,000,000đ / month",
+            "sublabel": "Budget"
+          },
+          "1m_to_2m5": {
+            "label": "1,000,000đ - 2,500,000đ / month",
+            "sublabel": "Most popular"
+          },
+          "2m5_to_5m": {
+            "label": "2,500,000đ - 5,000,000đ / month",
+            "sublabel": "Spacious"
+          },
+          "above_5m": {
+            "label": "Over 5,000,000đ / month",
+            "sublabel": "Business & premium"
+          }
+        }
+      }
+    },
+    "trust": {
+      "facilities": "50+ facilities nationwide",
+      "sizes": "Wide range of unit sizes",
+      "payment": "Flexible payment",
+      "support": "24/7 support"
+    },
+    "benefits": {
+      "security": {
+        "title": "Total security",
+        "description": "24/7 security, CCTV monitoring and code-controlled access."
+      },
+      "flexibility": {
+        "title": "Flexible terms",
+        "description": "Rent by the day, month or year with flexible plans."
+      },
+      "sizes": {
+        "title": "Many sizes",
+        "description": "From small lockers to large units, for every need."
+      },
+      "payment": {
+        "title": "Convenient payment",
+        "description": "Pay by card, e-wallet or bank transfer."
+      },
+      "support": {
+        "title": "24/7 support",
+        "description": "Our team is always ready to help you, anytime."
+      }
+    },
+    "why": {
+      "eyebrow": "Why choose StorageHub?",
+      "title": "Smart storage solutions <br></br>made for you",
+      "description": "We provide modern, secure and convenient storage facilities that help you make the most of your living and working space.",
+      "learnMore": "Learn more",
+      "imageAlt": "A happy customer using StorageHub",
+      "noteTitle": "More room <br></br>for big plans!",
+      "noteCaption": "✦ Declutter with ease",
+      "stats": {
+        "facilities": {
+          "value": "50+",
+          "title": "Facilities nationwide",
+          "description": "Easily find a location near you."
+        },
+        "units": {
+          "value": "1,000+",
+          "title": "Storage units",
+          "description": "Many sizes, plenty of choice."
+        },
+        "customers": {
+          "value": "100,000+",
+          "title": "Trusted customers",
+          "description": "Individuals, families and businesses."
+        },
+        "safety": {
+          "value": "99.9%",
+          "title": "Safety rate",
+          "description": "Modern monitoring systems."
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "Just <highlight>4 simple</highlight> steps",
+      "subtitle": "Renting storage has never been this easy!",
+      "steps": {
+        "search": {
+          "title": "Search",
+          "description": "Choose a facility, storage type, size and rental period."
+        },
+        "booking": {
+          "title": "Book",
+          "description": "Confirm your details and pay the deposit."
+        },
+        "payment": {
+          "title": "Pay",
+          "description": "Complete payment with your preferred method."
+        },
+        "pickup": {
+          "title": "Move in",
+          "description": "Visit the facility, get your access code and start using it."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "title": "Choose the plan that fits you",
+      "description": "Flexible plans with no long-term commitment. Start renting today.",
+      "billingCycle": "Billing cycle",
+      "monthly": "Monthly",
+      "annual": "Yearly",
+      "annualDiscount": "-15%",
+      "popular": "Most popular",
+      "perMonth": "/month",
+      "annualNote": "(Save 15% when paying for 12 months)",
+      "bookNow": "Book now",
+      "customPrompt": "Need a larger unit or a custom plan?",
+      "customLink": "Contact us for advice",
+      "plans": {
+        "small": {
+          "name": "Small",
+          "size": "1–5 m²",
+          "description": "For personal items, luggage and documents",
+          "features": [
+            "Private security lock",
+            "24/7 CCTV monitoring",
+            "Access 7 days a week",
+            "Online support"
+          ]
+        },
+        "medium": {
+          "name": "Medium",
+          "size": "5–15 m²",
+          "description": "Ideal for families or small inventory",
+          "features": [
+            "Private security lock",
+            "24/7 CCTV monitoring",
+            "24/7 access",
+            "Priority support",
+            "Basic property insurance"
+          ]
+        },
+        "large": {
+          "name": "Large",
+          "size": "15–30 m²",
+          "description": "For businesses and commercial goods",
+          "features": [
+            "Smart lock",
+            "24/7 4K cameras",
+            "24/7 access + truck entry",
+            "Dedicated account manager",
+            "Full property insurance",
+            "Monthly reports"
+          ]
+        }
+      }
+    },
+    "testimonials": {
+      "eyebrow": "What our customers say",
+      "title": "Thousands of customers trust StorageHub",
+      "rating": "Rated {rating} out of 5 stars",
+      "items": {
+        "lan": {
+          "name": "Nguyễn Thị Lan",
+          "role": "Homeowner, Hanoi",
+          "content": "StorageHub solved my family’s lack of space. The units are clean and secure, and the staff are very helpful. I’ve used it for 8 months and I’m very satisfied!"
+        },
+        "khoa": {
+          "name": "Trần Minh Khoa",
+          "role": "Business owner, HCMC",
+          "content": "I keep my inventory here. Reasonable prices and professional management. 24/7 access is especially convenient for my business."
+        },
+        "thu": {
+          "name": "Phạm Thị Thu",
+          "role": "Student, Da Nang",
+          "content": "When I went home for the summer, I stored my things at StorageHub. Very convenient and affordable for students. Everything was well kept, nothing damaged."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to free up <br></br>your space?",
+      "description": "Sign up today and get your first month free on your first unit.",
+      "register": "Sign up for free",
+      "contact": "Talk to an advisor",
+      "note": "No credit card required • Cancel anytime"
+    },
+    "footer": {
+      "description": "StorageHub - Vietnam’s leading self-storage rental platform for individuals and businesses. Total security, flexible terms and maximum convenience.",
+      "address": "Head office: 8th Floor, StorageHub Building, District 7, Ho Chi Minh City",
+      "hotline": "Hotline: 1900 8899 (24/7)",
+      "email": "Support email: hotro@storagehub.vn",
+      "services": {
+        "title": "Storage services",
+        "items": {
+          "personal": "Personal & family storage",
+          "business": "Business / commercial storage",
+          "climate": "Cold & humidity-controlled storage",
+          "locker": "Smart mini lockers",
+          "moving": "Packing & moving services"
+        }
+      },
+      "support": {
+        "title": "Customer support",
+        "items": {
+          "faq": "Frequently asked questions (FAQ)",
+          "pricing": "Pricing & promotions",
+          "guide": "Online booking guide",
+          "insurance": "Goods insurance policy",
+          "terms": "Terms of service"
+        }
+      },
+      "safety": {
+        "title": "Safety standards",
+        "items": {
+          "camera": "24/7 AI camera monitoring and key-card access",
+          "access": "Free 24/7 access without prior notice",
+          "insurance": "Property risk insurance up to 500 million VND"
+        }
+      },
+      "copyright": "© {year} StorageHub Vietnam. All rights reserved.",
+      "legal": {
+        "privacy": "Privacy policy",
+        "regulations": "Operating regulations",
+        "partnership": "Partnerships"
+      }
+    }
   }
 }

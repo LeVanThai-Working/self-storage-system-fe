@@ -1,4 +1,4 @@
-import type { USER_ROLE } from "../constants/role";
+import type { USER_ROLE } from "../enums/user.enum";
 
 // Request/response contracts mirror the backend auth module (src/modules/auth/schemas)
 

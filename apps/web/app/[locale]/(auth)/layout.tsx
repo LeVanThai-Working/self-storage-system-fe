@@ -1,7 +1,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { ArrowLeft, KeyRound, ShieldCheck, Wallet } from "lucide-react";
-import { Logo } from "@/components/common/logo";
+import { Logo } from "@/components/common/Logo";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const t = useTranslations("auth.layout");

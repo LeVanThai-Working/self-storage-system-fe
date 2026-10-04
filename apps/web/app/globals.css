@@ -65,6 +65,7 @@
   --color-cta-hover: var(--brand-cta-hover);
   --color-cta-dark: var(--brand-cta-dark);
   --color-cta-light: var(--brand-cta-light);
+  --color-cta-active: var(--brand-cta-dark);
 
   /* Neutrals */
   --color-neutral-main: var(--brand-text-main);
@@ -81,6 +82,8 @@
   --shadow-brand: 0 4px 16px rgba(11, 146, 126, 0.2);
   --shadow-search-panel:
     0 20px 40px -10px rgba(6, 78, 75, 0.08), 0 6px 18px -4px rgba(6, 78, 75, 0.04);
+  --shadow-soft: 0 10px 30px -5px rgba(6, 78, 75, 0.05), 0 4px 12px -2px rgba(6, 78, 75, 0.03);
+  --shadow-benefit: 0 4px 20px -2px rgba(6, 78, 75, 0.04);
 }
 
 :root {
@@ -212,6 +215,14 @@
       0 20px 40px -10px rgba(6, 78, 75, 0.08),
       0 6px 18px -4px rgba(6, 78, 75, 0.04);
   }
+}
+
+/* Landing page: smooth anchor scrolling; anchor targets clear the sticky header */
+html:has([data-landing]) {
+  scroll-behavior: smooth;
+}
+[data-landing] [id] {
+  scroll-margin-top: 6rem;
 }
 
 /* Custom Scrollbar */
