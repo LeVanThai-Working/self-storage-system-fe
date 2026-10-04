@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail, Phone, User } from "lucide-react";
 import { toast } from "sonner";
@@ -16,11 +15,11 @@ import {
   type RegisterFormValues,
 } from "@self-storage-system-fe/shared/schemas";
 import { Button } from "@/components/ui/button";
-import { FormAlert, FormField, PasswordField } from "@/components/auth/form-field";
-import { AuthDivider, GoogleButton } from "@/components/auth/google-button";
-import { RegisterOtpStep } from "@/components/auth/register-otp-step";
-import { authApi } from "@/lib/api/auth";
-import { isValidationError, useApiErrorMessage } from "@/lib/api/error-message";
+import { FormAlert, FormField, PasswordField } from "@/features/auth/components/FormField";
+import { AuthDivider, GoogleButton } from "@/features/auth/components/GoogleButton";
+import { RegisterOtpStep } from "@/features/auth/components/RegisterOtpStep";
+import { useRegister, useSendOtp } from "@/features/auth/hooks";
+import { isValidationError, useApiErrorMessage } from "@/features/auth/error-message";
 
 /**
  * Registration is a two-step flow on the backend:
@@ -33,8 +32,8 @@ export function RegisterForm() {
   const locale = useLocale();
   const router = useRouter();
   const getErrorMessage = useApiErrorMessage();
-  const sendOtp = useMutation({ mutationFn: authApi.sendOtp });
-  const registerMutation = useMutation({ mutationFn: authApi.register });
+  const sendOtp = useSendOtp();
+  const registerMutation = useRegister();
   const [formError, setFormError] = useState("");
   const [pending, setPending] = useState<RegisterFormOutput | null>(null);
 

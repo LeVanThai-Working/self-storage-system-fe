@@ -2,11 +2,12 @@ import {
   API_BASE_URL,
   type ApiResponse,
   type AuthLoginResponse,
+  type AuthUser,
   type LoginRequest,
   type RegisterRequest,
   type SendOtpRequest,
 } from "@self-storage-system-fe/shared";
-import api from "./axios";
+import api from "@/lib/api/axios";
 
 // The backend also sets accessToken/refreshToken as HttpOnly cookies on login/register,
 // so the tokens in the response body are not stored on the web client.
@@ -30,6 +31,12 @@ export const authApi = {
 
   logout: async () => {
     const { data } = await api.post<ApiResponse<null>>("/auth/logout");
+    return data;
+  },
+
+  /** Current session user. A 401 here just means "signed out", so it must not redirect to login. */
+  getMe: async () => {
+    const { data } = await api.get<ApiResponse<AuthUser>>("/auth/me", { skipAuthRedirect: true });
     return data;
   },
 

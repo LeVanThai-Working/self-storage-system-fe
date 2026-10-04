@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
@@ -16,10 +15,10 @@ import {
   type LoginFormValues,
 } from "@self-storage-system-fe/shared/schemas";
 import { Button } from "@/components/ui/button";
-import { FormAlert, FormField, PasswordField } from "@/components/auth/form-field";
-import { AuthDivider, GoogleButton } from "@/components/auth/google-button";
-import { authApi } from "@/lib/api/auth";
-import { isValidationError, useApiErrorMessage } from "@/lib/api/error-message";
+import { FormAlert, FormField, PasswordField } from "@/features/auth/components/FormField";
+import { AuthDivider, GoogleButton } from "@/features/auth/components/GoogleButton";
+import { useLogin } from "@/features/auth/hooks";
+import { isValidationError, useApiErrorMessage } from "@/features/auth/error-message";
 
 /** Only allow same-origin relative paths to prevent open redirects. */
 function getSafeRedirect(value: string | null, fallback: string) {
@@ -34,7 +33,7 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const getErrorMessage = useApiErrorMessage();
-  const login = useMutation({ mutationFn: authApi.login });
+  const login = useLogin();
   const [formError, setFormError] = useState("");
 
   const {

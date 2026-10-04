@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, MailCheck } from "lucide-react";
 import { otpSchema, type OtpFormValues } from "@self-storage-system-fe/shared/schemas";
 import { Button } from "@/components/ui/button";
-import { FormAlert, FormField } from "@/components/auth/form-field";
+import { FormAlert, FormField } from "@/features/auth/components/FormField";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 

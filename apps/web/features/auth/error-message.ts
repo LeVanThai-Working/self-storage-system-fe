@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { AppApiError } from "./axios";
+import { AppApiError } from "@/lib/api/axios";
 
 type ErrorOverrides = Partial<Record<string, string>>;
 

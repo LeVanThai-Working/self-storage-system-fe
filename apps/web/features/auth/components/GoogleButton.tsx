@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { authApi } from "@/lib/api/auth";
+import { authApi } from "@/features/auth/api";
 import { cn } from "@/lib/utils";
 
 export function GoogleButton({ className }: { className?: string }) {
