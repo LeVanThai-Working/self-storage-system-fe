@@ -9,7 +9,7 @@ const intlMiddleware = createMiddleware({
 });
 
 // Routes that require the user to be authenticated
-const protectedPaths = ["/facility-manager", "/business-ops", "/system-admin"];
+const protectedPaths = ["/facility-manager", "/business-ops"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
