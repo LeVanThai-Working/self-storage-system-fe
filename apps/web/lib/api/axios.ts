@@ -8,6 +8,13 @@ import {
 
 export type { ApiErrorResponse, ApiResponse, MessageCode };
 
+declare module "axios" {
+  interface AxiosRequestConfig {
+    /** Still try to refresh on 401, but do not redirect to login if that fails. */
+    skipAuthRedirect?: boolean;
+  }
+}
+
 /**
  * Custom error class that gives React Query and UI layers direct access
  * to the message, messageCode, and validation errors from the backend.
@@ -149,7 +156,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshErr) {
         processQueue(refreshErr);
-        redirectToLogin();
+        if (!originalRequest.skipAuthRedirect) redirectToLogin();
         return Promise.reject(refreshErr);
       } finally {
         isRefreshing = false;
