@@ -2,8 +2,6 @@ import api from "@/lib/api/axios";
 import { User, UserQueryParams, CreateUserPayload } from "./types";
 import { USER_ROLE } from "@self-storage-system-fe/shared";
 
-// Removed mockUsers
-
 export const fetchUsers = async (
   params?: UserQueryParams
 ): Promise<{ data: User[]; total: number }> => {
