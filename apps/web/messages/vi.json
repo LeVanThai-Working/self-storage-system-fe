@@ -41,6 +41,77 @@
     "MESSAGE_CODE_200": "{0} không được để trống",
     "MESSAGE_CODE_201": "Mã token không hợp lệ hoặc đã hết hạn"
   },
+  "systemAdmin": {
+    "nav": {
+      "overview": "Tổng quan",
+      "userManagement": "Quản lý Người dùng",
+      "facilityManagement": "Quản lý Cơ sở",
+      "settings": "Cài đặt hệ thống"
+    },
+    "search": "Tìm kiếm...",
+    "userTable": {
+      "title": "Quản lý Người dùng",
+      "createAccount": "+ Tạo tài khoản mới",
+      "searchPlaceholder": "Tìm kiếm người dùng...",
+      "columns": {
+        "user": "Người dùng",
+        "role": "Vai trò",
+        "facility": "Cơ sở được gán",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "status": {
+        "active": "Hoạt động",
+        "inactive": "Đã khóa"
+      },
+      "roles": {
+        "systemAdmin": "Quản trị HT",
+        "facilityManager": "Quản lý cơ sở",
+        "facilityStaff": "Nhân viên",
+        "customer": "Khách hàng"
+      },
+      "loading": "Đang tải dữ liệu...",
+      "empty": "Không tìm thấy người dùng nào.",
+      "edit": "Chỉnh sửa",
+      "lockAccount": "Khóa tài khoản",
+      "unlockAccount": "Mở khóa tài khoản",
+      "deleteAccount": "Xóa tài khoản",
+      "createModal": {
+        "title": "Tạo tài khoản mới",
+        "name": "Tên người dùng *",
+        "email": "Email *",
+        "phone": "Số điện thoại *",
+        "password": "Mật khẩu *",
+        "role": "Vai trò *",
+        "cancel": "Hủy",
+        "saving": "Đang lưu...",
+        "confirm": "Xác nhận tạo"
+      },
+      "editModal": {
+        "title": "Chỉnh sửa người dùng",
+        "name": "Tên người dùng *",
+        "phone": "Số điện thoại *",
+        "role": "Vai trò *",
+        "status": "Trạng thái",
+        "cancel": "Hủy",
+        "saving": "Đang lưu...",
+        "save": "Lưu thay đổi",
+        "updateFailed": "Cập nhật thất bại!"
+      },
+      "deleteModal": {
+        "title": "Xác nhận xóa người dùng",
+        "message": "Bạn có chắc chắn muốn xóa tài khoản",
+        "warning": "Hành động này không thể hoàn tác.",
+        "cancel": "Hủy",
+        "deleting": "Đang xóa...",
+        "confirm": "Xóa tài khoản",
+        "failed": "Xóa người dùng thất bại. Vui lòng thử lại!"
+      },
+      "createFailed": "Tạo người dùng thất bại.",
+      "retryMessage": "Vui lòng thử lại!",
+      "updateStatusFailed": "Cập nhật trạng thái thất bại!"
+    }
+  },
   "landing": {
     "meta": {
       "title": "StorageHub - Không gian lưu trữ an toàn cho mọi nhu cầu",
