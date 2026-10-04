@@ -11,12 +11,13 @@
   "exports": {
     ".": "./src/index.ts",
     "./types": "./src/types/index.ts",
+    "./enums": "./src/enums/index.ts",
     "./utils": "./src/utils/index.ts",
     "./constants": "./src/constants/index.ts",
     "./schemas": "./src/schemas/index.ts"
   },
   "dependencies": {
-    "zod": "^3"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "typescript": "^5"

@@ -6,7 +6,8 @@
     "error": "Đã có lỗi xảy ra",
     "search": "Tìm kiếm",
     "confirm": "Xác nhận",
-    "back": "Quay lại"
+    "back": "Quay lại",
+    "language": "Ngôn ngữ"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -109,6 +110,346 @@
       "createFailed": "Tạo người dùng thất bại.",
       "retryMessage": "Vui lòng thử lại!",
       "updateStatusFailed": "Cập nhật trạng thái thất bại!"
+    }
+  },
+  "landing": {
+    "meta": {
+      "title": "StorageHub - Không gian lưu trữ an toàn cho mọi nhu cầu",
+      "description": "StorageHub - Dịch vụ thuê kho lưu trữ tự phục vụ thông minh, an toàn và linh hoạt cho cá nhân và doanh nghiệp."
+    },
+    "nav": {
+      "home": "Trang chủ",
+      "storage": "Kho lưu trữ",
+      "pricing": "Bảng giá",
+      "about": "Về chúng tôi",
+      "support": "Hỗ trợ"
+    },
+    "header": {
+      "login": "Đăng nhập",
+      "register": "Đăng ký",
+      "quickSearch": "Tìm kiếm nhanh",
+      "openMenu": "Mở menu",
+      "closeMenu": "Đóng menu",
+      "mainNav": "Điều hướng chính"
+    },
+    "hero": {
+      "badge": "Tự phục vụ • An toàn • Linh hoạt",
+      "title": "Không gian lưu trữ <br></br>an toàn cho <highlight>mọi nhu cầu</highlight>",
+      "description": "Tìm và thuê kho lưu trữ tự phục vụ một cách nhanh chóng, dễ dàng. <br></br>Giải pháp linh hoạt cho cá nhân, gia đình và doanh nghiệp.",
+      "imageAlt": "Hành lang kho lưu trữ hiện đại StorageHub",
+      "annotationLine1": "Lưu trữ dễ dàng",
+      "annotationLine2": "Cuộc sống nhẹ nhàng hơn"
+    },
+    "search": {
+      "fields": {
+        "location": "Địa điểm",
+        "type": "Loại kho",
+        "size": "Kích thước",
+        "price": "Mức giá"
+      },
+      "locationPlaceholder": "Chọn cơ sở",
+      "submit": "Tìm kho trống",
+      "options": {
+        "location": {
+          "all": {
+            "label": "Tất cả cơ sở",
+            "sublabel": "Hệ thống toàn quốc"
+          },
+          "hcm-q7": {
+            "label": "TP.HCM - Q.7 (Phú Mỹ Hưng)",
+            "sublabel": "Số 10 Nguyễn Văn Linh, Q.7"
+          },
+          "hcm-bt": {
+            "label": "TP.HCM - Bình Thạnh (Điện Biên Phủ)",
+            "sublabel": "Tòa nhà Landmark Tower, Bình Thạnh"
+          },
+          "hcm-td": {
+            "label": "TP.HCM - TP. Thủ Đức (Thảo Điền)",
+            "sublabel": "24 Đường Song Hành, Thảo Điền"
+          },
+          "hn-cg": {
+            "label": "Hà Nội - Cầu Giấy (Duy Tân)",
+            "sublabel": "Khu công nghệ cao Duy Tân, Cầu Giấy"
+          },
+          "hn-tx": {
+            "label": "Hà Nội - Thanh Xuân (Nguyễn Trãi)",
+            "sublabel": "Số 229 Nguyễn Trãi, Thanh Xuân"
+          },
+          "dn-hc": {
+            "label": "Đà Nẵng - Hải Châu (Bạch Đằng)",
+            "sublabel": "Số 150 Bạch Đằng, Hải Châu"
+          }
+        },
+        "type": {
+          "all": {
+            "label": "Tất cả loại",
+            "sublabel": "Mọi dòng kho"
+          },
+          "locker": {
+            "label": "Kho tủ cá nhân (Locker)",
+            "sublabel": "Tài liệu, vali, đồ nhỏ"
+          },
+          "standard": {
+            "label": "Kho tiêu chuẩn khô ráo",
+            "sublabel": "Đồ gia đình, nội thất"
+          },
+          "climate_controlled": {
+            "label": "Kho kiểm soát độ ẩm & nhiệt độ",
+            "sublabel": "Đồ cổ, điện tử, rượu vang"
+          },
+          "commercial": {
+            "label": "Kho lưu trữ doanh nghiệp",
+            "sublabel": "Hàng hóa, hồ sơ lưu trữ lâu năm"
+          }
+        },
+        "size": {
+          "all": {
+            "label": "Tất cả kích thước",
+            "sublabel": "Mọi diện tích"
+          },
+          "small": {
+            "label": "Kho nhỏ (1m² - 3m²)",
+            "sublabel": "Phù hợp 10 - 20 thùng carton"
+          },
+          "medium": {
+            "label": "Kho vừa (4m² - 8m²)",
+            "sublabel": "Nội thất phòng khách, phòng ngủ"
+          },
+          "large": {
+            "label": "Kho lớn (9m² - 15m²)",
+            "sublabel": "Toàn bộ đồ dùng căn hộ 2-3 phòng"
+          },
+          "extra_large": {
+            "label": "Kho ngoại cỡ (trên 15m²)",
+            "sublabel": "Doanh nghiệp, xưởng nhỏ"
+          }
+        },
+        "price": {
+          "all": {
+            "label": "Tất cả mức giá",
+            "sublabel": "Tất cả ngân sách"
+          },
+          "under_1m": {
+            "label": "Dưới 1.000.000đ / tháng",
+            "sublabel": "Tiết kiệm"
+          },
+          "1m_to_2m5": {
+            "label": "1.000.000đ - 2.500.000đ / tháng",
+            "sublabel": "Phổ biến nhất"
+          },
+          "2m5_to_5m": {
+            "label": "2.500.000đ - 5.000.000đ / tháng",
+            "sublabel": "Diện tích rộng rãi"
+          },
+          "above_5m": {
+            "label": "Trên 5.000.000đ / tháng",
+            "sublabel": "Doanh nghiệp & cao cấp"
+          }
+        }
+      }
+    },
+    "trust": {
+      "facilities": "Hơn 50+ cơ sở toàn quốc",
+      "sizes": "Đa dạng kích thước kho",
+      "payment": "Thanh toán linh hoạt",
+      "support": "Hỗ trợ 24/7"
+    },
+    "benefits": {
+      "security": {
+        "title": "An toàn tuyệt đối",
+        "description": "Hệ thống an ninh 24/7, camera giám sát, kiểm soát ra vào bằng mã."
+      },
+      "flexibility": {
+        "title": "Linh hoạt thời gian",
+        "description": "Thuê theo ngày, tháng, năm với nhiều gói linh hoạt."
+      },
+      "sizes": {
+        "title": "Đa dạng kích thước",
+        "description": "Từ kho nhỏ đến kho lớn, phù hợp mọi nhu cầu."
+      },
+      "payment": {
+        "title": "Thanh toán tiện lợi",
+        "description": "Hỗ trợ nhiều phương thức thanh toán: thẻ, ví điện tử, chuyển khoản."
+      },
+      "support": {
+        "title": "Hỗ trợ 24/7",
+        "description": "Đội ngũ nhân viên luôn sẵn sàng hỗ trợ bạn mọi lúc."
+      }
+    },
+    "why": {
+      "eyebrow": "Vì sao chọn StorageHub?",
+      "title": "Giải pháp lưu trữ thông minh <br></br>dành cho bạn",
+      "description": "Chúng tôi mang đến hệ thống kho lưu trữ hiện đại, an toàn và tiện lợi, giúp bạn tối ưu không gian sống và làm việc.",
+      "learnMore": "Tìm hiểu thêm",
+      "imageAlt": "Khách hàng hài lòng khi sử dụng dịch vụ StorageHub",
+      "noteTitle": "Không gian thêm rộng <br></br>cho những kế hoạch lớn!",
+      "noteCaption": "✦ Thảnh thơi dọn dẹp",
+      "stats": {
+        "facilities": {
+          "value": "50+",
+          "title": "Cơ sở trên toàn quốc",
+          "description": "Dễ dàng tìm thấy địa điểm gần bạn."
+        },
+        "units": {
+          "value": "1.000+",
+          "title": "Kho lưu trữ",
+          "description": "Nhiều loại kích thước, đa dạng lựa chọn."
+        },
+        "customers": {
+          "value": "100.000+",
+          "title": "Khách hàng tin tưởng",
+          "description": "Cá nhân, gia đình, doanh nghiệp."
+        },
+        "safety": {
+          "value": "99.9%",
+          "title": "Tỷ lệ an toàn",
+          "description": "Hệ thống giám sát hiện đại."
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "Chỉ với <highlight>4 bước</highlight> đơn giản",
+      "subtitle": "Thuê kho chưa bao giờ dễ dàng đến thế!",
+      "steps": {
+        "search": {
+          "title": "Tìm kiếm",
+          "description": "Chọn cơ sở, loại kho, kích thước và thời gian thuê."
+        },
+        "booking": {
+          "title": "Đặt chỗ",
+          "description": "Xác nhận thông tin và đặt cọc."
+        },
+        "payment": {
+          "title": "Thanh toán",
+          "description": "Hoàn tất thanh toán qua nhiều phương thức."
+        },
+        "pickup": {
+          "title": "Nhận kho",
+          "description": "Đến cơ sở, nhận mã truy cập và bắt đầu sử dụng."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Bảng giá",
+      "title": "Lựa chọn phù hợp với bạn",
+      "description": "Các gói linh hoạt, không ràng buộc dài hạn. Bắt đầu thuê ngay hôm nay.",
+      "billingCycle": "Chu kỳ thanh toán",
+      "monthly": "Theo tháng",
+      "annual": "Theo năm",
+      "annualDiscount": "-15%",
+      "popular": "Phổ biến nhất",
+      "perMonth": "/tháng",
+      "annualNote": "(Tiết kiệm 15% khi thanh toán 12 tháng)",
+      "bookNow": "Đặt kho ngay",
+      "customPrompt": "Cần kho lớn hơn hoặc gói đặc biệt?",
+      "customLink": "Liên hệ để được tư vấn",
+      "plans": {
+        "small": {
+          "name": "Kho Nhỏ",
+          "size": "1–5 m²",
+          "description": "Phù hợp đồ cá nhân, hành lý, tài liệu",
+          "features": [
+            "Khóa bảo mật riêng",
+            "Camera giám sát 24/7",
+            "Truy cập 7 ngày/tuần",
+            "Hỗ trợ trực tuyến"
+          ]
+        },
+        "medium": {
+          "name": "Kho Vừa",
+          "size": "5–15 m²",
+          "description": "Lý tưởng cho gia đình hoặc hàng tồn kho nhỏ",
+          "features": [
+            "Khóa bảo mật riêng",
+            "Camera giám sát 24/7",
+            "Truy cập 24/7",
+            "Hỗ trợ ưu tiên",
+            "Bảo hiểm tài sản cơ bản"
+          ]
+        },
+        "large": {
+          "name": "Kho Lớn",
+          "size": "15–30 m²",
+          "description": "Dành cho doanh nghiệp, kho hàng thương mại",
+          "features": [
+            "Khóa thông minh",
+            "Camera 4K 24/7",
+            "Truy cập 24/7 + xe tải vào",
+            "Quản lý tài khoản riêng",
+            "Bảo hiểm tài sản đầy đủ",
+            "Báo cáo hàng tháng"
+          ]
+        }
+      }
+    },
+    "testimonials": {
+      "eyebrow": "Khách hàng nói gì?",
+      "title": "Hàng nghìn khách hàng tin tưởng StorageHub",
+      "rating": "Đánh giá {rating} trên 5 sao",
+      "items": {
+        "lan": {
+          "name": "Nguyễn Thị Lan",
+          "role": "Chủ hộ gia đình, Hà Nội",
+          "content": "StorageHub giúp gia đình tôi giải quyết được vấn đề chật chội. Kho sạch sẽ, an toàn và nhân viên rất nhiệt tình. Tôi đã dùng được 8 tháng và rất hài lòng!"
+        },
+        "khoa": {
+          "name": "Trần Minh Khoa",
+          "role": "Chủ doanh nghiệp, TP.HCM",
+          "content": "Tôi lưu hàng tồn kho tại đây. Giá cả hợp lý, hệ thống quản lý chuyên nghiệp. Đặc biệt là có thể truy cập 24/7 rất thuận tiện cho công việc kinh doanh."
+        },
+        "thu": {
+          "name": "Phạm Thị Thu",
+          "role": "Sinh viên, Đà Nẵng",
+          "content": "Khi về quê nghỉ hè, tôi gửi đồ tại StorageHub. Rất tiện lợi, giá cả phải chăng cho sinh viên. Đồ đạc được bảo quản tốt, không có gì hỏng cả."
+        }
+      }
+    },
+    "cta": {
+      "title": "Sẵn sàng giải phóng <br></br>không gian của bạn?",
+      "description": "Đăng ký ngay hôm nay và nhận ưu đãi 1 tháng miễn phí cho kho đầu tiên của bạn.",
+      "register": "Đăng ký miễn phí",
+      "contact": "Liên hệ tư vấn",
+      "note": "Không yêu cầu thẻ tín dụng • Hủy bất cứ lúc nào"
+    },
+    "footer": {
+      "description": "StorageHub - Nền tảng cho thuê kho lưu trữ cá nhân & doanh nghiệp tự phục vụ hàng đầu tại Việt Nam. An toàn tuyệt đối, linh hoạt thời gian và tiện lợi tối đa.",
+      "address": "Trụ sở chính: Tầng 8, Tòa nhà StorageHub, Quận 7, TP. Hồ Chí Minh",
+      "hotline": "Hotline tư vấn: 1900 8899 (24/7)",
+      "email": "Email hỗ trợ: hotro@storagehub.vn",
+      "services": {
+        "title": "Dịch vụ lưu trữ",
+        "items": {
+          "personal": "Kho cá nhân & gia đình",
+          "business": "Kho doanh nghiệp / thương mại",
+          "climate": "Kho lạnh & kiểm soát ẩm",
+          "locker": "Tủ Locker mini thông minh",
+          "moving": "Dịch vụ đóng gói & vận chuyển"
+        }
+      },
+      "support": {
+        "title": "Hỗ trợ khách hàng",
+        "items": {
+          "faq": "Câu hỏi thường gặp (FAQ)",
+          "pricing": "Bảng giá & Khuyến mãi",
+          "guide": "Hướng dẫn đặt kho trực tuyến",
+          "insurance": "Chính sách bảo hiểm hàng hóa",
+          "terms": "Điều khoản sử dụng dịch vụ"
+        }
+      },
+      "safety": {
+        "title": "Tiêu chuẩn an toàn",
+        "items": {
+          "camera": "Camera giám sát AI 24/7 và kiểm soát thẻ từ",
+          "access": "Truy cập kho tự do 24/7 không cần báo trước",
+          "insurance": "Bảo hiểm rủi ro tài sản lên tới 500 triệu đồng"
+        }
+      },
+      "copyright": "© {year} StorageHub Vietnam. Bảo lưu mọi quyền.",
+      "legal": {
+        "privacy": "Chính sách bảo mật",
+        "regulations": "Quy chế hoạt động",
+        "partnership": "Liên hệ hợp tác"
+      }
     }
   }
 }
