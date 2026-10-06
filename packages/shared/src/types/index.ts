@@ -5,4 +5,5 @@ export * from "./facilityUnitTypeOffering.types";
 export * from "./storageUnit.types";
 export * from "./amenity.types";
 export * from "./facilityAmenityOffering.types";
-export * from "./auth";
+export * from "./auth.types";
+export * from "./user.types";

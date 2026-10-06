@@ -10,7 +10,7 @@ import { Lock, Mail, Phone, User } from "lucide-react";
 import { toast } from "sonner";
 import { MESSAGE_CODE } from "@self-storage-system-fe/shared";
 import {
-  registerSchema,
+  registerFormSchema as registerSchema,
   type RegisterFormOutput,
   type RegisterFormValues,
 } from "@self-storage-system-fe/shared/schemas";

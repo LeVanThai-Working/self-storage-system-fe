@@ -1,5 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import * as SecureStore from "expo-secure-store";
+import { tokenStorage } from "@/lib/storage/tokenStorage";
 import {
   API_BASE_URL,
   type ApiErrorResponse,
@@ -8,9 +8,6 @@ import {
 } from "@self-storage-system-fe/shared";
 
 export type { ApiErrorResponse, ApiResponse, MessageCode };
-
-export const TOKEN_KEY = "access_token";
-export const REFRESH_KEY = "refresh_token";
 
 export class AppApiError extends Error {
   statusCode: number;
@@ -67,7 +64,7 @@ const processQueue = (error: unknown = null) => {
 
 api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
   try {
-    const token = await SecureStore.getItemAsync(TOKEN_KEY);
+    const token = await tokenStorage.getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -118,28 +115,45 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = await SecureStore.getItemAsync(REFRESH_KEY);
+        const refreshToken = await tokenStorage.getRefreshToken();
         if (!refreshToken) {
           throw new Error("No refresh token available");
         }
 
-        const { data } = await api.post<{
-          accessToken: string;
+        const res = await api.post<{
+          accessToken?: string;
           refreshToken?: string;
+          tokens?: { accessToken?: string; refreshToken?: string };
+          data?: {
+            accessToken?: string;
+            refreshToken?: string;
+            tokens?: { accessToken?: string; refreshToken?: string };
+          };
         }>("/auth/refresh", { refreshToken });
 
-        await SecureStore.setItemAsync(TOKEN_KEY, data.accessToken);
-        if (data.refreshToken) {
-          await SecureStore.setItemAsync(REFRESH_KEY, data.refreshToken);
+        const newAccessToken =
+          res.data.data?.tokens?.accessToken ??
+          res.data.data?.accessToken ??
+          res.data.tokens?.accessToken ??
+          res.data.accessToken;
+        const newRefreshToken =
+          res.data.data?.tokens?.refreshToken ??
+          res.data.data?.refreshToken ??
+          res.data.tokens?.refreshToken ??
+          res.data.refreshToken;
+
+        if (!newAccessToken) {
+          throw new Error("Invalid token refresh response");
         }
 
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+        await tokenStorage.setTokens(newAccessToken, newRefreshToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         processQueue(null);
         return api(originalRequest);
       } catch (refreshErr) {
         processQueue(refreshErr);
-        await SecureStore.deleteItemAsync(TOKEN_KEY).catch(() => {});
-        await SecureStore.deleteItemAsync(REFRESH_KEY).catch(() => {});
+        await tokenStorage.clearTokens();
         return Promise.reject(refreshErr);
       } finally {
         isRefreshing = false;

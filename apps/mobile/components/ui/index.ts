@@ -28,3 +28,5 @@ export type { SkeletonProps } from "./skeleton";
 
 export { Text } from "./text";
 export type { TextProps } from "./text";
+
+export { GlobalToast } from "./toast";
