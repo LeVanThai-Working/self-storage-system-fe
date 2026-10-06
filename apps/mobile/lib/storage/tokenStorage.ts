@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
 export const ACCESS_TOKEN_KEY = "access_token";
@@ -6,6 +7,12 @@ export const REFRESH_TOKEN_KEY = "refresh_token";
 export const tokenStorage = {
   getAccessToken: async (): Promise<string | null> => {
     try {
+      if (Platform.OS === "web") {
+        if (typeof window !== "undefined" && window.localStorage) {
+          return window.localStorage.getItem(ACCESS_TOKEN_KEY);
+        }
+        return null;
+      }
       return await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
     } catch (error) {
       console.error("Failed to read Access Token from SecureStore:", error);
@@ -15,6 +22,12 @@ export const tokenStorage = {
 
   getRefreshToken: async (): Promise<string | null> => {
     try {
+      if (Platform.OS === "web") {
+        if (typeof window !== "undefined" && window.localStorage) {
+          return window.localStorage.getItem(REFRESH_TOKEN_KEY);
+        }
+        return null;
+      }
       return await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
     } catch (error) {
       console.error("Failed to read Refresh Token from SecureStore:", error);
@@ -27,6 +40,17 @@ export const tokenStorage = {
       if (!accessToken || typeof accessToken !== "string") {
         throw new Error(`Invalid accessToken (expected string, received: ${typeof accessToken})`);
       }
+
+      if (Platform.OS === "web") {
+        if (typeof window !== "undefined" && window.localStorage) {
+          window.localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+          if (refreshToken && typeof refreshToken === "string") {
+            window.localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+          }
+        }
+        return;
+      }
+
       await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accessToken);
 
       if (refreshToken && typeof refreshToken === "string") {
@@ -40,6 +64,14 @@ export const tokenStorage = {
 
   clearTokens: async (): Promise<void> => {
     try {
+      if (Platform.OS === "web") {
+        if (typeof window !== "undefined" && window.localStorage) {
+          window.localStorage.removeItem(ACCESS_TOKEN_KEY);
+          window.localStorage.removeItem(REFRESH_TOKEN_KEY);
+        }
+        return;
+      }
+
       await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
       await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
     } catch (error) {

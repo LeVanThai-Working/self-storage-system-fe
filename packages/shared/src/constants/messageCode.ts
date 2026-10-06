@@ -22,6 +22,24 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_106: "MESSAGE_CODE_106",
   // Invalid Email Or Password
   MESSAGE_CODE_107: "MESSAGE_CODE_107",
+  // {0} Email Is Not Verified
+  MESSAGE_CODE_108: "MESSAGE_CODE_108",
+  // Invalid Or Expired OTP
+  MESSAGE_CODE_109: "MESSAGE_CODE_109",
+
+  // {0} Is Inactive
+  MESSAGE_CODE_110: "MESSAGE_CODE_110",
+  // {0} Is Banned Or Locked
+  MESSAGE_CODE_111: "MESSAGE_CODE_111",
+  // {0} Has Been Deleted
+  MESSAGE_CODE_112: "MESSAGE_CODE_112",
+
+  // {0} Role Is Invalid
+  MESSAGE_CODE_120: "MESSAGE_CODE_120",
+  // User Must Have Role {0}
+  MESSAGE_CODE_121: "MESSAGE_CODE_121",
+  // You Do Not Have Permission To Manage {0}
+  MESSAGE_CODE_122: "MESSAGE_CODE_122",
 
   // {0} Is Required
   MESSAGE_CODE_200: "MESSAGE_CODE_200",
@@ -46,6 +64,14 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_105: "{0} Already Exists",
   MESSAGE_CODE_106: "Internal Server Error",
   MESSAGE_CODE_107: "Invalid Email Or Password",
+  MESSAGE_CODE_108: "{0} Email Is Not Verified",
+  MESSAGE_CODE_109: "Invalid Or Expired OTP",
+  MESSAGE_CODE_110: "{0} Is Inactive",
+  MESSAGE_CODE_111: "{0} Is Banned Or Locked",
+  MESSAGE_CODE_112: "{0} Has Been Deleted",
+  MESSAGE_CODE_120: "{0} Role Is Invalid",
+  MESSAGE_CODE_121: "User Must Have Role {0}",
+  MESSAGE_CODE_122: "You Do Not Have Permission To Manage {0}",
   MESSAGE_CODE_200: "{0} Is Required",
   MESSAGE_CODE_201: "Invalid Token",
 };
@@ -65,6 +91,14 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_105: "{0} đã tồn tại trong hệ thống",
   MESSAGE_CODE_106: "Lỗi hệ thống máy chủ",
   MESSAGE_CODE_107: "Email hoặc mật khẩu không chính xác",
+  MESSAGE_CODE_108: "Email {0} chưa được xác thực",
+  MESSAGE_CODE_109: "Mã OTP không hợp lệ hoặc đã hết hạn",
+  MESSAGE_CODE_110: "{0} đang ngừng hoạt động",
+  MESSAGE_CODE_111: "{0} đã bị khóa",
+  MESSAGE_CODE_112: "{0} đã bị xóa",
+  MESSAGE_CODE_120: "Vai trò {0} không hợp lệ",
+  MESSAGE_CODE_121: "Người dùng phải có vai trò {0}",
+  MESSAGE_CODE_122: "Bạn không có quyền quản lý {0}",
   MESSAGE_CODE_200: "{0} không được để trống",
   MESSAGE_CODE_201: "Mã token không hợp lệ hoặc đã hết hạn",
 };
