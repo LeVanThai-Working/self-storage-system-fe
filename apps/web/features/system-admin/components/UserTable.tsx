@@ -443,9 +443,6 @@ export const UserTable = () => {
                   {t("userTable.columns.role")}
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  {t("userTable.columns.facility")}
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   {t("userTable.columns.status")}
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">
@@ -456,13 +453,13 @@ export const UserTable = () => {
             <tbody className="divide-y divide-slate-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
+                  <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
                     {t("userTable.loading")}
                   </td>
                 </tr>
               ) : data?.data.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
+                  <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
                     {t("userTable.empty")}
                   </td>
                 </tr>
@@ -487,11 +484,6 @@ export const UserTable = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4">{getRoleBadge(user.role, t)}</td>
-                      <td className="px-6 py-4">
-                        <span className="text-slate-600 text-sm">
-                          {user.assignedFacility || "-"}
-                        </span>
-                      </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <span
