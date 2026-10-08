@@ -915,5 +915,148 @@
         "restoreSuccess": "Unit type restored successfully!"
       }
     }
+  },
+  "storageUnitStatus": {
+    "available": "Available",
+    "reserved": "Reserved",
+    "occupied": "Occupied",
+    "under_maintenance": "Under maintenance",
+    "inactive": "Inactive"
+  },
+  "facilityManager": {
+    "roleLabel": "Facility Manager",
+    "nav": {
+      "storageUnits": "Storage units",
+      "sectionFacility": "FACILITY OPERATIONS"
+    },
+    "sidebar": {
+      "assignedFacility": "Assigned facility",
+      "noFacility": "No facility assigned"
+    },
+    "storageUnits": {
+      "title": "Storage Unit Management",
+      "subtitle": "Physical storage units of {facility}: location, unit type and status.",
+      "addUnit": "+ Add storage unit",
+      "searchPlaceholder": "Search by unit number...",
+      "floorPlaceholder": "Floor",
+      "zonePlaceholder": "Zone",
+      "unitTypeFilterAll": "All unit types",
+      "clearFilters": "Clear filters",
+      "refresh": "Refresh",
+      "retry": "Try again",
+      "stats": {
+        "total": "Total units",
+        "available": "Available",
+        "inUse": "Reserved / Occupied",
+        "maintenance": "Under maintenance"
+      },
+      "statusFilter": {
+        "all": "All statuses",
+        "available": "Available",
+        "reserved": "Reserved",
+        "occupied": "Occupied",
+        "under_maintenance": "Under maintenance",
+        "inactive": "Inactive"
+      },
+      "sortBy": {
+        "createdAt": "Newest first",
+        "unitNumber": "Unit number (A-Z)",
+        "floor": "Floor ascending",
+        "status": "Status"
+      },
+      "table": {
+        "unit": "Unit & Notes",
+        "location": "Location",
+        "unitType": "Unit type",
+        "size": "Area / Volume",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "location": {
+        "floor": "Floor {floor}",
+        "zone": "Zone {zone}"
+      },
+      "empty": {
+        "title": "This facility has no storage units yet",
+        "description": "Click \"Add storage unit\" to create the first unit for your facility.",
+        "filteredTitle": "No matching storage units",
+        "filteredDescription": "Try another keyword or adjust the floor, zone, unit type and status filters."
+      },
+      "loadError": {
+        "title": "Unable to load storage units"
+      },
+      "noFacility": {
+        "title": "Could not determine your facility",
+        "description": "Your account has not been assigned to a facility. Please contact Business Operations to get one assigned."
+      },
+      "pagination": {
+        "showing": "Showing",
+        "to": "-",
+        "of": "of",
+        "units": "units",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete unit",
+        "deleteBlocked": "Cannot delete a unit that is reserved or occupied"
+      },
+      "formModal": {
+        "createTitle": "Add Storage Unit",
+        "createSubtitle": "Enter the unit number, location and unit type of the new physical unit.",
+        "editTitle": "Edit Storage Unit",
+        "editSubtitle": "Update the location, unit type, status and notes of this unit.",
+        "unitNumberLabel": "Unit number *",
+        "unitNumberPlaceholder": "e.g. A-101",
+        "unitTypeLabel": "Unit type *",
+        "unitTypePlaceholder": "Select a unit type",
+        "unitTypeLocked": "This unit is reserved or occupied, so its unit type cannot be changed.",
+        "noOffering": "This facility does not offer any unit type yet, so units cannot be created. Send a request to Business Operations to offer a unit type first.",
+        "floorLabel": "Floor *",
+        "zoneLabel": "Zone",
+        "zonePlaceholder": "e.g. A",
+        "statusLabel": "Status",
+        "statusOptions": {
+          "available": "Available",
+          "under_maintenance": "Under maintenance",
+          "inactive": "Inactive"
+        },
+        "statusReadonly": "This status is managed by the system based on reservations / contracts.",
+        "notesLabel": "Notes",
+        "notesPlaceholder": "e.g. Next to the elevator, moisture-proof floor...",
+        "cancel": "Cancel",
+        "confirmCreate": "Create unit",
+        "confirmEdit": "Save changes",
+        "saving": "Saving...",
+        "successCreate": "Storage unit created successfully!",
+        "successEdit": "Storage unit updated successfully!",
+        "validation": {
+          "unitNumberRequired": "Please enter a unit number",
+          "unitNumberMax": "Unit number must not exceed {max} characters",
+          "floorInvalid": "Floor must be a whole number of 1 or more",
+          "zoneMax": "Zone must not exceed {max} characters",
+          "unitTypeRequired": "Please select a unit type",
+          "notesMax": "Notes must not exceed {max} characters"
+        }
+      },
+      "deleteModal": {
+        "title": "Confirm deleting storage unit",
+        "message": "Are you sure you want to delete unit \"{unitNumber}\"?",
+        "warning": "The unit will be hidden from the list and can no longer be reserved. You can undo right after deleting. Units that are reserved or occupied cannot be deleted.",
+        "cancel": "Cancel",
+        "confirm": "Confirm delete",
+        "deleting": "Processing...",
+        "success": "Storage unit deleted successfully!",
+        "undo": "Undo / Restore",
+        "restoring": "Restoring..."
+      },
+      "errors": {
+        "cannotDeleteBusy": "Cannot delete a unit that is reserved or occupied.",
+        "createRejected": "Could not create the unit. Make sure the facility offers this unit type and is active.",
+        "updateRejected": "Could not update the unit. Reserved/occupied units cannot change unit type, and the facility must offer the selected unit type.",
+        "duplicateUnitNumber": "This unit number already exists in the facility. Please choose another."
+      }
+    }
   }
 }
