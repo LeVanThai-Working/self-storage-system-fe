@@ -618,5 +618,153 @@
         "partnership": "Liên hệ hợp tác"
       }
     }
+  },
+  "businessOps": {
+    "nav": {
+      "overview": "Tổng quan",
+      "facilities": "Quản lý Cơ sở",
+      "analytics": "Báo cáo & Phân tích",
+      "sectionOperations": "VẬN HÀNH CHI NHÁNH"
+    },
+    "searchPlaceholder": "Tìm kiếm nhanh cơ sở, mã chi nhánh...",
+    "facilities": {
+      "title": "Quản lý Cơ sở & Mạng lưới chi nhánh",
+      "subtitle": "Theo dõi danh sách toàn bộ cơ sở trong mạng lưới StorageHub, trạng thái vận hành và thông tin liên hệ.",
+      "addFacility": "+ Thêm cơ sở mới",
+      "searchPlaceholder": "Tìm kiếm theo tên cơ sở hoặc địa chỉ...",
+      "cityLabel": "Thành phố",
+      "statusLabel": "Trạng thái",
+      "refresh": "Làm mới",
+      "stats": {
+        "total": "Tổng số cơ sở",
+        "active": "Đang hoạt động",
+        "inactive": "Tạm ngưng / Đóng",
+        "operatingRate": "Tỷ lệ hoạt động"
+      },
+      "columns": {
+        "facility": "Cơ sở lưu trữ",
+        "city": "Thành phố",
+        "contact": "Hotline & Email",
+        "operatingHours": "Giờ hoạt động",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "cityFilter": {
+        "all": "Tất cả thành phố",
+        "hanoi": "Hà Nội",
+        "hcm": "TP. Hồ Chí Minh",
+        "danang": "Đà Nẵng",
+        "binhduong": "Bình Dương",
+        "haiphong": "Hải Phòng",
+        "cantho": "Cần Thơ"
+      },
+      "statusFilter": {
+        "all": "Tất cả trạng thái",
+        "active": "Đang hoạt động",
+        "inactive": "Tạm ngưng",
+        "closed": "Đã đóng cửa"
+      },
+      "statuses": {
+        "active": "Đang hoạt động",
+        "inactive": "Tạm ngưng",
+        "closed": "Đóng cửa"
+      },
+      "actions": {
+        "edit": "Chỉnh sửa",
+        "assignManager": "Phân công quản lý",
+        "viewDetail": "Xem chi tiết",
+        "delete": "Ngừng hoạt động",
+        "restore": "Khôi phục"
+      },
+      "pagination": {
+        "showing": "Hiển thị",
+        "of": "trên",
+        "facilities": "cơ sở",
+        "prev": "Trang trước",
+        "next": "Trang sau"
+      },
+      "empty": {
+        "title": "Không tìm thấy cơ sở nào phù hợp",
+        "description": "Hãy thử kiểm tra lại từ khóa tìm kiếm hoặc bỏ bớt các tiêu chí lọc.",
+        "clearFilter": "Xóa bộ lọc"
+      },
+      "loading": "Đang tải danh sách cơ sở...",
+      "createModal": {
+        "title": "Thêm cơ sở lưu trữ mới",
+        "subtitle": "Điền thông tin chi nhánh kho mới để đưa vào hệ thống quản lý.",
+        "name": "Tên cơ sở *",
+        "namePlaceholder": "vd: StorageHub Cầu Giấy",
+        "city": "Tỉnh / Thành phố *",
+        "cityPlaceholder": "Chọn thành phố",
+        "address": "Địa chỉ chi tiết *",
+        "addressPlaceholder": "vd: Số 123 Đường Cầu Giấy, P. Dịch Vọng, Q. Cầu Giấy",
+        "phone": "Hotline / Số điện thoại",
+        "phonePlaceholder": "vd: 0987 654 321",
+        "email": "Email liên hệ",
+        "emailPlaceholder": "vd: caugiay@storagehub.vn",
+        "operatingHours": "Khung giờ hoạt động",
+        "openTime": "Giờ mở cửa",
+        "closeTime": "Giờ đóng cửa",
+        "description": "Mô tả cơ sở",
+        "descriptionPlaceholder": "Mô tả hạ tầng, vị trí thuận lợi, tiện ích tại cơ sở...",
+        "cancel": "Hủy",
+        "saving": "Đang lưu...",
+        "submit": "Lưu cơ sở",
+        "success": "Tạo cơ sở thành công!",
+        "error": "Tạo cơ sở thất bại. Vui lòng kiểm tra lại thông tin!",
+        "validation": {
+          "nameRequired": "Vui lòng nhập tên cơ sở",
+          "cityRequired": "Vui lòng chọn tỉnh / thành phố",
+          "addressRequired": "Vui lòng nhập địa chỉ chi tiết"
+        }
+      },
+      "editModal": {
+        "title": "Chỉnh sửa thông tin cơ sở",
+        "subtitle": "Cập nhật thông tin chi nhánh, thời gian hoạt động và trạng thái cơ sở.",
+        "loading": "Đang tải thông tin chi tiết cơ sở...",
+        "name": "Tên cơ sở *",
+        "city": "Tỉnh / Thành phố *",
+        "address": "Địa chỉ chi tiết *",
+        "phone": "Hotline / Số điện thoại",
+        "email": "Email liên hệ",
+        "status": "Trạng thái hoạt động",
+        "operatingHours": "Khung giờ hoạt động",
+        "openTime": "Giờ mở cửa",
+        "closeTime": "Giờ đóng cửa",
+        "description": "Mô tả cơ sở",
+        "cancel": "Hủy",
+        "saving": "Đang lưu thay đổi...",
+        "submit": "Lưu thay đổi",
+        "success": "Cập nhật cơ sở thành công!",
+        "error": "Cập nhật cơ sở thất bại. Vui lòng kiểm tra lại thông tin!"
+      },
+      "deleteModal": {
+        "title": "Xác nhận ngừng hoạt động cơ sở",
+        "message": "Bạn có chắc chắn muốn xóa cơ sở \"{name}\"?",
+        "warning": "Cơ sở này sẽ bị tạm ẩn khỏi hệ thống quản lý và ứng dụng khách hàng. Bạn có thể khôi phục lại bất cứ lúc nào.",
+        "cancel": "Hủy",
+        "confirm": "Xác nhận xóa",
+        "deleting": "Đang xóa...",
+        "success": "Đã xóa cơ sở thành công!",
+        "error": "Xóa cơ sở thất bại. Vui lòng thử lại!",
+        "undo": "Hoàn tác / Khôi phục",
+        "restoring": "Đang khôi phục...",
+        "restoreSuccess": "Khôi phục cơ sở thành công!"
+      },
+      "assignManagerModal": {
+        "title": "Phân công Quản lý cơ sở",
+        "subtitle": "Chỉ định Quản lý (Facility Manager) phụ trách vận hành và duyệt hợp đồng tại chi nhánh này.",
+        "facilityLabel": "Cơ sở lưu trữ",
+        "selectManager": "Chọn Quản lý phụ trách *",
+        "placeholder": "-- Chọn Quản lý cơ sở --",
+        "noManagers": "Không tìm thấy tài khoản Quản lý cơ sở nào trong hệ thống.",
+        "cancel": "Hủy",
+        "confirm": "Xác nhận phân công",
+        "saving": "Đang phân công...",
+        "success": "Phân công Quản lý cơ sở thành công!",
+        "error": "Phân công Quản lý thất bại. Vui lòng thử lại!",
+        "validationRequired": "Vui lòng chọn một Quản lý cơ sở"
+      }
+    }
   }
 }

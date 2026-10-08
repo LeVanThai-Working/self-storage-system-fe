@@ -618,5 +618,153 @@
         "partnership": "Partnerships"
       }
     }
+  },
+  "businessOps": {
+    "nav": {
+      "overview": "Overview",
+      "facilities": "Facility Management",
+      "analytics": "Analytics & Reports",
+      "sectionOperations": "BRANCH OPERATIONS"
+    },
+    "searchPlaceholder": "Search facilities, branch code...",
+    "facilities": {
+      "title": "Facility & Branch Network",
+      "subtitle": "Monitor all storage facilities across the StorageHub network, operational statuses, and contact details.",
+      "addFacility": "+ Add New Facility",
+      "searchPlaceholder": "Search by facility name or address...",
+      "cityLabel": "City",
+      "statusLabel": "Status",
+      "refresh": "Refresh",
+      "stats": {
+        "total": "Total Facilities",
+        "active": "Active",
+        "inactive": "Inactive / Closed",
+        "operatingRate": "Operation Rate"
+      },
+      "columns": {
+        "facility": "Facility",
+        "city": "City",
+        "contact": "Hotline & Email",
+        "operatingHours": "Operating Hours",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "cityFilter": {
+        "all": "All Cities",
+        "hanoi": "Hanoi",
+        "hcm": "Ho Chi Minh City",
+        "danang": "Da Nang",
+        "binhduong": "Binh Duong",
+        "haiphong": "Hai Phong",
+        "cantho": "Can Tho"
+      },
+      "statusFilter": {
+        "all": "All Statuses",
+        "active": "Active",
+        "inactive": "Inactive",
+        "closed": "Closed"
+      },
+      "statuses": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "closed": "Closed"
+      },
+      "actions": {
+        "edit": "Edit",
+        "assignManager": "Assign Manager",
+        "viewDetail": "View Details",
+        "delete": "Deactivate",
+        "restore": "Restore"
+      },
+      "pagination": {
+        "showing": "Showing",
+        "of": "of",
+        "facilities": "facilities",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "empty": {
+        "title": "No facilities found",
+        "description": "Try adjusting your search query or removing some filters.",
+        "clearFilter": "Clear filters"
+      },
+      "loading": "Loading facilities...",
+      "createModal": {
+        "title": "Add New Storage Facility",
+        "subtitle": "Fill in the details to add a new storage branch to the management system.",
+        "name": "Facility Name *",
+        "namePlaceholder": "e.g., StorageHub Cau Giay",
+        "city": "City / Province *",
+        "cityPlaceholder": "Select a city",
+        "address": "Detailed Address *",
+        "addressPlaceholder": "e.g., 123 Cau Giay St, Dich Vong Ward, Cau Giay Dist",
+        "phone": "Hotline / Phone Number",
+        "phonePlaceholder": "e.g., +84 987 654 321",
+        "email": "Contact Email",
+        "emailPlaceholder": "e.g., caugiay@storagehub.vn",
+        "operatingHours": "Operating Hours",
+        "openTime": "Opening Time",
+        "closeTime": "Closing Time",
+        "description": "Facility Description",
+        "descriptionPlaceholder": "Describe infrastructure, highlights, available services...",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "submit": "Save Facility",
+        "success": "Facility created successfully!",
+        "error": "Failed to create facility. Please check the information!",
+        "validation": {
+          "nameRequired": "Facility name is required",
+          "cityRequired": "City / Province is required",
+          "addressRequired": "Detailed address is required"
+        }
+      },
+      "editModal": {
+        "title": "Edit Storage Facility",
+        "subtitle": "Update branch information, operating hours, and operational status.",
+        "loading": "Loading facility details...",
+        "name": "Facility Name *",
+        "city": "City / Province *",
+        "address": "Detailed Address *",
+        "phone": "Hotline / Phone Number",
+        "email": "Contact Email",
+        "status": "Operational Status",
+        "operatingHours": "Operating Hours",
+        "openTime": "Opening Time",
+        "closeTime": "Closing Time",
+        "description": "Facility Description",
+        "cancel": "Cancel",
+        "saving": "Saving changes...",
+        "submit": "Save Changes",
+        "success": "Facility updated successfully!",
+        "error": "Failed to update facility. Please check the information!"
+      },
+      "deleteModal": {
+        "title": "Confirm Deactivate Facility",
+        "message": "Are you sure you want to deactivate \"{name}\"?",
+        "warning": "This facility will be temporarily hidden from the system and customer booking app. You can restore it anytime.",
+        "cancel": "Cancel",
+        "confirm": "Confirm Delete",
+        "deleting": "Deleting...",
+        "success": "Facility deleted successfully!",
+        "error": "Failed to delete facility. Please try again!",
+        "undo": "Undo / Restore",
+        "restoring": "Restoring...",
+        "restoreSuccess": "Facility restored successfully!"
+      },
+      "assignManagerModal": {
+        "title": "Assign Facility Manager",
+        "subtitle": "Assign a dedicated Facility Manager responsible for branch operations and contract approvals.",
+        "facilityLabel": "Storage Facility",
+        "selectManager": "Select Facility Manager *",
+        "placeholder": "-- Select Facility Manager --",
+        "noManagers": "No Facility Manager accounts found in the system.",
+        "cancel": "Cancel",
+        "confirm": "Confirm Assignment",
+        "saving": "Assigning...",
+        "success": "Manager assigned successfully!",
+        "error": "Failed to assign manager. Please try again!",
+        "validationRequired": "Please select a Facility Manager"
+      }
+    }
   }
 }
