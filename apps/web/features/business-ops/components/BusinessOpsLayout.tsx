@@ -29,6 +29,12 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       icon: Building2,
     },
     {
+      href: `/${locale}/business-ops/unit-types`,
+      exact: false,
+      label: t("nav.unitTypes"),
+      icon: Layers,
+    },
+    {
       href: `/${locale}/business-ops/analytics`,
       exact: false,
       label: t("nav.analytics"),

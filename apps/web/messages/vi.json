@@ -623,6 +623,7 @@
     "nav": {
       "overview": "Tổng quan",
       "facilities": "Quản lý Cơ sở",
+      "unitTypes": "Quy cách kho chuẩn",
       "analytics": "Báo cáo & Phân tích",
       "sectionOperations": "VẬN HÀNH CHI NHÁNH"
     },
@@ -764,6 +765,154 @@
         "success": "Phân công Quản lý cơ sở thành công!",
         "error": "Phân công Quản lý thất bại. Vui lòng thử lại!",
         "validationRequired": "Vui lòng chọn một Quản lý cơ sở"
+      }
+    },
+    "unitTypes": {
+      "title": "Danh mục Quy cách kho chuẩn",
+      "subtitle": "Quản lý hệ thống phân loại, kích thước, diện tích và thể tích tiêu chuẩn của các loại kho.",
+      "addUnitType": "+ Thêm quy cách mới",
+      "searchPlaceholder": "Tìm kiếm theo tên quy cách...",
+      "categoryLabel": "Phân loại",
+      "statusLabel": "Trạng thái",
+      "sortByLabel": "Sắp xếp theo",
+      "refresh": "Làm mới",
+      "stats": {
+        "total": "Tổng số quy cách",
+        "active": "Đang áp dụng",
+        "inactive": "Ngừng cung cấp",
+        "categories": "Nhóm phân loại"
+      },
+      "categoryFilter": {
+        "all": "Tất cả nhóm",
+        "locker": "Tủ đồ (Locker)",
+        "small": "Kho nhỏ (Small)",
+        "medium": "Kho vừa (Medium)",
+        "large": "Kho lớn (Large)",
+        "climate_controlled": "Kiểm soát nhiệt độ"
+      },
+      "statusFilter": {
+        "all": "Tất cả trạng thái",
+        "active": "Đang áp dụng",
+        "inactive": "Ngừng cung cấp"
+      },
+      "sortBy": {
+        "createdAt": "Mới tạo nhất",
+        "name": "Tên quy cách (A-Z)",
+        "area": "Diện tích tăng dần",
+        "volume": "Thể tích tăng dần"
+      },
+      "table": {
+        "name": "Tên & Mô tả",
+        "category": "Phân loại",
+        "dimensions": "Kích thước (D × R × C)",
+        "metrics": "Diện tích / Thể tích",
+        "features": "Tiện ích & Đặc tính",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "status": {
+        "active": "Đang áp dụng",
+        "inactive": "Ngừng cung cấp"
+      },
+      "empty": {
+        "title": "Không tìm thấy quy cách kho nào",
+        "description": "Thử thay đổi từ khóa tìm kiếm hoặc điều chỉnh bộ lọc phân loại/trạng thái."
+      },
+      "pagination": {
+        "showing": "Hiển thị",
+        "to": "-",
+        "of": "trong tổng số",
+        "unitTypes": "quy cách",
+        "prev": "Trước",
+        "next": "Tiếp theo"
+      },
+      "actions": {
+        "edit": "Chỉnh sửa",
+        "delete": "Vô hiệu hóa",
+        "restore": "Khôi phục",
+        "viewDetails": "Xem chi tiết"
+      },
+      "createModal": {
+        "title": "Thêm Quy cách kho mới",
+        "subtitle": "Khai báo phân loại, kích thước thực tế và tiện ích tiêu chuẩn cho loại kho lưu trữ.",
+        "nameLabel": "Tên quy cách kho *",
+        "namePlaceholder": "Ví dụ: Kho mini 2x2, Tủ đồ cá nhân...",
+        "categoryLabel": "Nhóm phân loại *",
+        "dimensionsGroup": "Kích thước tiêu chuẩn (mét) *",
+        "lengthLabel": "Chiều dài (m) *",
+        "widthLabel": "Chiều rộng (m) *",
+        "heightLabel": "Chiều cao (m) *",
+        "calculatedMetrics": "Thông số tự động tính toán",
+        "floorArea": "Diện tích sàn (m²)",
+        "volume": "Thể tích không gian (m³)",
+        "statusLabel": "Trạng thái áp dụng",
+        "statusActive": "Hoạt động (Active)",
+        "statusInactive": "Tạm dừng (Inactive)",
+        "descriptionLabel": "Mô tả chi tiết",
+        "descriptionPlaceholder": "Mô tả đối tượng lưu trữ phù hợp, vật liệu sàn/vách...",
+        "featuresLabel": "Đặc tính & Tiện ích đi kèm",
+        "featuresPlaceholder": "Nhập tính năng rồi nhấn Enter (ví dụ: Khóa thông minh, Có điều hòa...)",
+        "addFeature": "Thêm",
+        "cancel": "Hủy bỏ",
+        "confirm": "Xác nhận tạo mới",
+        "saving": "Đang khởi tạo...",
+        "success": "Tạo quy cách kho mới thành công!",
+        "error": "Tạo quy cách thất bại. Vui lòng thử lại!",
+        "validation": {
+          "nameRequired": "Vui lòng nhập tên quy cách kho",
+          "dimensionsRequired": "Chiều dài, chiều rộng và chiều cao phải lớn hơn 0"
+        }
+      },
+      "detailModal": {
+        "title": "Chi tiết Quy cách kho",
+        "subtitle": "Thông tin chi tiết được tải trực tiếp từ hệ thống.",
+        "loading": "Đang tải thông tin...",
+        "error": "Không thể tải chi tiết quy cách kho.",
+        "close": "Đóng"
+      },
+      "editModal": {
+        "title": "Chỉnh sửa Quy cách kho",
+        "subtitle": "Cập nhật kích thước, phân loại, trạng thái và tiện ích chuẩn.",
+        "nameLabel": "Tên quy cách kho *",
+        "namePlaceholder": "Ví dụ: Kho mini 2x2...",
+        "categoryLabel": "Nhóm phân loại *",
+        "dimensionsGroup": "Kích thước tiêu chuẩn (mét) *",
+        "lengthLabel": "Chiều dài (m) *",
+        "widthLabel": "Chiều rộng (m) *",
+        "heightLabel": "Chiều cao (m) *",
+        "calculatedMetrics": "Thông số tự động tính toán",
+        "floorArea": "Diện tích sàn (m²)",
+        "volume": "Thể tích không gian (m³)",
+        "statusLabel": "Trạng thái áp dụng",
+        "statusActive": "Hoạt động (Active)",
+        "statusInactive": "Tạm dừng (Inactive)",
+        "descriptionLabel": "Mô tả chi tiết",
+        "descriptionPlaceholder": "Mô tả đối tượng lưu trữ phù hợp...",
+        "featuresLabel": "Đặc tính & Tiện ích đi kèm",
+        "featuresPlaceholder": "Nhập tính năng rồi nhấn Enter...",
+        "addFeature": "Thêm",
+        "cancel": "Hủy bỏ",
+        "confirm": "Lưu thay đổi",
+        "saving": "Đang lưu...",
+        "success": "Cập nhật quy cách kho thành công!",
+        "error": "Cập nhật quy cách thất bại. Vui lòng thử lại!",
+        "validation": {
+          "nameRequired": "Vui lòng nhập tên quy cách kho",
+          "dimensionsRequired": "Chiều dài, chiều rộng và chiều cao phải lớn hơn 0"
+        }
+      },
+      "deleteModal": {
+        "title": "Xác nhận vô hiệu hóa quy cách kho",
+        "message": "Bạn có chắc chắn muốn vô hiệu hóa quy cách \"{name}\"?",
+        "warning": "Quy cách này sẽ được chuyển sang trạng thái Ngừng cung cấp (Inactive) và tạm ẩn khỏi danh mục tạo hợp đồng mới. Các hợp đồng kho cũ đang sử dụng quy cách này sẽ không bị ảnh hưởng.",
+        "cancel": "Hủy",
+        "confirm": "Xác nhận vô hiệu hóa",
+        "deleting": "Đang xử lý...",
+        "success": "Đã vô hiệu hóa quy cách kho thành công!",
+        "error": "Vô hiệu hóa quy cách thất bại. Vui lòng thử lại!",
+        "undo": "Hoàn tác / Khôi phục",
+        "restoring": "Đang khôi phục...",
+        "restoreSuccess": "Khôi phục quy cách kho thành công!"
       }
     }
   }
