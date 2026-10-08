@@ -7,7 +7,6 @@ export interface User {
   phoneNumber?: string;
   avatarUrl?: string;
   role: USER_ROLE | string;
-  assignedFacility?: string;
   status: "active" | "inactive";
   authProvider?: string;
   isEmailVerified?: boolean;
