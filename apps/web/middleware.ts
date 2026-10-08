@@ -14,6 +14,28 @@ const protectedPaths = ["/facility-manager", "/business-ops"];
 // Routes that authenticated users should not see (login, register)
 const guestOnlyPaths = ["/login", "/register"];
 
+function isJwtExpired(tokenString?: string): boolean {
+  if (!tokenString) return true;
+  try {
+    const parts = tokenString.split(".");
+    if (parts.length !== 3) return false;
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    const payload = JSON.parse(jsonPayload);
+    if (typeof payload.exp === "number" && payload.exp * 1000 < Date.now()) {
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -23,17 +45,22 @@ export function middleware(request: NextRequest) {
 
   // Detect locale from URL (vi or en) to redirect to the correct language page
   const currentLocale = pathname.startsWith("/en") ? "en" : "vi";
-  // HttpOnly cookies set by the backend (see BE utils/cookie.util.ts). The access token
-  // expires after 15 min, but a valid refresh token still means the session can be renewed.
-  const token = request.cookies.get("accessToken") ?? request.cookies.get("refreshToken");
+  const accessToken = request.cookies.get("accessToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
+  const hasToken = Boolean(accessToken || refreshToken);
 
-  // Already signed in → skip the login/register pages
-  if (isGuestOnly && token) {
+  // A session is active only if at least one token is present and not expired
+  const isSessionActive = Boolean(
+    (accessToken && !isJwtExpired(accessToken)) || (refreshToken && !isJwtExpired(refreshToken))
+  );
+
+  // Already signed in with active session → skip the login/register pages
+  if (isGuestOnly && isSessionActive) {
     return NextResponse.redirect(new URL(`/${currentLocale}`, request.url));
   }
 
   if (isProtected) {
-    if (!token) {
+    if (!hasToken || !isSessionActive) {
       const loginUrl = new URL(`/${currentLocale}/login`, request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
