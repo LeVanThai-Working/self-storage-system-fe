@@ -9,7 +9,7 @@ const intlMiddleware = createMiddleware({
 });
 
 // Routes that require the user to be authenticated
-const protectedPaths = ["/facility-manager", "/business-ops"];
+const protectedPaths = ["/facility-manager"];
 
 // Routes that authenticated users should not see (login, register)
 const guestOnlyPaths = ["/login", "/register"];
