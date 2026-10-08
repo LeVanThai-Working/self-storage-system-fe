@@ -623,6 +623,7 @@
     "nav": {
       "overview": "Overview",
       "facilities": "Facility Management",
+      "unitTypes": "Unit Types",
       "analytics": "Analytics & Reports",
       "sectionOperations": "BRANCH OPERATIONS"
     },
@@ -764,6 +765,154 @@
         "success": "Manager assigned successfully!",
         "error": "Failed to assign manager. Please try again!",
         "validationRequired": "Please select a Facility Manager"
+      }
+    },
+    "unitTypes": {
+      "title": "Unit Types Directory",
+      "subtitle": "Manage standardized unit classifications, dimensions, area, and volume across the network.",
+      "addUnitType": "+ Add Unit Type",
+      "searchPlaceholder": "Search by unit type name...",
+      "categoryLabel": "Category",
+      "statusLabel": "Status",
+      "sortByLabel": "Sort By",
+      "refresh": "Refresh",
+      "stats": {
+        "total": "Total Unit Types",
+        "active": "Active",
+        "inactive": "Inactive",
+        "categories": "Categories"
+      },
+      "categoryFilter": {
+        "all": "All Categories",
+        "locker": "Locker",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "climate_controlled": "Climate Controlled"
+      },
+      "statusFilter": {
+        "all": "All Statuses",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "sortBy": {
+        "createdAt": "Recently Added",
+        "name": "Name (A-Z)",
+        "area": "Floor Area (Asc)",
+        "volume": "Volume (Asc)"
+      },
+      "table": {
+        "name": "Name & Description",
+        "category": "Category",
+        "dimensions": "Dimensions (L × W × H)",
+        "metrics": "Area / Volume",
+        "features": "Features & Highlights",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "empty": {
+        "title": "No unit types found",
+        "description": "Try modifying your search query or adjusting your category/status filters."
+      },
+      "pagination": {
+        "showing": "Showing",
+        "to": "-",
+        "of": "of",
+        "unitTypes": "unit types",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Deactivate",
+        "restore": "Restore",
+        "viewDetails": "View Details"
+      },
+      "createModal": {
+        "title": "Add New Unit Type",
+        "subtitle": "Declare classification, dimensions, and amenities for standard storage space.",
+        "nameLabel": "Unit Type Name *",
+        "namePlaceholder": "e.g. Mini Locker 2x2, Standard Box...",
+        "categoryLabel": "Category *",
+        "dimensionsGroup": "Standard Dimensions (meters) *",
+        "lengthLabel": "Length (m) *",
+        "widthLabel": "Width (m) *",
+        "heightLabel": "Height (m) *",
+        "calculatedMetrics": "Auto-Calculated Metrics",
+        "floorArea": "Floor Area (m²)",
+        "volume": "Volume Capacity (m³)",
+        "statusLabel": "Status",
+        "statusActive": "Active",
+        "statusInactive": "Inactive",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Describe recommended items, wall/floor material...",
+        "featuresLabel": "Features & Highlights",
+        "featuresPlaceholder": "Type feature and press Enter (e.g. Climate Controlled, Smart Lock...)",
+        "addFeature": "Add",
+        "cancel": "Cancel",
+        "confirm": "Confirm & Create",
+        "saving": "Creating...",
+        "success": "Unit type created successfully!",
+        "error": "Failed to create unit type. Please try again!",
+        "validation": {
+          "nameRequired": "Please enter a unit type name",
+          "dimensionsRequired": "Length, width, and height must be greater than 0"
+        }
+      },
+      "detailModal": {
+        "title": "Unit Type Details",
+        "subtitle": "Detailed specification fetched directly from the system.",
+        "loading": "Loading details...",
+        "error": "Failed to load unit type details.",
+        "close": "Close"
+      },
+      "editModal": {
+        "title": "Edit Unit Type",
+        "subtitle": "Update dimensions, classification, status, and amenities.",
+        "nameLabel": "Unit Type Name *",
+        "namePlaceholder": "e.g. Mini Locker 2x2...",
+        "categoryLabel": "Category *",
+        "dimensionsGroup": "Standard Dimensions (meters) *",
+        "lengthLabel": "Length (m) *",
+        "widthLabel": "Width (m) *",
+        "heightLabel": "Height (m) *",
+        "calculatedMetrics": "Auto-Calculated Metrics",
+        "floorArea": "Floor Area (m²)",
+        "volume": "Volume Capacity (m³)",
+        "statusLabel": "Status",
+        "statusActive": "Active",
+        "statusInactive": "Inactive",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Describe recommended items...",
+        "featuresLabel": "Features & Highlights",
+        "featuresPlaceholder": "Type feature and press Enter...",
+        "addFeature": "Add",
+        "cancel": "Cancel",
+        "confirm": "Save Changes",
+        "saving": "Saving...",
+        "success": "Unit type updated successfully!",
+        "error": "Failed to update unit type. Please try again!",
+        "validation": {
+          "nameRequired": "Please enter a unit type name",
+          "dimensionsRequired": "Length, width, and height must be greater than 0"
+        }
+      },
+      "deleteModal": {
+        "title": "Confirm Deactivation",
+        "message": "Are you sure you want to deactivate \"{name}\"?",
+        "warning": "This unit type will be set to Inactive and hidden from new unit creation. Existing contracts will not be affected.",
+        "cancel": "Cancel",
+        "confirm": "Confirm Deactivation",
+        "deleting": "Processing...",
+        "success": "Unit type deactivated successfully!",
+        "error": "Failed to deactivate unit type. Please try again!",
+        "undo": "Undo / Restore",
+        "restoring": "Restoring...",
+        "restoreSuccess": "Unit type restored successfully!"
       }
     }
   }
