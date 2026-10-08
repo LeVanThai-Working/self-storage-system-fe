@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { Bell, Search, Users, Settings, Home, LayoutDashboard } from "lucide-react";
+import { Bell, Search, Users, Settings, Home, LayoutDashboard, ScrollText } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 
 interface SystemAdminLayoutProps {
   children: React.ReactNode;
@@ -11,7 +12,41 @@ interface SystemAdminLayoutProps {
 
 export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
   const locale = useLocale();
+  const pathname = usePathname();
   const t = useTranslations("systemAdmin");
+
+  const navItems = [
+    {
+      href: `/${locale}/system-admin`,
+      exact: true,
+      label: t("nav.overview"),
+      icon: LayoutDashboard,
+    },
+    {
+      href: `/${locale}/system-admin/users`,
+      exact: false,
+      label: t("nav.userManagement"),
+      icon: Users,
+    },
+    {
+      href: `/${locale}/system-admin/audit-logs`,
+      exact: false,
+      label: t("nav.auditLogs"),
+      icon: ScrollText,
+    },
+    {
+      href: `/${locale}/system-admin/facilities`,
+      exact: false,
+      label: t("nav.facilityManagement"),
+      icon: Home,
+    },
+    {
+      href: `/${locale}/system-admin/settings`,
+      exact: false,
+      label: t("nav.settings"),
+      icon: Settings,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans flex">
@@ -26,34 +61,27 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
           </div>
         </div>
         <nav className="flex-1 px-4 space-y-2 mt-4">
-          <Link
-            href={`/${locale}/system-admin`}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium"
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            {t("nav.overview")}
-          </Link>
-          <Link
-            href={`/${locale}/system-admin/users`}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 text-emerald-600 font-semibold transition-colors"
-          >
-            <Users className="w-5 h-5" />
-            {t("nav.userManagement")}
-          </Link>
-          <Link
-            href={`/${locale}/system-admin/facilities`}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium"
-          >
-            <Home className="w-5 h-5" />
-            {t("nav.facilityManagement")}
-          </Link>
-          <Link
-            href={`/${locale}/system-admin/settings`}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium"
-          >
-            <Settings className="w-5 h-5" />
-            {t("nav.settings")}
-          </Link>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.exact
+              ? pathname === item.href
+              : pathname === item.href || pathname?.startsWith(item.href + "/");
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+                  isActive
+                    ? "bg-emerald-50 text-emerald-600 font-semibold"
+                    : "text-slate-600 hover:bg-slate-50 font-medium"
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
       </aside>
 
