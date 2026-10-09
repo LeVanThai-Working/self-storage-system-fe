@@ -624,6 +624,7 @@
       "overview": "Tổng quan",
       "facilities": "Quản lý Cơ sở",
       "unitTypes": "Quy cách kho chuẩn",
+      "amenities": "Tiện ích & Dịch vụ",
       "analytics": "Báo cáo & Phân tích",
       "sectionOperations": "VẬN HÀNH CHI NHÁNH"
     },
@@ -913,6 +914,157 @@
         "undo": "Hoàn tác / Khôi phục",
         "restoring": "Đang khôi phục...",
         "restoreSuccess": "Khôi phục quy cách kho thành công!"
+      }
+    },
+    "amenities": {
+      "title": "Danh mục Tiện ích & Dịch vụ chuẩn",
+      "subtitle": "Quản lý hệ thống cơ sở vật chất và dịch vụ hỗ trợ áp dụng cho khách hàng trên toàn mạng lưới.",
+      "addAmenity": "+ Thêm tiện ích mới",
+      "searchPlaceholder": "Tìm kiếm theo tên tiện ích, dịch vụ...",
+      "typeLabel": "Phân loại",
+      "statusLabel": "Trạng thái",
+      "sortByLabel": "Sắp xếp theo",
+      "refresh": "Làm mới",
+      "stats": {
+        "total": "Tổng số tiện ích",
+        "physical": "Cơ sở vật chất",
+        "service": "Dịch vụ hỗ trợ",
+        "active": "Đang áp dụng"
+      },
+      "typeFilter": {
+        "all": "Tất cả phân loại",
+        "physical": "Cơ sở vật chất (Physical)",
+        "service": "Dịch vụ hỗ trợ (Service)"
+      },
+      "statusFilter": {
+        "all": "Tất cả trạng thái",
+        "active": "Đang áp dụng",
+        "inactive": "Tạm dừng"
+      },
+      "sortBy": {
+        "createdAt": "Mới tạo nhất",
+        "name": "Tên tiện ích (A-Z)",
+        "type": "Phân loại",
+        "status": "Trạng thái"
+      },
+      "table": {
+        "name": "Tên tiện ích & Mô tả",
+        "type": "Phân loại",
+        "tags": "Nhãn phân loại (Tags)",
+        "status": "Trạng thái",
+        "createdAt": "Ngày tạo",
+        "actions": "Thao tác"
+      },
+      "type": {
+        "physical": "Cơ sở vật chất",
+        "service": "Dịch vụ hỗ trợ"
+      },
+      "status": {
+        "active": "Đang áp dụng",
+        "inactive": "Tạm dừng"
+      },
+      "empty": {
+        "title": "Không tìm thấy tiện ích nào",
+        "description": "Thử thay đổi từ khóa tìm kiếm hoặc điều chỉnh bộ lọc phân loại/trạng thái."
+      },
+      "pagination": {
+        "showing": "Hiển thị",
+        "to": "-",
+        "of": "trong tổng số",
+        "amenities": "tiện ích",
+        "prev": "Trước",
+        "next": "Tiếp theo"
+      },
+      "actions": {
+        "edit": "Chỉnh sửa",
+        "delete": "Vô hiệu hóa",
+        "restore": "Khôi phục",
+        "viewDetails": "Xem chi tiết"
+      },
+      "createModal": {
+        "title": "Thêm tiện ích mới",
+        "subtitle": "Khai báo cơ sở vật chất hoặc dịch vụ hỗ trợ mới áp dụng toàn hệ thống.",
+        "nameLabel": "Tên tiện ích / dịch vụ",
+        "namePlaceholder": "Ví dụ: Thang máy vận chuyển hàng, Bảo vệ 24/7...",
+        "typeLabel": "Phân loại",
+        "typePhysical": "Cơ sở vật chất (Physical)",
+        "typePhysicalDesc": "Thiết bị, hạ tầng vật lý (Thang máy, Máy lạnh, Xe đẩy...)",
+        "typeService": "Dịch vụ hỗ trợ (Service)",
+        "typeServiceDesc": "Dịch vụ phục vụ khách hàng (Bảo vệ 24/7, Vệ sinh định kỳ...)",
+        "statusLabel": "Trạng thái áp dụng",
+        "statusActive": "Đang áp dụng (Active)",
+        "statusInactive": "Tạm dừng (Inactive)",
+        "descriptionLabel": "Mô tả chi tiết",
+        "descriptionPlaceholder": "Mô tả công năng, quy cách sử dụng hoặc tiêu chuẩn...",
+        "tagsLabel": "Nhãn phân loại (Tags)",
+        "tagsPlaceholder": "Nhập nhãn và nhấn Enter...",
+        "addTag": "Thêm",
+        "imagesLabel": "Hình ảnh minh họa (URL)",
+        "imagesPlaceholder": "Dán đường dẫn ảnh (https://...)",
+        "addImage": "Thêm ảnh",
+        "cancel": "Hủy",
+        "submit": "Tạo tiện ích",
+        "submitting": "Đang tạo...",
+        "success": "Đã tạo tiện ích mới thành công!",
+        "error": "Không thể tạo tiện ích. Vui lòng thử lại sau.",
+        "duplicateNameError": "Tên tiện ích này đã tồn tại trong hệ thống. Vui lòng chọn tên khác!",
+        "validation": {
+          "nameRequired": "Vui lòng nhập tên tiện ích",
+          "typeRequired": "Vui lòng chọn phân loại tiện ích"
+        }
+      },
+      "editModal": {
+        "title": "Chỉnh sửa tiện ích",
+        "subtitle": "Cập nhật thông tin chi tiết, phân loại hoặc trạng thái tiện ích.",
+        "nameLabel": "Tên tiện ích / dịch vụ",
+        "namePlaceholder": "Ví dụ: Thang máy vận chuyển hàng, Bảo vệ 24/7...",
+        "typeLabel": "Phân loại",
+        "typePhysical": "Cơ sở vật chất (Physical)",
+        "typePhysicalDesc": "Thiết bị, hạ tầng vật lý (Thang máy, Máy lạnh, Xe đẩy...)",
+        "typeService": "Dịch vụ hỗ trợ (Service)",
+        "typeServiceDesc": "Dịch vụ phục vụ khách hàng (Bảo vệ 24/7, Vệ sinh định kỳ...)",
+        "statusLabel": "Trạng thái áp dụng",
+        "statusActive": "Đang áp dụng (Active)",
+        "statusInactive": "Tạm dừng (Inactive)",
+        "descriptionLabel": "Mô tả chi tiết",
+        "descriptionPlaceholder": "Mô tả công năng, quy cách sử dụng hoặc tiêu chuẩn...",
+        "tagsLabel": "Nhãn phân loại (Tags)",
+        "tagsPlaceholder": "Nhập nhãn và nhấn Enter...",
+        "addTag": "Thêm",
+        "imagesLabel": "Hình ảnh minh họa (URL)",
+        "imagesPlaceholder": "Dán đường dẫn ảnh (https://...)",
+        "addImage": "Thêm ảnh",
+        "cancel": "Hủy",
+        "submit": "Lưu thay đổi",
+        "submitting": "Đang lưu...",
+        "success": "Cập nhật tiện ích thành công!",
+        "error": "Không thể cập nhật tiện ích. Vui lòng thử lại sau.",
+        "duplicateNameError": "Tên tiện ích này đã tồn tại trong hệ thống. Vui lòng chọn tên khác!",
+        "validation": {
+          "nameRequired": "Vui lòng nhập tên tiện ích"
+        }
+      },
+      "deleteModal": {
+        "title": "Vô hiệu hóa tiện ích",
+        "warning": "Bạn có chắc chắn muốn vô hiệu hóa tiện ích này không?",
+        "description": "Sau khi vô hiệu hóa, tiện ích sẽ chuyển sang trạng thái tạm dừng và không còn hiển thị cho khách hàng chọn tại các cơ sở. Bạn có thể khôi phục lại bất kỳ lúc nào.",
+        "amenityName": "Tên tiện ích:",
+        "cancel": "Hủy bỏ",
+        "confirm": "Xác nhận vô hiệu hóa",
+        "deleting": "Đang vô hiệu hóa...",
+        "success": "Đã vô hiệu hóa tiện ích thành công!",
+        "error": "Không thể vô hiệu hóa tiện ích. Vui lòng thử lại sau."
+      },
+      "restoreModal": {
+        "title": "Khôi phục tiện ích",
+        "question": "Bạn có muốn mở lại tiện ích này?",
+        "description": "Tiện ích sẽ được chuyển lại trạng thái Đang áp dụng (Active) và có thể sử dụng bình thường trên toàn hệ thống.",
+        "amenityName": "Tên tiện ích:",
+        "cancel": "Hủy bỏ",
+        "confirm": "Xác nhận khôi phục",
+        "restoring": "Đang khôi phục...",
+        "success": "Khôi phục tiện ích thành công!",
+        "error": "Không thể khôi phục tiện ích. Vui lòng thử lại sau."
       }
     }
   }
