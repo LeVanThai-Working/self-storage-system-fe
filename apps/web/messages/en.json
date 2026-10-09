@@ -624,6 +624,7 @@
       "overview": "Overview",
       "facilities": "Facility Management",
       "unitTypes": "Unit Types",
+      "amenities": "Amenities & Services",
       "analytics": "Analytics & Reports",
       "sectionOperations": "BRANCH OPERATIONS"
     },
@@ -913,6 +914,157 @@
         "undo": "Undo / Restore",
         "restoring": "Restoring...",
         "restoreSuccess": "Unit type restored successfully!"
+      }
+    },
+    "amenities": {
+      "title": "Standard Amenities & Services",
+      "subtitle": "Manage standardized physical equipment and service offerings available across all storage facilities.",
+      "addAmenity": "+ Add New Amenity",
+      "searchPlaceholder": "Search by amenity or service name...",
+      "typeLabel": "Classification",
+      "statusLabel": "Status",
+      "sortByLabel": "Sort By",
+      "refresh": "Refresh",
+      "stats": {
+        "total": "Total Amenities",
+        "physical": "Physical Equipment",
+        "service": "Support Services",
+        "active": "Active Offerings"
+      },
+      "typeFilter": {
+        "all": "All Classifications",
+        "physical": "Physical Equipment",
+        "service": "Support Services"
+      },
+      "statusFilter": {
+        "all": "All Statuses",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "sortBy": {
+        "createdAt": "Recently Added",
+        "name": "Name (A-Z)",
+        "type": "Classification",
+        "status": "Status"
+      },
+      "table": {
+        "name": "Amenity Name & Description",
+        "type": "Classification",
+        "tags": "Tags & Categories",
+        "status": "Status",
+        "createdAt": "Created At",
+        "actions": "Actions"
+      },
+      "type": {
+        "physical": "Physical Equipment",
+        "service": "Support Service"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "empty": {
+        "title": "No amenities found",
+        "description": "Try modifying your search query or adjusting your classification/status filters."
+      },
+      "pagination": {
+        "showing": "Showing",
+        "to": "-",
+        "of": "of",
+        "amenities": "amenities",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Deactivate",
+        "restore": "Restore",
+        "viewDetails": "View Details"
+      },
+      "createModal": {
+        "title": "Add New Amenity",
+        "subtitle": "Declare standard physical equipment or customer service offering across all facilities.",
+        "nameLabel": "Amenity / Service Name",
+        "namePlaceholder": "E.g., Freight Elevator, 24/7 Security Patrol...",
+        "typeLabel": "Classification",
+        "typePhysical": "Physical Equipment",
+        "typePhysicalDesc": "Hardware, facilities & infrastructure (Elevator, AC, Trolley...)",
+        "typeService": "Support Service",
+        "typeServiceDesc": "Customer & security services (24/7 Guard, Periodic Cleaning...)",
+        "statusLabel": "Status",
+        "statusActive": "Active",
+        "statusInactive": "Inactive",
+        "descriptionLabel": "Detailed Description",
+        "descriptionPlaceholder": "Describe specifications, usage guidelines, or standards...",
+        "tagsLabel": "Tags",
+        "tagsPlaceholder": "Type tag and press Enter...",
+        "addTag": "Add",
+        "imagesLabel": "Image URLs (Optional)",
+        "imagesPlaceholder": "Paste image URL (https://...)",
+        "addImage": "Add Image",
+        "cancel": "Cancel",
+        "submit": "Create Amenity",
+        "submitting": "Creating...",
+        "success": "New amenity created successfully!",
+        "error": "Failed to create amenity. Please try again later.",
+        "duplicateNameError": "This amenity name already exists in the system. Please use a different name!",
+        "validation": {
+          "nameRequired": "Please enter the amenity name",
+          "typeRequired": "Please select the classification"
+        }
+      },
+      "editModal": {
+        "title": "Edit Amenity",
+        "subtitle": "Update detailed specifications, classification, or active status.",
+        "nameLabel": "Amenity / Service Name",
+        "namePlaceholder": "E.g., Freight Elevator, 24/7 Security Patrol...",
+        "typeLabel": "Classification",
+        "typePhysical": "Physical Equipment",
+        "typePhysicalDesc": "Hardware, facilities & infrastructure (Elevator, AC, Trolley...)",
+        "typeService": "Support Service",
+        "typeServiceDesc": "Customer & security services (24/7 Guard, Periodic Cleaning...)",
+        "statusLabel": "Status",
+        "statusActive": "Active",
+        "statusInactive": "Inactive",
+        "descriptionLabel": "Detailed Description",
+        "descriptionPlaceholder": "Describe specifications, usage guidelines, or standards...",
+        "tagsLabel": "Tags",
+        "tagsPlaceholder": "Type tag and press Enter...",
+        "addTag": "Add",
+        "imagesLabel": "Image URLs (Optional)",
+        "imagesPlaceholder": "Paste image URL (https://...)",
+        "addImage": "Add Image",
+        "cancel": "Cancel",
+        "submit": "Save Changes",
+        "submitting": "Saving...",
+        "success": "Amenity updated successfully!",
+        "error": "Failed to update amenity. Please try again later.",
+        "duplicateNameError": "This amenity name already exists in the system. Please use a different name!",
+        "validation": {
+          "nameRequired": "Please enter the amenity name"
+        }
+      },
+      "deleteModal": {
+        "title": "Deactivate Amenity",
+        "warning": "Are you sure you want to deactivate this amenity?",
+        "description": "After deactivation, this amenity will be paused and no longer available for customer assignment at facilities. You can restore it at any time.",
+        "amenityName": "Amenity Name:",
+        "cancel": "Cancel",
+        "confirm": "Confirm Deactivation",
+        "deleting": "Deactivating...",
+        "success": "Amenity deactivated successfully!",
+        "error": "Failed to deactivate amenity. Please try again later."
+      },
+      "restoreModal": {
+        "title": "Restore Amenity",
+        "question": "Do you want to re-activate this amenity?",
+        "description": "This amenity will be restored back to Active status and available across the entire network.",
+        "amenityName": "Amenity Name:",
+        "cancel": "Cancel",
+        "confirm": "Confirm Restore",
+        "restoring": "Restoring...",
+        "success": "Amenity restored successfully!",
+        "error": "Failed to restore amenity. Please try again later."
       }
     }
   }
