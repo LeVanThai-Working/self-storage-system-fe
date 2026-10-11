@@ -9,11 +9,14 @@ import { Logo } from "@/components/common/Logo";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS, SEARCH_PANEL_ID } from "@/features/landing/constants";
+import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { useAuthStore } from "@/features/auth/store";
 
 export function LandingHeader() {
   const t = useTranslations("landing");
   const locale = useLocale();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const scrollToSearchPanel = () => {
     setMobileMenuOpen(false);
@@ -77,33 +80,39 @@ export function LandingHeader() {
           >
             <Search className="size-5 stroke-2" />
           </button>
-          <Link
-            href={`/${locale}/login`}
-            className={cn(
-              buttonVariants({ variant: "ghost" }),
-              "hidden h-11 rounded-xl px-3 text-sm font-semibold text-neutral-main hover:bg-brand-bg hover:text-brand sm:inline-flex md:px-4"
-            )}
-          >
-            {t("header.login")}
-          </Link>
-          {/* Icon-only login on phones, where the text buttons don't fit */}
-          <Link
-            href={`/${locale}/login`}
-            aria-label={t("header.login")}
-            title={t("header.login")}
-            className={cn(iconButtonClass, "size-9 max-[359px]:size-8 sm:hidden")}
-          >
-            <UserRound className="size-5" />
-          </Link>
-          <Link
-            href={`/${locale}/register`}
-            className={cn(
-              buttonVariants({ variant: "cta" }),
-              "hidden h-11 rounded-full px-5 text-sm font-semibold shadow-sm sm:inline-flex md:px-6"
-            )}
-          >
-            {t("header.register")}
-          </Link>
+          {isAuthenticated ? (
+            <LogoutButton />
+          ) : (
+            <>
+              <Link
+                href={`/${locale}/login`}
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  "hidden h-11 rounded-xl px-3 text-sm font-semibold text-neutral-main hover:bg-brand-bg hover:text-brand sm:inline-flex md:px-4"
+                )}
+              >
+                {t("header.login")}
+              </Link>
+              {/* Icon-only login on phones, where the text buttons don't fit */}
+              <Link
+                href={`/${locale}/login`}
+                aria-label={t("header.login")}
+                title={t("header.login")}
+                className={cn(iconButtonClass, "size-9 max-[359px]:size-8 sm:hidden")}
+              >
+                <UserRound className="size-5" />
+              </Link>
+              <Link
+                href={`/${locale}/register`}
+                className={cn(
+                  buttonVariants({ variant: "cta" }),
+                  "hidden h-11 rounded-full px-5 text-sm font-semibold shadow-sm sm:inline-flex md:px-6"
+                )}
+              >
+                {t("header.register")}
+              </Link>
+            </>
+          )}
           <button
             type="button"
             aria-label={mobileMenuOpen ? t("header.closeMenu") : t("header.openMenu")}

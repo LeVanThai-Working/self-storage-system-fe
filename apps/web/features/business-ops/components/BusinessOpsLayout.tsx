@@ -9,6 +9,7 @@ import {
   BarChart3,
   Layers,
   Sparkles,
+  Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -47,6 +48,12 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       exact: false,
       label: t("nav.amenities"),
       icon: Sparkles,
+    },
+    {
+      href: `/${locale}/business-ops/offerings`,
+      exact: false,
+      label: t("nav.offerings"),
+      icon: Tag,
     },
     {
       href: `/${locale}/business-ops/analytics`,

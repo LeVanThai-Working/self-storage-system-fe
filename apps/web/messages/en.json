@@ -625,6 +625,7 @@
       "facilities": "Facility Management",
       "unitTypes": "Unit Types",
       "amenities": "Amenities & Services",
+      "offerings": "Facility Pricing",
       "analytics": "Analytics & Reports",
       "sectionOperations": "BRANCH OPERATIONS"
     },
@@ -1066,6 +1067,94 @@
         "success": "Amenity restored successfully!",
         "error": "Failed to restore amenity. Please try again later."
       }
+    },
+    "offerings": {
+      "title": "Facility Unit Type Offerings",
+      "subtitle": "Configure which unit types are sold at each facility, with pricing, deposit multiplier and minimum rental days.",
+      "addOffering": "+ Add Offering",
+      "refresh": "Refresh",
+      "facilityFilter": {
+        "all": "All facilities"
+      },
+      "statusFilter": {
+        "all": "All statuses",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "table": {
+        "facility": "Facility",
+        "unitType": "Unit Type",
+        "price": "Price",
+        "deposit": "Deposit",
+        "minRentalDays": "Min. Rental Days",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "billingUnit": {
+        "day": "day",
+        "month": "month",
+        "one_time": "one-time"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Deactivate",
+        "restore": "Restore"
+      },
+      "empty": {
+        "title": "No offerings yet",
+        "description": "Add the first unit type offering for a facility."
+      },
+      "pagination": {
+        "page": "Page",
+        "prev": "Prev",
+        "next": "Next"
+      },
+      "formModal": {
+        "createTitle": "Add Offering",
+        "editTitle": "Edit Offering",
+        "facilityLabel": "Facility",
+        "facilityPlaceholder": "Select facility",
+        "unitTypeLabel": "Unit Type",
+        "unitTypePlaceholder": "Select unit type",
+        "priceLabel": "Price (VND)",
+        "billingUnitLabel": "Billing Unit",
+        "depositLabel": "Deposit Multiplier",
+        "minRentalDaysLabel": "Minimum Rental Days",
+        "statusLabel": "Status",
+        "notesLabel": "Notes",
+        "billingUnit": {
+          "day": "day",
+          "month": "month",
+          "oneTime": "one-time"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving...",
+        "success": "Saved successfully!",
+        "error": "Could not save. Please try again.",
+        "validation": {
+          "required": "Please select a facility and unit type.",
+          "price": "Invalid price."
+        }
+      },
+      "confirmModal": {
+        "deleteTitle": "Deactivate this offering?",
+        "deleteDescription": "This unit type will no longer be available for new storage units at this facility.",
+        "restoreTitle": "Restore this offering?",
+        "restoreDescription": "This unit type will be available again for new storage units at this facility.",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "processing": "Processing...",
+        "error": "Could not process. Please try again."
+      }
     }
   },
   "storageUnitStatus": {
@@ -1079,7 +1168,8 @@
     "roleLabel": "Facility Manager",
     "nav": {
       "storageUnits": "Storage units",
-      "sectionFacility": "FACILITY OPERATIONS"
+      "sectionFacility": "FACILITY OPERATIONS",
+      "requests": "Request Center"
     },
     "sidebar": {
       "assignedFacility": "Assigned facility",
@@ -1208,6 +1298,111 @@
         "createRejected": "Could not create the unit. Make sure the facility offers this unit type and is active.",
         "updateRejected": "Could not update the unit. Reserved/occupied units cannot change unit type, and the facility must offer the selected unit type.",
         "duplicateUnitNumber": "This unit number already exists in the facility. Please choose another."
+      }
+    },
+    "requests": {
+      "title": "Request Center",
+      "subtitle": "Browse the unit types and amenities currently offered at your facility, and submit requests to Business Operations.",
+      "createRequest": "+ New Request",
+      "catalogSectionTitle": "Available at this facility",
+      "requestsSectionTitle": "Submitted Requests",
+      "empty": "You haven't submitted any requests yet.",
+      "cancelRequest": "Cancel",
+      "cancelError": "Could not cancel the request. Please try again.",
+      "rejectionReasonPrefix": "Rejection reason",
+      "table": {
+        "target": "Request Type",
+        "reason": "Reason",
+        "status": "Status",
+        "createdAt": "Submitted",
+        "actions": "Actions",
+        "page": "Page"
+      },
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "cancelled": "Cancelled"
+      },
+      "targetType": {
+        "unit_type": "New Unit Type",
+        "facility_unit_type_offering": "Unit Type Pricing",
+        "amenity": "New Amenity",
+        "facility_amenity_offering": "Facility Amenity"
+      },
+      "action": {
+        "create": "Create",
+        "update": "Update"
+      },
+      "catalog": {
+        "unitTypesTitle": "Unit types on sale",
+        "amenitiesTitle": "Amenities offered",
+        "loading": "Loading...",
+        "emptyUnitTypes": "This facility has no unit types on sale yet.",
+        "emptyAmenities": "This facility has no amenities yet.",
+        "available": "Available",
+        "billingUnit": {
+          "day": "day",
+          "month": "month",
+          "one_time": "one-time"
+        }
+      },
+      "createModal": {
+        "title": "Create Request",
+        "kindLabel": "Request Type",
+        "kind": {
+          "newOffering": "Request to sell a new unit type at this facility",
+          "adjustPrice": "Request price / deposit adjustment",
+          "newAmenity": "Request additional amenity",
+          "newUnitType": "Propose a new unit type (system-wide)"
+        },
+        "unitTypeLabel": "Unit Type (catalog)",
+        "unitTypePlaceholder": "Select unit type",
+        "offeringLabel": "Current offering at this facility",
+        "offeringPlaceholder": "Select offering to adjust",
+        "amenityLabel": "Amenity (catalog)",
+        "amenityPlaceholder": "Select amenity",
+        "priceLabel": "Proposed Price (VND)",
+        "depositLabel": "Deposit Multiplier",
+        "totalQuantityLabel": "Quantity",
+        "billingUnitLabel": "Billing Unit",
+        "billingUnit": {
+          "day": "day",
+          "month": "month",
+          "oneTime": "one-time"
+        },
+        "newTypeNameLabel": "New Unit Type Name",
+        "lengthLabel": "Length (m)",
+        "widthLabel": "Width (m)",
+        "heightLabel": "Height (m)",
+        "reasonLabel": "Reason",
+        "reasonPlaceholder": "Explain why you're submitting this request...",
+        "cancel": "Cancel",
+        "submit": "Submit Request",
+        "submitting": "Submitting...",
+        "success": "Request submitted! Waiting for Business Operations to review.",
+        "error": "Could not submit the request. Please try again.",
+        "validation": {
+          "required": "Please fill in all required fields.",
+          "reason": "Reason must be at least {min} characters."
+        }
+      },
+      "detailModal": {
+        "title": "Request Details",
+        "actionLabel": "Action",
+        "requesterLabel": "Requested by",
+        "payloadLabel": "Proposed Changes",
+        "currentDataLabel": "Current Data",
+        "approverLabel": "Reviewed by",
+        "reviewNotesLabel": "Review Notes",
+        "fields": {
+          "pricePerUnit": "Price",
+          "billingUnit": "Billing unit",
+          "depositMultiplier": "Deposit multiplier",
+          "totalQuantity": "Quantity",
+          "name": "Name",
+          "dimensions": "Dimensions (L × W × H)"
+        }
       }
     }
   }

@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { Bell, Boxes, Building2 } from "lucide-react";
+import { Bell, Boxes, Building2, FileText } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
+import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { useAuthStore } from "@/features/auth/store";
 import { useMyFacility } from "@/features/storage-unit-management/hooks";
 
@@ -32,6 +33,11 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
       href: `/${locale}/facility-manager/storage-units`,
       label: t("nav.storageUnits"),
       icon: Boxes,
+    },
+    {
+      href: `/${locale}/facility-manager/requests`,
+      label: t("nav.requests"),
+      icon: FileText,
     },
   ];
 
@@ -128,6 +134,7 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
                   {getInitials(currentUser?.name)}
                 </span>
               </div>
+              <LogoutButton />
             </div>
           </div>
         </header>
