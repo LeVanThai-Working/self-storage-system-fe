@@ -1,7 +1,15 @@
 "use client";
 
 import React from "react";
-import { Bell, Search, Building2, LayoutDashboard, BarChart3, Layers } from "lucide-react";
+import {
+  Bell,
+  Search,
+  Building2,
+  LayoutDashboard,
+  BarChart3,
+  Layers,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -33,6 +41,12 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       exact: false,
       label: t("nav.unitTypes"),
       icon: Layers,
+    },
+    {
+      href: `/${locale}/business-ops/amenities`,
+      exact: false,
+      label: t("nav.amenities"),
+      icon: Sparkles,
     },
     {
       href: `/${locale}/business-ops/analytics`,
