@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { View, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
+import { useReservationHandoffStore } from "@/features/storage-explore/stores/reservationHandoff.store";
+import {
+  calculateEstimatedDeposit,
+  formatVndPrice,
+  getBillingUnitSuffix,
+  getUnitCategoryLabel,
+} from "@/features/storage-explore/utils/storageFormat";
 import {
   CalendarCheck,
   Building2,
@@ -13,6 +20,9 @@ import {
   CheckCircle,
   XCircle,
   Info,
+  Sparkles,
+  Check,
+  X,
 } from "lucide-react-native";
 
 interface ReservationRecord {
@@ -31,7 +41,11 @@ export default function ReservationsScreen() {
   const { t } = useTranslation();
   const toast = useToast();
 
-  // Booking Form State
+  // Read Handoff Payload from FacilityPublicDetailScreen (Section 2.4)
+  const { handoffPayload, clearHandoffPayload } = useReservationHandoffStore();
+  const [selectedAmenityOfferingIds, setSelectedAmenityOfferingIds] = useState<string[]>([]);
+
+  // Fallback Manual Booking Form State (when no handoffPayload is active)
   const [selectedFacility, setSelectedFacility] = useState<"facilityHanoi" | "facilityHcm">(
     "facilityHanoi"
   );
@@ -55,7 +69,6 @@ export default function ReservationsScreen() {
     },
   ]);
 
-  // Price calculations based on selection
   const unitPrices = {
     mini: { base: 1200000, code: "MINI-102", nameKey: "explore.miniStorage" },
     family: { base: 2800000, code: "FAM-204", nameKey: "explore.familyStorage" },
@@ -69,23 +82,52 @@ export default function ReservationsScreen() {
     12: 0.15,
   };
 
-  const selectedBasePrice = unitPrices[selectedUnitType].base;
+  const toggleAmenitySelection = (offeringId: string) => {
+    setSelectedAmenityOfferingIds((prev) =>
+      prev.includes(offeringId) ? prev.filter((id) => id !== offeringId) : [...prev, offeringId]
+    );
+  };
+
+  const selectedAmenitiesTotal = useMemo(() => {
+    if (!handoffPayload) return 0;
+    return handoffPayload.availableAmenities
+      .filter((a) => selectedAmenityOfferingIds.includes(a.id))
+      .reduce((sum, a) => sum + (a.pricePerUnit || 0), 0);
+  }, [handoffPayload, selectedAmenityOfferingIds]);
+
+  // Dynamic Price Calculations (uses handoffPayload when available, fallback otherwise)
+  const selectedBasePrice = handoffPayload
+    ? handoffPayload.offering.pricePerUnit
+    : unitPrices[selectedUnitType].base;
   const discountRate = discountRates[selectedDuration];
   const discountedMonthlyRent = selectedBasePrice * (1 - discountRate);
-  const deposit = selectedBasePrice; // 1 month deposit
-  const totalInitial = deposit + discountedMonthlyRent;
+  const deposit = handoffPayload
+    ? calculateEstimatedDeposit(
+        handoffPayload.offering.pricePerUnit,
+        handoffPayload.offering.depositMultiplier
+      )
+    : selectedBasePrice;
+  const totalInitial = deposit + discountedMonthlyRent + selectedAmenitiesTotal;
 
   const handleCreateReservation = () => {
+    const unitCodeLabel = handoffPayload
+      ? handoffPayload.offering.unitType.name
+      : unitPrices[selectedUnitType].code;
+    const facilityNameLabel = handoffPayload
+      ? handoffPayload.facilityName
+      : selectedFacility === "facilityHanoi"
+        ? "StorageHub Cầu Giấy"
+        : "StorageHub Quận 7";
+
     const newReservation: ReservationRecord = {
       id: `res-${Date.now()}`,
       code: `RES-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      unitCode: unitPrices[selectedUnitType].code,
-      facilityName:
-        selectedFacility === "facilityHanoi" ? "StorageHub Cầu Giấy" : "StorageHub Quận 7",
+      unitCode: unitCodeLabel,
+      facilityName: facilityNameLabel,
       moveInDate: "20/10/2026",
       durationMonths: selectedDuration,
       depositAmount: deposit.toLocaleString("vi-VN"),
-      monthlyRent: discountedMonthlyRent.toLocaleString("vi-VN"),
+      monthlyRent: (discountedMonthlyRent + selectedAmenitiesTotal).toLocaleString("vi-VN"),
       status: "pending",
     };
 
@@ -124,122 +166,286 @@ export default function ReservationsScreen() {
             </Text>
           </View>
 
-          {/* Step 1: Select Facility */}
-          <View className="mb-4">
-            <View className="flex-row items-center gap-1.5 mb-2">
-              <Building2 size={15} color="#647B80" />
-              <Text className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                {t("reservation.step1Facility")}
-              </Text>
-            </View>
-            <View className="flex-row gap-2">
-              <Pressable
-                onPress={() => setSelectedFacility("facilityHanoi")}
-                className={`flex-1 rounded-xl p-3 border ${
-                  selectedFacility === "facilityHanoi"
-                    ? "border-brand bg-brand-light dark:bg-brand/20"
-                    : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                }`}
-              >
-                <Text
-                  className={`text-xs font-bold ${
-                    selectedFacility === "facilityHanoi"
-                      ? "text-brand"
-                      : "text-neutral-dark dark:text-neutral-200"
-                  }`}
-                >
-                  {t("explore.facilityHanoi")}
-                </Text>
-              </Pressable>
+          {handoffPayload ? (
+            /* ── Handoff Package from FacilityPublicDetailScreen (Section 2.4) ── */
+            <View className="mb-4 gap-4">
+              <View className="rounded-2xl border border-brand bg-brand-light/30 dark:bg-brand/15 p-4">
+                <View className="flex-row items-center justify-between mb-3">
+                  <Badge variant="outline" className="border-brand/40 bg-white dark:bg-neutral-900">
+                    <Text className="text-xs font-bold text-brand">
+                      {t("reservationHandoff.selectedPackageBanner")}
+                    </Text>
+                  </Badge>
+                  <Pressable
+                    onPress={() => {
+                      clearHandoffPayload();
+                      setSelectedAmenityOfferingIds([]);
+                    }}
+                    className="flex-row items-center gap-1 rounded-lg bg-white dark:bg-neutral-800 px-2.5 py-1 border border-neutral-border dark:border-neutral-700"
+                  >
+                    <X size={12} color="#647B80" />
+                    <Text className="text-xs font-semibold text-neutral-main dark:text-neutral-300">
+                      {t("reservationHandoff.clearSelection")}
+                    </Text>
+                  </Pressable>
+                </View>
 
-              <Pressable
-                onPress={() => setSelectedFacility("facilityHcm")}
-                className={`flex-1 rounded-xl p-3 border ${
-                  selectedFacility === "facilityHcm"
-                    ? "border-brand bg-brand-light dark:bg-brand/20"
-                    : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                }`}
-              >
-                <Text
-                  className={`text-xs font-bold ${
-                    selectedFacility === "facilityHcm"
-                      ? "text-brand"
-                      : "text-neutral-dark dark:text-neutral-200"
-                  }`}
-                >
-                  {t("explore.facilityHcm")}
-                </Text>
-              </Pressable>
-            </View>
-          </View>
+                <View className="gap-2">
+                  <View className="flex-row justify-between">
+                    <Text variant="muted" className="text-xs">
+                      {t("reservationHandoff.facilityLabel")}
+                    </Text>
+                    <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                      {handoffPayload.facilityName}
+                    </Text>
+                  </View>
 
-          {/* Step 2: Select Unit Type */}
-          <View className="mb-4">
-            <View className="flex-row items-center gap-1.5 mb-2">
-              <Boxes size={15} color="#647B80" />
-              <Text className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                {t("reservation.step2UnitType")}
-              </Text>
-            </View>
-            <View className="gap-2">
-              <Pressable
-                onPress={() => setSelectedUnitType("mini")}
-                className={`flex-row items-center justify-between rounded-xl p-3 border ${
-                  selectedUnitType === "mini"
-                    ? "border-brand bg-brand-light dark:bg-brand/20"
-                    : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                }`}
-              >
+                  <View className="flex-row justify-between">
+                    <Text variant="muted" className="text-xs">
+                      {t("reservationHandoff.unitTypeLabel")}
+                    </Text>
+                    <Text className="text-xs font-bold text-brand">
+                      {handoffPayload.offering.unitType.name} (
+                      {getUnitCategoryLabel(handoffPayload.offering.unitType.category, t)})
+                    </Text>
+                  </View>
+
+                  <View className="flex-row justify-between">
+                    <Text variant="muted" className="text-xs">
+                      {t("reservationHandoff.dimensionsLabel")}
+                    </Text>
+                    <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
+                      {handoffPayload.offering.unitType.dimensions.length}m ×{" "}
+                      {handoffPayload.offering.unitType.dimensions.width}m ×{" "}
+                      {handoffPayload.offering.unitType.dimensions.height}m (
+                      {handoffPayload.offering.unitType.area} m²)
+                    </Text>
+                  </View>
+
+                  <View className="flex-row justify-between">
+                    <Text variant="muted" className="text-xs">
+                      {t("reservationHandoff.pricePerCycle")}
+                    </Text>
+                    <Text className="text-xs font-bold text-brand">
+                      {formatVndPrice(handoffPayload.offering.pricePerUnit)}{" "}
+                      {getBillingUnitSuffix(handoffPayload.offering.billingUnit, t)}
+                    </Text>
+                  </View>
+
+                  <View className="flex-row justify-between">
+                    <Text variant="muted" className="text-xs">
+                      {t("reservationHandoff.minRentalDays")}
+                    </Text>
+                    <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
+                      {handoffPayload.offering.minRentalDays} {t("reservationHandoff.daysUnit")}
+                    </Text>
+                  </View>
+
+                  <View className="flex-row justify-between">
+                    <Text variant="muted" className="text-xs">
+                      {t("reservationHandoff.estimatedDeposit")}
+                    </Text>
+                    <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                      {formatVndPrice(deposit)} (×{handoffPayload.offering.depositMultiplier})
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Optional Facility Amenities Selection */}
+              {handoffPayload.availableAmenities.length > 0 && (
                 <View>
-                  <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                    {t("explore.miniStorage")}
-                  </Text>
-                  <Text variant="muted" className="text-xs">
-                    1.5m x 1.5m • 2.25 m²
+                  <View className="flex-row items-center justify-between mb-2">
+                    <View className="flex-row items-center gap-1.5">
+                      <Sparkles size={15} color="#0B927E" />
+                      <Text className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                        {t("reservationHandoff.optionalAmenitiesTitle")}
+                      </Text>
+                    </View>
+                    {selectedAmenityOfferingIds.length > 0 && (
+                      <Badge variant="outline" className="border-brand/40 bg-brand-light/40">
+                        <Text className="text-xs font-semibold text-brand">
+                          {t("reservationHandoff.amenitiesSelectedCount", {
+                            count: selectedAmenityOfferingIds.length,
+                          })}
+                        </Text>
+                      </Badge>
+                    )}
+                  </View>
+
+                  <View className="gap-2">
+                    {handoffPayload.availableAmenities.map((am) => {
+                      const isSelected = selectedAmenityOfferingIds.includes(am.id);
+                      const isDisabled = am.availableQuantity <= 0;
+                      return (
+                        <Pressable
+                          key={am.id}
+                          disabled={isDisabled}
+                          onPress={() => toggleAmenitySelection(am.id)}
+                          className={`flex-row items-center justify-between rounded-xl border p-3 ${
+                            isSelected
+                              ? "border-brand bg-brand-light/40 dark:bg-brand/20"
+                              : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
+                          } ${isDisabled ? "opacity-50" : ""}`}
+                        >
+                          <View className="flex-row items-center gap-2 flex-1">
+                            <View
+                              className={`h-5 w-5 items-center justify-center rounded-md border ${
+                                isSelected
+                                  ? "border-brand bg-brand"
+                                  : "border-neutral-400 bg-transparent"
+                              }`}
+                            >
+                              {isSelected && <Check size={12} color="#FFFFFF" />}
+                            </View>
+                            <View className="flex-1">
+                              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                                {am.amenity.name}
+                              </Text>
+                              <Text variant="muted" className="text-[11px]">
+                                {t("facilityDetail.availableAmenityQty", {
+                                  count: am.availableQuantity,
+                                })}
+                              </Text>
+                            </View>
+                          </View>
+
+                          <Text className="text-xs font-bold text-brand">
+                            {am.pricePerUnit === 0
+                              ? t("facilityDetail.freeAmenity")
+                              : `${formatVndPrice(am.pricePerUnit)} ${getBillingUnitSuffix(
+                                  am.billingUnit,
+                                  t
+                                )}`}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+              )}
+            </View>
+          ) : (
+            /* ── Default Fallback Selection Steps ── */
+            <>
+              {/* Step 1: Select Facility */}
+              <View className="mb-4">
+                <View className="flex-row items-center gap-1.5 mb-2">
+                  <Building2 size={15} color="#647B80" />
+                  <Text className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                    {t("reservation.step1Facility")}
                   </Text>
                 </View>
-                <Text className="text-xs font-bold text-brand">1.200.000 đ</Text>
-              </Pressable>
+                <View className="flex-row gap-2">
+                  <Pressable
+                    onPress={() => setSelectedFacility("facilityHanoi")}
+                    className={`flex-1 rounded-xl p-3 border ${
+                      selectedFacility === "facilityHanoi"
+                        ? "border-brand bg-brand-light dark:bg-brand/20"
+                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${
+                        selectedFacility === "facilityHanoi"
+                          ? "text-brand"
+                          : "text-neutral-dark dark:text-neutral-200"
+                      }`}
+                    >
+                      {t("explore.facilityHanoi")}
+                    </Text>
+                  </Pressable>
 
-              <Pressable
-                onPress={() => setSelectedUnitType("family")}
-                className={`flex-row items-center justify-between rounded-xl p-3 border ${
-                  selectedUnitType === "family"
-                    ? "border-brand bg-brand-light dark:bg-brand/20"
-                    : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                }`}
-              >
-                <View>
-                  <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                    {t("explore.familyStorage")}
-                  </Text>
-                  <Text variant="muted" className="text-xs">
-                    3.0m x 2.5m • 7.5 m²
+                  <Pressable
+                    onPress={() => setSelectedFacility("facilityHcm")}
+                    className={`flex-1 rounded-xl p-3 border ${
+                      selectedFacility === "facilityHcm"
+                        ? "border-brand bg-brand-light dark:bg-brand/20"
+                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${
+                        selectedFacility === "facilityHcm"
+                          ? "text-brand"
+                          : "text-neutral-dark dark:text-neutral-200"
+                      }`}
+                    >
+                      {t("explore.facilityHcm")}
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              {/* Step 2: Select Unit Type */}
+              <View className="mb-4">
+                <View className="flex-row items-center gap-1.5 mb-2">
+                  <Boxes size={15} color="#647B80" />
+                  <Text className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                    {t("reservation.step2UnitType")}
                   </Text>
                 </View>
-                <Text className="text-xs font-bold text-brand">2.800.000 đ</Text>
-              </Pressable>
+                <View className="gap-2">
+                  <Pressable
+                    onPress={() => setSelectedUnitType("mini")}
+                    className={`flex-row items-center justify-between rounded-xl p-3 border ${
+                      selectedUnitType === "mini"
+                        ? "border-brand bg-brand-light dark:bg-brand/20"
+                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
+                    }`}
+                  >
+                    <View>
+                      <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                        {t("explore.miniStorage")}
+                      </Text>
+                      <Text variant="muted" className="text-xs">
+                        1.5m x 1.5m • 2.25 m²
+                      </Text>
+                    </View>
+                    <Text className="text-xs font-bold text-brand">1.200.000 đ</Text>
+                  </Pressable>
 
-              <Pressable
-                onPress={() => setSelectedUnitType("business")}
-                className={`flex-row items-center justify-between rounded-xl p-3 border ${
-                  selectedUnitType === "business"
-                    ? "border-brand bg-brand-light dark:bg-brand/20"
-                    : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                }`}
-              >
-                <View>
-                  <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                    {t("explore.businessStorage")}
-                  </Text>
-                  <Text variant="muted" className="text-xs">
-                    5.0m x 4.0m • 20.0 m²
-                  </Text>
+                  <Pressable
+                    onPress={() => setSelectedUnitType("family")}
+                    className={`flex-row items-center justify-between rounded-xl p-3 border ${
+                      selectedUnitType === "family"
+                        ? "border-brand bg-brand-light dark:bg-brand/20"
+                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
+                    }`}
+                  >
+                    <View>
+                      <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                        {t("explore.familyStorage")}
+                      </Text>
+                      <Text variant="muted" className="text-xs">
+                        3.0m x 2.5m • 7.5 m²
+                      </Text>
+                    </View>
+                    <Text className="text-xs font-bold text-brand">2.800.000 đ</Text>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={() => setSelectedUnitType("business")}
+                    className={`flex-row items-center justify-between rounded-xl p-3 border ${
+                      selectedUnitType === "business"
+                        ? "border-brand bg-brand-light dark:bg-brand/20"
+                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
+                    }`}
+                  >
+                    <View>
+                      <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                        {t("explore.businessStorage")}
+                      </Text>
+                      <Text variant="muted" className="text-xs">
+                        5.0m x 4.0m • 20.0 m²
+                      </Text>
+                    </View>
+                    <Text className="text-xs font-bold text-brand">6.500.000 đ</Text>
+                  </Pressable>
                 </View>
-                <Text className="text-xs font-bold text-brand">6.500.000 đ</Text>
-              </Pressable>
-            </View>
-          </View>
+              </View>
+            </>
+          )}
 
           {/* Step 3: Select Duration */}
           <View className="mb-4">
@@ -274,7 +480,7 @@ export default function ReservationsScreen() {
             </View>
           </View>
 
-          {/* Step 4: Summary Card */}
+          {/* Summary Card */}
           <View className="rounded-2xl bg-neutral-100 dark:bg-neutral-800/90 p-4 mb-4">
             <Text className="text-xs font-bold uppercase text-neutral-dark dark:text-neutral-200 mb-2">
               {t("reservation.summaryTitle")}
@@ -293,9 +499,22 @@ export default function ReservationsScreen() {
                   {t("reservation.monthlyRentLabel")}
                 </Text>
                 <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
-                  {discountedMonthlyRent.toLocaleString("vi-VN")} đ / tháng
+                  {discountedMonthlyRent.toLocaleString("vi-VN")} đ{" "}
+                  {handoffPayload
+                    ? getBillingUnitSuffix(handoffPayload.offering.billingUnit, t)
+                    : t("storageExplore.billing_month")}
                 </Text>
               </View>
+              {selectedAmenitiesTotal > 0 && (
+                <View className="flex-row justify-between">
+                  <Text variant="muted" className="text-xs">
+                    {t("reservationHandoff.amenitiesCostLabel")}
+                  </Text>
+                  <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
+                    {selectedAmenitiesTotal.toLocaleString("vi-VN")} đ
+                  </Text>
+                </View>
+              )}
               <View className="flex-row justify-between border-t border-neutral-200 dark:border-neutral-700 pt-2 mt-1">
                 <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
                   {t("reservation.totalInitialDue")}

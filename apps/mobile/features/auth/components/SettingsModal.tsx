@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, View, Pressable, TouchableWithoutFeedback } from "react-native";
-import { X, Globe, Sun, Moon, LogOut, User as UserIcon, Shield, Phone } from "lucide-react-native";
+import { X, Globe, Sun, Moon, LogOut, LogIn, User as UserIcon, Phone } from "lucide-react-native";
+import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/stores/language.store";
@@ -15,10 +16,11 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ visible, onClose }: SettingsModalProps) {
+  const router = useRouter();
   const { t, locale, setLocale } = useTranslation();
   const { setThemeMode } = useThemeStore();
   const { colorScheme, setColorScheme } = useColorScheme();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { confirmLogout } = useLogout();
 
   const handleSetTheme = (mode: "light" | "dark") => {
@@ -32,6 +34,11 @@ export function SettingsModal({ visible, onClose }: SettingsModalProps) {
     setTimeout(() => {
       confirmLogout();
     }, 300);
+  };
+
+  const handleLoginPress = () => {
+    onClose();
+    router.push("/(auth)/login" as any);
   };
 
   return (
@@ -188,21 +195,31 @@ export function SettingsModal({ visible, onClose }: SettingsModalProps) {
                 </View>
               </View>
 
-              {/* Version & Sign Out Section */}
+              {/* Version & Sign Out / Sign In Section */}
               <View className="pt-4">
                 <Text variant="muted" className="text-center text-xs mb-3">
                   {t("settings.appVersion")}
                 </Text>
 
-                <Pressable
-                  onPress={handleLogoutPress}
-                  className="flex-row items-center justify-center gap-2 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 py-3 active:opacity-80"
-                >
-                  <LogOut size={18} color="#EF4444" />
-                  <Text className="text-sm font-bold text-red-600 dark:text-red-400">
-                    {t("settings.signOut")}
-                  </Text>
-                </Pressable>
+                {isAuthenticated ? (
+                  <Pressable
+                    onPress={handleLogoutPress}
+                    className="flex-row items-center justify-center gap-2 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 py-3 active:opacity-80"
+                  >
+                    <LogOut size={18} color="#EF4444" />
+                    <Text className="text-sm font-bold text-red-600 dark:text-red-400">
+                      {t("settings.signOut")}
+                    </Text>
+                  </Pressable>
+                ) : (
+                  <Pressable
+                    onPress={handleLoginPress}
+                    className="flex-row items-center justify-center gap-2 rounded-xl bg-brand py-3 active:opacity-90"
+                  >
+                    <LogIn size={18} color="#FFFFFF" />
+                    <Text className="text-sm font-bold text-white">{t("auth.login")}</Text>
+                  </Pressable>
+                )}
               </View>
             </View>
           </TouchableWithoutFeedback>

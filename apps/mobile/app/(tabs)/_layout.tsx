@@ -1,8 +1,8 @@
 import { Tabs } from "expo-router";
-import { Search, CalendarCheck, Package, CreditCard, Headphones } from "lucide-react-native";
-import { SettingsButton } from "@/features/auth/components/SettingsButton";
+import { Home, CalendarCheck, Package, CreditCard, Headphones } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { useTranslation } from "@/stores/language.store";
+import { CustomerTabHeader } from "@/features/storage-explore/components/CustomerTabHeader";
 
 const BRAND = "#0B927E";
 const MUTED = "#647B80";
@@ -26,26 +26,17 @@ export default function TabLayout() {
           fontSize: 10,
           fontWeight: "600",
         },
-        headerStyle: {
-          backgroundColor: isDark ? "#171717" : "#F8FAF9",
-          borderBottomColor: isDark ? "#262626" : "#E1E8E8",
-          borderBottomWidth: 1,
-        },
-        headerTitleStyle: {
-          fontWeight: "700",
-          color: isDark ? "#F5F5F5" : "#173A3A",
-          fontSize: 16,
-        },
-        headerRight: () => <SettingsButton />,
+        header: () => <CustomerTabHeader isHome={false} />,
       }}
     >
-      {/* 1. Explore & Search Storages */}
+      {/* 1. Home (Explore & Search Storages) */}
       <Tabs.Screen
         name="index"
         options={{
           title: t("customerTabs.exploreTitle"),
           tabBarLabel: t("customerTabs.explore"),
-          tabBarIcon: ({ color, size }) => <Search size={size} color={color} />,
+          header: () => <CustomerTabHeader isHome={true} />,
+          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
         }}
       />
 

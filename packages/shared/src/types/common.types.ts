@@ -12,8 +12,8 @@ export interface ApiErrorResponse {
   messageCode: string;
   message: string;
   errors?: unknown;
-  path?: string;
-  timestamp?: string;
+  path: string;
+  timestamp: string;
   stack?: string;
 }
 

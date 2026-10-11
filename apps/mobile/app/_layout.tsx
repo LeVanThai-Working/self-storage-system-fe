@@ -9,6 +9,7 @@ import { PortalHost } from "@rn-primitives/portal";
 import { useColorScheme } from "nativewind";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "@/features/auth/stores/auth.store";
+import { useReservationHandoffStore } from "@/features/storage-explore/stores/reservationHandoff.store";
 import { GlobalToast } from "@/components/ui/toast";
 
 export {
@@ -61,6 +62,7 @@ function RootLayoutNav() {
   const router = useRouter();
   const segments = useSegments();
   const { isAuthenticated, isInitializing, initAuth } = useAuthStore();
+  const consumePendingRedirect = useReservationHandoffStore((s) => s.consumePendingRedirect);
 
   // Restore authenticated session from SecureStore on startup
   useEffect(() => {
@@ -74,25 +76,38 @@ function RootLayoutNav() {
     }
   }, [isInitializing]);
 
-  // Auth Guard: enforce protected routes and guest-only routes
+  // Auth Guard: allow public storage lookup (Explore tab & Facility Detail), protect customer-only routes
   useEffect(() => {
     if (isInitializing) return;
 
-    const inAuthGroup = (segments[0] as string) === "(auth)";
+    const firstSegment = segments[0] as string | undefined;
+    const secondSegment = segments[1] as string | undefined;
 
-    if (!isAuthenticated && !inAuthGroup) {
-      // Unauthenticated user attempting to access protected area
+    const inAuthGroup = firstSegment === "(auth)";
+    const inPublicFacilityDetail = firstSegment === "facilities";
+    const inPublicExploreTab =
+      !firstSegment || (firstSegment === "(tabs)" && (!secondSegment || secondSegment === "index"));
+
+    const isPublicRoute = inAuthGroup || inPublicFacilityDetail || inPublicExploreTab;
+
+    if (!isAuthenticated && !isPublicRoute) {
+      // Unauthenticated user attempting to access protected customer route
       router.replace("/(auth)/login" as any);
     } else if (isAuthenticated && inAuthGroup) {
-      // Authenticated user attempting to access auth screen
-      router.replace("/(tabs)" as any);
+      // Authenticated user on auth screen -> check if there is a pending reservation handoff
+      if (consumePendingRedirect()) {
+        router.replace("/(tabs)/reservations" as any);
+      } else {
+        router.replace("/(tabs)" as any);
+      }
     }
-  }, [isAuthenticated, isInitializing, segments, router]);
+  }, [isAuthenticated, isInitializing, segments, router, consumePendingRedirect]);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="facilities/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack>
       {/* Global floating toast notification overlay */}
