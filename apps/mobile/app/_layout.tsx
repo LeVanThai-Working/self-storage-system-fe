@@ -80,8 +80,9 @@ function RootLayoutNav() {
   useEffect(() => {
     if (isInitializing) return;
 
-    const firstSegment = segments[0] as string | undefined;
-    const secondSegment = segments[1] as string | undefined;
+    const segmentList = segments as string[];
+    const firstSegment = segmentList[0];
+    const secondSegment = segmentList[1];
 
     const inAuthGroup = firstSegment === "(auth)";
     const inPublicFacilityDetail = firstSegment === "facilities";
