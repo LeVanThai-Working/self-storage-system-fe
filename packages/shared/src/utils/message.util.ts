@@ -130,6 +130,17 @@ export function extractMessageParamsFromRaw(
     return match.slice(1).map((item) => item.trim());
   }
 
+  if (messageCode === "MESSAGE_CODE_307") {
+    const altMatch = rawMessage
+      .trim()
+      .match(
+        /insufficient(?:\s+available)?\s+(?:amenity\s+)?quantity\s+for(?:\s+amenity)?\s+(.+?)[.!]*$/i
+      );
+    if (altMatch?.[1]) {
+      return [altMatch[1].trim()];
+    }
+  }
+
   return [];
 }
 

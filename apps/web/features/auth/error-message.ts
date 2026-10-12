@@ -1,6 +1,11 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import {
+  extractMessageParamsFromRaw,
+  resolveMessageCode,
+  translateMessageSubject,
+} from "@self-storage-system-fe/shared";
 import { AppApiError } from "@/lib/api/axios";
 
 type ErrorOverrides = Partial<Record<string, string>>;
@@ -18,6 +23,7 @@ export function isValidationError(error: unknown) {
 export function useApiErrorMessage() {
   const tApi = useTranslations("api");
   const tCommon = useTranslations("common");
+  const locale = useLocale() === "en" ? "en" : "vi";
 
   return (error: unknown, overrides: ErrorOverrides = {}) => {
     if (error instanceof AppApiError) {
@@ -25,7 +31,20 @@ export function useApiErrorMessage() {
       if (error.statusCode === 0) return tCommon("networkError");
       const code = error.messageCode;
       if (code && overrides[code]) return overrides[code];
-      if (code && tApi.has(code)) return tApi(code, { 0: "" }).trim();
+      if (code && tApi.has(code)) {
+        const extracted = extractMessageParamsFromRaw(error.message, code);
+        const param0 = extracted[0] ? translateMessageSubject(extracted[0], locale) : "";
+        return tApi(code, { 0: param0 })
+          .replace(/\s{2,}/g, " ")
+          .trim();
+      }
+      if (code) {
+        const resolved = resolveMessageCode(code, {
+          locale,
+          rawMessage: error.message,
+        });
+        if (resolved) return resolved;
+      }
       if (error.message) return error.message;
     }
     return tCommon("error");

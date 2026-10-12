@@ -6,3 +6,7 @@ export * from "./amenity.enum";
 export * from "./facilityAmenityOffering.enum";
 export * from "./billing.enum";
 export * from "./user.enum";
+export * from "./reservation.enum";
+export * from "./payment.enum";
+export * from "./contract.enum";
+export * from "./notification.enum";

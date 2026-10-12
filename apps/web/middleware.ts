@@ -14,11 +14,17 @@ const protectedPaths = ["/facility-manager"];
 // Routes that authenticated users should not see (login, register)
 const guestOnlyPaths = ["/login", "/register"];
 
-function isJwtExpired(tokenString?: string): boolean {
-  if (!tokenString) return true;
+const ROLE_HOME: Record<string, string> = {
+  system_admin: "system-admin",
+  business_ops_manager: "business-ops",
+  facility_manager: "facility-manager",
+};
+
+function decodeJwtPayload(tokenString?: string): Record<string, unknown> | null {
+  if (!tokenString) return null;
   try {
     const parts = tokenString.split(".");
-    if (parts.length !== 3) return false;
+    if (parts.length !== 3) return null;
     const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
       atob(base64)
@@ -26,18 +32,24 @@ function isJwtExpired(tokenString?: string): boolean {
         .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
         .join("")
     );
-    const payload = JSON.parse(jsonPayload);
-    if (typeof payload.exp === "number" && payload.exp * 1000 < Date.now()) {
-      return true;
-    }
-    return false;
+    return JSON.parse(jsonPayload);
   } catch {
-    return false;
+    return null;
   }
 }
 
+function isJwtExpired(tokenString?: string): boolean {
+  if (!tokenString) return true;
+  const payload = decodeJwtPayload(tokenString);
+  if (!payload) return false;
+  if (typeof payload.exp === "number" && payload.exp * 1000 < Date.now()) {
+    return true;
+  }
+  return false;
+}
+
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
 
   // Check if the current route is in the protected list
   const isProtected = protectedPaths.some((p) => pathname.includes(p));
@@ -56,7 +68,16 @@ export function middleware(request: NextRequest) {
 
   // Already signed in with active session → skip the login/register pages
   if (isGuestOnly && isSessionActive) {
-    return NextResponse.redirect(new URL(`/${currentLocale}`, request.url));
+    const redirectParam = searchParams.get("redirect");
+    if (redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")) {
+      return NextResponse.redirect(new URL(redirectParam, request.url));
+    }
+    const payload = decodeJwtPayload(accessToken) ?? decodeJwtPayload(refreshToken);
+    const role = typeof payload?.role === "string" ? payload.role.toLowerCase() : "";
+    const home = ROLE_HOME[role];
+    return NextResponse.redirect(
+      new URL(`/${currentLocale}${home ? `/${home}` : ""}`, request.url)
+    );
   }
 
   if (isProtected) {

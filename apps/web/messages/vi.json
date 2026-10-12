@@ -117,7 +117,23 @@
     "MESSAGE_CODE_121": "Người dùng phải có vai trò {0}",
     "MESSAGE_CODE_122": "Bạn không có quyền quản lý {0}",
     "MESSAGE_CODE_200": "{0} không được để trống",
-    "MESSAGE_CODE_201": "Mã token không hợp lệ hoặc đã hết hạn"
+    "MESSAGE_CODE_201": "Mã token không hợp lệ hoặc đã hết hạn",
+    "MESSAGE_CODE_300": "Không tìm thấy đơn đặt chỗ",
+    "MESSAGE_CODE_301": "Trạng thái đơn đặt chỗ đã thay đổi, vui lòng tải lại danh sách",
+    "MESSAGE_CODE_302": "Đơn đã được cơ sở tiếp nhận xử lý nên không thể chỉnh sửa thông tin",
+    "MESSAGE_CODE_303": "Đơn đặt chỗ không thể hủy ở trạng thái hiện tại",
+    "MESSAGE_CODE_304": "Thời gian giữ chỗ của đơn đã hết hạn",
+    "MESSAGE_CODE_305": "Ô kho được chọn hiện không còn trống",
+    "MESSAGE_CODE_306": "Ô kho được chọn không thuộc cơ sở hoặc không khớp loại kho yêu cầu",
+    "MESSAGE_CODE_307": "Tiện ích {0} tại cơ sở không đủ số lượng tồn kho",
+    "MESSAGE_CODE_500": "Không tìm thấy phiên thanh toán",
+    "MESSAGE_CODE_501": "Cơ sở kho chưa cấu hình tài khoản ngân hàng nhận thanh toán",
+    "MESSAGE_CODE_502": "Mã QR thanh toán đã hết hạn",
+    "MESSAGE_CODE_503": "Hợp đồng chưa ở trạng thái chờ đặt cọc",
+    "MESSAGE_CODE_504": "Không thể hủy phiên thanh toán ở trạng thái hiện tại",
+    "MESSAGE_CODE_505": "Đơn chưa ở bước chờ thanh toán hoặc đã được thanh toán xong",
+    "MESSAGE_CODE_506": "Xác thực giao dịch thanh toán thất bại",
+    "MESSAGE_CODE_507": "Khoản thanh toán đã hoàn tất trước đó"
   },
   "systemAdmin": {
     "nav": {
@@ -1167,6 +1183,7 @@
   "facilityManager": {
     "roleLabel": "Quản lý cơ sở",
     "nav": {
+      "reservations": "Đơn đặt chỗ",
       "storageUnits": "Phòng kho",
       "sectionFacility": "VẬN HÀNH CƠ SỞ",
       "requests": "Yêu cầu đề xuất"
@@ -1403,6 +1420,281 @@
           "name": "Tên",
           "dimensions": "Kích thước (D × R × C)"
         }
+      }
+    },
+    "reservations": {
+      "title": "Quản lý Đơn đặt chỗ & Phân bổ kho",
+      "subtitle": "Tiếp nhận, phân bổ ô kho vật lý, kiểm tra đặt cọc và xác nhận đơn đặt chỗ tại cơ sở {facility}.",
+      "refresh": "Làm mới",
+      "retry": "Thử lại",
+      "loadError": "Không thể tải danh sách đơn đặt chỗ. Vui lòng thử lại.",
+      "noFacility": {
+        "title": "Chưa xác định được cơ sở phụ trách",
+        "description": "Tài khoản Quản lý của bạn chưa được gán vào cơ sở kho nào. Vui lòng liên hệ bộ phận Vận hành để được phân công."
+      },
+      "quickTabs": {
+        "all": "Tất cả đơn",
+        "pending": "Cần tiếp nhận mới",
+        "received": "Cần phân bổ kho",
+        "awaitingDeposit": "Đang chờ khách cọc",
+        "paymentSuccessful": "Cần xác nhận chốt đơn",
+        "confirmed": "Đã xác nhận (Chờ nhận kho)",
+        "closed": "Hoàn tất / Đã đóng"
+      },
+      "statuses": {
+        "pending": "Chờ tiếp nhận",
+        "received": "Đã tiếp nhận (Chờ gán kho)",
+        "pending_payment": "Chờ khách đặt cọc",
+        "payment_failed": "Thanh toán cọc lỗi",
+        "payment_successful": "Đã đặt cọc (Chờ xác nhận)",
+        "confirmed": "Đã xác nhận giữ kho",
+        "completed": "Đã bàn giao (Hoàn tất)",
+        "cancelled": "Đã hủy",
+        "rejected": "Đã từ chối",
+        "expired": "Quá hạn giữ chỗ"
+      },
+      "billingUnit": {
+        "day": "ngày",
+        "month": "tháng",
+        "one_time": "lần"
+      },
+      "filters": {
+        "searchCodePlaceholder": "Tìm theo mã đơn (VD: RSV-2026...)",
+        "allStatuses": "Tất cả trạng thái",
+        "allOfferings": "Tất cả loại kho",
+        "startFrom": "Nhận từ",
+        "startTo": "Đến",
+        "sortBy": {
+          "createdAt": "Mới tạo nhất",
+          "startDate": "Ngày bắt đầu thuê",
+          "totalAmount": "Tổng giá trị đơn",
+          "updatedAt": "Cập nhật gần nhất"
+        },
+        "toggleSortOrder": "Đổi chiều sắp xếp",
+        "desc": "Giảm dần",
+        "asc": "Tăng dần",
+        "clear": "Xóa bộ lọc"
+      },
+      "table": {
+        "codeAndDate": "Mã đơn & Ngày tạo",
+        "customer": "Khách hàng",
+        "packageAndSchedule": "Gói thuê & Lịch thuê",
+        "storageUnit": "Ô kho vật lý",
+        "financials": "Tài chính & Cọc",
+        "status": "Trạng thái & Giữ chỗ",
+        "actions": "Thao tác nhanh",
+        "standardPackage": "Gói thuê kho tiêu chuẩn",
+        "amenitiesCount": "tiện ích đi kèm",
+        "floorShort": "Tầng {floor}",
+        "zoneShort": "Khu {zone}",
+        "unassigned": "Chưa phân bổ",
+        "depositLabel": "Tiền cọc",
+        "totalLabel": "Tổng tạm tính",
+        "paidBadge": "Đã cọc"
+      },
+      "actions": {
+        "receive": "Tiếp nhận",
+        "assignUnit": "Phân bổ ô kho",
+        "assignUnitShort": "Gán kho",
+        "reject": "Từ chối",
+        "verifyPayment": "Xác nhận TT",
+        "confirmOrder": "Xác nhận chốt đơn",
+        "completeShort": "Hoàn tất",
+        "completeHandover": "Hoàn tất bàn giao",
+        "cancel": "Hủy đơn",
+        "viewDetail": "Chi tiết"
+      },
+      "empty": {
+        "title": "Không tìm thấy đơn đặt chỗ nào",
+        "description": "Chưa có đơn đặt chỗ nào khớp với tiêu chí lọc hiện tại tại cơ sở của bạn."
+      },
+      "pagination": {
+        "showing": "Hiển thị",
+        "of": "trên tổng",
+        "items": "đơn đặt chỗ",
+        "prev": "Trang trước",
+        "next": "Trang sau"
+      },
+      "feedback": {
+        "receiveSuccess": "Đã tiếp nhận đơn đặt chỗ {code} thành công!",
+        "completeSuccess": "Đã hoàn tất bàn giao đơn đặt chỗ {code}!"
+      },
+      "errors": {
+        "statusChanged": "Trạng thái đơn đặt chỗ vừa thay đổi. Hệ thống đã tự động làm mới dữ liệu.",
+        "unitNotAvailableReloaded": "Ô kho bạn chọn vừa được gán cho đơn khác hoặc không còn trống. Danh sách ô kho trống đã được tải lại!",
+        "unitMismatch": "Ô kho được chọn không thuộc cơ sở này hoặc không đúng loại kho khách đặt.",
+        "cannotCancel": "Đơn đặt chỗ không thể hủy ở trạng thái hiện tại."
+      },
+      "assignModal": {
+        "title": "Phân bổ Ô kho vật lý & Mở cổng đặt cọc",
+        "subtitle": "Chọn một phòng kho vật lý đang trống phù hợp với gói thuê để giữ chỗ và mở thanh toán cọc cho khách hàng.",
+        "customerSection": "Thông tin khách hàng",
+        "packageSection": "Yêu cầu gói thuê",
+        "requestedUnitType": "Gói loại kho đã chọn",
+        "depositLabel": "Cọc yêu cầu",
+        "startDate": "Nhận kho",
+        "totalEstimated": "Tổng tạm tính",
+        "pendingReceiveHintTitle": "Đơn đang ở bước Chờ tiếp nhận",
+        "pendingReceiveHintDesc": "Bạn có thể nhấn \"Đánh dấu đã tiếp nhận\" trước, hoặc chọn ô kho bên dưới để gán kho và mở cổng thanh toán cọc ngay.",
+        "markReceivedBtn": "Đánh dấu đã tiếp nhận",
+        "receiving": "Đang tiếp nhận...",
+        "receiveSuccess": "Đã chuyển đơn sang trạng thái Đã tiếp nhận!",
+        "selectUnitLabel": "Chọn ô kho vật lý đang trống",
+        "availableCount": "Đang có {count} ô kho trống phù hợp để phân bổ",
+        "searchUnitPlaceholder": "Tìm số phòng...",
+        "allFloors": "Tất cả tầng",
+        "allZones": "Tất cả khu",
+        "floorItem": "Tầng {floor}",
+        "zoneItem": "Khu {zone}",
+        "refreshUnits": "Làm mới",
+        "noAvailableUnitsTitle": "Hiện không còn ô kho vật lý nào đang trống thuộc loại kho này!",
+        "noAvailableUnitsDesc": "Tất cả ô kho thuộc loại này tại cơ sở đang được giữ chỗ, đang thuê hoặc bảo trì. Bạn có thể kiểm tra lại danh sách phòng kho hoặc từ chối đơn.",
+        "switchToRejectBtn": "Từ chối đơn do hết phòng trống",
+        "noFilteredUnits": "Không có ô kho nào khớp với bộ lọc tầng / khu / số phòng.",
+        "selectedBadge": "Đang chọn",
+        "availableBadge": "Còn trống",
+        "holdingHoursLabel": "Thời gian giữ chỗ chờ khách cọc (giờ)",
+        "expectedExpiresAt": "Dự kiến hết hạn giữ chỗ lúc",
+        "notesLabel": "Ghi chú vận hành (không bắt buộc)",
+        "notesPlaceholder": "Ghi chú vị trí kho, hướng dẫn nhận kho cho khách hàng...",
+        "cancel": "Đóng",
+        "submitBtn": "Xác nhận phân bổ kho & Mở cổng cọc",
+        "submitting": "Đang phân bổ kho...",
+        "assignSuccess": "Đã phân bổ ô kho {unitNumber} và mở cổng thanh toán cọc thành công!",
+        "validation": {
+          "unitRequired": "Vui lòng chọn một ô kho vật lý trống để phân bổ cho đơn.",
+          "holdingHoursInvalid": "Thời gian giữ chỗ phải từ 1 đến 168 giờ (tối đa 7 ngày).",
+          "invalidInput": "Thông tin phân bổ kho không hợp lệ."
+        }
+      },
+      "rejectModal": {
+        "title": "Từ chối đơn đặt chỗ",
+        "subtitle": "Đơn sẽ chuyển sang trạng thái Đã từ chối và thông báo lý do cho khách hàng.",
+        "customerLabel": "Khách hàng",
+        "depositLabel": "Mức đặt cọc",
+        "reasonLabel": "Lý do từ chối đơn",
+        "reasonPlaceholder": "Nhập lý do từ chối (tối thiểu 3 ký tự, ví dụ: Hiện tại cơ sở đã hết phòng kho trống ở tầng 1)...",
+        "validationReason": "Vui lòng nhập lý do từ chối từ 3 đến 500 ký tự.",
+        "cancel": "Hủy bỏ",
+        "confirmBtn": "Xác nhận từ chối đơn",
+        "submitting": "Đang xử lý...",
+        "success": "Đã từ chối đơn đặt chỗ thành công!"
+      },
+      "confirmModal": {
+        "title": "Xác nhận chốt đơn đặt chỗ",
+        "subtitle": "Khách hàng đã hoàn tất thanh toán tiền cọc. Xác nhận chốt đơn để giữ kho chờ ngày khách đến nhận.",
+        "customerLabel": "Khách hàng",
+        "assignedUnitLabel": "Ô kho đã phân bổ",
+        "paidDepositLabel": "Tiền cọc đã thu",
+        "paidAtLabel": "Thời điểm thanh toán",
+        "startDateLabel": "Ngày bắt đầu thuê",
+        "notesLabel": "Ghi chú xác nhận (không bắt buộc)",
+        "notesPlaceholder": "Nhập hướng dẫn bàn giao kho hoặc ghi chú cho nhân viên trực tại quầy...",
+        "validationError": "Ghi chú không được vượt quá 1000 ký tự.",
+        "cancel": "Đóng",
+        "confirmBtn": "Xác nhận chốt đơn giữ kho",
+        "submitting": "Đang xác nhận...",
+        "success": "Đã xác nhận chốt đơn đặt chỗ thành công!"
+      },
+      "cancelModal": {
+        "title": "Hủy đơn đặt chỗ",
+        "subtitle": "Xác nhận hủy đơn đặt chỗ và giải phóng tài nguyên kho tại cơ sở.",
+        "impactTitle": "Tác động khi hủy đơn này:",
+        "releaseUnitNotice": "Ô kho vật lý {unitNumber} sẽ được tự động giải phóng về trạng thái Còn trống.",
+        "restoreAmenitiesNotice": "Số lượng tồn kho của {count} tiện ích đi kèm sẽ được hoàn trả lại cho cơ sở.",
+        "refundFullNotice": "Đơn đang ở trạng thái Đã đặt cọc (chưa chốt đơn): Khách hàng được hoàn 100% tiền cọc ({amount}).",
+        "refundZeroConfirmedNotice": "Đơn đã ở trạng thái Đã xác nhận giữ kho: Theo chính sách, tiền cọc sẽ không được hoàn lại (0đ).",
+        "reasonLabel": "Lý do hủy đơn",
+        "reasonPlaceholder": "Nhập lý do hủy đơn (tối thiểu 3 ký tự, ví dụ: Khách hàng liên hệ báo thay đổi kế hoạch chuyển nhà)...",
+        "validationReason": "Vui lòng nhập lý do hủy đơn từ 3 đến 500 ký tự.",
+        "back": "Quay lại",
+        "confirmBtn": "Xác nhận hủy đơn",
+        "submitting": "Đang hủy đơn...",
+        "success": "Đã hủy đơn đặt chỗ và giải phóng kho thành công!"
+      },
+      "manualPaymentModal": {
+        "title": "Kiểm tra & Xác nhận Thanh toán Cọc",
+        "subtitle": "Xem mã VietQR đang mở cho đơn hoặc xác nhận thu cọc thủ công tại quầy (Tiền mặt / Ủy nhiệm chi).",
+        "loadingSession": "Đang tải phiên thanh toán đặt cọc...",
+        "depositAmountLabel": "Số tiền cọc cần thanh toán",
+        "bankLabel": "Ngân hàng thụ hưởng",
+        "accountNumberLabel": "Số tài khoản",
+        "accountHolderLabel": "Chủ tài khoản",
+        "transferContentLabel": "Nội dung chuyển khoản",
+        "qrExpiresAtLabel": "Hạn phiên thanh toán",
+        "manualSectionTitle": "Xác nhận đã thu tiền thủ công",
+        "manualSectionDesc": "Dùng khi khách thanh toán tiền mặt trực tiếp tại cơ sở hoặc chuyển khoản nhưng quên ghi đúng mã tự động.",
+        "methodCash": "Tiền mặt tại quầy",
+        "methodBankTransfer": "Chuyển khoản ngân hàng",
+        "referenceCodeLabel": "Mã tham chiếu giao dịch / Số biên lai (không bắt buộc)",
+        "referenceCodePlaceholder": "Ví dụ: FT26085123456 hoặc số phiếu thu...",
+        "noteLabel": "Ghi chú đối soát (bắt buộc)",
+        "notePlaceholder": "Nhập nội dung xác minh giao dịch (tối thiểu 2 ký tự, ví dụ: Đã nhận đủ tiền mặt tại quầy lễ tân)...",
+        "validationNoteRequired": "Vui lòng nhập ghi chú đối soát từ 2 đến 1000 ký tự.",
+        "noPaymentSessionError": "Không tìm thấy phiên thanh toán hợp lệ để xác nhận.",
+        "close": "Đóng",
+        "confirmBtn": "Xác nhận đã thu cọc",
+        "submitting": "Đang xác nhận...",
+        "success": "Đã xác nhận thanh toán tiền cọc thành công!"
+      },
+      "detailSheet": {
+        "title": "Chi tiết Đơn đặt chỗ",
+        "createdAt": "Tạo lúc",
+        "refresh": "Làm mới chi tiết",
+        "timelineTitle": "Tiến trình xử lý đơn đặt chỗ (6 bước)",
+        "steps": {
+          "pending": "1. Khách gửi yêu cầu đặt chỗ",
+          "received": "2. Quản lý cơ sở tiếp nhận xử lý",
+          "pending_payment": "3. Đã phân bổ ô kho & Chờ khách đặt cọc",
+          "payment_failed": "3. Đã phân bổ ô kho & Thanh toán cọc gặp sự cố",
+          "payment_successful": "4. Khách đã hoàn tất thanh toán cọc",
+          "confirmed": "5. Quản lý xác nhận chốt đơn giữ kho",
+          "completed": "6. Đã bàn giao kho & Chuyển sang Hợp đồng"
+        },
+        "stepStates": {
+          "completed": "Đã hoàn thành",
+          "current": "Đang xử lý",
+          "error": "Thanh toán lỗi",
+          "upcoming": "Chờ thực hiện"
+        },
+        "unitStatuses": {
+          "available": "Còn trống",
+          "reserved": "Đã giữ chỗ",
+          "occupied": "Đang thuê",
+          "under_maintenance": "Đang bảo trì",
+          "inactive": "Ngừng sử dụng"
+        },
+        "terminal": {
+          "rejectedTitle": "Đơn đặt chỗ đã bị từ chối",
+          "cancelledTitle": "Đơn đặt chỗ đã bị hủy",
+          "expiredTitle": "Đơn đặt chỗ đã quá hạn giữ chỗ thanh toán",
+          "reason": "Lý do",
+          "refundAmount": "Số tiền cọc hoàn lại",
+          "expiredAt": "Hết hạn lúc"
+        },
+        "customerTitle": "Thông tin liên hệ Khách hàng",
+        "customerName": "Họ và tên",
+        "customerPhone": "Số điện thoại",
+        "customerEmail": "Địa chỉ Email",
+        "notesLabel": "Ghi chú trên đơn",
+        "assignedUnitTitle": "Ô kho vật lý được gán",
+        "unitStatusLabel": "Trạng thái phòng kho",
+        "floorLabel": "Tầng {floor}",
+        "zoneLabel": "Khu {zone}",
+        "unassignedUnitText": "Chưa phân bổ ô kho vật lý",
+        "scheduleTitle": "Lịch thuê & Thời hạn giữ chỗ",
+        "unitTypeLabel": "Loại kho",
+        "standardOffering": "Gói tiêu chuẩn",
+        "startDateLabel": "Ngày nhận kho",
+        "durationLabel": "Thời lượng thuê",
+        "holdExpiresAtLabel": "Hạn giữ chỗ cọc",
+        "financialTitle": "Chi tiết Gói thuê, Tiện ích & Đặt cọc",
+        "storageRentalRow": "Tiền thuê kho cơ bản",
+        "amenitiesHeader": "Tiện ích đăng ký kèm theo",
+        "totalAmountLabel": "Tổng giá trị đơn dự kiến",
+        "depositRequiredLabel": "Tiền đặt cọc giữ chỗ cần thanh toán",
+        "paidDepositText": "Khách đã thanh toán",
+        "close": "Đóng"
       }
     }
   }

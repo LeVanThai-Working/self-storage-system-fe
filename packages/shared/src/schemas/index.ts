@@ -57,3 +57,39 @@ export {
   storageUnitQuerySchema,
   availableStorageUnitQuerySchema,
 } from "./request/storageUnit.request.schema";
+
+export {
+  reservationIdParamSchema,
+  reservationAmenityInputSchema,
+  dateStringSchema,
+  createReservationSchema,
+  updateReservationSchema,
+  assignStorageUnitSchema,
+  rejectReservationSchema,
+  confirmReservationSchema,
+  cancelReservationSchema,
+  reservationQuerySchema,
+  type CreateReservationRequest,
+  type UpdateReservationRequest,
+  type AssignStorageUnitRequest,
+  type RejectReservationRequest,
+  type ConfirmReservationRequest,
+  type CancelReservationRequest,
+  type ReservationQuery,
+  type ReservationIdParam,
+} from "./request/reservation.request.schema";
+
+export {
+  paymentIdParamSchema,
+  createPaymentSchema,
+  confirmManualPaymentSchema,
+  cancelPaymentSchema,
+  paymentQuerySchema,
+  sepayWebhookSchema,
+  type SepayWebhookPayload,
+  type CreatePaymentRequest,
+  type ConfirmManualPaymentRequest,
+  type CancelPaymentRequest,
+  type PaymentQuery,
+  type PaymentIdParam,
+} from "./request/payment.request.schema";

@@ -45,6 +45,45 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_200: "MESSAGE_CODE_200",
   // Invalid Token
   MESSAGE_CODE_201: "MESSAGE_CODE_201",
+
+  // {0} Created Successfully (Alias)
+  MESSAGE_CODE_100: "MESSAGE_CODE_100",
+
+  // Reservation Message Codes
+  // Reservation Not Found
+  MESSAGE_CODE_300: "MESSAGE_CODE_300",
+  // Invalid Reservation Status Transition
+  MESSAGE_CODE_301: "MESSAGE_CODE_301",
+  // Reservation Cannot Be Updated After Being Received
+  MESSAGE_CODE_302: "MESSAGE_CODE_302",
+  // Reservation Cannot Be Cancelled
+  MESSAGE_CODE_303: "MESSAGE_CODE_303",
+  // Reservation Has Expired
+  MESSAGE_CODE_304: "MESSAGE_CODE_304",
+  // Selected Storage Unit Is Not Available
+  MESSAGE_CODE_305: "MESSAGE_CODE_305",
+  // Start Date Cannot Be In The Past
+  MESSAGE_CODE_306: "MESSAGE_CODE_306",
+  // Insufficient Amenity Quantity For {0}
+  MESSAGE_CODE_307: "MESSAGE_CODE_307",
+
+  // Payment Message Codes
+  // Payment Not Found / Invalid Session
+  MESSAGE_CODE_500: "MESSAGE_CODE_500",
+  // Facility Bank Account Not Configured
+  MESSAGE_CODE_501: "MESSAGE_CODE_501",
+  // Payment Has Expired
+  MESSAGE_CODE_502: "MESSAGE_CODE_502",
+  // Contract Is Not In Pending Deposit Status
+  MESSAGE_CODE_503: "MESSAGE_CODE_503",
+  // Payment Cannot Be Cancelled
+  MESSAGE_CODE_504: "MESSAGE_CODE_504",
+  // Order Is Not Awaiting Payment
+  MESSAGE_CODE_505: "MESSAGE_CODE_505",
+  // Webhook Verification Failed
+  MESSAGE_CODE_506: "MESSAGE_CODE_506",
+  // Payment Already Settled
+  MESSAGE_CODE_507: "MESSAGE_CODE_507",
 } as const;
 
 export type MessageCode = (typeof MESSAGE_CODE)[keyof typeof MESSAGE_CODE];
@@ -57,6 +96,7 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_002: "{0} Created Successfully",
   MESSAGE_CODE_003: "{0} Updated Successfully",
   MESSAGE_CODE_004: "{0} Deleted Successfully",
+  MESSAGE_CODE_100: "{0} Created Successfully",
   MESSAGE_CODE_101: "Invalid Request",
   MESSAGE_CODE_102: "Unauthorized Access",
   MESSAGE_CODE_103: "Access Denied",
@@ -74,6 +114,22 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_122: "You Do Not Have Permission To Manage {0}",
   MESSAGE_CODE_200: "{0} Is Required",
   MESSAGE_CODE_201: "Invalid Token",
+  MESSAGE_CODE_300: "Reservation Not Found",
+  MESSAGE_CODE_301: "Invalid Reservation Status Transition",
+  MESSAGE_CODE_302: "Reservation Cannot Be Updated After Being Received",
+  MESSAGE_CODE_303: "Reservation Cannot Be Cancelled",
+  MESSAGE_CODE_304: "Reservation Has Expired",
+  MESSAGE_CODE_305: "Selected Storage Unit Is Not Available",
+  MESSAGE_CODE_306: "Start Date Cannot Be In The Past",
+  MESSAGE_CODE_307: "Insufficient Amenity Quantity For {0}",
+  MESSAGE_CODE_500: "Payment Session Not Found",
+  MESSAGE_CODE_501: "Facility Bank Account Is Not Configured",
+  MESSAGE_CODE_502: "Payment Has Expired",
+  MESSAGE_CODE_503: "Contract Is Not In Pending Deposit Status",
+  MESSAGE_CODE_504: "Payment Cannot Be Cancelled",
+  MESSAGE_CODE_505: "Order Is Not Awaiting Payment",
+  MESSAGE_CODE_506: "Webhook Verification Failed",
+  MESSAGE_CODE_507: "Payment Already Settled",
 };
 
 /**
@@ -84,6 +140,7 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_002: "{0} đã được tạo thành công",
   MESSAGE_CODE_003: "{0} đã được cập nhật thành công",
   MESSAGE_CODE_004: "{0} đã được xóa thành công",
+  MESSAGE_CODE_100: "{0} đã được tạo thành công",
   MESSAGE_CODE_101: "Yêu cầu không hợp lệ",
   MESSAGE_CODE_102: "Chưa được xác thực danh tính",
   MESSAGE_CODE_103: "Bạn không có quyền truy cập",
@@ -101,6 +158,22 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_122: "Bạn không có quyền quản lý {0}",
   MESSAGE_CODE_200: "{0} không được để trống",
   MESSAGE_CODE_201: "Mã token không hợp lệ hoặc đã hết hạn",
+  MESSAGE_CODE_300: "Đơn đặt chỗ không tồn tại",
+  MESSAGE_CODE_301: "Trạng thái đơn đặt chỗ đã thay đổi, vui lòng tải lại",
+  MESSAGE_CODE_302: "Đơn đã được cơ sở tiếp nhận xử lý nên không thể chỉnh sửa thông tin",
+  MESSAGE_CODE_303: "Đơn đặt chỗ không thể hủy ở trạng thái hiện tại",
+  MESSAGE_CODE_304: "Thời gian giữ chỗ của đơn đã hết hạn",
+  MESSAGE_CODE_305: "Ô kho được chọn hiện không còn trống",
+  MESSAGE_CODE_306: "Ngày bắt đầu thuê không được nằm trong quá khứ",
+  MESSAGE_CODE_307: "Tiện ích {0} tại cơ sở không đủ số lượng tồn kho",
+  MESSAGE_CODE_500: "Không tìm thấy phiên thanh toán",
+  MESSAGE_CODE_501: "Cơ sở kho chưa cấu hình tài khoản ngân hàng nhận thanh toán",
+  MESSAGE_CODE_502: "Mã QR thanh toán đã hết hạn",
+  MESSAGE_CODE_503: "Hợp đồng chưa ở trạng thái chờ đặt cọc",
+  MESSAGE_CODE_504: "Không thể hủy phiên thanh toán ở trạng thái hiện tại",
+  MESSAGE_CODE_505: "Đơn chưa ở bước chờ thanh toán hoặc đã được thanh toán xong",
+  MESSAGE_CODE_506: "Xác thực giao dịch thanh toán thất bại",
+  MESSAGE_CODE_507: "Khoản thanh toán đã hoàn tất trước đó",
 };
 
 export const MESSAGE_DICTIONARY = MESSAGE_DICTIONARY_EN;

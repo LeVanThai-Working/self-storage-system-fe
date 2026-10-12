@@ -137,6 +137,8 @@ export default function FacilityPublicDetailScreen() {
           facilityId: payload.facilityId,
           facilityName: payload.facilityName,
           unitTypeId: payload.unitTypeId,
+          facilityUnitTypeOfferingId: offering.id,
+          mode: "create",
         },
       });
     },

@@ -47,8 +47,10 @@ export class AppApiError extends Error {
 }
 
 // 1. Create the Axios instance
+// In the browser, route requests through Next.js rewrites (/api/*) so HttpOnly
+// cookies from the backend are stored on the frontend origin.
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: typeof window !== "undefined" ? "/api" : API_BASE_URL,
   timeout: 20000, // 20s timeout to avoid hanging connections
   withCredentials: true, // Automatically attach HttpOnly cookies
   headers: {

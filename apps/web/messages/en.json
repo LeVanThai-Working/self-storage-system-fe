@@ -117,7 +117,23 @@
     "MESSAGE_CODE_121": "User Must Have Role {0}",
     "MESSAGE_CODE_122": "You Do Not Have Permission To Manage {0}",
     "MESSAGE_CODE_200": "{0} Is Required",
-    "MESSAGE_CODE_201": "Invalid Token"
+    "MESSAGE_CODE_201": "Invalid Token",
+    "MESSAGE_CODE_300": "Reservation Not Found",
+    "MESSAGE_CODE_301": "Reservation status has changed, please refresh",
+    "MESSAGE_CODE_302": "Reservation cannot be updated after being received",
+    "MESSAGE_CODE_303": "Reservation cannot be cancelled in its current status",
+    "MESSAGE_CODE_304": "Reservation hold period has expired",
+    "MESSAGE_CODE_305": "Selected storage unit is no longer available",
+    "MESSAGE_CODE_306": "Selected storage unit does not belong to this facility or match the unit type",
+    "MESSAGE_CODE_307": "Insufficient available quantity for amenity {0}",
+    "MESSAGE_CODE_500": "Payment session not found",
+    "MESSAGE_CODE_501": "Facility bank account is not configured",
+    "MESSAGE_CODE_502": "Payment QR session has expired",
+    "MESSAGE_CODE_503": "Contract is not in pending deposit status",
+    "MESSAGE_CODE_504": "Payment session cannot be cancelled in its current status",
+    "MESSAGE_CODE_505": "Order is not awaiting payment or has already been settled",
+    "MESSAGE_CODE_506": "Payment transaction verification failed",
+    "MESSAGE_CODE_507": "Payment has already been settled"
   },
   "systemAdmin": {
     "nav": {
@@ -1167,6 +1183,7 @@
   "facilityManager": {
     "roleLabel": "Facility Manager",
     "nav": {
+      "reservations": "Reservations",
       "storageUnits": "Storage units",
       "sectionFacility": "FACILITY OPERATIONS",
       "requests": "Request Center"
@@ -1403,6 +1420,281 @@
           "name": "Name",
           "dimensions": "Dimensions (L × W × H)"
         }
+      }
+    },
+    "reservations": {
+      "title": "Reservation & Unit Assignment Management",
+      "subtitle": "Receive reservations, assign physical storage units, verify deposit payments, and confirm bookings at {facility}.",
+      "refresh": "Refresh",
+      "retry": "Retry",
+      "loadError": "Unable to load reservations. Please try again.",
+      "noFacility": {
+        "title": "Could not determine your assigned facility",
+        "description": "Your Manager account has not been assigned to a facility yet. Please contact Business Operations."
+      },
+      "quickTabs": {
+        "all": "All reservations",
+        "pending": "New (Pending)",
+        "received": "Needs unit assignment",
+        "awaitingDeposit": "Awaiting deposit",
+        "paymentSuccessful": "Deposit paid (Confirm)",
+        "confirmed": "Confirmed (Ready)",
+        "closed": "Completed / Closed"
+      },
+      "statuses": {
+        "pending": "Pending receipt",
+        "received": "Received (Assign unit)",
+        "pending_payment": "Awaiting deposit",
+        "payment_failed": "Deposit failed",
+        "payment_successful": "Deposit paid",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "rejected": "Rejected",
+        "expired": "Hold expired"
+      },
+      "billingUnit": {
+        "day": "day",
+        "month": "month",
+        "one_time": "one-time"
+      },
+      "filters": {
+        "searchCodePlaceholder": "Search by code (e.g. RSV-2026...)",
+        "allStatuses": "All statuses",
+        "allOfferings": "All unit types",
+        "startFrom": "Start from",
+        "startTo": "To",
+        "sortBy": {
+          "createdAt": "Newest created",
+          "startDate": "Rental start date",
+          "totalAmount": "Total amount",
+          "updatedAt": "Recently updated"
+        },
+        "toggleSortOrder": "Toggle sort order",
+        "desc": "Descending",
+        "asc": "Ascending",
+        "clear": "Clear filters"
+      },
+      "table": {
+        "codeAndDate": "Code & Created",
+        "customer": "Customer",
+        "packageAndSchedule": "Package & Schedule",
+        "storageUnit": "Physical Unit",
+        "financials": "Deposit & Total",
+        "status": "Status & Hold",
+        "actions": "Quick Actions",
+        "standardPackage": "Standard Storage Package",
+        "amenitiesCount": "add-on amenities",
+        "floorShort": "Floor {floor}",
+        "zoneShort": "Zone {zone}",
+        "unassigned": "Unassigned",
+        "depositLabel": "Deposit",
+        "totalLabel": "Est. Total",
+        "paidBadge": "Paid"
+      },
+      "actions": {
+        "receive": "Receive",
+        "assignUnit": "Assign unit",
+        "assignUnitShort": "Assign unit",
+        "reject": "Reject",
+        "verifyPayment": "Verify payment",
+        "confirmOrder": "Confirm order",
+        "completeShort": "Complete",
+        "completeHandover": "Complete handover",
+        "cancel": "Cancel",
+        "viewDetail": "Details"
+      },
+      "empty": {
+        "title": "No reservations found",
+        "description": "No reservations match the current filters at your facility."
+      },
+      "pagination": {
+        "showing": "Showing",
+        "of": "of",
+        "items": "reservations",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "feedback": {
+        "receiveSuccess": "Reservation {code} marked as received!",
+        "completeSuccess": "Reservation {code} completed and handed over!"
+      },
+      "errors": {
+        "statusChanged": "Reservation status has changed. Data has been refreshed automatically.",
+        "unitNotAvailableReloaded": "The selected storage unit is no longer available. The available units list has been reloaded!",
+        "unitMismatch": "Selected storage unit does not belong to this facility or match the requested unit type.",
+        "cannotCancel": "This reservation cannot be cancelled in its current status."
+      },
+      "assignModal": {
+        "title": "Assign Physical Storage Unit & Open Deposit",
+        "subtitle": "Select an available physical storage unit matching the requested unit type to hold for the customer and open deposit payment.",
+        "customerSection": "Customer Information",
+        "packageSection": "Requested Package",
+        "requestedUnitType": "Selected Unit Type",
+        "depositLabel": "Required Deposit",
+        "startDate": "Start date",
+        "totalEstimated": "Estimated total",
+        "pendingReceiveHintTitle": "Reservation is currently Pending Receipt",
+        "pendingReceiveHintDesc": "You can click \"Mark as Received\" first, or directly select a storage unit below to assign and open deposit payment immediately.",
+        "markReceivedBtn": "Mark as Received",
+        "receiving": "Receiving...",
+        "receiveSuccess": "Reservation marked as Received!",
+        "selectUnitLabel": "Select an Available Physical Storage Unit",
+        "availableCount": "{count} available units matching this package",
+        "searchUnitPlaceholder": "Search unit...",
+        "allFloors": "All floors",
+        "allZones": "All zones",
+        "floorItem": "Floor {floor}",
+        "zoneItem": "Zone {zone}",
+        "refreshUnits": "Refresh",
+        "noAvailableUnitsTitle": "No available physical storage units for this unit type!",
+        "noAvailableUnitsDesc": "All units of this type at your facility are currently reserved, occupied, or under maintenance. You may check your unit inventory or reject this reservation.",
+        "switchToRejectBtn": "Reject reservation due to no available units",
+        "noFilteredUnits": "No available units match the floor / zone / unit number filter.",
+        "selectedBadge": "Selected",
+        "availableBadge": "Available",
+        "holdingHoursLabel": "Deposit Hold Duration (hours)",
+        "expectedExpiresAt": "Expected hold expiry at",
+        "notesLabel": "Operational Notes (optional)",
+        "notesPlaceholder": "Location notes or check-in instructions for the customer...",
+        "cancel": "Close",
+        "submitBtn": "Assign Unit & Open Deposit Payment",
+        "submitting": "Assigning unit...",
+        "assignSuccess": "Assigned unit {unitNumber} and opened deposit payment!",
+        "validation": {
+          "unitRequired": "Please select an available physical storage unit.",
+          "holdingHoursInvalid": "Hold duration must be an integer between 1 and 168 hours.",
+          "invalidInput": "Invalid unit assignment parameters."
+        }
+      },
+      "rejectModal": {
+        "title": "Reject Reservation",
+        "subtitle": "This reservation will move to Rejected status and notify the customer with your reason.",
+        "customerLabel": "Customer",
+        "depositLabel": "Deposit amount",
+        "reasonLabel": "Rejection Reason",
+        "reasonPlaceholder": "Enter rejection reason (3–500 characters, e.g. No units available on Floor 1)...",
+        "validationReason": "Please enter a rejection reason between 3 and 500 characters.",
+        "cancel": "Cancel",
+        "confirmBtn": "Confirm Rejection",
+        "submitting": "Rejecting...",
+        "success": "Reservation rejected successfully!"
+      },
+      "confirmModal": {
+        "title": "Confirm Reservation",
+        "subtitle": "The customer has paid the deposit. Confirm this reservation to lock the unit until check-in.",
+        "customerLabel": "Customer",
+        "assignedUnitLabel": "Assigned Unit",
+        "paidDepositLabel": "Paid Deposit",
+        "paidAtLabel": "Paid At",
+        "startDateLabel": "Start Date",
+        "notesLabel": "Confirmation Notes (optional)",
+        "notesPlaceholder": "Enter handover instructions or counter notes...",
+        "validationError": "Notes cannot exceed 1000 characters.",
+        "cancel": "Close",
+        "confirmBtn": "Confirm Reservation",
+        "submitting": "Confirming...",
+        "success": "Reservation confirmed successfully!"
+      },
+      "cancelModal": {
+        "title": "Cancel Reservation",
+        "subtitle": "Confirm cancelling this reservation and releasing assigned facility resources.",
+        "impactTitle": "Cancellation Impact:",
+        "releaseUnitNotice": "Physical storage unit {unitNumber} will be automatically released back to Available status.",
+        "restoreAmenitiesNotice": "Inventory stock for {count} add-on amenities will be restored.",
+        "refundFullNotice": "Status is Deposit Paid (not yet confirmed): Customer receives a 100% deposit refund ({amount}).",
+        "refundZeroConfirmedNotice": "Status is Confirmed: Per policy, deposit refund is 0 VND.",
+        "reasonLabel": "Cancellation Reason",
+        "reasonPlaceholder": "Enter cancellation reason (3–500 characters)...",
+        "validationReason": "Please enter a cancellation reason between 3 and 500 characters.",
+        "back": "Back",
+        "confirmBtn": "Confirm Cancellation",
+        "submitting": "Cancelling...",
+        "success": "Reservation cancelled and unit released!"
+      },
+      "manualPaymentModal": {
+        "title": "Inspect & Confirm Deposit Payment",
+        "subtitle": "View the active VietQR session or manually confirm counter payment (Cash / Bank Transfer).",
+        "loadingSession": "Loading deposit payment session...",
+        "depositAmountLabel": "Required Deposit Amount",
+        "bankLabel": "Beneficiary Bank",
+        "accountNumberLabel": "Account Number",
+        "accountHolderLabel": "Account Holder",
+        "transferContentLabel": "Transfer Content",
+        "qrExpiresAtLabel": "QR Session Expiry",
+        "manualSectionTitle": "Manual Payment Verification",
+        "manualSectionDesc": "Use when the customer pays cash at the counter or transfers via bank without automatic webhook matching.",
+        "methodCash": "Cash at Counter",
+        "methodBankTransfer": "Bank Transfer",
+        "referenceCodeLabel": "Transaction Reference / Receipt No. (optional)",
+        "referenceCodePlaceholder": "e.g. FT26085123456 or receipt number...",
+        "noteLabel": "Verification Note (required)",
+        "notePlaceholder": "Enter payment verification note (2–1000 characters, e.g. Received cash in full at reception)...",
+        "validationNoteRequired": "Please enter a verification note between 2 and 1000 characters.",
+        "noPaymentSessionError": "No active payment session found to confirm.",
+        "close": "Close",
+        "confirmBtn": "Confirm Deposit Received",
+        "submitting": "Confirming...",
+        "success": "Deposit payment confirmed manually!"
+      },
+      "detailSheet": {
+        "title": "Reservation Details",
+        "createdAt": "Created at",
+        "refresh": "Refresh details",
+        "timelineTitle": "Reservation Workflow Progress (6 Steps)",
+        "steps": {
+          "pending": "1. Customer submitted reservation",
+          "received": "2. Facility Manager received reservation",
+          "pending_payment": "3. Physical unit assigned & Awaiting deposit",
+          "payment_failed": "3. Physical unit assigned & Deposit payment issue",
+          "payment_successful": "4. Customer completed deposit payment",
+          "confirmed": "5. Facility Manager confirmed reservation",
+          "completed": "6. Handed over & Converted to Contract"
+        },
+        "stepStates": {
+          "completed": "Completed",
+          "current": "In progress",
+          "error": "Payment failed",
+          "upcoming": "Upcoming"
+        },
+        "unitStatuses": {
+          "available": "Available",
+          "reserved": "Reserved",
+          "occupied": "Occupied",
+          "under_maintenance": "Under maintenance",
+          "inactive": "Inactive"
+        },
+        "terminal": {
+          "rejectedTitle": "Reservation was rejected",
+          "cancelledTitle": "Reservation was cancelled",
+          "expiredTitle": "Reservation hold expired before deposit payment",
+          "reason": "Reason",
+          "refundAmount": "Refunded deposit",
+          "expiredAt": "Expired at"
+        },
+        "customerTitle": "Customer Contact Information",
+        "customerName": "Full name",
+        "customerPhone": "Phone number",
+        "customerEmail": "Email address",
+        "notesLabel": "Customer notes",
+        "assignedUnitTitle": "Assigned Physical Unit",
+        "unitStatusLabel": "Unit status",
+        "floorLabel": "Floor {floor}",
+        "zoneLabel": "Zone {zone}",
+        "unassignedUnitText": "No physical storage unit assigned yet",
+        "scheduleTitle": "Rental Schedule & Hold Expiry",
+        "unitTypeLabel": "Unit Type",
+        "standardOffering": "Standard Package",
+        "startDateLabel": "Start Date",
+        "durationLabel": "Rental Duration",
+        "holdExpiresAtLabel": "Deposit Hold Expiry",
+        "financialTitle": "Storage Package, Amenities & Deposit Breakdown",
+        "storageRentalRow": "Base Storage Rental",
+        "amenitiesHeader": "Selected Amenities",
+        "totalAmountLabel": "Estimated Total Amount",
+        "depositRequiredLabel": "Required Reservation Deposit",
+        "paidDepositText": "Paid by customer",
+        "close": "Close"
       }
     }
   }
