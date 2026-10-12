@@ -3,13 +3,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { forgotPasswordApi, resetPasswordApi } from "../api/auth.api";
 import { useTranslation } from "@/stores/language.store";
-import { AppApiError } from "@/lib/api/axios";
 import { toast } from "@/stores/toast.store";
+import { resolveMobileApiError } from "../utils/authMessage";
 import type { ForgotPasswordRequest, ResetPasswordRequest } from "../types/auth.types";
 
 export function useForgotPassword() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isOtpSent, setIsOtpSent] = useState<boolean>(false);
@@ -28,21 +28,11 @@ export function useForgotPassword() {
       toast.success(msg);
     },
     onError: (error: unknown) => {
-      let msg = t("common.error");
-      if (error instanceof AppApiError) {
-        if (error.messageCode) {
-          const translated = t(`api.${error.messageCode}`);
-          if (translated && !translated.startsWith("missing translation")) {
-            msg = translated;
-          } else {
-            msg = error.message || t("common.error");
-          }
-        } else {
-          msg = error.message || t("common.error");
-        }
-      } else if (error instanceof Error) {
-        msg = error.message;
-      }
+      const msg = resolveMobileApiError(error, t, {
+        locale,
+        defaultSubject: "Email",
+        fallbackMessage: t("common.error"),
+      });
       setErrorMessage(msg);
       toast.error(msg);
     },
@@ -64,21 +54,11 @@ export function useForgotPassword() {
       }, 1500);
     },
     onError: (error: unknown) => {
-      let msg = t("common.error");
-      if (error instanceof AppApiError) {
-        if (error.messageCode) {
-          const translated = t(`api.${error.messageCode}`);
-          if (translated && !translated.startsWith("missing translation")) {
-            msg = translated;
-          } else {
-            msg = error.message || t("common.error");
-          }
-        } else {
-          msg = error.message || t("common.error");
-        }
-      } else if (error instanceof Error) {
-        msg = error.message;
-      }
+      const msg = resolveMobileApiError(error, t, {
+        locale,
+        defaultSubject: "Account",
+        fallbackMessage: t("common.error"),
+      });
       setErrorMessage(msg);
       toast.error(msg);
     },

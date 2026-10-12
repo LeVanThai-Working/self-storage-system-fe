@@ -85,10 +85,12 @@ function RootLayoutNav() {
 
     const inAuthGroup = firstSegment === "(auth)";
     const inPublicFacilityDetail = firstSegment === "facilities";
+    const inPublicUnitTypeDetail = firstSegment === "unit-types";
     const inPublicExploreTab =
       !firstSegment || (firstSegment === "(tabs)" && (!secondSegment || secondSegment === "index"));
 
-    const isPublicRoute = inAuthGroup || inPublicFacilityDetail || inPublicExploreTab;
+    const isPublicRoute =
+      inAuthGroup || inPublicFacilityDetail || inPublicUnitTypeDetail || inPublicExploreTab;
 
     if (!isAuthenticated && !isPublicRoute) {
       // Unauthenticated user attempting to access protected customer route
@@ -108,6 +110,8 @@ function RootLayoutNav() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="facilities/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="facilities/[id]/offerings" options={{ headerShown: false }} />
+        <Stack.Screen name="unit-types/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack>
       {/* Global floating toast notification overlay */}

@@ -20,6 +20,7 @@ import {
   CheckCircle,
 } from "lucide-react-native";
 import { useRegister } from "../hooks/useRegister";
+import { translateValidationError } from "../utils/authMessage";
 import { useTranslation } from "@/stores/language.store";
 
 export function RegisterForm() {
@@ -45,6 +46,7 @@ export function RegisterForm() {
     control,
     handleSubmit,
     getValues,
+    trigger,
     formState: { errors },
   } = useForm<RegisterRequest>({
     resolver: zodResolver(registerSchema),
@@ -57,13 +59,14 @@ export function RegisterForm() {
     },
   });
 
-  const handleSendOtp = () => {
-    const email = getValues("email");
-    if (!email) {
+  const handleSendOtp = async () => {
+    const isValidEmail = await trigger("email");
+    if (!isValidEmail) {
       return;
     }
+    const email = getValues("email");
     Keyboard.dismiss();
-    sendOtp(email);
+    sendOtp(email.trim());
   };
 
   const onSubmit = (data: RegisterRequest) => {
@@ -142,7 +145,7 @@ export function RegisterForm() {
         </View>
         {errors.email && (
           <Text variant="error" className="text-xs">
-            {errors.email.message}
+            {translateValidationError(errors.email.message, t)}
           </Text>
         )}
       </View>
@@ -178,7 +181,7 @@ export function RegisterForm() {
         </View>
         {errors.otp && (
           <Text variant="error" className="text-xs">
-            {errors.otp.message}
+            {translateValidationError(errors.otp.message, t)}
           </Text>
         )}
       </View>
@@ -213,7 +216,7 @@ export function RegisterForm() {
         </View>
         {errors.name && (
           <Text variant="error" className="text-xs">
-            {errors.name.message}
+            {translateValidationError(errors.name.message, t)}
           </Text>
         )}
       </View>
@@ -261,7 +264,7 @@ export function RegisterForm() {
         </View>
         {errors.password && (
           <Text variant="error" className="text-xs">
-            {errors.password.message}
+            {translateValidationError(errors.password.message, t)}
           </Text>
         )}
       </View>
@@ -294,7 +297,7 @@ export function RegisterForm() {
         </View>
         {errors.phoneNumber && (
           <Text variant="error" className="text-xs">
-            {errors.phoneNumber.message}
+            {translateValidationError(errors.phoneNumber.message, t)}
           </Text>
         )}
       </View>

@@ -132,40 +132,63 @@ export function HeroBannerCarousel() {
         {BANNER_SLIDES.map((slide, idx) => (
           <View
             key={slide.id}
-            style={{ width: bannerWidth }}
-            className={`relative h-44 justify-between p-5 ${slide.accentBgClass}`}
+            style={{ width: bannerWidth, height: 184 }}
+            className={`relative overflow-hidden ${slide.accentBgClass}`}
           >
-            {/* Background Banner Image */}
+            {/* Background Banner Image filling 100% of frame */}
             <Image
               source={{ uri: slide.imageUri }}
-              className="absolute inset-0 h-44 w-full opacity-40"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: bannerWidth,
+                height: 184,
+              }}
               resizeMode="cover"
             />
 
-            {/* Top Badge & Slide Counter */}
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-1.5 rounded-full bg-white/20 px-3 py-1">
-                {slide.icon === "shield" && <ShieldCheck size={13} color="#FFFFFF" />}
-                {slide.icon === "boxes" && <Boxes size={13} color="#FFFFFF" />}
-                {slide.icon === "sparkles" && <Sparkles size={13} color="#FFFFFF" />}
-                <Text className="text-xs font-bold text-white">{t(slide.badgeKey)}</Text>
+            {/* Dark contrast overlay so white text & badges remain crisp */}
+            <View
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              }}
+              className="bg-black/45"
+            />
+
+            {/* Foreground Padded Content */}
+            <View className="flex-1 justify-between p-5">
+              {/* Top Badge & Slide Counter */}
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center gap-1.5 rounded-full bg-white/20 px-3 py-1">
+                  {slide.icon === "shield" && <ShieldCheck size={13} color="#FFFFFF" />}
+                  {slide.icon === "boxes" && <Boxes size={13} color="#FFFFFF" />}
+                  {slide.icon === "sparkles" && <Sparkles size={13} color="#FFFFFF" />}
+                  <Text className="text-xs font-bold text-white">{t(slide.badgeKey)}</Text>
+                </View>
+
+                <View className="rounded-full bg-black/35 px-2.5 py-0.5">
+                  <Text className="text-[11px] font-semibold text-white/95">
+                    {idx + 1}/{BANNER_SLIDES.length}
+                  </Text>
+                </View>
               </View>
 
-              <View className="rounded-full bg-black/30 px-2.5 py-0.5">
-                <Text className="text-[11px] font-semibold text-white/90">
-                  {idx + 1}/{BANNER_SLIDES.length}
+              {/* Bottom Title & Subtitle */}
+              <View className="pb-4">
+                <Text numberOfLines={2} className="text-lg font-extrabold leading-6 text-white">
+                  {t(slide.titleKey)}
+                </Text>
+                <Text numberOfLines={2} className="mt-1 text-xs leading-4 text-white/90">
+                  {t(slide.subtitleKey)}
                 </Text>
               </View>
-            </View>
-
-            {/* Bottom Title & Subtitle */}
-            <View className="pb-4">
-              <Text numberOfLines={2} className="text-lg font-extrabold leading-6 text-white">
-                {t(slide.titleKey)}
-              </Text>
-              <Text numberOfLines={2} className="mt-1 text-xs leading-4 text-white/85">
-                {t(slide.subtitleKey)}
-              </Text>
             </View>
           </View>
         ))}
