@@ -18,6 +18,8 @@ export interface StorageUnitResponse {
   updatedAt: string;
 }
 
+export type StorageUnitListResponse = StorageUnitResponse[];
+
 export interface CreateStorageUnitRequest {
   facilityId: string;
   unitTypeId: string;

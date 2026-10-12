@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Bell, Boxes, Building2, FileText } from "lucide-react";
+import { Bell, Boxes, Building2, CalendarCheck, FileText } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -29,6 +29,11 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
   const { data: facility } = useMyFacility();
 
   const navItems = [
+    {
+      href: `/${locale}/facility-manager/reservations`,
+      label: t("nav.reservations"),
+      icon: CalendarCheck,
+    },
     {
       href: `/${locale}/facility-manager/storage-units`,
       label: t("nav.storageUnits"),

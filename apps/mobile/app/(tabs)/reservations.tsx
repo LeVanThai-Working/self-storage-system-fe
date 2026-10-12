@@ -1,602 +1,420 @@
-import React, { useState, useMemo } from "react";
-import { View, ScrollView, Pressable } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  View,
+  FlatList,
+  ScrollView,
+  Pressable,
+  TextInput,
+  RefreshControl,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
-import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
+import { useDebounce } from "@/features/storage-explore/hooks/useDebounce";
 import { useReservationHandoffStore } from "@/features/storage-explore/stores/reservationHandoff.store";
 import {
-  calculateEstimatedDeposit,
-  formatVndPrice,
-  getBillingUnitSuffix,
-  getUnitCategoryLabel,
-} from "@/features/storage-explore/utils/storageFormat";
+  ReservationStatusEnum,
+  type MessageLocale,
+  type ReservationResponse,
+} from "@self-storage-system-fe/shared";
 import {
-  CalendarCheck,
-  Building2,
-  Boxes,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Info,
-  Sparkles,
-  Check,
+  Search,
+  PlusCircle,
+  ListFilter,
+  ArrowUpDown,
   X,
+  Inbox,
+  Compass,
 } from "lucide-react-native";
+import {
+  useMyReservationsInfinite,
+  type ReservationFilterTabKey,
+  type ReservationSortBy,
+  type ReservationSortOrder,
+} from "@/features/reservations/hooks/useReservations";
+import { CreateReservationView } from "@/features/reservations/components/CreateReservationView";
+import { ReservationCard } from "@/features/reservations/components/ReservationCard";
+import { retryReservationPaymentApi } from "@/features/reservations/api/reservations.api";
+import { resolveReservationErrorMessage } from "@/features/reservations/utils/reservationFormat";
 
-interface ReservationRecord {
-  id: string;
-  code: string;
-  unitCode: string;
-  facilityName: string;
-  moveInDate: string;
-  durationMonths: number;
-  depositAmount: string;
-  monthlyRent: string;
-  status: "pending" | "confirmed";
-}
+type ScreenMode = "list" | "create";
 
-export default function ReservationsScreen() {
-  const { t } = useTranslation();
+export default function ReservationsTabScreen() {
+  const router = useRouter();
   const toast = useToast();
+  const { locale } = useTranslation();
+  const currentLocale: MessageLocale = locale === "en" ? "en" : "vi";
+  const isEn = currentLocale === "en";
 
-  // Read Handoff Payload from FacilityPublicDetailScreen (Section 2.4)
-  const { handoffPayload, clearHandoffPayload } = useReservationHandoffStore();
-  const [selectedAmenityOfferingIds, setSelectedAmenityOfferingIds] = useState<string[]>([]);
+  const params = useLocalSearchParams<{
+    facilityId?: string;
+    facilityUnitTypeOfferingId?: string;
+    unitTypeId?: string;
+    mode?: string;
+  }>();
 
-  // Fallback Manual Booking Form State (when no handoffPayload is active)
-  const [selectedFacility, setSelectedFacility] = useState<"facilityHanoi" | "facilityHcm">(
-    "facilityHanoi"
+  const handoffPayload = useReservationHandoffStore((s) => s.handoffPayload);
+
+  const [mode, setMode] = useState<ScreenMode>(() =>
+    handoffPayload || params.facilityId || params.mode === "create" ? "create" : "list"
   );
-  const [selectedUnitType, setSelectedUnitType] = useState<"mini" | "family" | "business">(
-    "family"
-  );
-  const [selectedDuration, setSelectedDuration] = useState<1 | 3 | 6 | 12>(3);
 
-  // Active User Reservations
-  const [reservations, setReservations] = useState<ReservationRecord[]>([
+  // Automatically switch to Create view when user arrives from Facility Detail / Offerings with a handoff package
+  useEffect(() => {
+    const unsubscribe = useReservationHandoffStore.subscribe((state, prevState) => {
+      if (state.handoffPayload && state.handoffPayload !== prevState.handoffPayload) {
+        setMode("create");
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  // ── Filter, Search & Sort State for MyReservationsScreen (Section 2.1) ──
+  const [filterTab, setFilterTab] = useState<ReservationFilterTabKey>("ALL");
+  const [searchCode, setSearchCode] = useState<string>("");
+  const debouncedSearchCode = useDebounce(searchCode, 350);
+
+  const [sortBy, setSortBy] = useState<ReservationSortBy>("createdAt");
+  const [sortOrder, setSortOrder] = useState<ReservationSortOrder>("desc");
+  const [showSortOptions, setShowSortOptions] = useState<boolean>(false);
+
+  const reservationsQuery = useMyReservationsInfinite({
+    filterTab,
+    reservationCode: debouncedSearchCode,
+    sortBy,
+    sortOrder,
+    limit: 10,
+    enabled: mode === "list",
+  });
+
+  const filterTabs: { key: ReservationFilterTabKey; label: string }[] = [
+    { key: "ALL", label: isEn ? "All" : "Tất cả" },
+    { key: "PROCESSING", label: isEn ? "Processing" : "Chờ xử lý" },
+    { key: "PENDING_DEPOSIT", label: isEn ? "Awaiting Deposit" : "Chờ đặt cọc" },
     {
-      id: "res-1",
-      code: "RES-2026-8812",
-      unitCode: "FAM-204",
-      facilityName: "StorageHub Cầu Giấy",
-      moveInDate: "15/10/2026",
-      durationMonths: 3,
-      depositAmount: "2.800.000",
-      monthlyRent: "2.660.000",
-      status: "pending",
+      key: "PAID_CONFIRMED",
+      label: isEn ? "Paid / Confirmed" : "Đã cọc / Xác nhận",
     },
-  ]);
+    { key: "COMPLETED", label: isEn ? "Completed" : "Hoàn tất" },
+    {
+      key: "TERMINATED",
+      label: isEn ? "Cancelled / Rejected / Expired" : "Đã hủy / Từ chối / Hết hạn",
+    },
+  ];
 
-  const unitPrices = {
-    mini: { base: 1200000, code: "MINI-102", nameKey: "explore.miniStorage" },
-    family: { base: 2800000, code: "FAM-204", nameKey: "explore.familyStorage" },
-    business: { base: 6500000, code: "BIZ-501", nameKey: "explore.businessStorage" },
-  };
+  const sortOptions: {
+    label: string;
+    sortBy: ReservationSortBy;
+    sortOrder: ReservationSortOrder;
+  }[] = [
+    {
+      label: isEn ? "Newest Created" : "Mới tạo nhất",
+      sortBy: "createdAt",
+      sortOrder: "desc",
+    },
+    {
+      label: isEn ? "Oldest Created" : "Cũ nhất",
+      sortBy: "createdAt",
+      sortOrder: "asc",
+    },
+    {
+      label: isEn ? "Earliest Start Date" : "Ngày nhận kho gần nhất",
+      sortBy: "startDate",
+      sortOrder: "asc",
+    },
+    {
+      label: isEn ? "Highest Total Amount" : "Tổng tiền cao nhất",
+      sortBy: "totalAmount",
+      sortOrder: "desc",
+    },
+    {
+      label: isEn ? "Lowest Total Amount" : "Tổng tiền thấp nhất",
+      sortBy: "totalAmount",
+      sortOrder: "asc",
+    },
+  ];
 
-  const discountRates = {
-    1: 0,
-    3: 0.05,
-    6: 0.1,
-    12: 0.15,
-  };
+  const handleOpenDetail = useCallback(
+    (reservation: ReservationResponse) => {
+      router.push({
+        pathname: "/reservations/[id]" as any,
+        params: { id: reservation.id },
+      });
+    },
+    [router]
+  );
 
-  const toggleAmenitySelection = (offeringId: string) => {
-    setSelectedAmenityOfferingIds((prev) =>
-      prev.includes(offeringId) ? prev.filter((id) => id !== offeringId) : [...prev, offeringId]
-    );
-  };
+  const handleQuickPayDeposit = useCallback(
+    async (reservation: ReservationResponse) => {
+      if (reservation.status === ReservationStatusEnum.PAYMENT_FAILED) {
+        try {
+          await retryReservationPaymentApi(reservation.id);
+          reservationsQuery.refetch();
+        } catch (err) {
+          const resolved = resolveReservationErrorMessage(err, currentLocale, "reservation");
+          toast.error(resolved.message);
+          return;
+        }
+      }
 
-  const selectedAmenitiesTotal = useMemo(() => {
-    if (!handoffPayload) return 0;
-    return handoffPayload.availableAmenities
-      .filter((a) => selectedAmenityOfferingIds.includes(a.id))
-      .reduce((sum, a) => sum + (a.pricePerUnit || 0), 0);
-  }, [handoffPayload, selectedAmenityOfferingIds]);
+      router.push({
+        pathname: "/reservations/[id]/payment" as any,
+        params: { id: reservation.id },
+      });
+    },
+    [router, reservationsQuery, currentLocale, toast]
+  );
 
-  // Dynamic Price Calculations (uses handoffPayload when available, fallback otherwise)
-  const selectedBasePrice = handoffPayload
-    ? handoffPayload.offering.pricePerUnit
-    : unitPrices[selectedUnitType].base;
-  const discountRate = discountRates[selectedDuration];
-  const discountedMonthlyRent = selectedBasePrice * (1 - discountRate);
-  const deposit = handoffPayload
-    ? calculateEstimatedDeposit(
-        handoffPayload.offering.pricePerUnit,
-        handoffPayload.offering.depositMultiplier
-      )
-    : selectedBasePrice;
-  const totalInitial = deposit + discountedMonthlyRent + selectedAmenitiesTotal;
-
-  const handleCreateReservation = () => {
-    const unitCodeLabel = handoffPayload
-      ? handoffPayload.offering.unitType.name
-      : unitPrices[selectedUnitType].code;
-    const facilityNameLabel = handoffPayload
-      ? handoffPayload.facilityName
-      : selectedFacility === "facilityHanoi"
-        ? "StorageHub Cầu Giấy"
-        : "StorageHub Quận 7";
-
-    const newReservation: ReservationRecord = {
-      id: `res-${Date.now()}`,
-      code: `RES-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      unitCode: unitCodeLabel,
-      facilityName: facilityNameLabel,
-      moveInDate: "20/10/2026",
-      durationMonths: selectedDuration,
-      depositAmount: deposit.toLocaleString("vi-VN"),
-      monthlyRent: (discountedMonthlyRent + selectedAmenitiesTotal).toLocaleString("vi-VN"),
-      status: "pending",
-    };
-
-    setReservations((prev) => [newReservation, ...prev]);
-    toast.success(t("reservation.bookingSuccess", { code: newReservation.unitCode }));
-  };
-
-  const handleCancelReservation = (id: string, code: string) => {
-    setReservations((prev) => prev.filter((item) => item.id !== id));
-    toast.info(t("reservation.cancelSuccess", { code }));
-  };
-
-  const handleGuidePress = (unitCode: string) => {
-    toast.info(`${t("reservation.checkinGuide")}: #${unitCode}`);
-  };
+  const activeSortLabel =
+    sortOptions.find((opt) => opt.sortBy === sortBy && opt.sortOrder === sortOrder)?.label ??
+    (isEn ? "Newest Created" : "Mới tạo nhất");
 
   return (
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-      <ScrollView contentContainerClassName="p-4 pb-14">
-        {/* Header Introduction */}
-        <View className="mb-4">
-          <Text variant="heading2" className="text-neutral-dark dark:text-neutral-100 font-bold">
-            {t("customerTabs.reservationTitle")}
-          </Text>
-          <Text variant="muted" className="mt-1 text-sm">
-            {t("customerTabs.reservationDesc")}
-          </Text>
-        </View>
-
-        {/* Booking Form Card */}
-        <View className="mb-6 rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-sm">
-          <View className="flex-row items-center gap-2 mb-4">
-            <CalendarCheck size={20} color="#0B927E" />
-            <Text variant="title" className="font-bold text-neutral-dark dark:text-neutral-100">
-              {t("reservation.formTitle")}
-            </Text>
-          </View>
-
-          {handoffPayload ? (
-            /* ── Handoff Package from FacilityPublicDetailScreen (Section 2.4) ── */
-            <View className="mb-4 gap-4">
-              <View className="rounded-2xl border border-brand bg-brand-light/30 dark:bg-brand/15 p-4">
-                <View className="flex-row items-center justify-between mb-3">
-                  <Badge variant="outline" className="border-brand/40 bg-white dark:bg-neutral-900">
-                    <Text className="text-xs font-bold text-brand">
-                      {t("reservationHandoff.selectedPackageBanner")}
-                    </Text>
-                  </Badge>
-                  <Pressable
-                    onPress={() => {
-                      clearHandoffPayload();
-                      setSelectedAmenityOfferingIds([]);
-                    }}
-                    className="flex-row items-center gap-1 rounded-lg bg-white dark:bg-neutral-800 px-2.5 py-1 border border-neutral-border dark:border-neutral-700"
-                  >
-                    <X size={12} color="#647B80" />
-                    <Text className="text-xs font-semibold text-neutral-main dark:text-neutral-300">
-                      {t("reservationHandoff.clearSelection")}
-                    </Text>
-                  </Pressable>
-                </View>
-
-                <View className="gap-2">
-                  <View className="flex-row justify-between">
-                    <Text variant="muted" className="text-xs">
-                      {t("reservationHandoff.facilityLabel")}
-                    </Text>
-                    <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                      {handoffPayload.facilityName}
-                    </Text>
-                  </View>
-
-                  <View className="flex-row justify-between">
-                    <Text variant="muted" className="text-xs">
-                      {t("reservationHandoff.unitTypeLabel")}
-                    </Text>
-                    <Text className="text-xs font-bold text-brand">
-                      {handoffPayload.offering.unitType.name} (
-                      {getUnitCategoryLabel(handoffPayload.offering.unitType.category, t)})
-                    </Text>
-                  </View>
-
-                  <View className="flex-row justify-between">
-                    <Text variant="muted" className="text-xs">
-                      {t("reservationHandoff.dimensionsLabel")}
-                    </Text>
-                    <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
-                      {handoffPayload.offering.unitType.dimensions.length}m ×{" "}
-                      {handoffPayload.offering.unitType.dimensions.width}m ×{" "}
-                      {handoffPayload.offering.unitType.dimensions.height}m (
-                      {handoffPayload.offering.unitType.area} m²)
-                    </Text>
-                  </View>
-
-                  <View className="flex-row justify-between">
-                    <Text variant="muted" className="text-xs">
-                      {t("reservationHandoff.pricePerCycle")}
-                    </Text>
-                    <Text className="text-xs font-bold text-brand">
-                      {formatVndPrice(handoffPayload.offering.pricePerUnit)}{" "}
-                      {getBillingUnitSuffix(handoffPayload.offering.billingUnit, t)}
-                    </Text>
-                  </View>
-
-                  <View className="flex-row justify-between">
-                    <Text variant="muted" className="text-xs">
-                      {t("reservationHandoff.minRentalDays")}
-                    </Text>
-                    <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
-                      {handoffPayload.offering.minRentalDays} {t("reservationHandoff.daysUnit")}
-                    </Text>
-                  </View>
-
-                  <View className="flex-row justify-between">
-                    <Text variant="muted" className="text-xs">
-                      {t("reservationHandoff.estimatedDeposit")}
-                    </Text>
-                    <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                      {formatVndPrice(deposit)} (×{handoffPayload.offering.depositMultiplier})
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Optional Facility Amenities Selection */}
-              {handoffPayload.availableAmenities.length > 0 && (
-                <View>
-                  <View className="flex-row items-center justify-between mb-2">
-                    <View className="flex-row items-center gap-1.5">
-                      <Sparkles size={15} color="#0B927E" />
-                      <Text className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                        {t("reservationHandoff.optionalAmenitiesTitle")}
-                      </Text>
-                    </View>
-                    {selectedAmenityOfferingIds.length > 0 && (
-                      <Badge variant="outline" className="border-brand/40 bg-brand-light/40">
-                        <Text className="text-xs font-semibold text-brand">
-                          {t("reservationHandoff.amenitiesSelectedCount", {
-                            count: selectedAmenityOfferingIds.length,
-                          })}
-                        </Text>
-                      </Badge>
-                    )}
-                  </View>
-
-                  <View className="gap-2">
-                    {handoffPayload.availableAmenities.map((am) => {
-                      const isSelected = selectedAmenityOfferingIds.includes(am.id);
-                      const isDisabled = am.availableQuantity <= 0;
-                      return (
-                        <Pressable
-                          key={am.id}
-                          disabled={isDisabled}
-                          onPress={() => toggleAmenitySelection(am.id)}
-                          className={`flex-row items-center justify-between rounded-xl border p-3 ${
-                            isSelected
-                              ? "border-brand bg-brand-light/40 dark:bg-brand/20"
-                              : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                          } ${isDisabled ? "opacity-50" : ""}`}
-                        >
-                          <View className="flex-row items-center gap-2 flex-1">
-                            <View
-                              className={`h-5 w-5 items-center justify-center rounded-md border ${
-                                isSelected
-                                  ? "border-brand bg-brand"
-                                  : "border-neutral-400 bg-transparent"
-                              }`}
-                            >
-                              {isSelected && <Check size={12} color="#FFFFFF" />}
-                            </View>
-                            <View className="flex-1">
-                              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                                {am.amenity.name}
-                              </Text>
-                              <Text variant="muted" className="text-[11px]">
-                                {t("facilityDetail.availableAmenityQty", {
-                                  count: am.availableQuantity,
-                                })}
-                              </Text>
-                            </View>
-                          </View>
-
-                          <Text className="text-xs font-bold text-brand">
-                            {am.pricePerUnit === 0
-                              ? t("facilityDetail.freeAmenity")
-                              : `${formatVndPrice(am.pricePerUnit)} ${getBillingUnitSuffix(
-                                  am.billingUnit,
-                                  t
-                                )}`}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                </View>
-              )}
-            </View>
-          ) : (
-            /* ── Default Fallback Selection Steps ── */
-            <>
-              {/* Step 1: Select Facility */}
-              <View className="mb-4">
-                <View className="flex-row items-center gap-1.5 mb-2">
-                  <Building2 size={15} color="#647B80" />
-                  <Text className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                    {t("reservation.step1Facility")}
-                  </Text>
-                </View>
-                <View className="flex-row gap-2">
-                  <Pressable
-                    onPress={() => setSelectedFacility("facilityHanoi")}
-                    className={`flex-1 rounded-xl p-3 border ${
-                      selectedFacility === "facilityHanoi"
-                        ? "border-brand bg-brand-light dark:bg-brand/20"
-                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                    }`}
-                  >
-                    <Text
-                      className={`text-xs font-bold ${
-                        selectedFacility === "facilityHanoi"
-                          ? "text-brand"
-                          : "text-neutral-dark dark:text-neutral-200"
-                      }`}
-                    >
-                      {t("explore.facilityHanoi")}
-                    </Text>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => setSelectedFacility("facilityHcm")}
-                    className={`flex-1 rounded-xl p-3 border ${
-                      selectedFacility === "facilityHcm"
-                        ? "border-brand bg-brand-light dark:bg-brand/20"
-                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                    }`}
-                  >
-                    <Text
-                      className={`text-xs font-bold ${
-                        selectedFacility === "facilityHcm"
-                          ? "text-brand"
-                          : "text-neutral-dark dark:text-neutral-200"
-                      }`}
-                    >
-                      {t("explore.facilityHcm")}
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
-
-              {/* Step 2: Select Unit Type */}
-              <View className="mb-4">
-                <View className="flex-row items-center gap-1.5 mb-2">
-                  <Boxes size={15} color="#647B80" />
-                  <Text className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                    {t("reservation.step2UnitType")}
-                  </Text>
-                </View>
-                <View className="gap-2">
-                  <Pressable
-                    onPress={() => setSelectedUnitType("mini")}
-                    className={`flex-row items-center justify-between rounded-xl p-3 border ${
-                      selectedUnitType === "mini"
-                        ? "border-brand bg-brand-light dark:bg-brand/20"
-                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                    }`}
-                  >
-                    <View>
-                      <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                        {t("explore.miniStorage")}
-                      </Text>
-                      <Text variant="muted" className="text-xs">
-                        1.5m x 1.5m • 2.25 m²
-                      </Text>
-                    </View>
-                    <Text className="text-xs font-bold text-brand">1.200.000 đ</Text>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => setSelectedUnitType("family")}
-                    className={`flex-row items-center justify-between rounded-xl p-3 border ${
-                      selectedUnitType === "family"
-                        ? "border-brand bg-brand-light dark:bg-brand/20"
-                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                    }`}
-                  >
-                    <View>
-                      <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                        {t("explore.familyStorage")}
-                      </Text>
-                      <Text variant="muted" className="text-xs">
-                        3.0m x 2.5m • 7.5 m²
-                      </Text>
-                    </View>
-                    <Text className="text-xs font-bold text-brand">2.800.000 đ</Text>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => setSelectedUnitType("business")}
-                    className={`flex-row items-center justify-between rounded-xl p-3 border ${
-                      selectedUnitType === "business"
-                        ? "border-brand bg-brand-light dark:bg-brand/20"
-                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                    }`}
-                  >
-                    <View>
-                      <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                        {t("explore.businessStorage")}
-                      </Text>
-                      <Text variant="muted" className="text-xs">
-                        5.0m x 4.0m • 20.0 m²
-                      </Text>
-                    </View>
-                    <Text className="text-xs font-bold text-brand">6.500.000 đ</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </>
-          )}
-
-          {/* Step 3: Select Duration */}
-          <View className="mb-4">
-            <View className="flex-row items-center gap-1.5 mb-2">
-              <Clock size={15} color="#647B80" />
-              <Text className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                {t("reservation.step3Duration")}
-              </Text>
-            </View>
-            <View className="flex-row flex-wrap gap-2">
-              {[1, 3, 6, 12].map((months) => (
-                <Pressable
-                  key={months}
-                  onPress={() => setSelectedDuration(months as any)}
-                  className={`flex-1 min-w-[45%] rounded-xl p-2.5 border ${
-                    selectedDuration === months
-                      ? "border-brand bg-brand-light dark:bg-brand/20"
-                      : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                  }`}
-                >
-                  <Text
-                    className={`text-xs font-bold ${
-                      selectedDuration === months
-                        ? "text-brand"
-                        : "text-neutral-dark dark:text-neutral-200"
-                    }`}
-                  >
-                    {t(`reservation.duration${months}` as any)}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
-          {/* Summary Card */}
-          <View className="rounded-2xl bg-neutral-100 dark:bg-neutral-800/90 p-4 mb-4">
-            <Text className="text-xs font-bold uppercase text-neutral-dark dark:text-neutral-200 mb-2">
-              {t("reservation.summaryTitle")}
-            </Text>
-            <View className="gap-1.5">
-              <View className="flex-row justify-between">
-                <Text variant="muted" className="text-xs">
-                  {t("reservation.depositLabel")}
-                </Text>
-                <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
-                  {deposit.toLocaleString("vi-VN")} đ
-                </Text>
-              </View>
-              <View className="flex-row justify-between">
-                <Text variant="muted" className="text-xs">
-                  {t("reservation.monthlyRentLabel")}
-                </Text>
-                <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
-                  {discountedMonthlyRent.toLocaleString("vi-VN")} đ{" "}
-                  {handoffPayload
-                    ? getBillingUnitSuffix(handoffPayload.offering.billingUnit, t)
-                    : t("storageExplore.billing_month")}
-                </Text>
-              </View>
-              {selectedAmenitiesTotal > 0 && (
-                <View className="flex-row justify-between">
-                  <Text variant="muted" className="text-xs">
-                    {t("reservationHandoff.amenitiesCostLabel")}
-                  </Text>
-                  <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
-                    {selectedAmenitiesTotal.toLocaleString("vi-VN")} đ
-                  </Text>
-                </View>
-              )}
-              <View className="flex-row justify-between border-t border-neutral-200 dark:border-neutral-700 pt-2 mt-1">
-                <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                  {t("reservation.totalInitialDue")}
-                </Text>
-                <Text className="text-sm font-bold text-brand">
-                  {totalInitial.toLocaleString("vi-VN")} đ
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Confirm Button */}
+      {/* Top Mode Switcher: "Đơn đặt chỗ của tôi" vs "+ Đặt chỗ mới" */}
+      <View className="px-4 py-2.5 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
+        <View className="flex-row rounded-2xl border border-neutral-border dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800 p-1">
           <Pressable
-            onPress={handleCreateReservation}
-            className="flex-row items-center justify-center gap-2 rounded-xl bg-cta py-3.5 shadow-sm active:opacity-90"
+            onPress={() => setMode("list")}
+            className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-xl py-2 ${
+              mode === "list" ? "bg-brand" : "bg-transparent"
+            }`}
           >
-            <CheckCircle size={18} color="#FFFFFF" />
-            <Text className="text-sm font-bold text-white">{t("reservation.confirmButton")}</Text>
+            <ListFilter size={14} color={mode === "list" ? "#FFFFFF" : "#647B80"} />
+            <Text
+              className={`text-xs font-bold ${
+                mode === "list" ? "text-white" : "text-neutral-500 dark:text-neutral-400"
+              }`}
+            >
+              {isEn ? "My Reservations" : "Đơn đặt chỗ của tôi"}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setMode("create")}
+            className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-xl py-2 ${
+              mode === "create" ? "bg-brand" : "bg-transparent"
+            }`}
+          >
+            <PlusCircle size={14} color={mode === "create" ? "#FFFFFF" : "#647B80"} />
+            <Text
+              className={`text-xs font-bold ${
+                mode === "create" ? "text-white" : "text-neutral-500 dark:text-neutral-400"
+              }`}
+            >
+              {isEn ? "New Reservation" : "Đặt chỗ mới"}
+            </Text>
+            {handoffPayload ? <View className="h-2 w-2 rounded-full bg-cta" /> : null}
           </Pressable>
         </View>
+      </View>
 
-        {/* Active Reservations Section */}
-        <View className="gap-3">
-          <Text variant="title" className="font-bold text-neutral-dark dark:text-neutral-100">
-            {t("reservation.recentReservations")}
-          </Text>
-
-          {reservations.map((item) => (
-            <View
-              key={item.id}
-              className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-sm"
-            >
-              <View className="flex-row items-center justify-between mb-3">
-                <View>
-                  <Text className="text-xs font-semibold text-neutral-400">
-                    {t("reservation.code", { code: item.code })}
-                  </Text>
-                  <Text className="text-base font-bold text-neutral-dark dark:text-neutral-100">
-                    #{item.unitCode} • {item.facilityName}
-                  </Text>
-                </View>
-                <Badge variant="outline" className="border-cta/40 bg-cta-light/30">
-                  <Text className="text-xs font-semibold text-cta">
-                    {t("reservation.statusPending")}
-                  </Text>
-                </Badge>
+      {mode === "create" ? (
+        <CreateReservationView
+          key="reservations-tab-create-view"
+          initialFacilityId={params.facilityId}
+          initialOfferingId={params.facilityUnitTypeOfferingId}
+          initialUnitTypeId={params.unitTypeId}
+          onSuccessNavigate={(newReservationId) => {
+            setMode("list");
+            router.push({
+              pathname: "/reservations/[id]" as any,
+              params: { id: newReservationId },
+            });
+          }}
+        />
+      ) : (
+        <View key="reservations-tab-list-view" className="flex-1">
+          {/* ── Section 2.1: Search, Sort & Horizontal Status Filter Tabs ── */}
+          <View className="bg-white dark:bg-neutral-900 px-4 pt-3 pb-2.5 border-b border-neutral-border dark:border-neutral-800 gap-2.5">
+            {/* Search by reservationCode + Sort Button */}
+            <View className="flex-row items-center gap-2">
+              <View className="flex-1 flex-row items-center rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2">
+                <Search size={15} color="#647B80" />
+                <TextInput
+                  value={searchCode}
+                  onChangeText={setSearchCode}
+                  placeholder={
+                    isEn ? "Search by code (e.g. RES-2026...)" : "Tìm theo mã đơn (VD: RES-2026...)"
+                  }
+                  placeholderTextColor="#94A3B8"
+                  autoCapitalize="characters"
+                  className="ml-2 flex-1 text-xs font-semibold text-neutral-dark dark:text-neutral-100 py-0"
+                />
+                {searchCode.length > 0 ? (
+                  <Pressable onPress={() => setSearchCode("")} hitSlop={8}>
+                    <X size={14} color="#647B80" />
+                  </Pressable>
+                ) : null}
               </View>
 
-              <View className="flex-row justify-between border-t border-b border-neutral-border/60 dark:border-neutral-800/80 py-2.5 mb-3">
-                <Text variant="muted" className="text-xs">
-                  {t("reservation.startDateLabel")} {item.moveInDate}
-                </Text>
-                <Text className="text-xs font-semibold text-brand">
-                  {item.depositAmount} đ (Deposit)
-                </Text>
-              </View>
-
-              <View className="flex-row gap-2">
-                <Pressable
-                  onPress={() => handleGuidePress(item.unitCode)}
-                  className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-brand bg-brand-light dark:bg-brand/20 py-2.5"
+              <Pressable
+                onPress={() => setShowSortOptions((prev) => !prev)}
+                className={`flex-row items-center gap-1.5 rounded-xl border px-3 py-2.5 ${
+                  showSortOptions
+                    ? "border-brand bg-brand-light/40 dark:bg-brand/20"
+                    : "border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800"
+                }`}
+              >
+                <ArrowUpDown size={14} color="#0B927E" />
+                <Text
+                  className="text-[11px] font-bold text-neutral-dark dark:text-neutral-200 max-w-[100px]"
+                  numberOfLines={1}
                 >
-                  <Info size={14} color="#0B927E" />
-                  <Text className="text-xs font-bold text-brand">
-                    {t("reservation.checkinGuide")}
-                  </Text>
-                </Pressable>
-
-                <Pressable
-                  onPress={() => handleCancelReservation(item.id, item.code)}
-                  className="flex-row items-center justify-center gap-1 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 px-3 py-2.5"
-                >
-                  <XCircle size={14} color="#EF4444" />
-                  <Text className="text-xs font-bold text-red-600 dark:text-red-400">
-                    {t("reservation.cancel")}
-                  </Text>
-                </Pressable>
-              </View>
+                  {activeSortLabel}
+                </Text>
+              </Pressable>
             </View>
-          ))}
+
+            {/* Expandable Sort Selector */}
+            {showSortOptions ? (
+              <View key="sort-options-panel" className="flex-row flex-wrap gap-1.5 pt-0.5">
+                {sortOptions.map((opt) => {
+                  const active = opt.sortBy === sortBy && opt.sortOrder === sortOrder;
+                  return (
+                    <Pressable
+                      key={`${opt.sortBy}-${opt.sortOrder}`}
+                      onPress={() => {
+                        setSortBy(opt.sortBy);
+                        setSortOrder(opt.sortOrder);
+                        setShowSortOptions(false);
+                      }}
+                      className={`rounded-lg border px-2.5 py-1.5 ${
+                        active
+                          ? "border-brand bg-brand-light/40 dark:bg-brand/20"
+                          : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800"
+                      }`}
+                    >
+                      <Text
+                        className={`text-[11px] font-semibold ${
+                          active ? "text-brand" : "text-neutral-600 dark:text-neutral-300"
+                        }`}
+                      >
+                        {opt.label}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            ) : null}
+
+            {/* Horizontal Status Filter Tabs */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerClassName="gap-2"
+            >
+              {filterTabs.map((tab) => {
+                const active = filterTab === tab.key;
+                return (
+                  <Pressable
+                    key={tab.key}
+                    onPress={() => setFilterTab(tab.key)}
+                    className={`rounded-full border px-3.5 py-1.5 ${
+                      active
+                        ? "border-brand bg-brand"
+                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800"
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${
+                        active ? "text-white" : "text-neutral-600 dark:text-neutral-300"
+                      }`}
+                    >
+                      {tab.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          {/* ── Section 2.2: Reservations List (Infinite Scroll & Pull-to-Refresh) ── */}
+          {reservationsQuery.isLoading ? (
+            <View key="reservations-list-loading" className="p-4 gap-3">
+              <Skeleton className="h-44 w-full rounded-3xl" />
+              <Skeleton className="h-44 w-full rounded-3xl" />
+              <Skeleton className="h-44 w-full rounded-3xl" />
+            </View>
+          ) : (
+            <FlatList
+              key="reservations-list-flatlist"
+              data={reservationsQuery.items}
+              keyExtractor={(item) => item.id}
+              contentContainerClassName="p-4 pb-16 gap-3"
+              refreshControl={
+                <RefreshControl
+                  refreshing={reservationsQuery.isRefetching}
+                  onRefresh={reservationsQuery.refetch}
+                  tintColor="#0B927E"
+                />
+              }
+              onEndReachedThreshold={0.35}
+              onEndReached={() => {
+                if (reservationsQuery.hasNextPage && !reservationsQuery.isFetchingNextPage) {
+                  reservationsQuery.fetchNextPage();
+                }
+              }}
+              renderItem={({ item }) => (
+                <ReservationCard
+                  reservation={item}
+                  locale={currentLocale}
+                  onPress={handleOpenDetail}
+                  onPayDepositPress={handleQuickPayDeposit}
+                />
+              )}
+              ListEmptyComponent={
+                <View className="mt-8 items-center justify-center rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-8">
+                  <View className="h-14 w-14 items-center justify-center rounded-full bg-brand-light/40 dark:bg-brand/20 mb-3">
+                    <Inbox size={26} color="#0B927E" />
+                  </View>
+                  <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100 text-center">
+                    {isEn ? "No reservations found" : "Chưa có đơn đặt chỗ nào phù hợp"}
+                  </Text>
+                  <Text variant="muted" className="mt-1 text-xs text-center leading-4">
+                    {isEn
+                      ? "Explore active storage facilities or create a new reservation right now."
+                      : "Khám phá các cơ sở kho đang hoạt động hoặc tạo yêu cầu đặt chỗ mới ngay."}
+                  </Text>
+
+                  <View className="mt-4 flex-row gap-2.5">
+                    <Pressable
+                      onPress={() => router.push("/(tabs)" as any)}
+                      className="flex-row items-center gap-1.5 rounded-xl border border-brand bg-brand-light/30 px-4 py-2.5"
+                    >
+                      <Compass size={14} color="#0B927E" />
+                      <Text className="text-xs font-bold text-brand">
+                        {isEn ? "Explore Facilities" : "Khám phá kho"}
+                      </Text>
+                    </Pressable>
+
+                    <Pressable
+                      onPress={() => setMode("create")}
+                      className="flex-row items-center gap-1.5 rounded-xl bg-cta px-4 py-2.5"
+                    >
+                      <PlusCircle size={14} color="#FFFFFF" />
+                      <Text className="text-xs font-bold text-white">
+                        {isEn ? "Create Reservation" : "Tạo đặt chỗ"}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+              }
+              ListFooterComponent={
+                reservationsQuery.isFetchingNextPage ? (
+                  <View className="py-4 items-center">
+                    <ActivityIndicator size="small" color="#0B927E" />
+                  </View>
+                ) : null
+              }
+            />
+          )}
         </View>
-      </ScrollView>
+      )}
     </SafeAreaView>
   );
 }

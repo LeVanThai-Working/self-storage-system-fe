@@ -66,7 +66,6 @@ export function LoginForm() {
         router.replace(
           getSafeRedirect(searchParams.get("redirect"), `/${locale}${home ? `/${home}` : ""}`)
         );
-        router.refresh();
       },
       onError: (error) =>
         setFormError(

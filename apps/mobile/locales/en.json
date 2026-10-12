@@ -123,7 +123,7 @@
     "explore": "Home",
     "exploreTitle": "Home",
     "exploreDesc": "Search storage facilities, unit sizes, rental rates, and real-time availability.",
-    "reservation": "Booking",
+    "reservation": "Reservation",
     "reservationTitle": "Reserve a Storage",
     "reservationDesc": "Select storage facility, unit type, start date, and rental duration.",
     "myUnits": "My Storages",

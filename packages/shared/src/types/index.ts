@@ -7,3 +7,5 @@ export * from "./amenity.types";
 export * from "./facilityAmenityOffering.types";
 export * from "./auth.types";
 export * from "./user.types";
+export * from "./reservation.types";
+export * from "./payment.types";

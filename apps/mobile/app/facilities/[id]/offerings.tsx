@@ -110,6 +110,8 @@ export default function FacilityAvailableOfferingsScreen() {
           facilityId: payload.facilityId,
           facilityName: payload.facilityName,
           unitTypeId: payload.unitTypeId,
+          facilityUnitTypeOfferingId: offering.id,
+          mode: "create",
         },
       });
     },
