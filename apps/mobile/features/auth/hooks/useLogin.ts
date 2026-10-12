@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { loginApi, getMeApi } from "../api/auth.api";
 import { tokenStorage } from "@/lib/storage/tokenStorage";
 import { useAuthStore } from "../stores/auth.store";
+import { useReservationHandoffStore } from "@/features/storage-explore/stores/reservationHandoff.store";
 import { useTranslation } from "@/stores/language.store";
 import { AppApiError } from "@/lib/api/axios";
 import { toast } from "@/stores/toast.store";
@@ -53,8 +54,15 @@ export function useLogin() {
       setAuth(user);
       toast.success(t("auth.loginSuccess") || t("common.confirm"));
 
-      // 6. Navigate to main tabs screen
-      router.replace("/(tabs)" as any);
+      // 6. Navigate to reservation screen if user had a pending booking handoff, else main tabs
+      const shouldRedirectToReservation = useReservationHandoffStore
+        .getState()
+        .consumePendingRedirect();
+      if (shouldRedirectToReservation) {
+        router.replace("/(tabs)/reservations" as any);
+      } else {
+        router.replace("/(tabs)" as any);
+      }
     },
     onError: (error: unknown) => {
       console.error("Sign in failed:", error);
