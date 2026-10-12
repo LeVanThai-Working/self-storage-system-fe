@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
-import { MESSAGE_CODE } from "@self-storage-system-fe/shared";
+import { MESSAGE_CODE, RoleEnum } from "@self-storage-system-fe/shared";
 import {
   loginSchema,
   type LoginFormOutput,
@@ -25,6 +25,13 @@ function getSafeRedirect(value: string | null, fallback: string) {
   if (!value || !value.startsWith("/") || value.startsWith("//")) return fallback;
   return value;
 }
+
+/** Portal per role; roles not listed (customer, staff) stay on the public landing. */
+const ROLE_HOME: Record<string, string> = {
+  [RoleEnum.SYSTEM_ADMIN]: "system-admin",
+  [RoleEnum.BUSINESS_OPS_MANAGER]: "business-ops",
+  [RoleEnum.FACILITY_MANAGER]: "facility-manager",
+};
 
 export function LoginForm() {
   const t = useTranslations("auth");
@@ -53,9 +60,12 @@ export function LoginForm() {
   const onSubmit = (values: LoginFormOutput) => {
     setFormError("");
     login.mutate(values, {
-      onSuccess: () => {
+      onSuccess: ({ data }) => {
         toast.success(t("loginSuccess"));
-        router.replace(getSafeRedirect(searchParams.get("redirect"), `/${locale}`));
+        const home = ROLE_HOME[String(data.user.role).toLowerCase()];
+        router.replace(
+          getSafeRedirect(searchParams.get("redirect"), `/${locale}${home ? `/${home}` : ""}`)
+        );
         router.refresh();
       },
       onError: (error) =>

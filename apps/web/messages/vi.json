@@ -625,6 +625,7 @@
       "facilities": "Quản lý Cơ sở",
       "unitTypes": "Quy cách kho chuẩn",
       "amenities": "Tiện ích & Dịch vụ",
+      "offerings": "Bảng giá theo cơ sở",
       "analytics": "Báo cáo & Phân tích",
       "sectionOperations": "VẬN HÀNH CHI NHÁNH"
     },
@@ -1065,6 +1066,343 @@
         "restoring": "Đang khôi phục...",
         "success": "Khôi phục tiện ích thành công!",
         "error": "Không thể khôi phục tiện ích. Vui lòng thử lại sau."
+      }
+    },
+    "offerings": {
+      "title": "Bảng giá Loại kho theo Cơ sở",
+      "subtitle": "Thiết lập loại kho được mở bán tại từng cơ sở kèm đơn giá, hệ số cọc và số ngày thuê tối thiểu.",
+      "addOffering": "+ Mở bán loại kho",
+      "refresh": "Làm mới",
+      "facilityFilter": {
+        "all": "Tất cả cơ sở"
+      },
+      "statusFilter": {
+        "all": "Tất cả trạng thái",
+        "active": "Đang mở bán",
+        "inactive": "Ngừng bán"
+      },
+      "table": {
+        "facility": "Cơ sở",
+        "unitType": "Loại kho",
+        "price": "Đơn giá",
+        "deposit": "Hệ số cọc",
+        "minRentalDays": "Số ngày thuê tối thiểu",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "billingUnit": {
+        "day": "ngày",
+        "month": "tháng",
+        "one_time": "một lần"
+      },
+      "status": {
+        "active": "Đang mở bán",
+        "inactive": "Ngừng bán"
+      },
+      "actions": {
+        "edit": "Chỉnh sửa",
+        "delete": "Ngừng bán",
+        "restore": "Mở bán lại"
+      },
+      "empty": {
+        "title": "Chưa có bảng giá nào",
+        "description": "Hãy mở bán loại kho đầu tiên cho một cơ sở."
+      },
+      "pagination": {
+        "page": "Trang",
+        "prev": "Trước",
+        "next": "Sau"
+      },
+      "formModal": {
+        "createTitle": "Mở bán loại kho",
+        "editTitle": "Chỉnh sửa bảng giá",
+        "facilityLabel": "Cơ sở",
+        "facilityPlaceholder": "Chọn cơ sở",
+        "unitTypeLabel": "Loại kho",
+        "unitTypePlaceholder": "Chọn loại kho",
+        "priceLabel": "Đơn giá (VND)",
+        "billingUnitLabel": "Đơn vị tính",
+        "depositLabel": "Hệ số cọc",
+        "minRentalDaysLabel": "Số ngày thuê tối thiểu",
+        "statusLabel": "Trạng thái",
+        "notesLabel": "Ghi chú",
+        "billingUnit": {
+          "day": "ngày",
+          "month": "tháng",
+          "oneTime": "một lần"
+        },
+        "status": {
+          "active": "Đang mở bán",
+          "inactive": "Ngừng bán"
+        },
+        "cancel": "Hủy bỏ",
+        "save": "Lưu",
+        "saving": "Đang lưu...",
+        "success": "Lưu thành công!",
+        "error": "Không thể lưu. Vui lòng thử lại sau.",
+        "validation": {
+          "required": "Vui lòng chọn cơ sở và loại kho.",
+          "price": "Đơn giá không hợp lệ."
+        }
+      },
+      "confirmModal": {
+        "deleteTitle": "Ngừng bán loại kho này?",
+        "deleteDescription": "Loại kho sẽ không còn hiển thị để tạo phòng kho mới tại cơ sở này.",
+        "restoreTitle": "Mở bán lại loại kho này?",
+        "restoreDescription": "Loại kho sẽ hiển thị trở lại để tạo phòng kho mới tại cơ sở này.",
+        "cancel": "Hủy bỏ",
+        "confirm": "Xác nhận",
+        "processing": "Đang xử lý...",
+        "error": "Không thể thực hiện. Vui lòng thử lại sau."
+      }
+    }
+  },
+  "storageUnitStatus": {
+    "available": "Còn trống",
+    "reserved": "Đã giữ chỗ",
+    "occupied": "Đang thuê",
+    "under_maintenance": "Đang bảo trì",
+    "inactive": "Ngừng sử dụng"
+  },
+  "facilityManager": {
+    "roleLabel": "Quản lý cơ sở",
+    "nav": {
+      "storageUnits": "Phòng kho",
+      "sectionFacility": "VẬN HÀNH CƠ SỞ",
+      "requests": "Yêu cầu đề xuất"
+    },
+    "sidebar": {
+      "assignedFacility": "Cơ sở phụ trách",
+      "noFacility": "Chưa được gán cơ sở"
+    },
+    "storageUnits": {
+      "title": "Quản lý Phòng kho",
+      "subtitle": "Danh sách phòng kho vật lý thuộc cơ sở {facility}: vị trí, loại kho và trạng thái.",
+      "addUnit": "+ Thêm phòng kho",
+      "searchPlaceholder": "Tìm theo số phòng...",
+      "floorPlaceholder": "Tầng",
+      "zonePlaceholder": "Dãy",
+      "unitTypeFilterAll": "Tất cả loại kho",
+      "clearFilters": "Xóa bộ lọc",
+      "refresh": "Làm mới",
+      "retry": "Thử lại",
+      "stats": {
+        "total": "Tổng số phòng",
+        "available": "Còn trống",
+        "inUse": "Đã đặt / Đang thuê",
+        "maintenance": "Đang bảo trì"
+      },
+      "statusFilter": {
+        "all": "Tất cả trạng thái",
+        "available": "Còn trống",
+        "reserved": "Đã giữ chỗ",
+        "occupied": "Đang thuê",
+        "under_maintenance": "Đang bảo trì",
+        "inactive": "Ngừng sử dụng"
+      },
+      "sortBy": {
+        "createdAt": "Mới tạo nhất",
+        "unitNumber": "Số phòng (A-Z)",
+        "floor": "Tầng tăng dần",
+        "status": "Trạng thái"
+      },
+      "table": {
+        "unit": "Số phòng & Ghi chú",
+        "location": "Vị trí",
+        "unitType": "Loại kho",
+        "size": "Diện tích / Thể tích",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "location": {
+        "floor": "Tầng {floor}",
+        "zone": "Dãy {zone}"
+      },
+      "empty": {
+        "title": "Cơ sở chưa có phòng kho nào",
+        "description": "Nhấn \"Thêm phòng kho\" để tạo phòng đầu tiên cho cơ sở của bạn.",
+        "filteredTitle": "Không tìm thấy phòng kho phù hợp",
+        "filteredDescription": "Thử thay đổi từ khóa hoặc điều chỉnh bộ lọc tầng, dãy, loại kho, trạng thái."
+      },
+      "loadError": {
+        "title": "Không thể tải danh sách phòng kho"
+      },
+      "noFacility": {
+        "title": "Chưa xác định được cơ sở phụ trách",
+        "description": "Tài khoản của bạn chưa được gán cơ sở nào. Vui lòng liên hệ Business Operations để được gán cơ sở."
+      },
+      "pagination": {
+        "showing": "Hiển thị",
+        "to": "-",
+        "of": "trong tổng số",
+        "units": "phòng kho",
+        "prev": "Trước",
+        "next": "Tiếp theo"
+      },
+      "actions": {
+        "edit": "Chỉnh sửa",
+        "delete": "Xóa phòng kho",
+        "deleteBlocked": "Không thể xóa phòng đang được đặt chỗ hoặc đang cho thuê"
+      },
+      "formModal": {
+        "createTitle": "Thêm Phòng kho mới",
+        "createSubtitle": "Khai báo số phòng, vị trí và loại kho cho phòng vật lý mới của cơ sở.",
+        "editTitle": "Chỉnh sửa Phòng kho",
+        "editSubtitle": "Cập nhật vị trí, loại kho, trạng thái và ghi chú của phòng.",
+        "unitNumberLabel": "Số phòng *",
+        "unitNumberPlaceholder": "Ví dụ: A-101",
+        "unitTypeLabel": "Loại kho *",
+        "unitTypePlaceholder": "Chọn loại kho",
+        "unitTypeLocked": "Phòng đang được đặt chỗ hoặc cho thuê nên không thể đổi loại kho.",
+        "noOffering": "Cơ sở chưa mở bán loại kho nào nên chưa thể tạo phòng. Hãy gửi đề xuất mở bán loại kho cho Business Operations trước.",
+        "floorLabel": "Tầng *",
+        "zoneLabel": "Dãy / Khu",
+        "zonePlaceholder": "Ví dụ: A",
+        "statusLabel": "Trạng thái",
+        "statusOptions": {
+          "available": "Còn trống (Available)",
+          "under_maintenance": "Đang bảo trì (Under maintenance)",
+          "inactive": "Ngừng sử dụng (Inactive)"
+        },
+        "statusReadonly": "Trạng thái này do hệ thống cập nhật theo đặt chỗ / hợp đồng.",
+        "notesLabel": "Ghi chú",
+        "notesPlaceholder": "Ví dụ: Gần thang máy, sàn đã sơn chống ẩm...",
+        "cancel": "Hủy bỏ",
+        "confirmCreate": "Xác nhận tạo mới",
+        "confirmEdit": "Lưu thay đổi",
+        "saving": "Đang lưu...",
+        "successCreate": "Tạo phòng kho mới thành công!",
+        "successEdit": "Cập nhật phòng kho thành công!",
+        "validation": {
+          "unitNumberRequired": "Vui lòng nhập số phòng",
+          "unitNumberMax": "Số phòng tối đa {max} ký tự",
+          "floorInvalid": "Tầng phải là số nguyên từ 1 trở lên",
+          "zoneMax": "Dãy tối đa {max} ký tự",
+          "unitTypeRequired": "Vui lòng chọn loại kho",
+          "notesMax": "Ghi chú tối đa {max} ký tự"
+        }
+      },
+      "deleteModal": {
+        "title": "Xác nhận xóa phòng kho",
+        "message": "Bạn có chắc chắn muốn xóa phòng \"{unitNumber}\"?",
+        "warning": "Phòng sẽ bị ẩn khỏi danh sách và không thể được đặt chỗ nữa. Bạn có thể hoàn tác ngay sau khi xóa. Phòng đang được đặt chỗ hoặc đang cho thuê không thể xóa.",
+        "cancel": "Hủy",
+        "confirm": "Xác nhận xóa",
+        "deleting": "Đang xử lý...",
+        "success": "Đã xóa phòng kho thành công!",
+        "undo": "Hoàn tác / Khôi phục",
+        "restoring": "Đang khôi phục..."
+      },
+      "errors": {
+        "cannotDeleteBusy": "Không thể xóa phòng đang được đặt chỗ hoặc đang cho thuê.",
+        "createRejected": "Không thể tạo phòng. Hãy kiểm tra cơ sở đã mở bán loại kho này và còn hoạt động.",
+        "updateRejected": "Không thể cập nhật phòng. Phòng đang đặt chỗ/cho thuê không đổi được loại kho, hoặc loại kho này chưa được cơ sở mở bán.",
+        "duplicateUnitNumber": "Số phòng này đã tồn tại trong cơ sở. Vui lòng chọn số phòng khác."
+      }
+    },
+    "requests": {
+      "title": "Trung tâm Yêu cầu Đề xuất",
+      "subtitle": "Tra cứu danh mục loại kho, tiện ích hiện có tại cơ sở và gửi đề xuất đến Business Operations.",
+      "createRequest": "+ Tạo đề xuất mới",
+      "catalogSectionTitle": "Danh mục hiện có tại cơ sở",
+      "requestsSectionTitle": "Yêu cầu đã gửi",
+      "empty": "Bạn chưa gửi yêu cầu đề xuất nào.",
+      "cancelRequest": "Hủy yêu cầu",
+      "cancelError": "Không thể hủy yêu cầu. Vui lòng thử lại sau.",
+      "rejectionReasonPrefix": "Lý do từ chối",
+      "table": {
+        "target": "Loại đề xuất",
+        "reason": "Lý do",
+        "status": "Trạng thái",
+        "createdAt": "Ngày gửi",
+        "actions": "Thao tác",
+        "page": "Trang"
+      },
+      "status": {
+        "pending": "Đang chờ",
+        "approved": "Đã duyệt",
+        "rejected": "Bị từ chối",
+        "cancelled": "Đã hủy"
+      },
+      "targetType": {
+        "unit_type": "Loại kho mới",
+        "facility_unit_type_offering": "Bảng giá loại kho",
+        "amenity": "Tiện ích mới",
+        "facility_amenity_offering": "Tiện ích tại cơ sở"
+      },
+      "action": {
+        "create": "Tạo mới",
+        "update": "Cập nhật"
+      },
+      "catalog": {
+        "unitTypesTitle": "Loại kho đang mở bán",
+        "amenitiesTitle": "Tiện ích đang cung cấp",
+        "loading": "Đang tải...",
+        "emptyUnitTypes": "Cơ sở chưa mở bán loại kho nào.",
+        "emptyAmenities": "Cơ sở chưa có tiện ích nào.",
+        "available": "Còn trống",
+        "billingUnit": {
+          "day": "ngày",
+          "month": "tháng",
+          "one_time": "một lần"
+        }
+      },
+      "createModal": {
+        "title": "Tạo yêu cầu đề xuất",
+        "kindLabel": "Loại đề xuất",
+        "kind": {
+          "newOffering": "Đề xuất mở bán loại kho mới tại cơ sở",
+          "adjustPrice": "Xin điều chỉnh giá thuê / hệ số cọc",
+          "newAmenity": "Xin cấp thêm tiện ích",
+          "newUnitType": "Đề xuất tạo loại kho mới (toàn hệ thống)"
+        },
+        "unitTypeLabel": "Loại kho (danh mục chuẩn)",
+        "unitTypePlaceholder": "Chọn loại kho",
+        "offeringLabel": "Loại kho đang mở bán tại cơ sở",
+        "offeringPlaceholder": "Chọn bảng giá cần điều chỉnh",
+        "amenityLabel": "Tiện ích (danh mục chuẩn)",
+        "amenityPlaceholder": "Chọn tiện ích",
+        "priceLabel": "Đơn giá đề xuất (VND)",
+        "depositLabel": "Hệ số cọc",
+        "totalQuantityLabel": "Số lượng",
+        "billingUnitLabel": "Đơn vị tính",
+        "billingUnit": {
+          "day": "ngày",
+          "month": "tháng",
+          "oneTime": "một lần"
+        },
+        "newTypeNameLabel": "Tên loại kho mới",
+        "lengthLabel": "Dài (m)",
+        "widthLabel": "Rộng (m)",
+        "heightLabel": "Cao (m)",
+        "reasonLabel": "Lý do đề xuất",
+        "reasonPlaceholder": "Giải thích lý do gửi đề xuất này...",
+        "cancel": "Hủy bỏ",
+        "submit": "Gửi đề xuất",
+        "submitting": "Đang gửi...",
+        "success": "Gửi đề xuất thành công! Đang chờ Business Operations duyệt.",
+        "error": "Không thể gửi đề xuất. Vui lòng thử lại sau.",
+        "validation": {
+          "required": "Vui lòng điền đầy đủ thông tin bắt buộc.",
+          "reason": "Lý do cần tối thiểu {min} ký tự."
+        }
+      },
+      "detailModal": {
+        "title": "Chi tiết yêu cầu đề xuất",
+        "actionLabel": "Hành động",
+        "requesterLabel": "Người gửi",
+        "payloadLabel": "Nội dung đề xuất",
+        "currentDataLabel": "Dữ liệu hiện tại",
+        "approverLabel": "Người duyệt",
+        "reviewNotesLabel": "Ghi chú duyệt",
+        "fields": {
+          "pricePerUnit": "Đơn giá",
+          "billingUnit": "Đơn vị tính",
+          "depositMultiplier": "Hệ số cọc",
+          "totalQuantity": "Số lượng",
+          "name": "Tên",
+          "dimensions": "Kích thước (D × R × C)"
+        }
       }
     }
   }
