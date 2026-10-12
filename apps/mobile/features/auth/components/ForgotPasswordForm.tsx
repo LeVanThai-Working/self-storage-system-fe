@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Eye, EyeOff, Mail, Lock, KeyRound, AlertCircle, CheckCircle } from "lucide-react-native";
 import { useForgotPassword } from "../hooks/useForgotPassword";
+import { translateValidationError } from "../utils/authMessage";
 import { useTranslation } from "@/stores/language.store";
 
 export function ForgotPasswordForm() {
@@ -119,7 +120,7 @@ export function ForgotPasswordForm() {
             </View>
             {initialForm.formState.errors.email && (
               <Text variant="error" className="text-xs">
-                {initialForm.formState.errors.email.message}
+                {translateValidationError(initialForm.formState.errors.email.message, t)}
               </Text>
             )}
           </View>
@@ -172,7 +173,7 @@ export function ForgotPasswordForm() {
             </View>
             {resetForm.formState.errors.email && (
               <Text variant="error" className="text-xs">
-                {resetForm.formState.errors.email.message}
+                {translateValidationError(resetForm.formState.errors.email.message, t)}
               </Text>
             )}
           </View>
@@ -208,7 +209,7 @@ export function ForgotPasswordForm() {
             </View>
             {resetForm.formState.errors.otp && (
               <Text variant="error" className="text-xs">
-                {resetForm.formState.errors.otp.message}
+                {translateValidationError(resetForm.formState.errors.otp.message, t)}
               </Text>
             )}
           </View>
@@ -256,7 +257,7 @@ export function ForgotPasswordForm() {
             </View>
             {resetForm.formState.errors.newPassword && (
               <Text variant="error" className="text-xs">
-                {resetForm.formState.errors.newPassword.message}
+                {translateValidationError(resetForm.formState.errors.newPassword.message, t)}
               </Text>
             )}
           </View>

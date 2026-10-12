@@ -143,6 +143,15 @@ export async function getPublicUnitTypesApi(
 }
 
 /**
+ * 4b. GET /unit-types/{id}
+ * Fetches detail of a single standard unit type for the Size Guide Detail screen.
+ */
+export async function getPublicUnitTypeByIdApi(id: string): Promise<UnitTypeResponse> {
+  const response = await api.get<ApiResponse<UnitTypeResponse>>(`/unit-types/${id}`);
+  return response.data?.data;
+}
+
+/**
  * 5. GET /amenities
  * Fetches active amenities to render multi-criteria facility filters.
  */
@@ -173,14 +182,16 @@ export async function getPublicAmenitiesApi(
 
 /**
  * 6. GET /facility-unit-type-offerings
- * Cross-facility package pricing lookup filtered by unitTypeId and/or price range.
+ * Fetches paginated facility unit type offerings filtered by facilityId, unitTypeId, and/or price range.
  */
 export async function getPublicOfferingsApi(
-  params?: OfferingQuery
+  params?: OfferingQuery & { onlyAvailable?: boolean; category?: string }
 ): Promise<PaginatedData<FacilityUnitTypeOfferingResponse>> {
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 6;
   const query = cleanQueryParams({
-    page: params?.page ?? 1,
-    limit: params?.limit ?? 50,
+    page,
+    limit,
     facilityId: params?.facilityId,
     unitTypeId: params?.unitTypeId,
     billingUnit: params?.billingUnit,
@@ -201,7 +212,6 @@ export async function getPublicOfferingsApi(
   const payload = response.data?.data;
   return {
     items: payload?.items ?? [],
-    pagination:
-      payload?.pagination ?? createDefaultPagination(params?.page ?? 1, params?.limit ?? 50),
+    pagination: payload?.pagination ?? createDefaultPagination(page, limit),
   };
 }

@@ -83,17 +83,6 @@ export function FacilityCard({ facility, onPress }: FacilityCardProps) {
             ) : null}
           </View>
         )}
-
-        {/* Mô tả ngắn */}
-        {facility.description ? (
-          <Text
-            variant="muted"
-            numberOfLines={2}
-            className="pt-1 border-t border-neutral-border/60 dark:border-neutral-700/60 text-xs leading-4 text-neutral-main dark:text-neutral-300"
-          >
-            {facility.description}
-          </Text>
-        ) : null}
       </View>
 
       {/* 4. Nút View Details (Màu nút CTA) */}
