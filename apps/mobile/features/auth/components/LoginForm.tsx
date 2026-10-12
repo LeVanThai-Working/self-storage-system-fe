@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Eye, EyeOff, Mail, Lock, AlertCircle } from "lucide-react-native";
 import { useLogin } from "../hooks/useLogin";
+import { translateValidationError } from "../utils/authMessage";
 import { useTranslation } from "@/stores/language.store";
 
 export function LoginForm() {
@@ -77,7 +78,7 @@ export function LoginForm() {
         </View>
         {errors.email && (
           <Text variant="error" className="text-xs">
-            {errors.email.message}
+            {translateValidationError(errors.email.message, t)}
           </Text>
         )}
       </View>
@@ -131,7 +132,7 @@ export function LoginForm() {
         </View>
         {errors.password && (
           <Text variant="error" className="text-xs">
-            {errors.password.message}
+            {translateValidationError(errors.password.message, t)}
           </Text>
         )}
       </View>
