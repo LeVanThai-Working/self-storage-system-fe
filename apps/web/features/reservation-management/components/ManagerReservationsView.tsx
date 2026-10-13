@@ -52,6 +52,7 @@ import {
 } from "./ReservationActionModals";
 import { ReservationDetailSheet } from "./ReservationDetailSheet";
 import { ReservationStatusBadge } from "./ReservationStatusBadge";
+import { CreateContractFromReservationModal } from "@/features/contract-management/components/CreateContractFromReservationModal";
 
 const PAGE_LIMIT = 10;
 
@@ -165,6 +166,9 @@ export const ManagerReservationsView: React.FC = () => {
   const [confirmTarget, setConfirmTarget] = useState<ReservationResponse | null>(null);
   const [cancelTarget, setCancelTarget] = useState<ReservationResponse | null>(null);
   const [manualPaymentTarget, setManualPaymentTarget] = useState<ReservationResponse | null>(null);
+  const [createContractTarget, setCreateContractTarget] = useState<ReservationResponse | null>(
+    null
+  );
 
   const [bannerFeedback, setBannerFeedback] = useState<{
     type: "success" | "error";
@@ -846,15 +850,26 @@ export const ManagerReservationsView: React.FC = () => {
                           {/* CONFIRMED actions */}
                           {st === ReservationStatusEnum.CONFIRMED && (
                             <>
-                              <button
-                                type="button"
-                                onClick={() => handleQuickComplete(item)}
-                                disabled={completeMutation.isPending}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm disabled:opacity-50"
-                              >
-                                <FileCheck2 className="w-3 h-3" />
-                                {tActions("completeShort")}
-                              </button>
+                              {item.storageUnitId ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setCreateContractTarget(item)}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm"
+                                >
+                                  <FileCheck2 className="w-3 h-3" />
+                                  {tActions("createContractShort")}
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleQuickComplete(item)}
+                                  disabled={completeMutation.isPending}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm disabled:opacity-50"
+                                >
+                                  <FileCheck2 className="w-3 h-3" />
+                                  {tActions("completeShort")}
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 onClick={() => setCancelTarget(item)}
@@ -941,6 +956,7 @@ export const ManagerReservationsView: React.FC = () => {
         onOpenConfirm={(r) => setConfirmTarget(r)}
         onOpenCancel={(r) => setCancelTarget(r)}
         onOpenManualPayment={(r) => setManualPaymentTarget(r)}
+        onOpenCreateContract={(r) => setCreateContractTarget(r)}
         onComplete={handleQuickComplete}
         isReceiving={receiveMutation.isPending}
         isCompleting={completeMutation.isPending}
@@ -986,6 +1002,15 @@ export const ManagerReservationsView: React.FC = () => {
         isOpen={Boolean(manualPaymentTarget)}
         onClose={() => setManualPaymentTarget(null)}
         reservation={manualPaymentTarget}
+      />
+
+      {/* Section 5.5: Create Contract & Assign Check-in Staff Modal */}
+      <CreateContractFromReservationModal
+        key={createContractTarget?.id ?? "create-contract-from-reservation-modal"}
+        isOpen={Boolean(createContractTarget)}
+        onClose={() => setCreateContractTarget(null)}
+        reservation={createContractTarget}
+        portalBase="facility-manager"
       />
     </div>
   );

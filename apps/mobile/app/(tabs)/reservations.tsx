@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/stores/language.store";
@@ -18,6 +18,7 @@ import { useDebounce } from "@/features/storage-explore/hooks/useDebounce";
 import { useReservationHandoffStore } from "@/features/storage-explore/stores/reservationHandoff.store";
 import {
   ReservationStatusEnum,
+  type ContractResponse,
   type MessageLocale,
   type ReservationResponse,
 } from "@self-storage-system-fe/shared";
@@ -30,6 +31,7 @@ import {
   Inbox,
   Compass,
 } from "lucide-react-native";
+import { useCustomerContractsByReservationMap } from "@/features/contracts/hooks/useContracts";
 import {
   useMyReservationsInfinite,
   type ReservationFilterTabKey,
@@ -91,6 +93,20 @@ export default function ReservationsTabScreen() {
     enabled: mode === "list",
   });
 
+  const { contractByReservationId, refetch: refetchContractsMap } =
+    useCustomerContractsByReservationMap(mode === "list");
+
+  const { refetch: refetchReservations } = reservationsQuery;
+
+  useFocusEffect(
+    useCallback(() => {
+      if (mode === "list") {
+        void refetchReservations();
+        void refetchContractsMap();
+      }
+    }, [mode, refetchReservations, refetchContractsMap])
+  );
+
   const filterTabs: { key: ReservationFilterTabKey; label: string }[] = [
     { key: "ALL", label: isEn ? "All" : "Tất cả" },
     { key: "PROCESSING", label: isEn ? "Processing" : "Chờ xử lý" },
@@ -143,6 +159,16 @@ export default function ReservationsTabScreen() {
       router.push({
         pathname: "/reservations/[id]" as any,
         params: { id: reservation.id },
+      });
+    },
+    [router]
+  );
+
+  const handleOpenContractDetail = useCallback(
+    (contract: ContractResponse) => {
+      router.push({
+        pathname: "/contracts/[id]" as any,
+        params: { id: contract.id },
       });
     },
     [router]
@@ -349,7 +375,10 @@ export default function ReservationsTabScreen() {
               refreshControl={
                 <RefreshControl
                   refreshing={reservationsQuery.isRefetching}
-                  onRefresh={reservationsQuery.refetch}
+                  onRefresh={() => {
+                    void reservationsQuery.refetch();
+                    void refetchContractsMap();
+                  }}
                   tintColor="#0B927E"
                 />
               }
@@ -362,9 +391,11 @@ export default function ReservationsTabScreen() {
               renderItem={({ item }) => (
                 <ReservationCard
                   reservation={item}
+                  linkedContract={contractByReservationId.get(item.id) ?? null}
                   locale={currentLocale}
                   onPress={handleOpenDetail}
                   onPayDepositPress={handleQuickPayDeposit}
+                  onViewContractPress={handleOpenContractDetail}
                 />
               )}
               ListEmptyComponent={

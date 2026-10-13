@@ -1,10 +1,12 @@
 import {
   BillingUnitEnum,
+  ContractStatusEnum,
   MESSAGE_CODE,
   PaymentStatusEnum,
   ReservationStatusEnum,
   formatCurrency,
   resolveMessageCode,
+  type ContractResponse,
   type MessageLocale,
   type ReservationResponse,
 } from "@self-storage-system-fe/shared";
@@ -298,7 +300,7 @@ export function getReservationStatusMeta(
       };
     case ReservationStatusEnum.COMPLETED:
       return {
-        label: isEn ? "Completed" : "Hoàn tất (Đã lập HĐ)",
+        label: isEn ? "Completed" : "Hoàn tất",
         compactStepLabel: isEn ? "Step 6/6: Completed" : "Bước 6/6: Hoàn tất",
         badgeBgClass: "bg-emerald-50 dark:bg-emerald-950/40",
         badgeBorderClass: "border-emerald-400 dark:border-emerald-700",
@@ -370,7 +372,8 @@ export interface ReservationTerminalNode {
  */
 export function buildReservationTimeline(
   reservation: ReservationResponse,
-  locale: MessageLocale = "vi"
+  locale: MessageLocale = "vi",
+  linkedContract?: ContractResponse | null
 ): {
   steps: ReservationTimelineStep[];
   terminalNode: ReservationTerminalNode | null;
@@ -415,7 +418,7 @@ export function buildReservationTimeline(
         activeStepNumber = 4;
         break;
       case ReservationStatusEnum.CONFIRMED:
-        activeStepNumber = 5;
+        activeStepNumber = linkedContract ? 6 : 5;
         break;
       case ReservationStatusEnum.COMPLETED:
         activeStepNumber = 6;
@@ -430,6 +433,14 @@ export function buildReservationTimeline(
       return stepNum <= lastCompletedByTimestamp ? "completed" : "upcoming";
     }
     if (status === ReservationStatusEnum.COMPLETED) {
+      return "completed";
+    }
+    if (
+      stepNum === 6 &&
+      linkedContract &&
+      linkedContract.status !== ContractStatusEnum.DRAFT &&
+      linkedContract.status !== ContractStatusEnum.CANCELLED
+    ) {
       return "completed";
     }
     if (stepNum < activeStepNumber) {
@@ -521,11 +532,30 @@ export function buildReservationTimeline(
     },
     {
       stepNumber: 6,
-      title: isEn ? "Completed & Contract Created" : "Hoàn tất & Tạo hợp đồng",
-      description: isEn
-        ? "Reservation converted into an official rental contract."
-        : "Đơn đặt chỗ đã chuyển đổi thành Hợp đồng thuê kho chính thức.",
-      timestamp: status === ReservationStatusEnum.COMPLETED ? reservation.updatedAt : null,
+      title:
+        linkedContract?.status === ContractStatusEnum.DRAFT
+          ? isEn
+            ? "Draft Contract Created (Pending Check-in)"
+            : "Đã tạo Hợp đồng nháp (Chờ Check-in)"
+          : isEn
+            ? "Completed & Contract Created"
+            : "Hoàn tất & Tạo hợp đồng",
+      description: linkedContract
+        ? linkedContract.status === ContractStatusEnum.DRAFT
+          ? isEn
+            ? `Draft contract #${linkedContract.contractCode} created (deposit inherited). Please visit the facility counter to check in.`
+            : `Đã khởi tạo hợp đồng nháp #${linkedContract.contractCode} (đã kế thừa tiền cọc). Vui lòng đến quầy cơ sở gặp nhân viên phụ trách để Check-in nhận kho.`
+          : isEn
+            ? `Converted into official rental contract #${linkedContract.contractCode}.`
+            : `Đơn đặt chỗ đã chuyển đổi thành Hợp đồng thuê kho chính thức #${linkedContract.contractCode}.`
+        : isEn
+          ? "Reservation converted into an official rental contract."
+          : "Đơn đặt chỗ đã chuyển đổi thành Hợp đồng thuê kho chính thức.",
+      timestamp:
+        linkedContract?.createdAt ??
+        (status === ReservationStatusEnum.COMPLETED ? reservation.updatedAt : null),
+      actorName: linkedContract?.assignedStaff?.name ?? null,
+      extraBadge: linkedContract ? `#${linkedContract.contractCode}` : null,
       state: getStepState(6),
     },
   ];

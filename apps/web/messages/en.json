@@ -1184,6 +1184,7 @@
     "roleLabel": "Facility Manager",
     "nav": {
       "reservations": "Reservations",
+      "contracts": "Lease Contracts",
       "storageUnits": "Storage units",
       "sectionFacility": "FACILITY OPERATIONS",
       "requests": "Request Center"
@@ -1499,6 +1500,8 @@
         "reject": "Reject",
         "verifyPayment": "Verify payment",
         "confirmOrder": "Confirm order",
+        "createContract": "Create Contract & Assign Check-in",
+        "createContractShort": "Create contract",
         "completeShort": "Complete",
         "completeHandover": "Complete handover",
         "cancel": "Cancel",

@@ -10,3 +10,4 @@ export * from "./reservation.enum";
 export * from "./payment.enum";
 export * from "./contract.enum";
 export * from "./notification.enum";
+export * from "./auditLog.enum";

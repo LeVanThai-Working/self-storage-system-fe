@@ -12,11 +12,16 @@ import {
   RefreshCw,
   UserCheck,
 } from "lucide-react-native";
-import type { MessageLocale, ReservationResponse } from "@self-storage-system-fe/shared";
+import type {
+  ContractResponse,
+  MessageLocale,
+  ReservationResponse,
+} from "@self-storage-system-fe/shared";
 import { buildReservationTimeline, formatDateTime, formatVnd } from "../utils/reservationFormat";
 
 interface ReservationTimelineStepperProps {
   reservation: ReservationResponse;
+  linkedContract?: ContractResponse | null;
   locale?: MessageLocale;
   countdownFormatted?: string;
   isExpiredCountdown?: boolean;
@@ -26,6 +31,7 @@ interface ReservationTimelineStepperProps {
 
 export function ReservationTimelineStepper({
   reservation,
+  linkedContract,
   locale = "vi",
   countdownFormatted,
   isExpiredCountdown = false,
@@ -33,7 +39,7 @@ export function ReservationTimelineStepper({
   isRetryingPayment = false,
 }: ReservationTimelineStepperProps) {
   const isEn = locale === "en";
-  const { steps, terminalNode } = buildReservationTimeline(reservation, locale);
+  const { steps, terminalNode } = buildReservationTimeline(reservation, locale, linkedContract);
 
   return (
     <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm">
