@@ -292,7 +292,7 @@ export default function MyStoragesScreen() {
           }}
           ListHeaderComponent={
             firstDraftContract ? (
-              <View className="mb-1 rounded-3xl border border-cta/30 bg-cta-light/20 dark:bg-cta/15 p-4 shadow-sm">
+              <View className="mb-1 rounded-3xl border bg-[#F1E9E5] border-cta/30 bg-cta-light/20 dark:bg-cta/15 p-4 shadow-sm">
                 <View className="flex-row items-center gap-2 mb-1.5">
                   <QrCode size={18} color="#FF702E" />
                   <Text className="text-xs font-bold text-cta">

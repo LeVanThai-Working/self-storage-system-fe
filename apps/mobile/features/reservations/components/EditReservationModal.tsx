@@ -38,6 +38,7 @@ import {
   getTodayDateInput,
   isoToDateInput,
   parseAndValidateStartDate,
+  requiresAdvanceDayForCategory,
   resolveReservationErrorMessage,
 } from "../utils/reservationFormat";
 
@@ -75,6 +76,13 @@ export function EditReservationModal({
   );
 
   const minRentalDays = Math.max(1, reservation.offering?.minRentalDays ?? 1);
+  const resolvedCategory = useMemo(() => {
+    const matchedOffering = (facilityDetail?.unitTypeOfferings ?? []).find(
+      (item) => item.id === reservation.facilityUnitTypeOfferingId
+    );
+    return matchedOffering?.unitType?.category;
+  }, [facilityDetail?.unitTypeOfferings, reservation.facilityUnitTypeOfferingId]);
+  const requiresAdvanceDay = requiresAdvanceDayForCategory(resolvedCategory);
 
   const [startDateInput, setStartDateInput] = useState<string>(() =>
     isoToDateInput(reservation.startDate)
@@ -180,7 +188,7 @@ export function EditReservationModal({
     setDateError(null);
     setDurationError(null);
 
-    const parsedDate = parseAndValidateStartDate(startDateInput);
+    const parsedDate = parseAndValidateStartDate(startDateInput, resolvedCategory);
     if (!parsedDate.isValidFormat) {
       setDateError(
         isEn
@@ -194,6 +202,14 @@ export function EditReservationModal({
         isEn
           ? "Start date cannot be in the past."
           : "Ngày bắt đầu thuê không được nằm trong quá khứ."
+      );
+      return;
+    }
+    if (!parsedDate.isSatisfyingAdvanceDay) {
+      setDateError(
+        isEn
+          ? "For Small, Medium, and Large storage units, the expected move-in date must be at least 1 day after today (to allow time for order processing)."
+          : "Đối với kho loại Small, Medium, Large thì ngày dự kiến bắt đầu thuê sẽ phải là sau 1 ngày hiện tại (để chừa thời gian tiếp nhận đơn)."
       );
       return;
     }
@@ -239,12 +255,19 @@ export function EditReservationModal({
     }
   };
 
-  const quickDateOptions = [
-    { label: isEn ? "Today" : "Hôm nay", value: getTodayDateInput(0) },
-    { label: isEn ? "Tomorrow" : "Ngày mai", value: getTodayDateInput(1) },
-    { label: isEn ? "+3 Days" : "+3 ngày", value: getTodayDateInput(3) },
-    { label: isEn ? "+7 Days" : "+7 ngày", value: getTodayDateInput(7) },
-  ];
+  const quickDateOptions = requiresAdvanceDay
+    ? [
+        { label: isEn ? "Tomorrow" : "Ngày mai", value: getTodayDateInput(1) },
+        { label: isEn ? "+2 Days" : "+2 ngày", value: getTodayDateInput(2) },
+        { label: isEn ? "+3 Days" : "+3 ngày", value: getTodayDateInput(3) },
+        { label: isEn ? "+7 Days" : "+7 ngày", value: getTodayDateInput(7) },
+      ]
+    : [
+        { label: isEn ? "Today" : "Hôm nay", value: getTodayDateInput(0) },
+        { label: isEn ? "Tomorrow" : "Ngày mai", value: getTodayDateInput(1) },
+        { label: isEn ? "+3 Days" : "+3 ngày", value: getTodayDateInput(3) },
+        { label: isEn ? "+7 Days" : "+7 ngày", value: getTodayDateInput(7) },
+      ];
 
   const quickDurationPresets = useMemo(() => {
     const candidates = minRentalDays < 30 ? [minRentalDays, 30, 90, 180, 360] : [30, 90, 180, 360];

@@ -563,7 +563,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                   onClose();
                   onOpenAssignUnit(reservation);
                 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
               >
                 <Boxes className="w-3.5 h-3.5" />
                 {tActions("assignUnit")}
@@ -591,7 +591,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                   onClose();
                   onOpenConfirm(reservation);
                 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
               >
                 <ShieldCheck className="w-3.5 h-3.5" />
                 {tActions("confirmOrder")}
@@ -605,7 +605,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                   onClose();
                   onOpenCreateContract(reservation);
                 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
               >
                 <FileCheck2 className="w-3.5 h-3.5" />
                 {tActions("createContract")}

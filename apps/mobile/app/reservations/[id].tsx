@@ -243,10 +243,8 @@ export default function ReservationDetailScreen() {
   const billingLabel = getBillingUnitName(reservation.billingUnit, currentLocale);
 
   const canEdit = reservation.status === ReservationStatusEnum.PENDING;
-  const canPayDeposit =
-    reservation.status === ReservationStatusEnum.PENDING_PAYMENT && !countdown.isExpired;
-  const canRetryPayment =
-    reservation.status === ReservationStatusEnum.PAYMENT_FAILED && !countdown.isExpired;
+  const canPayDeposit = reservation.status === ReservationStatusEnum.PENDING_PAYMENT;
+  const canRetryPayment = reservation.status === ReservationStatusEnum.PAYMENT_FAILED;
   const canCancel = canCancelReservation(reservation.status) && !linkedContract;
 
   const handleOpenLinkedContract = () => {
@@ -312,6 +310,7 @@ export default function ReservationDetailScreen() {
           locale={currentLocale}
           countdownFormatted={countdown.formatted}
           isExpiredCountdown={countdown.isExpired}
+          onPayDepositPress={canPayDeposit ? handleNavigateToPayment : undefined}
           onRetryPaymentPress={canRetryPayment ? handleRetryPayment : undefined}
           isRetryingPayment={retryPaymentMutation.isPending}
         />

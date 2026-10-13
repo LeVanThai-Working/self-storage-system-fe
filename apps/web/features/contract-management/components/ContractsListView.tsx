@@ -78,7 +78,6 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
   );
   const effectiveScope: ContractScopeTab = isStaff ? "ASSIGNED_TO_ME" : scopeTab;
 
-  const [quickTab, setQuickTab] = useState<ContractQuickStatusTab>("ALL");
   const [statusFilter, setStatusFilter] = useState<ContractStatusEnum | "">("");
   const [sourceFilter, setSourceFilter] = useState<ContractSourceEnum | "">("");
   const [storageUnitFilter, setStorageUnitFilter] = useState<string>("");
@@ -155,7 +154,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
 
   const rawItems = contractsQuery.data?.items;
 
-  // Client-side filter + sort priority when viewing "ASSIGNED_TO_ME" or "TERMINATED_GROUP"
+  // Client-side filter + sort priority when viewing "ASSIGNED_TO_ME"
   const displayedItems = useMemo(() => {
     let list = rawItems ?? [];
 
@@ -177,45 +176,12 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
       }
     }
 
-    if (quickTab === "TERMINATED_GROUP" && !statusFilter) {
-      list = list.filter(
-        (c) =>
-          c.status === ContractStatusEnum.CANCELLED || c.status === ContractStatusEnum.TERMINATED
-      );
-    }
-
     return list;
-  }, [rawItems, effectiveScope, currentUserId, statusFilter, quickTab]);
+  }, [rawItems, effectiveScope, currentUserId, statusFilter]);
 
   const pagination = contractsQuery.data?.pagination;
 
-  const handleSelectQuickTab = (tab: ContractQuickStatusTab) => {
-    setQuickTab(tab);
-    setPage(1);
-    switch (tab) {
-      case "ALL":
-        setStatusFilter("");
-        break;
-      case "DRAFT":
-        setStatusFilter(ContractStatusEnum.DRAFT);
-        break;
-      case "ACTIVE":
-        setStatusFilter(ContractStatusEnum.ACTIVE);
-        break;
-      case "OVERDUE":
-        setStatusFilter(ContractStatusEnum.OVERDUE);
-        break;
-      case "COMPLETED":
-        setStatusFilter(ContractStatusEnum.COMPLETED);
-        break;
-      case "TERMINATED_GROUP":
-        setStatusFilter("");
-        break;
-    }
-  };
-
   const handleResetFilters = () => {
-    setQuickTab("ALL");
     setStatusFilter("");
     setSourceFilter("");
     setStorageUnitFilter("");
@@ -267,7 +233,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
           <button
             type="button"
             onClick={() => setIsWalkInModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all"
           >
             <UserPlus className="w-4 h-4" />
             {isEn ? "+ Create Walk-in Contract" : "+ Tạo hợp đồng Walk-in"}
@@ -291,7 +257,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             }`}
           >
             <UserCheck className="w-4 h-4 text-emerald-600" />
-            {isEn ? "Assigned to Me (My Tasks)" : "Công việc của tôi (Được giao cho tôi)"}
+            {isEn ? "Assigned to Me" : "Được giao cho tôi"}
           </button>
 
           {!isStaff && (
@@ -324,67 +290,57 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
         </p>
       </div>
 
-      {/* Quick Status Tabs */}
+      {/* Static Statistical Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {[
-          {
-            key: "ALL" as ContractQuickStatusTab,
-            label: isEn ? "All Contracts" : "Tất cả",
-            count: stats.total,
-            tone: "border-slate-200 bg-white text-slate-800",
-          },
-          {
-            key: "DRAFT" as ContractQuickStatusTab,
-            label: isEn ? "Pending Check-in (DRAFT)" : "Chờ Check-in (DRAFT)",
-            count: stats.draft,
-            tone: "border-amber-200 bg-amber-50/50 text-amber-800",
-          },
-          {
-            key: "ACTIVE" as ContractQuickStatusTab,
-            label: isEn ? "Active Lease" : "Đang thuê (ACTIVE)",
-            count: stats.active,
-            tone: "border-emerald-200 bg-emerald-50/50 text-emerald-800",
-          },
-          {
-            key: "OVERDUE" as ContractQuickStatusTab,
-            label: isEn ? "Overdue" : "Quá hạn (OVERDUE)",
-            count: stats.overdue,
-            tone: "border-orange-200 bg-orange-50/50 text-orange-800",
-          },
-          {
-            key: "COMPLETED" as ContractQuickStatusTab,
-            label: isEn ? "Completed" : "Đã hoàn tất",
-            count: stats.completed,
-            tone: "border-sky-200 bg-sky-50/50 text-sky-800",
-          },
-          {
-            key: "TERMINATED_GROUP" as ContractQuickStatusTab,
-            label: isEn ? "Cancelled / Terminated" : "Đã huỷ / Chấm dứt",
-            count: stats.terminatedGroup,
-            tone: "border-rose-200 bg-rose-50/40 text-rose-800",
-          },
-        ].map((tab) => {
-          const isActive = quickTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => handleSelectQuickTab(tab.key)}
-              className={`p-3.5 rounded-2xl border text-left transition-all ${
-                isActive
-                  ? "ring-2 ring-emerald-500 border-emerald-500 bg-white shadow-md"
-                  : `${tab.tone} hover:shadow-sm`
-              }`}
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-bold truncate">{tab.label}</span>
-                <span className="px-2 py-0.5 rounded-full text-xs font-extrabold bg-white/90 border border-slate-200/80 text-slate-900">
-                  {tab.count}
-                </span>
-              </div>
-            </button>
-          );
-        })}
+        {(
+          [
+            {
+              key: "ALL" as ContractQuickStatusTab,
+              label: isEn ? "All Contracts" : "Tất cả",
+              count: stats.total,
+              tone: "border-slate-200 bg-white text-slate-800",
+            },
+            {
+              key: "DRAFT" as ContractQuickStatusTab,
+              label: isEn ? "Pending Check-in" : "Chờ ký & Check-in",
+              count: stats.draft,
+              tone: "border-amber-200 bg-amber-50/50 text-amber-800",
+            },
+            {
+              key: "ACTIVE" as ContractQuickStatusTab,
+              label: isEn ? "Active" : "Đang thuê",
+              count: stats.active,
+              tone: "border-emerald-200 bg-emerald-50/50 text-emerald-800",
+            },
+            {
+              key: "OVERDUE" as ContractQuickStatusTab,
+              label: isEn ? "Overdue" : "Quá hạn trả kho",
+              count: stats.overdue,
+              tone: "border-orange-200 bg-orange-50/50 text-orange-800",
+            },
+            {
+              key: "COMPLETED" as ContractQuickStatusTab,
+              label: isEn ? "Completed" : "Đã hoàn tất",
+              count: stats.completed,
+              tone: "border-sky-200 bg-sky-50/50 text-sky-800",
+            },
+            {
+              key: "TERMINATED_GROUP" as ContractQuickStatusTab,
+              label: isEn ? "Cancelled / Terminated" : "Đã huỷ / Chấm dứt",
+              count: stats.terminatedGroup,
+              tone: "border-rose-200 bg-rose-50/40 text-rose-800",
+            },
+          ] as const
+        ).map((tab) => (
+          <div key={tab.key} className={`p-3.5 rounded-2xl border text-left shadow-sm ${tab.tone}`}>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-bold truncate">{tab.label}</span>
+              <span className="px-2 py-0.5 rounded-full text-xs font-extrabold bg-white/90 border border-slate-200/80 text-slate-900">
+                {tab.count}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Filter & Search Toolbar */}
@@ -432,29 +388,26 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value as ContractStatusEnum | "");
-              setQuickTab("ALL");
               setPage(1);
             }}
             className={FILTER_CONTROL}
           >
             <option value="">{isEn ? "All Statuses" : "Tất cả trạng thái"}</option>
             <option value={ContractStatusEnum.DRAFT}>
-              {isEn ? "Draft (Pending Check-in)" : "Chờ Check-in (DRAFT)"}
+              {isEn ? "Pending Check-in" : "Chờ ký & Check-in"}
             </option>
-            <option value={ContractStatusEnum.ACTIVE}>
-              {isEn ? "Active" : "Đang thuê (ACTIVE)"}
-            </option>
+            <option value={ContractStatusEnum.ACTIVE}>{isEn ? "Active" : "Đang thuê"}</option>
             <option value={ContractStatusEnum.OVERDUE}>
-              {isEn ? "Overdue" : "Quá hạn (OVERDUE)"}
+              {isEn ? "Overdue" : "Quá hạn trả kho"}
             </option>
             <option value={ContractStatusEnum.COMPLETED}>
-              {isEn ? "Completed" : "Đã hoàn tất (COMPLETED)"}
+              {isEn ? "Completed" : "Đã hoàn tất"}
             </option>
             <option value={ContractStatusEnum.CANCELLED}>
-              {isEn ? "Cancelled" : "Đã huỷ (CANCELLED)"}
+              {isEn ? "Cancelled" : "Đã huỷ bản nháp"}
             </option>
             <option value={ContractStatusEnum.TERMINATED}>
-              {isEn ? "Terminated" : "Chấm dứt trước hạn (TERMINATED)"}
+              {isEn ? "Terminated" : "Chấm dứt trước hạn"}
             </option>
           </select>
 

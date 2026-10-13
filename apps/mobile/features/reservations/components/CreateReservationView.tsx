@@ -42,6 +42,7 @@ import {
   formatVnd,
   getTodayDateInput,
   parseAndValidateStartDate,
+  requiresAdvanceDayForCategory,
   resolveReservationErrorMessage,
 } from "../utils/reservationFormat";
 
@@ -142,9 +143,13 @@ export function CreateReservationView({
   }, [handoffPayload, activeFacilityId, facilityDetailQuery.data?.amenityOfferings]);
 
   const minRentalDays = Math.max(1, selectedOffering?.minRentalDays ?? 1);
+  const selectedCategory = selectedOffering?.unitType?.category;
+  const requiresAdvanceDay = requiresAdvanceDayForCategory(selectedCategory);
 
   // Form State (Sections 1.2 - 1.4)
-  const [startDateInput, setStartDateInput] = useState<string>(() => getTodayDateInput(0));
+  const [customStartDateInput, setCustomStartDateInput] = useState<string | null>(null);
+  const startDateInput = customStartDateInput ?? getTodayDateInput(requiresAdvanceDay ? 1 : 0);
+
   const [customRentalDuration, setCustomRentalDuration] = useState<number | null>(null);
   const [amenityQuantities, setAmenityQuantities] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState<string>("");
@@ -209,7 +214,7 @@ export function CreateReservationView({
       return;
     }
 
-    const parsedDate = parseAndValidateStartDate(startDateInput);
+    const parsedDate = parseAndValidateStartDate(startDateInput, selectedCategory);
     if (!parsedDate.isValidFormat) {
       setDateError(
         isEn
@@ -223,6 +228,14 @@ export function CreateReservationView({
         isEn
           ? "Start date cannot be in the past."
           : "Ngày bắt đầu thuê không được nằm trong quá khứ."
+      );
+      return;
+    }
+    if (!parsedDate.isSatisfyingAdvanceDay) {
+      setDateError(
+        isEn
+          ? "For Small, Medium, and Large storage units, the expected move-in date must be at least 1 day after today (to allow time for order processing)."
+          : "Đối với kho loại Small, Medium, Large thì ngày dự kiến bắt đầu thuê sẽ phải là sau 1 ngày hiện tại (để chừa thời gian tiếp nhận đơn)."
       );
       return;
     }
@@ -276,12 +289,19 @@ export function CreateReservationView({
     }
   };
 
-  const quickDateOptions = [
-    { label: isEn ? "Today" : "Hôm nay", value: getTodayDateInput(0) },
-    { label: isEn ? "Tomorrow" : "Ngày mai", value: getTodayDateInput(1) },
-    { label: isEn ? "+3 Days" : "+3 ngày", value: getTodayDateInput(3) },
-    { label: isEn ? "+7 Days" : "+7 ngày", value: getTodayDateInput(7) },
-  ];
+  const quickDateOptions = requiresAdvanceDay
+    ? [
+        { label: isEn ? "Tomorrow" : "Ngày mai", value: getTodayDateInput(1) },
+        { label: isEn ? "+2 Days" : "+2 ngày", value: getTodayDateInput(2) },
+        { label: isEn ? "+3 Days" : "+3 ngày", value: getTodayDateInput(3) },
+        { label: isEn ? "+7 Days" : "+7 ngày", value: getTodayDateInput(7) },
+      ]
+    : [
+        { label: isEn ? "Today" : "Hôm nay", value: getTodayDateInput(0) },
+        { label: isEn ? "Tomorrow" : "Ngày mai", value: getTodayDateInput(1) },
+        { label: isEn ? "+3 Days" : "+3 ngày", value: getTodayDateInput(3) },
+        { label: isEn ? "+7 Days" : "+7 ngày", value: getTodayDateInput(7) },
+      ];
 
   const quickDurationPresets = useMemo(() => {
     const candidates = minRentalDays < 30 ? [minRentalDays, 30, 90, 180, 360] : [30, 90, 180, 360];
@@ -555,10 +575,18 @@ export function CreateReservationView({
             {isEn ? "Expected Move-in Date (YYYY-MM-DD)" : "Ngày dự kiến bắt đầu thuê (YYYY-MM-DD)"}
           </Text>
 
+          {requiresAdvanceDay ? (
+            <Text className="text-[11px] font-medium text-amber-700 dark:text-amber-400 mb-2">
+              {isEn
+                ? "Note: Small, Medium, and Large storage units must be scheduled at least 1 day after today to allow time for order processing."
+                : "Lưu ý: Đối với kho loại Small, Medium, Large thì ngày dự kiến bắt đầu thuê phải sau ít nhất 1 ngày hiện tại (để chừa thời gian tiếp nhận đơn)."}
+            </Text>
+          ) : null}
+
           <TextInput
             value={startDateInput}
             onChangeText={(val) => {
-              setStartDateInput(val);
+              setCustomStartDateInput(val);
               setDateError(null);
             }}
             placeholder="YYYY-MM-DD"
@@ -573,7 +601,7 @@ export function CreateReservationView({
                 <Pressable
                   key={opt.label}
                   onPress={() => {
-                    setStartDateInput(opt.value);
+                    setCustomStartDateInput(opt.value);
                     setDateError(null);
                   }}
                   className={`rounded-xl border px-3 py-1.5 ${

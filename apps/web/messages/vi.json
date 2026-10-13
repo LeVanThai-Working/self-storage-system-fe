@@ -1278,9 +1278,9 @@
         "zonePlaceholder": "Ví dụ: A",
         "statusLabel": "Trạng thái",
         "statusOptions": {
-          "available": "Còn trống (Available)",
-          "under_maintenance": "Đang bảo trì (Under maintenance)",
-          "inactive": "Ngừng sử dụng (Inactive)"
+          "available": "Còn trống",
+          "under_maintenance": "Đang bảo trì",
+          "inactive": "Ngừng sử dụng"
         },
         "statusReadonly": "Trạng thái này do hệ thống cập nhật theo đặt chỗ / hợp đồng.",
         "notesLabel": "Ghi chú",
@@ -1435,21 +1435,21 @@
       },
       "quickTabs": {
         "all": "Tất cả đơn",
-        "pending": "Cần tiếp nhận mới",
-        "received": "Cần phân bổ kho",
-        "awaitingDeposit": "Đang chờ khách cọc",
-        "paymentSuccessful": "Cần xác nhận chốt đơn",
-        "confirmed": "Đã xác nhận (Chờ nhận kho)",
-        "closed": "Hoàn tất / Đã đóng"
+        "pending": "Chờ tiếp nhận",
+        "received": "Đã tiếp nhận",
+        "awaitingDeposit": "Chờ đặt cọc",
+        "paymentSuccessful": "Đã đặt cọc",
+        "confirmed": "Đã xác nhận",
+        "closed": "Đã hoàn tất"
       },
       "statuses": {
         "pending": "Chờ tiếp nhận",
-        "received": "Đã tiếp nhận (Chờ gán kho)",
+        "received": "Đã tiếp nhận",
         "pending_payment": "Chờ khách đặt cọc",
         "payment_failed": "Thanh toán cọc lỗi",
-        "payment_successful": "Đã đặt cọc (Chờ xác nhận)",
+        "payment_successful": "Đã đặt cọc",
         "confirmed": "Đã xác nhận giữ kho",
-        "completed": "Đã bàn giao (Hoàn tất)",
+        "completed": "Đã hoàn tất",
         "cancelled": "Đã hủy",
         "rejected": "Đã từ chối",
         "expired": "Quá hạn giữ chỗ"

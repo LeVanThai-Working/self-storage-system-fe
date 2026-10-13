@@ -85,7 +85,6 @@ export const ManagerReservationsView: React.FC = () => {
   const facilityId = facility?.id;
 
   // Filter states
-  const [quickTab, setQuickTab] = useState<ManagerReservationQuickTab>("ALL");
   const [statusFilter, setStatusFilter] = useState<ReservationStatusEnum | "">("");
   const [codeInput, setCodeInput] = useState("");
   const [debouncedCode, setDebouncedCode] = useState("");
@@ -182,34 +181,6 @@ export const ManagerReservationsView: React.FC = () => {
     }, 4000);
   };
 
-  const handleSelectQuickTab = (tab: ManagerReservationQuickTab) => {
-    setQuickTab(tab);
-    setPage(1);
-    switch (tab) {
-      case "ALL":
-        setStatusFilter("");
-        break;
-      case "PENDING":
-        setStatusFilter(ReservationStatusEnum.PENDING);
-        break;
-      case "RECEIVED":
-        setStatusFilter(ReservationStatusEnum.RECEIVED);
-        break;
-      case "AWAITING_DEPOSIT":
-        setStatusFilter(ReservationStatusEnum.PENDING_PAYMENT);
-        break;
-      case "PAYMENT_SUCCESSFUL":
-        setStatusFilter(ReservationStatusEnum.PAYMENT_SUCCESSFUL);
-        break;
-      case "CONFIRMED":
-        setStatusFilter(ReservationStatusEnum.CONFIRMED);
-        break;
-      case "CLOSED":
-        setStatusFilter(ReservationStatusEnum.COMPLETED);
-        break;
-    }
-  };
-
   const hasActiveFilters = Boolean(
     statusFilter ||
     debouncedCode ||
@@ -221,7 +192,6 @@ export const ManagerReservationsView: React.FC = () => {
   );
 
   const clearAllFilters = () => {
-    setQuickTab("ALL");
     setStatusFilter("");
     setCodeInput("");
     setDebouncedCode("");
@@ -296,7 +266,6 @@ export const ManagerReservationsView: React.FC = () => {
     count: number;
     icon: React.ComponentType<{ className?: string }>;
     accent: string;
-    activeRing: string;
   }[] = [
     {
       key: "ALL",
@@ -304,7 +273,6 @@ export const ManagerReservationsView: React.FC = () => {
       count: stats.total,
       icon: ClipboardList,
       accent: "text-slate-700 bg-slate-100",
-      activeRing: "border-slate-800 bg-slate-900 text-white",
     },
     {
       key: "PENDING",
@@ -312,7 +280,6 @@ export const ManagerReservationsView: React.FC = () => {
       count: stats.pending,
       icon: Sparkles,
       accent: "text-amber-700 bg-amber-50",
-      activeRing: "border-amber-500 bg-amber-50/90 text-amber-900 ring-2 ring-amber-500/20",
     },
     {
       key: "RECEIVED",
@@ -320,7 +287,6 @@ export const ManagerReservationsView: React.FC = () => {
       count: stats.received,
       icon: Boxes,
       accent: "text-sky-700 bg-sky-50",
-      activeRing: "border-sky-500 bg-sky-50/90 text-sky-900 ring-2 ring-sky-500/20",
     },
     {
       key: "AWAITING_DEPOSIT",
@@ -328,7 +294,6 @@ export const ManagerReservationsView: React.FC = () => {
       count: stats.awaitingDeposit,
       icon: Clock,
       accent: "text-orange-700 bg-orange-50",
-      activeRing: "border-orange-500 bg-orange-50/90 text-orange-900 ring-2 ring-orange-500/20",
     },
     {
       key: "PAYMENT_SUCCESSFUL",
@@ -336,7 +301,6 @@ export const ManagerReservationsView: React.FC = () => {
       count: stats.paymentSuccessful,
       icon: CreditCard,
       accent: "text-teal-700 bg-teal-50",
-      activeRing: "border-teal-500 bg-teal-50/90 text-teal-900 ring-2 ring-teal-500/20",
     },
     {
       key: "CONFIRMED",
@@ -344,7 +308,6 @@ export const ManagerReservationsView: React.FC = () => {
       count: stats.confirmed,
       icon: ShieldCheck,
       accent: "text-emerald-700 bg-emerald-50",
-      activeRing: "border-emerald-500 bg-emerald-50/90 text-emerald-900 ring-2 ring-emerald-500/20",
     },
     {
       key: "CLOSED",
@@ -352,7 +315,6 @@ export const ManagerReservationsView: React.FC = () => {
       count: stats.closed,
       icon: PackageCheck,
       accent: "text-indigo-700 bg-indigo-50",
-      activeRing: "border-indigo-500 bg-indigo-50/90 text-indigo-900 ring-2 ring-indigo-500/20",
     },
   ];
 
@@ -407,46 +369,29 @@ export const ManagerReservationsView: React.FC = () => {
         </div>
       )}
 
-      {/* Section 1A: Quick Filter Cards */}
+      {/* Section 1A: Static Statistical Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
         {quickTabs.map((tab) => {
           const Icon = tab.icon;
-          const isActive = quickTab === tab.key;
           return (
-            <button
+            <div
               key={tab.key}
-              type="button"
-              onClick={() => handleSelectQuickTab(tab.key)}
-              className={`text-left p-3.5 rounded-2xl border transition-all flex flex-col justify-between gap-2 ${
-                isActive
-                  ? tab.activeRing
-                  : "bg-white border-slate-100 hover:border-slate-200 shadow-sm"
-              }`}
+              className="text-left p-3.5 rounded-2xl border bg-white border-slate-100 shadow-sm flex flex-col justify-between gap-2"
             >
               <div className="flex items-center justify-between gap-2 w-full">
                 <div
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-                    isActive && tab.key === "ALL" ? "bg-white/15 text-white" : tab.accent
-                  }`}
+                  className={`w-8 h-8 rounded-xl flex items-center justify-center ${tab.accent}`}
                 >
                   <Icon className="w-4 h-4" />
                 </div>
-                <span
-                  className={`text-lg font-extrabold tracking-tight ${
-                    isActive && tab.key === "ALL" ? "text-white" : "text-slate-900"
-                  }`}
-                >
+                <span className="text-lg font-extrabold tracking-tight text-slate-900">
                   {stats.isLoading ? "…" : tab.count}
                 </span>
               </div>
-              <p
-                className={`text-xs font-bold leading-snug line-clamp-2 ${
-                  isActive && tab.key === "ALL" ? "text-slate-100" : "text-slate-600"
-                }`}
-              >
+              <p className="text-xs font-bold leading-snug line-clamp-2 text-slate-600">
                 {tab.label}
               </p>
-            </button>
+            </div>
           );
         })}
       </div>
@@ -473,7 +418,6 @@ export const ManagerReservationsView: React.FC = () => {
               const next = e.target.value as ReservationStatusEnum | "";
               setStatusFilter(next);
               setPage(1);
-              if (!next) setQuickTab("ALL");
             }}
             className={FILTER_CONTROL}
           >
@@ -774,7 +718,7 @@ export const ManagerReservationsView: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => setAssignTarget(item)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm"
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
                               >
                                 <Boxes className="w-3 h-3" />
                                 {tActions("assignUnitShort")}
@@ -796,7 +740,7 @@ export const ManagerReservationsView: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => setAssignTarget(item)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
                               >
                                 <Boxes className="w-3 h-3" />
                                 {tActions("assignUnit")}
@@ -840,7 +784,7 @@ export const ManagerReservationsView: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => setConfirmTarget(item)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
                             >
                               <ShieldCheck className="w-3 h-3" />
                               {tActions("confirmOrder")}
@@ -854,7 +798,7 @@ export const ManagerReservationsView: React.FC = () => {
                                 <button
                                   type="button"
                                   onClick={() => setCreateContractTarget(item)}
-                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
                                 >
                                   <FileCheck2 className="w-3 h-3" />
                                   {tActions("createContractShort")}

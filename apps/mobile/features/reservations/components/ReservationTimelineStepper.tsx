@@ -11,11 +11,13 @@ import {
   Timer,
   RefreshCw,
   UserCheck,
+  QrCode,
 } from "lucide-react-native";
-import type {
-  ContractResponse,
-  MessageLocale,
-  ReservationResponse,
+import {
+  ReservationStatusEnum,
+  type ContractResponse,
+  type MessageLocale,
+  type ReservationResponse,
 } from "@self-storage-system-fe/shared";
 import { buildReservationTimeline, formatDateTime, formatVnd } from "../utils/reservationFormat";
 
@@ -25,6 +27,7 @@ interface ReservationTimelineStepperProps {
   locale?: MessageLocale;
   countdownFormatted?: string;
   isExpiredCountdown?: boolean;
+  onPayDepositPress?: () => void;
   onRetryPaymentPress?: () => void;
   isRetryingPayment?: boolean;
 }
@@ -35,6 +38,7 @@ export function ReservationTimelineStepper({
   locale = "vi",
   countdownFormatted,
   isExpiredCountdown = false,
+  onPayDepositPress,
   onRetryPaymentPress,
   isRetryingPayment = false,
 }: ReservationTimelineStepperProps) {
@@ -208,13 +212,31 @@ export function ReservationTimelineStepper({
                   </View>
                 ) : null}
 
+                {/* Step 3 Action Button: Pay Deposit & Show VietQR when status === PENDING_PAYMENT */}
+                {step.stepNumber === 3 &&
+                isCurrent &&
+                reservation.status === ReservationStatusEnum.PENDING_PAYMENT &&
+                onPayDepositPress ? (
+                  <Pressable
+                    onPress={onPayDepositPress}
+                    className="mt-2.5 flex-row items-center justify-center gap-2 self-start rounded-xl bg-cta px-3.5 py-2 shadow-sm active:opacity-85"
+                  >
+                    <QrCode size={14} color="#FFFFFF" />
+                    <Text className="text-xs font-bold text-white">
+                      {isEn
+                        ? `Pay Deposit (${formatVnd(reservation.depositAmount)}) • Show QR`
+                        : `Thanh toán cọc (${formatVnd(reservation.depositAmount)}) • Hiển thị mã QR`}
+                    </Text>
+                  </Pressable>
+                ) : null}
+
                 {/* PAYMENT_FAILED Warning Box at Step 3 */}
                 {isWarning && step.errorText ? (
                   <View className="mt-2.5 rounded-xl border border-red-200 dark:border-red-900/70 bg-red-50/90 dark:bg-red-950/40 p-3">
                     <Text className="text-xs font-semibold text-red-700 dark:text-red-300 leading-4">
                       {step.errorText}
                     </Text>
-                    {onRetryPaymentPress && !isExpiredCountdown ? (
+                    {onRetryPaymentPress ? (
                       <Pressable
                         onPress={onRetryPaymentPress}
                         disabled={isRetryingPayment}
@@ -222,7 +244,9 @@ export function ReservationTimelineStepper({
                       >
                         <RefreshCw size={12} color="#FFFFFF" />
                         <Text className="text-[11px] font-bold text-white">
-                          {isEn ? "Retry Deposit Payment" : "Thanh toán lại ngay"}
+                          {isEn
+                            ? "Retry Deposit Payment (Show QR)"
+                            : "Thanh toán lại ngay (Hiển thị mã QR)"}
                         </Text>
                       </Pressable>
                     ) : null}

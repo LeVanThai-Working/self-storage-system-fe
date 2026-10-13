@@ -28,7 +28,7 @@ export function getContractStatusTone(status: ContractStatusEnum | string): Cont
         border: "border-amber-200",
         dot: "bg-amber-500",
         labelVi: "Chờ ký & Check-in",
-        labelEn: "Draft (Pending Sign & Check-in)",
+        labelEn: "Pending Check-in",
       };
     case ContractStatusEnum.ACTIVE:
       return {
@@ -221,7 +221,7 @@ export function getAddendumStatusTone(
         border: "border-amber-200",
         dot: "bg-amber-500",
         labelVi: "Chờ Quản lý duyệt",
-        labelEn: "Pending Manager Approval",
+        labelEn: "Pending Approval",
       };
     case ContractAddendumStatusEnum.DRAFT:
       return {
@@ -229,8 +229,8 @@ export function getAddendumStatusTone(
         text: "text-teal-700",
         border: "border-teal-200",
         dot: "bg-teal-500",
-        labelVi: "Chờ lắp đặt/tháo dỡ & Ký 2 bên (DRAFT)",
-        labelEn: "Draft (Pending 2-Party Sign)",
+        labelVi: "Chờ ký 2 bên",
+        labelEn: "Pending Signature",
       };
     case ContractAddendumStatusEnum.ACTIVE:
       return {
@@ -238,7 +238,7 @@ export function getAddendumStatusTone(
         text: "text-emerald-700",
         border: "border-emerald-200",
         dot: "bg-emerald-500",
-        labelVi: "Đã kích hoạt (ACTIVE)",
+        labelVi: "Đã kích hoạt",
         labelEn: "Active",
       };
     case ContractAddendumStatusEnum.REJECTED:

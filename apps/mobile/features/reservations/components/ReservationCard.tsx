@@ -54,10 +54,6 @@ export function ReservationCard({
   const isPendingPayment = reservation.status === ReservationStatusEnum.PENDING_PAYMENT;
   const isPaymentFailed = reservation.status === ReservationStatusEnum.PAYMENT_FAILED;
 
-  const [mountTimeMs] = React.useState(() => Date.now());
-  const isNotExpired =
-    !reservation.expiresAt || new Date(reservation.expiresAt).getTime() > mountTimeMs;
-
   return (
     <Pressable
       onPress={() => onPress(reservation)}
@@ -195,7 +191,7 @@ export function ReservationCard({
           </Text>
         </View>
 
-        {(isPendingPayment || isPaymentFailed) && isNotExpired && onPayDepositPress ? (
+        {(isPendingPayment || isPaymentFailed) && onPayDepositPress ? (
           <Pressable
             onPress={() => onPayDepositPress(reservation)}
             className="flex-row items-center gap-1.5 rounded-xl bg-cta px-3.5 py-2.5 shadow-sm active:opacity-85"

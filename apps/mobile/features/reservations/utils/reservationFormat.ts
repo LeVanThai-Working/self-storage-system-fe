@@ -4,6 +4,7 @@ import {
   MESSAGE_CODE,
   PaymentStatusEnum,
   ReservationStatusEnum,
+  UnitTypeCategoryEnum,
   formatCurrency,
   resolveMessageCode,
   type ContractResponse,
@@ -11,6 +12,22 @@ import {
   type ReservationResponse,
 } from "@self-storage-system-fe/shared";
 import { AppApiError } from "@/lib/api/axios";
+
+/**
+ * Checks whether a storage unit category (SMALL, MEDIUM, LARGE) requires at least 1 day
+ * advance notice from today for order processing.
+ */
+export function requiresAdvanceDayForCategory(
+  category?: UnitTypeCategoryEnum | string | null
+): boolean {
+  if (!category) return false;
+  const normalized = String(category).toLowerCase();
+  return (
+    normalized === UnitTypeCategoryEnum.SMALL ||
+    normalized === UnitTypeCategoryEnum.MEDIUM ||
+    normalized === UnitTypeCategoryEnum.LARGE
+  );
+}
 
 /**
  * Formats VND currency safely.
@@ -81,16 +98,25 @@ export function isoToDateInput(isoStr?: string | null): string {
 
 /**
  * Parses `YYYY-MM-DD` or `DD/MM/YYYY` or ISO string into a valid ISO 8601 string,
- * and checks whether it is >= startOfToday.
+ * and checks whether it is >= startOfToday (and >= startOfTomorrow for SMALL, MEDIUM, LARGE).
  */
-export function parseAndValidateStartDate(dateInput: string): {
+export function parseAndValidateStartDate(
+  dateInput: string,
+  category?: UnitTypeCategoryEnum | string | null
+): {
   isValidFormat: boolean;
   isNotInPast: boolean;
+  isSatisfyingAdvanceDay: boolean;
   isoString: string;
 } {
   const trimmed = dateInput.trim();
   if (!trimmed) {
-    return { isValidFormat: false, isNotInPast: false, isoString: "" };
+    return {
+      isValidFormat: false,
+      isNotInPast: false,
+      isSatisfyingAdvanceDay: false,
+      isoString: "",
+    };
   }
 
   let year = 0;
@@ -111,7 +137,12 @@ export function parseAndValidateStartDate(dateInput: string): {
   } else {
     const parsed = new Date(trimmed);
     if (Number.isNaN(parsed.getTime())) {
-      return { isValidFormat: false, isNotInPast: false, isoString: "" };
+      return {
+        isValidFormat: false,
+        isNotInPast: false,
+        isSatisfyingAdvanceDay: false,
+        isoString: "",
+      };
     }
     year = parsed.getFullYear();
     month = parsed.getMonth() + 1;
@@ -119,7 +150,12 @@ export function parseAndValidateStartDate(dateInput: string): {
   }
 
   if (month < 1 || month > 12 || day < 1 || day > 31 || year < 2000) {
-    return { isValidFormat: false, isNotInPast: false, isoString: "" };
+    return {
+      isValidFormat: false,
+      isNotInPast: false,
+      isSatisfyingAdvanceDay: false,
+      isoString: "",
+    };
   }
 
   const candidateLocal = new Date(year, month - 1, day, 9, 0, 0, 0);
@@ -128,16 +164,41 @@ export function parseAndValidateStartDate(dateInput: string): {
     candidateLocal.getMonth() !== month - 1 ||
     candidateLocal.getDate() !== day
   ) {
-    return { isValidFormat: false, isNotInPast: false, isoString: "" };
+    return {
+      isValidFormat: false,
+      isNotInPast: false,
+      isSatisfyingAdvanceDay: false,
+      isoString: "",
+    };
   }
 
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  const startOfTomorrow = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+    0,
+    0,
+    0,
+    0
+  );
+  const needsAdvanceDay = requiresAdvanceDayForCategory(category);
 
   if (candidateLocal.getTime() < startOfToday.getTime()) {
     return {
       isValidFormat: true,
       isNotInPast: false,
+      isSatisfyingAdvanceDay: false,
+      isoString: candidateLocal.toISOString(),
+    };
+  }
+
+  if (needsAdvanceDay && candidateLocal.getTime() < startOfTomorrow.getTime()) {
+    return {
+      isValidFormat: true,
+      isNotInPast: true,
+      isSatisfyingAdvanceDay: false,
       isoString: candidateLocal.toISOString(),
     };
   }
@@ -147,6 +208,7 @@ export function parseAndValidateStartDate(dateInput: string): {
   return {
     isValidFormat: true,
     isNotInPast: true,
+    isSatisfyingAdvanceDay: true,
     isoString: new Date(safeTimestamp).toISOString(),
   };
 }

@@ -68,7 +68,7 @@ export function getContractStatusMeta(
       };
     case ContractStatusEnum.COMPLETED:
       return {
-        label: isEn ? "Completed (Checked Out)" : "Đã trả kho (Hoàn tất)",
+        label: isEn ? "Checked Out" : "Đã trả kho",
         description: isEn
           ? "Storage unit has been returned and deposit settlement is complete."
           : "Đã hoàn tất thủ tục trả kho và quyết toán tiền đặt cọc.",

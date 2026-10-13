@@ -410,7 +410,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   type="button"
                   disabled={!canCheckIn}
                   onClick={() => setIsCheckInOpen(true)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-md shadow-emerald-500/20 disabled:opacity-40 transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-500/20 disabled:opacity-40 transition-all"
                 >
                   <ClipboardCheck className="w-4 h-4" />
                   {isEn ? "Confirm Handover & Sign (Staff)" : "Xác nhận bàn giao kho & Ký (Staff)"}
@@ -580,7 +580,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 {isOverdue
                   ? isEn
                     ? "This contract is currently OVERDUE. Please renew the lease or perform Check-out settlement."
-                    : "Hợp đồng đang quá hạn trả kho (OVERDUE). Vui lòng gia hạn hợp đồng hoặc làm thủ tục Check-out thanh lý."
+                    : "Hợp đồng đang quá hạn trả kho. Vui lòng gia hạn hợp đồng hoặc làm thủ tục Check-out thanh lý."
                   : isEn
                     ? "Manage add-on amenities, extend the lease end date, or inspect the unit for Check-out."
                     : "Quản lý tiện ích đi kèm, gia hạn thời gian thuê kho hoặc làm biên bản kiểm tra trả kho (Check-out)."}
@@ -594,7 +594,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
-                {isEn ? "Renew Contract" : "Gia hạn hợp đồng (Renew)"}
+                {isEn ? "Renew Contract" : "Gia hạn hợp đồng"}
               </button>
 
               <button
@@ -603,7 +603,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm transition-colors"
               >
                 <LogOut className="w-4 h-4" />
-                {isEn ? "Check-out (Return Unit)" : "Làm thủ tục Check-out (Trả kho)"}
+                {isEn ? "Check-out" : "Làm thủ tục trả kho"}
               </button>
 
               {/* Terminate button ONLY visible for FACILITY_MANAGER */}
@@ -614,7 +614,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors"
                 >
                   <ShieldAlert className="w-4 h-4" />
-                  {isEn ? "Terminate Contract" : "Chấm dứt hợp đồng (Terminate)"}
+                  {isEn ? "Terminate Contract" : "Chấm dứt hợp đồng"}
                 </button>
               )}
             </div>
@@ -653,14 +653,12 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 <strong className="text-slate-900">{formatVnd(contract.depositAmount)}</strong>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-200/70">
-                <span className="text-slate-600">
-                  {isEn ? "Overdue Fee:" : "Phí quá hạn (overdueFee):"}
-                </span>
+                <span className="text-slate-600">{isEn ? "Overdue Fee:" : "Phí quá hạn:"}</span>
                 <strong className="text-orange-600">{formatVnd(contract.overdueFee)}</strong>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-200/70">
                 <span className="text-slate-600">
-                  {isEn ? "Damage Compensation Fee:" : "Phí đền bù hư hại (damageFee):"}
+                  {isEn ? "Damage Compensation Fee:" : "Phí đền bù hư hại:"}
                 </span>
                 <strong className="text-rose-600">{formatVnd(contract.damageFee)}</strong>
               </div>
@@ -707,8 +705,8 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   </h3>
                   <p className="text-xs text-slate-500">
                     {isEn
-                      ? "After check-out, the physical unit enters UNDER_MAINTENANCE until staff finishes cleaning."
-                      : "Sau khi Check-out, kho vật lý tự động chuyển sang Đang bảo trì (UNDER_MAINTENANCE) để chờ nhân viên dọn dẹp."}
+                      ? "After check-out, the physical unit enters Under maintenance until staff finishes cleaning."
+                      : "Sau khi Check-out, kho vật lý tự động chuyển sang Đang bảo trì để chờ nhân viên dọn dẹp."}
                   </p>
                 </div>
               </div>
@@ -735,11 +733,11 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   >
                     {isUnitUnderMaintenance
                       ? isEn
-                        ? "UNDER_MAINTENANCE (Waiting for cleaning)"
-                        : "UNDER_MAINTENANCE (Đang chờ vệ sinh)"
+                        ? "Under maintenance"
+                        : "Đang bảo trì"
                       : isEn
-                        ? "AVAILABLE (Ready for next lease)"
-                        : "AVAILABLE (Đã mở lại sẵn sàng đón khách)"}
+                        ? "Available"
+                        : "Còn trống"}
                   </span>
                 </p>
               </div>
@@ -750,7 +748,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 type="button"
                 onClick={handleReopenStorageUnit}
                 disabled={maintenanceMutation.isPending}
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-extrabold shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 {maintenanceMutation.isPending
@@ -758,8 +756,8 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                     ? "Reopening Storage Unit..."
                     : "Đang mở lại kho..."
                   : isEn
-                    ? "Complete Cleaning & Reopen Unit (AVAILABLE)"
-                    : "Hoàn tất dọn dẹp & Mở lại kho (AVAILABLE)"}
+                    ? "Complete Cleaning & Reopen Unit"
+                    : "Hoàn tất dọn dẹp & Mở lại kho"}
               </button>
             ) : (
               <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs font-bold text-emerald-800 flex items-center gap-2">
