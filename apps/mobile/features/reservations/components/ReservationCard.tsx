@@ -3,7 +3,9 @@ import { View, Pressable } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import {
+  ContractStatusEnum,
   ReservationStatusEnum,
+  type ContractResponse,
   type MessageLocale,
   type ReservationResponse,
 } from "@self-storage-system-fe/shared";
@@ -14,8 +16,10 @@ import {
   QrCode,
   ChevronRight,
   Clock,
+  FileText,
   RefreshCw,
 } from "lucide-react-native";
+import { getContractStatusMeta } from "@/features/contracts/utils/contractFormat";
 import {
   formatDateShort,
   formatDateTime,
@@ -26,26 +30,29 @@ import {
 
 interface ReservationCardProps {
   reservation: ReservationResponse;
+  linkedContract?: ContractResponse | null;
   locale?: MessageLocale;
   onPress: (reservation: ReservationResponse) => void;
   onPayDepositPress?: (reservation: ReservationResponse) => void;
+  onViewContractPress?: (contract: ContractResponse) => void;
 }
 
 export function ReservationCard({
   reservation,
+  linkedContract,
   locale = "vi",
   onPress,
   onPayDepositPress,
+  onViewContractPress,
 }: ReservationCardProps) {
   const isEn = locale === "en";
   const statusMeta = getReservationStatusMeta(reservation.status, locale);
+  const contractStatusMeta = linkedContract
+    ? getContractStatusMeta(linkedContract.status, locale)
+    : null;
 
   const isPendingPayment = reservation.status === ReservationStatusEnum.PENDING_PAYMENT;
   const isPaymentFailed = reservation.status === ReservationStatusEnum.PAYMENT_FAILED;
-
-  const [mountTimeMs] = React.useState(() => Date.now());
-  const isNotExpired =
-    !reservation.expiresAt || new Date(reservation.expiresAt).getTime() > mountTimeMs;
 
   return (
     <Pressable
@@ -64,7 +71,11 @@ export function ReservationCard({
               style={{ backgroundColor: statusMeta.dotColor }}
             />
             <Text className="text-[11px] font-semibold text-neutral-500 dark:text-neutral-400">
-              {statusMeta.compactStepLabel}
+              {linkedContract?.status === ContractStatusEnum.DRAFT
+                ? isEn
+                  ? "Step 6/6: Contract Created (Awaiting Check-in)"
+                  : "Bước 6/6: Đã tạo hợp đồng"
+                : statusMeta.compactStepLabel}
             </Text>
           </View>
         </View>
@@ -131,6 +142,28 @@ export function ReservationCard({
           </View>
         ) : null}
 
+        {linkedContract && contractStatusMeta ? (
+          <View className="flex-row items-center justify-between border-t border-neutral-200/70 dark:border-neutral-700/70 pt-2">
+            <View className="flex-row items-center gap-1.5 flex-1 pr-2">
+              <FileText size={13} color="#0B927E" />
+              <Text
+                className="text-xs font-bold text-neutral-dark dark:text-neutral-100"
+                numberOfLines={1}
+              >
+                {isEn ? "Contract:" : "Hợp đồng:"} #{linkedContract.contractCode}
+              </Text>
+            </View>
+            <Badge
+              variant="outline"
+              className={`${contractStatusMeta.badgeBorderClass} ${contractStatusMeta.badgeBgClass} px-2 py-0.5`}
+            >
+              <Text className={`text-[10px] font-bold ${contractStatusMeta.badgeTextClass}`}>
+                {contractStatusMeta.label}
+              </Text>
+            </Badge>
+          </View>
+        ) : null}
+
         {isPendingPayment && reservation.expiresAt ? (
           <View className="flex-row items-center gap-1.5 border-t border-neutral-200/70 dark:border-neutral-700/70 pt-2">
             <Clock size={12} color="#FF702E" />
@@ -158,7 +191,7 @@ export function ReservationCard({
           </Text>
         </View>
 
-        {(isPendingPayment || isPaymentFailed) && isNotExpired && onPayDepositPress ? (
+        {(isPendingPayment || isPaymentFailed) && onPayDepositPress ? (
           <Pressable
             onPress={() => onPayDepositPress(reservation)}
             className="flex-row items-center gap-1.5 rounded-xl bg-cta px-3.5 py-2.5 shadow-sm active:opacity-85"
@@ -176,6 +209,22 @@ export function ReservationCard({
                 : isEn
                   ? "Pay Deposit"
                   : "Thanh toán cọc"}
+            </Text>
+          </Pressable>
+        ) : linkedContract && onViewContractPress ? (
+          <Pressable
+            onPress={() => onViewContractPress(linkedContract)}
+            className="flex-row items-center gap-1.5 rounded-xl bg-brand px-3.5 py-2.5 shadow-sm active:opacity-85"
+          >
+            <FileText size={14} color="#FFFFFF" />
+            <Text className="text-xs font-bold text-white">
+              {linkedContract.status === ContractStatusEnum.DRAFT
+                ? isEn
+                  ? "View Check-in Contract"
+                  : "Xem hợp đồng"
+                : isEn
+                  ? "View Contract"
+                  : "Xem hợp đồng"}
             </Text>
           </Pressable>
         ) : (

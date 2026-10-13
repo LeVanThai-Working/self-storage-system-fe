@@ -11,6 +11,12 @@ export interface BankInfoResponse {
   accountName: string;
 }
 
+export interface BankAccountResponse {
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+}
+
 export interface PaymentResponse {
   id: string;
   paymentCode: string;
@@ -20,17 +26,20 @@ export interface PaymentResponse {
   customerId: string;
   facilityId: string;
   amount: number;
+  currency?: string;
   paidAmount: number;
   overpaidAmount: number;
   method: PaymentMethodEnum;
   status: PaymentStatusEnum;
   qrUrl?: string | null;
   bankInfo?: BankInfoResponse | null;
+  bankAccount?: BankAccountResponse | null;
   expiresAt?: string | null;
+  expiredAt?: string | null;
   paidAt?: string | null;
-  sepayTransactionId?: number | null;
+  sepayTransactionId?: string | number | null;
   referenceCode?: string | null;
-  confirmedBy?: ReservationUserSnapshot | null;
+  confirmedBy?: ReservationUserSnapshot | string | null;
   confirmedAt?: string | null;
   cancelledBy?: ReservationUserSnapshot | null;
   cancelledAt?: string | null;

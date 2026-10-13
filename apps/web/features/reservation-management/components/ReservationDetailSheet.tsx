@@ -50,6 +50,7 @@ interface ReservationDetailSheetProps {
   onOpenConfirm: (reservation: ReservationResponse) => void;
   onOpenCancel: (reservation: ReservationResponse) => void;
   onOpenManualPayment: (reservation: ReservationResponse) => void;
+  onOpenCreateContract: (reservation: ReservationResponse) => void;
   onComplete: (reservation: ReservationResponse) => void;
   isReceiving?: boolean;
   isCompleting?: boolean;
@@ -67,6 +68,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   onOpenConfirm,
   onOpenCancel,
   onOpenManualPayment,
+  onOpenCreateContract,
   onComplete,
   isReceiving = false,
   isCompleting = false,
@@ -100,6 +102,8 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
     status === ReservationStatusEnum.PENDING_PAYMENT ||
     status === ReservationStatusEnum.PAYMENT_FAILED;
   const canConfirm = status === ReservationStatusEnum.PAYMENT_SUCCESSFUL;
+  const canCreateContract =
+    status === ReservationStatusEnum.CONFIRMED && Boolean(reservation.storageUnitId);
   const canComplete = status === ReservationStatusEnum.CONFIRMED;
   const canCancel =
     status === ReservationStatusEnum.PENDING ||
@@ -559,7 +563,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                   onClose();
                   onOpenAssignUnit(reservation);
                 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
               >
                 <Boxes className="w-3.5 h-3.5" />
                 {tActions("assignUnit")}
@@ -587,14 +591,28 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                   onClose();
                   onOpenConfirm(reservation);
                 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
               >
                 <ShieldCheck className="w-3.5 h-3.5" />
                 {tActions("confirmOrder")}
               </button>
             )}
 
-            {canComplete && (
+            {canCreateContract && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenCreateContract(reservation);
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+              >
+                <FileCheck2 className="w-3.5 h-3.5" />
+                {tActions("createContract")}
+              </button>
+            )}
+
+            {canComplete && !canCreateContract && (
               <button
                 type="button"
                 onClick={() => onComplete(reservation)}

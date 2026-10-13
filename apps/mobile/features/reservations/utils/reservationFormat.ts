@@ -1,14 +1,33 @@
 import {
   BillingUnitEnum,
+  ContractStatusEnum,
   MESSAGE_CODE,
   PaymentStatusEnum,
   ReservationStatusEnum,
+  UnitTypeCategoryEnum,
   formatCurrency,
   resolveMessageCode,
+  type ContractResponse,
   type MessageLocale,
   type ReservationResponse,
 } from "@self-storage-system-fe/shared";
 import { AppApiError } from "@/lib/api/axios";
+
+/**
+ * Checks whether a storage unit category (SMALL, MEDIUM, LARGE) requires at least 1 day
+ * advance notice from today for order processing.
+ */
+export function requiresAdvanceDayForCategory(
+  category?: UnitTypeCategoryEnum | string | null
+): boolean {
+  if (!category) return false;
+  const normalized = String(category).toLowerCase();
+  return (
+    normalized === UnitTypeCategoryEnum.SMALL ||
+    normalized === UnitTypeCategoryEnum.MEDIUM ||
+    normalized === UnitTypeCategoryEnum.LARGE
+  );
+}
 
 /**
  * Formats VND currency safely.
@@ -79,16 +98,25 @@ export function isoToDateInput(isoStr?: string | null): string {
 
 /**
  * Parses `YYYY-MM-DD` or `DD/MM/YYYY` or ISO string into a valid ISO 8601 string,
- * and checks whether it is >= startOfToday.
+ * and checks whether it is >= startOfToday (and >= startOfTomorrow for SMALL, MEDIUM, LARGE).
  */
-export function parseAndValidateStartDate(dateInput: string): {
+export function parseAndValidateStartDate(
+  dateInput: string,
+  category?: UnitTypeCategoryEnum | string | null
+): {
   isValidFormat: boolean;
   isNotInPast: boolean;
+  isSatisfyingAdvanceDay: boolean;
   isoString: string;
 } {
   const trimmed = dateInput.trim();
   if (!trimmed) {
-    return { isValidFormat: false, isNotInPast: false, isoString: "" };
+    return {
+      isValidFormat: false,
+      isNotInPast: false,
+      isSatisfyingAdvanceDay: false,
+      isoString: "",
+    };
   }
 
   let year = 0;
@@ -109,7 +137,12 @@ export function parseAndValidateStartDate(dateInput: string): {
   } else {
     const parsed = new Date(trimmed);
     if (Number.isNaN(parsed.getTime())) {
-      return { isValidFormat: false, isNotInPast: false, isoString: "" };
+      return {
+        isValidFormat: false,
+        isNotInPast: false,
+        isSatisfyingAdvanceDay: false,
+        isoString: "",
+      };
     }
     year = parsed.getFullYear();
     month = parsed.getMonth() + 1;
@@ -117,7 +150,12 @@ export function parseAndValidateStartDate(dateInput: string): {
   }
 
   if (month < 1 || month > 12 || day < 1 || day > 31 || year < 2000) {
-    return { isValidFormat: false, isNotInPast: false, isoString: "" };
+    return {
+      isValidFormat: false,
+      isNotInPast: false,
+      isSatisfyingAdvanceDay: false,
+      isoString: "",
+    };
   }
 
   const candidateLocal = new Date(year, month - 1, day, 9, 0, 0, 0);
@@ -126,16 +164,41 @@ export function parseAndValidateStartDate(dateInput: string): {
     candidateLocal.getMonth() !== month - 1 ||
     candidateLocal.getDate() !== day
   ) {
-    return { isValidFormat: false, isNotInPast: false, isoString: "" };
+    return {
+      isValidFormat: false,
+      isNotInPast: false,
+      isSatisfyingAdvanceDay: false,
+      isoString: "",
+    };
   }
 
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  const startOfTomorrow = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+    0,
+    0,
+    0,
+    0
+  );
+  const needsAdvanceDay = requiresAdvanceDayForCategory(category);
 
   if (candidateLocal.getTime() < startOfToday.getTime()) {
     return {
       isValidFormat: true,
       isNotInPast: false,
+      isSatisfyingAdvanceDay: false,
+      isoString: candidateLocal.toISOString(),
+    };
+  }
+
+  if (needsAdvanceDay && candidateLocal.getTime() < startOfTomorrow.getTime()) {
+    return {
+      isValidFormat: true,
+      isNotInPast: true,
+      isSatisfyingAdvanceDay: false,
       isoString: candidateLocal.toISOString(),
     };
   }
@@ -145,6 +208,7 @@ export function parseAndValidateStartDate(dateInput: string): {
   return {
     isValidFormat: true,
     isNotInPast: true,
+    isSatisfyingAdvanceDay: true,
     isoString: new Date(safeTimestamp).toISOString(),
   };
 }
@@ -298,7 +362,7 @@ export function getReservationStatusMeta(
       };
     case ReservationStatusEnum.COMPLETED:
       return {
-        label: isEn ? "Completed" : "Hoàn tất (Đã lập HĐ)",
+        label: isEn ? "Completed" : "Hoàn tất",
         compactStepLabel: isEn ? "Step 6/6: Completed" : "Bước 6/6: Hoàn tất",
         badgeBgClass: "bg-emerald-50 dark:bg-emerald-950/40",
         badgeBorderClass: "border-emerald-400 dark:border-emerald-700",
@@ -370,7 +434,8 @@ export interface ReservationTerminalNode {
  */
 export function buildReservationTimeline(
   reservation: ReservationResponse,
-  locale: MessageLocale = "vi"
+  locale: MessageLocale = "vi",
+  linkedContract?: ContractResponse | null
 ): {
   steps: ReservationTimelineStep[];
   terminalNode: ReservationTerminalNode | null;
@@ -415,7 +480,7 @@ export function buildReservationTimeline(
         activeStepNumber = 4;
         break;
       case ReservationStatusEnum.CONFIRMED:
-        activeStepNumber = 5;
+        activeStepNumber = linkedContract ? 6 : 5;
         break;
       case ReservationStatusEnum.COMPLETED:
         activeStepNumber = 6;
@@ -430,6 +495,14 @@ export function buildReservationTimeline(
       return stepNum <= lastCompletedByTimestamp ? "completed" : "upcoming";
     }
     if (status === ReservationStatusEnum.COMPLETED) {
+      return "completed";
+    }
+    if (
+      stepNum === 6 &&
+      linkedContract &&
+      linkedContract.status !== ContractStatusEnum.DRAFT &&
+      linkedContract.status !== ContractStatusEnum.CANCELLED
+    ) {
       return "completed";
     }
     if (stepNum < activeStepNumber) {
@@ -521,11 +594,30 @@ export function buildReservationTimeline(
     },
     {
       stepNumber: 6,
-      title: isEn ? "Completed & Contract Created" : "Hoàn tất & Tạo hợp đồng",
-      description: isEn
-        ? "Reservation converted into an official rental contract."
-        : "Đơn đặt chỗ đã chuyển đổi thành Hợp đồng thuê kho chính thức.",
-      timestamp: status === ReservationStatusEnum.COMPLETED ? reservation.updatedAt : null,
+      title:
+        linkedContract?.status === ContractStatusEnum.DRAFT
+          ? isEn
+            ? "Draft Contract Created (Pending Check-in)"
+            : "Đã tạo Hợp đồng nháp (Chờ Check-in)"
+          : isEn
+            ? "Completed & Contract Created"
+            : "Hoàn tất & Tạo hợp đồng",
+      description: linkedContract
+        ? linkedContract.status === ContractStatusEnum.DRAFT
+          ? isEn
+            ? `Draft contract #${linkedContract.contractCode} created (deposit inherited). Please visit the facility counter to check in.`
+            : `Đã khởi tạo hợp đồng nháp #${linkedContract.contractCode} (đã kế thừa tiền cọc). Vui lòng đến quầy cơ sở gặp nhân viên phụ trách để Check-in nhận kho.`
+          : isEn
+            ? `Converted into official rental contract #${linkedContract.contractCode}.`
+            : `Đơn đặt chỗ đã chuyển đổi thành Hợp đồng thuê kho chính thức #${linkedContract.contractCode}.`
+        : isEn
+          ? "Reservation converted into an official rental contract."
+          : "Đơn đặt chỗ đã chuyển đổi thành Hợp đồng thuê kho chính thức.",
+      timestamp:
+        linkedContract?.createdAt ??
+        (status === ReservationStatusEnum.COMPLETED ? reservation.updatedAt : null),
+      actorName: linkedContract?.assignedStaff?.name ?? null,
+      extraBadge: linkedContract ? `#${linkedContract.contractCode}` : null,
       state: getStepState(6),
     },
   ];

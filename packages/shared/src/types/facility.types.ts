@@ -18,7 +18,9 @@ export interface FacilitySnapshot {
   name: string;
   city: string;
   address: string;
-  status: FacilityStatusEnum;
+  phone?: string | null;
+  email?: string | null;
+  status?: FacilityStatusEnum | string | null;
 }
 
 export interface FacilityResponse {

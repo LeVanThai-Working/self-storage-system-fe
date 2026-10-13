@@ -31,6 +31,15 @@ export interface PaginatedData<T> {
   pagination: PaginationMeta;
 }
 
+export interface PaginatedResponse<T> {
+  success: boolean;
+  statusCode: number;
+  messageCode: string;
+  message: string;
+  data: T[];
+  pagination: PaginationMeta;
+}
+
 export interface PaginationQuery {
   page?: number;
   limit?: number;

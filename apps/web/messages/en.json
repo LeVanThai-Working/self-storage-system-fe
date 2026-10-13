@@ -1184,6 +1184,7 @@
     "roleLabel": "Facility Manager",
     "nav": {
       "reservations": "Reservations",
+      "contracts": "Lease Contracts",
       "storageUnits": "Storage units",
       "sectionFacility": "FACILITY OPERATIONS",
       "requests": "Request Center"
@@ -1434,16 +1435,16 @@
       },
       "quickTabs": {
         "all": "All reservations",
-        "pending": "New (Pending)",
-        "received": "Needs unit assignment",
+        "pending": "Pending receipt",
+        "received": "Received",
         "awaitingDeposit": "Awaiting deposit",
-        "paymentSuccessful": "Deposit paid (Confirm)",
-        "confirmed": "Confirmed (Ready)",
-        "closed": "Completed / Closed"
+        "paymentSuccessful": "Deposit paid",
+        "confirmed": "Confirmed",
+        "closed": "Completed"
       },
       "statuses": {
         "pending": "Pending receipt",
-        "received": "Received (Assign unit)",
+        "received": "Received",
         "pending_payment": "Awaiting deposit",
         "payment_failed": "Deposit failed",
         "payment_successful": "Deposit paid",
@@ -1499,6 +1500,8 @@
         "reject": "Reject",
         "verifyPayment": "Verify payment",
         "confirmOrder": "Confirm order",
+        "createContract": "Create Contract & Assign Check-in",
+        "createContractShort": "Create contract",
         "completeShort": "Complete",
         "completeHandover": "Complete handover",
         "cancel": "Cancel",

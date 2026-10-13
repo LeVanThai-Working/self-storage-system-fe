@@ -9,7 +9,7 @@ const intlMiddleware = createMiddleware({
 });
 
 // Routes that require the user to be authenticated
-const protectedPaths = ["/facility-manager"];
+const protectedPaths = ["/facility-manager", "/facility-staff"];
 
 // Routes that authenticated users should not see (login, register)
 const guestOnlyPaths = ["/login", "/register"];
@@ -18,6 +18,7 @@ const ROLE_HOME: Record<string, string> = {
   system_admin: "system-admin",
   business_ops_manager: "business-ops",
   facility_manager: "facility-manager",
+  facility_staff: "facility-staff",
 };
 
 function decodeJwtPayload(tokenString?: string): Record<string, unknown> | null {

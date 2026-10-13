@@ -7,7 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
-import { ReservationStatusEnum, type MessageLocale } from "@self-storage-system-fe/shared";
+import {
+  ContractStatusEnum,
+  ReservationStatusEnum,
+  type MessageLocale,
+} from "@self-storage-system-fe/shared";
 import {
   ArrowLeft,
   Building2,
@@ -16,18 +20,22 @@ import {
   Mail,
   Boxes,
   Calendar,
+  ChevronRight,
   Clock,
   Sparkles,
   Receipt,
   Edit3,
   QrCode,
   RefreshCw,
+  UserCheck,
   XCircle,
   AlertCircle,
   FileText,
   Layers,
   CheckCircle2,
 } from "lucide-react-native";
+import { useCustomerContractsByReservationMap } from "@/features/contracts/hooks/useContracts";
+import { getContractStatusMeta } from "@/features/contracts/utils/contractFormat";
 import {
   useReservationDetail,
   useRetryReservationPayment,
@@ -67,6 +75,13 @@ export default function ReservationDetailScreen() {
     refetch,
   } = useReservationDetail(reservationId);
 
+  const { contractByReservationId, refetch: refetchContractsMap } =
+    useCustomerContractsByReservationMap(Boolean(reservationId));
+
+  const linkedContract = reservationId
+    ? (contractByReservationId.get(reservationId) ?? null)
+    : null;
+
   const retryPaymentMutation = useRetryReservationPayment(reservationId ?? "");
 
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -76,9 +91,10 @@ export default function ReservationDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       if (reservationId) {
-        refetch();
+        void refetch();
+        void refetchContractsMap();
       }
-    }, [reservationId, refetch])
+    }, [reservationId, refetch, refetchContractsMap])
   );
 
   const reservationStatus = reservation?.status;
@@ -221,14 +237,23 @@ export default function ReservationDetailScreen() {
   }
 
   const statusMeta = getReservationStatusMeta(reservation.status, currentLocale);
+  const contractStatusMeta = linkedContract
+    ? getContractStatusMeta(linkedContract.status, currentLocale)
+    : null;
   const billingLabel = getBillingUnitName(reservation.billingUnit, currentLocale);
 
   const canEdit = reservation.status === ReservationStatusEnum.PENDING;
-  const canPayDeposit =
-    reservation.status === ReservationStatusEnum.PENDING_PAYMENT && !countdown.isExpired;
-  const canRetryPayment =
-    reservation.status === ReservationStatusEnum.PAYMENT_FAILED && !countdown.isExpired;
-  const canCancel = canCancelReservation(reservation.status);
+  const canPayDeposit = reservation.status === ReservationStatusEnum.PENDING_PAYMENT;
+  const canRetryPayment = reservation.status === ReservationStatusEnum.PAYMENT_FAILED;
+  const canCancel = canCancelReservation(reservation.status) && !linkedContract;
+
+  const handleOpenLinkedContract = () => {
+    if (!linkedContract) return;
+    router.push({
+      pathname: "/contracts/[id]" as any,
+      params: { id: linkedContract.id },
+    });
+  };
 
   return (
     <SafeAreaView
@@ -268,18 +293,96 @@ export default function ReservationDetailScreen() {
         contentContainerClassName="p-4 pb-28 gap-4"
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#0B927E" />
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => {
+              void refetch();
+              void refetchContractsMap();
+            }}
+            tintColor="#0B927E"
+          />
         }
       >
         {/* ── Section 3.1: 6-Step Reservation Progress Timeline Stepper ── */}
         <ReservationTimelineStepper
           reservation={reservation}
+          linkedContract={linkedContract}
           locale={currentLocale}
           countdownFormatted={countdown.formatted}
           isExpiredCountdown={countdown.isExpired}
+          onPayDepositPress={canPayDeposit ? handleNavigateToPayment : undefined}
           onRetryPaymentPress={canRetryPayment ? handleRetryPayment : undefined}
           isRetryingPayment={retryPaymentMutation.isPending}
         />
+
+        {/* ── Linked Contract Card (Visible from DRAFT through Check-in & Active Lease) ── */}
+        {linkedContract && contractStatusMeta ? (
+          <View className="rounded-3xl border border-brand/40 bg-brand-light/20 dark:bg-brand/15 p-4 shadow-sm gap-3">
+            <View className="flex-row items-center justify-between gap-2">
+              <View className="flex-row items-center gap-2 flex-1">
+                <FileText size={18} color="#0B927E" />
+                <View className="flex-1">
+                  <Text className="text-sm font-extrabold text-neutral-dark dark:text-neutral-100">
+                    {isEn ? "Storage Lease Contract" : "Hợp đồng thuê kho đã khởi tạo"}
+                  </Text>
+                  <Text className="text-xs font-bold text-brand mt-0.5">
+                    #{linkedContract.contractCode}
+                  </Text>
+                </View>
+              </View>
+
+              <Badge
+                variant="outline"
+                className={`${contractStatusMeta.badgeBorderClass} ${contractStatusMeta.badgeBgClass} px-2.5 py-1`}
+              >
+                <Text className={`text-[11px] font-bold ${contractStatusMeta.badgeTextClass}`}>
+                  {contractStatusMeta.label}
+                </Text>
+              </Badge>
+            </View>
+
+            <View className="rounded-2xl bg-white/90 dark:bg-neutral-900/80 border border-neutral-border dark:border-neutral-800 p-3 gap-2">
+              <Text className="text-xs text-neutral-700 dark:text-neutral-300 leading-4">
+                {linkedContract.status === ContractStatusEnum.DRAFT
+                  ? isEn
+                    ? "Your lease contract is prepared in DRAFT state. Please visit the facility counter to check in and receive your storage unit."
+                    : "Hợp đồng thuê kho đã được tạo ở trạng thái Bản nháp. Vui lòng đến quầy cơ sở gặp nhân viên phụ trách để làm thủ tục Check-in nhận kho."
+                  : isEn
+                    ? "Your storage lease contract is active. Tap below to view full contract details and smart lock controls."
+                    : "Hợp đồng thuê kho của bạn đã kích hoạt. Nhấn bên dưới để xem chi tiết hợp đồng và điều khiển khóa thông minh."}
+              </Text>
+
+              {linkedContract.assignedStaff?.name ? (
+                <View className="flex-row items-center gap-1.5 border-t border-neutral-200/70 dark:border-neutral-800 pt-2">
+                  <UserCheck size={13} color="#0B927E" />
+                  <Text variant="muted" className="text-xs">
+                    {isEn ? "Assigned Check-in Staff:" : "NV phụ trách Check-in:"}{" "}
+                    <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                      {linkedContract.assignedStaff.name}
+                    </Text>
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+
+            <Pressable
+              onPress={handleOpenLinkedContract}
+              className="flex-row items-center justify-center gap-2 rounded-2xl bg-brand py-3 shadow-sm active:opacity-90"
+            >
+              <FileText size={16} color="#FFFFFF" />
+              <Text className="text-xs font-bold text-white">
+                {linkedContract.status === ContractStatusEnum.DRAFT
+                  ? isEn
+                    ? "View Draft Contract & Check-in Info"
+                    : "Xem chi tiết Hợp đồng chờ Check-in"
+                  : isEn
+                    ? "View Lease Contract Details"
+                    : "Xem chi tiết Hợp đồng thuê kho"}
+              </Text>
+              <ChevronRight size={15} color="#FFFFFF" />
+            </Pressable>
+          </View>
+        ) : null}
 
         {/* ── Section 3.2: Facility & Assigned Physical Storage Unit ── */}
         <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3">
@@ -554,8 +657,26 @@ export default function ReservationDetailScreen() {
       </ScrollView>
 
       {/* ── Section 3.4: Contextual Customer Actions Bottom Bar ── */}
-      {(canEdit || canPayDeposit || canRetryPayment || canCancel) && (
+      {(Boolean(linkedContract) || canEdit || canPayDeposit || canRetryPayment || canCancel) && (
         <View className="border-t border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 py-3 gap-2.5">
+          {linkedContract ? (
+            <Pressable
+              onPress={handleOpenLinkedContract}
+              className="flex-row items-center justify-center gap-2 rounded-2xl bg-brand py-3.5 shadow-sm active:opacity-90"
+            >
+              <FileText size={18} color="#FFFFFF" />
+              <Text className="text-sm font-bold text-white">
+                {linkedContract.status === ContractStatusEnum.DRAFT
+                  ? isEn
+                    ? `View Check-in Contract (#${linkedContract.contractCode})`
+                    : `Xem hợp đồng (#${linkedContract.contractCode})`
+                  : isEn
+                    ? `View Lease Contract (#${linkedContract.contractCode})`
+                    : `Xem Hợp đồng (#${linkedContract.contractCode})`}
+              </Text>
+            </Pressable>
+          ) : null}
+
           {/* Primary Action: Pay Deposit or Retry Payment */}
           {canPayDeposit ? (
             <Pressable
@@ -591,31 +712,33 @@ export default function ReservationDetailScreen() {
           ) : null}
 
           {/* Secondary Actions Row: Edit (only when PENDING) & Cancel */}
-          <View className="flex-row items-center gap-2.5">
-            {canEdit ? (
-              <Pressable
-                onPress={() => setEditModalVisible(true)}
-                className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-brand bg-brand-light/30 dark:bg-brand/20 py-3 active:opacity-85"
-              >
-                <Edit3 size={15} color="#0B927E" />
-                <Text className="text-xs font-bold text-brand">
-                  {isEn ? "Edit Reservation" : "Chỉnh sửa đặt chỗ"}
-                </Text>
-              </Pressable>
-            ) : null}
+          {(canEdit || canCancel) && (
+            <View className="flex-row items-center gap-2.5">
+              {canEdit ? (
+                <Pressable
+                  onPress={() => setEditModalVisible(true)}
+                  className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-brand bg-brand-light/30 dark:bg-brand/20 py-3 active:opacity-85"
+                >
+                  <Edit3 size={15} color="#0B927E" />
+                  <Text className="text-xs font-bold text-brand">
+                    {isEn ? "Edit Reservation" : "Chỉnh sửa đặt chỗ"}
+                  </Text>
+                </Pressable>
+              ) : null}
 
-            {canCancel ? (
-              <Pressable
-                onPress={() => setCancelModalVisible(true)}
-                className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 py-3 active:opacity-85"
-              >
-                <XCircle size={15} color="#EF4444" />
-                <Text className="text-xs font-bold text-red-600 dark:text-red-400">
-                  {isEn ? "Cancel Reservation" : "Hủy đặt chỗ"}
-                </Text>
-              </Pressable>
-            ) : null}
-          </View>
+              {canCancel ? (
+                <Pressable
+                  onPress={() => setCancelModalVisible(true)}
+                  className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 py-3 active:opacity-85"
+                >
+                  <XCircle size={15} color="#EF4444" />
+                  <Text className="text-xs font-bold text-red-600 dark:text-red-400">
+                    {isEn ? "Cancel Reservation" : "Hủy đặt chỗ"}
+                  </Text>
+                </Pressable>
+              ) : null}
+            </View>
+          )}
         </View>
       )}
 

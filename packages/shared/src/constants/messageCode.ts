@@ -67,6 +67,18 @@ export const MESSAGE_CODE = {
   // Insufficient Amenity Quantity For {0}
   MESSAGE_CODE_307: "MESSAGE_CODE_307",
 
+  // Contract & Addendum Message Codes
+  // Contract Addendum Not Found
+  MESSAGE_CODE_409: "MESSAGE_CODE_409",
+  // Invalid Contract Addendum Status Transition
+  MESSAGE_CODE_410: "MESSAGE_CODE_410",
+  // Contract Terms Must Be Accepted
+  MESSAGE_CODE_411: "MESSAGE_CODE_411",
+  // Party Has Already Signed
+  MESSAGE_CODE_412: "MESSAGE_CODE_412",
+  // Insufficient Contracted Amenity Quantity To Remove
+  MESSAGE_CODE_413: "MESSAGE_CODE_413",
+
   // Payment Message Codes
   // Payment Not Found / Invalid Session
   MESSAGE_CODE_500: "MESSAGE_CODE_500",
@@ -122,6 +134,11 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_305: "Selected Storage Unit Is Not Available",
   MESSAGE_CODE_306: "Start Date Cannot Be In The Past",
   MESSAGE_CODE_307: "Insufficient Amenity Quantity For {0}",
+  MESSAGE_CODE_409: "Contract Addendum Not Found",
+  MESSAGE_CODE_410: "Invalid Contract Addendum Status Transition",
+  MESSAGE_CODE_411: "Contract Terms Must Be Accepted",
+  MESSAGE_CODE_412: "Party Has Already Signed",
+  MESSAGE_CODE_413: "Insufficient Contracted Amenity Quantity To Remove",
   MESSAGE_CODE_500: "Payment Session Not Found",
   MESSAGE_CODE_501: "Facility Bank Account Is Not Configured",
   MESSAGE_CODE_502: "Payment Has Expired",
@@ -166,6 +183,11 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_305: "Ô kho được chọn hiện không còn trống",
   MESSAGE_CODE_306: "Ngày bắt đầu thuê không được nằm trong quá khứ",
   MESSAGE_CODE_307: "Tiện ích {0} tại cơ sở không đủ số lượng tồn kho",
+  MESSAGE_CODE_409: "Không tìm thấy phụ lục hợp đồng",
+  MESSAGE_CODE_410: "Chuyển đổi trạng thái phụ lục hợp đồng không hợp lệ",
+  MESSAGE_CODE_411: "Vui lòng đồng ý với các điều khoản trước khi ký xác nhận",
+  MESSAGE_CODE_412: "Bên này đã ký xác nhận trước đó",
+  MESSAGE_CODE_413: "Số lượng tiện ích yêu cầu tháo dỡ vượt quá số lượng đang thuê hợp lệ",
   MESSAGE_CODE_500: "Không tìm thấy phiên thanh toán",
   MESSAGE_CODE_501: "Cơ sở kho chưa cấu hình tài khoản ngân hàng nhận thanh toán",
   MESSAGE_CODE_502: "Mã QR thanh toán đã hết hạn",

@@ -328,7 +328,7 @@ export const ConfirmReservationModal: React.FC<ConfirmReservationModalProps> = (
             <button
               type="submit"
               disabled={confirmMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
             >
               {confirmMutation.isPending ? t("submitting") : t("confirmBtn")}
             </button>
@@ -763,7 +763,7 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
                     <button
                       type="submit"
                       disabled={isPending}
-                      className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-sm disabled:opacity-50"
+                      className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
                     >
                       {confirmManualMutation.isPending ? t("submitting") : t("confirmBtn")}
                     </button>

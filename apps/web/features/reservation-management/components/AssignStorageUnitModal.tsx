@@ -589,7 +589,7 @@ export const AssignStorageUnitModal: React.FC<AssignStorageUnitModalProps> = ({
             <button
               type="submit"
               disabled={isPending || !selectedUnitId || allAvailableUnits.length === 0}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Sparkles className="w-4 h-4" />
               {assignMutation.isPending ? t("submitting") : t("submitBtn")}
