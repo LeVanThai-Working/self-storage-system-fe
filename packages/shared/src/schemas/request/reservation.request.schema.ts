@@ -19,9 +19,16 @@ export const dateStringSchema = z.string().refine((val) => !isNaN(Date.parse(val
 
 export const createReservationSchema = z.object({
   facilityId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid facility ID format"),
+  storageUnitId: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid storage unit ID format")
+    .optional(),
+  checkInDate: dateStringSchema.optional(),
+  checkInTimeSlot: z.string().min(3).max(50).trim().optional(),
   facilityUnitTypeOfferingId: z
     .string()
-    .regex(/^[0-9a-fA-F]{24}$/, "Invalid facility unit type offering ID format"),
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid facility unit type offering ID format")
+    .optional(),
   startDate: dateStringSchema,
   rentalDuration: z.number().int().min(1, "Rental duration must be at least 1"),
   amenities: z.array(reservationAmenityInputSchema).optional().default([]),
@@ -29,12 +36,20 @@ export const createReservationSchema = z.object({
 });
 
 export const updateReservationSchema = z.object({
+  checkInDate: dateStringSchema.optional(),
+  checkInTimeSlot: z.string().min(3).max(50).trim().optional(),
   startDate: dateStringSchema.optional(),
   rentalDuration: z.number().int().min(1).optional(),
   amenities: z.array(reservationAmenityInputSchema).optional(),
   notes: z.string().max(1000).optional(),
 });
 
+export const reassignStorageUnitSchema = z.object({
+  newStorageUnitId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid storage unit ID format"),
+  reason: z.string().min(3).max(500),
+});
+
+// Backward compatibility alias
 export const assignStorageUnitSchema = z.object({
   storageUnitId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid storage unit ID format"),
   holdingHours: z.number().int().min(1).max(168).optional().default(24),
@@ -46,6 +61,10 @@ export const rejectReservationSchema = z.object({
 });
 
 export const confirmReservationSchema = z.object({
+  assignedStaffId: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid staff ID format")
+    .optional(),
   notes: z.string().max(1000).optional(),
 });
 
@@ -54,6 +73,20 @@ export const cancelReservationSchema = z.object({
     .string()
     .min(3, "Cancellation reason must be at least 3 characters")
     .max(500),
+});
+
+export const assignReservationStaffSchema = z.object({
+  staffId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid staff ID format"),
+  notes: z.string().max(1000).optional(),
+});
+
+export const markDepositPaidSchema = z.object({
+  paymentId: z.string().min(1, "Payment ID is required"),
+  paidAmount: z.number().positive("Paid amount must be positive"),
+  paidAt: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid date format (must be a valid ISO 8601 date string)",
+  }),
+  referenceCode: z.string().optional().nullable(),
 });
 
 export const reservationQuerySchema = paginationQuerySchema.extend({
@@ -73,6 +106,10 @@ export const reservationQuerySchema = paginationQuerySchema.extend({
     .string()
     .regex(/^[0-9a-fA-F]{24}$/)
     .optional(),
+  assignedStaffId: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/)
+    .optional(),
   status: z.nativeEnum(ReservationStatusEnum).optional(),
   reservationCode: z.string().optional(),
   startDateFrom: dateStringSchema.optional(),
@@ -83,9 +120,12 @@ export const reservationQuerySchema = paginationQuerySchema.extend({
 
 export type CreateReservationRequest = z.infer<typeof createReservationSchema>;
 export type UpdateReservationRequest = z.infer<typeof updateReservationSchema>;
+export type ReassignStorageUnitRequest = z.infer<typeof reassignStorageUnitSchema>;
 export type AssignStorageUnitRequest = z.infer<typeof assignStorageUnitSchema>;
 export type RejectReservationRequest = z.infer<typeof rejectReservationSchema>;
 export type ConfirmReservationRequest = z.infer<typeof confirmReservationSchema>;
 export type CancelReservationRequest = z.infer<typeof cancelReservationSchema>;
+export type AssignReservationStaffRequest = z.infer<typeof assignReservationStaffSchema>;
+export type MarkDepositPaidRequest = z.infer<typeof markDepositPaidSchema>;
 export type ReservationQuery = z.infer<typeof reservationQuerySchema>;
 export type ReservationIdParam = z.infer<typeof reservationIdParamSchema>;

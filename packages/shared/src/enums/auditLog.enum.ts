@@ -22,4 +22,49 @@ export enum AuditActionEnum {
   REJECT_ADDENDUM = "reject_addendum",
   SIGN_ADDENDUM = "sign_addendum",
   CANCEL_ADDENDUM = "cancel_addendum",
+
+  // New actions from backend
+  LOGIN_GOOGLE = "login_google",
+  SEND_OTP = "send_otp",
+  FORGOT_PASSWORD = "forgot_password",
+  RESET_PASSWORD = "reset_password",
+  CHANGE_PASSWORD = "change_password",
+  RESTORE = "restore",
+  TOGGLE_MAINTENANCE = "toggle_maintenance",
+  APPROVE = "approve",
+  REJECT = "reject",
+  CANCEL = "cancel",
+  CHECK_IN = "check_in",
+  CHECK_OUT = "check_out",
+  RENEW = "renew",
+  TERMINATE = "terminate",
+  ADD_AMENITY = "add_amenity",
+  REMOVE_AMENITY = "remove_amenity",
+  CONFIRM_PAYMENT = "confirm_payment",
+  RECEIVE_PAYMENT = "receive_payment",
+}
+
+export enum AuditResourceEnum {
+  AUTH = "auth",
+  USER = "user",
+  PROFILE = "profile",
+  FACILITY = "facility",
+  UNIT_TYPE = "unit_type",
+  AMENITY = "amenity",
+  FACILITY_UNIT_TYPE_OFFERING = "facility_unit_type_offering",
+  FACILITY_AMENITY_OFFERING = "facility_amenity_offering",
+  STORAGE_UNIT = "storage_unit",
+  RESERVATION = "reservation",
+  APPROVAL_REQUEST = "approval_request",
+  CONTRACT = "contract",
+  PAYMENT = "payment",
+  NOTIFICATION = "notification",
+  STORAGE_RACK = "storage_rack",
+  RACK_TIER = "rack_tier",
+  CUSTOMER_SKU = "customer_sku",
+}
+
+export enum AuditStatusEnum {
+  SUCCESS = "success",
+  FAILURE = "failure",
 }
