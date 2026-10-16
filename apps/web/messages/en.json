@@ -1260,7 +1260,10 @@
       "actions": {
         "edit": "Edit",
         "delete": "Delete unit",
-        "deleteBlocked": "Cannot delete a unit that is reserved or occupied"
+        "deleteBlocked": "Cannot delete a unit that is reserved or occupied",
+        "startMaintenance": "Start maintenance",
+        "reopen": "Finish maintenance / Reopen unit",
+        "maintenanceBlocked": "Only Available or Under maintenance units can change maintenance status"
       },
       "formModal": {
         "createTitle": "Add Storage Unit",
@@ -1316,6 +1319,39 @@
         "createRejected": "Could not create the unit. Make sure the facility offers this unit type and is active.",
         "updateRejected": "Could not update the unit. Reserved/occupied units cannot change unit type, and the facility must offer the selected unit type.",
         "duplicateUnitNumber": "This unit number already exists in the facility. Please choose another."
+      },
+      "view": {
+        "table": "Table",
+        "map": "Floor plan"
+      },
+      "map": {
+        "legend": "Legend",
+        "loadError": "Could not load the floor plan",
+        "emptyDescription": "This facility has no storage units to show on the floor plan yet.",
+        "unitCount": "{count} units",
+        "noZone": "No zone"
+      },
+      "maintenanceModal": {
+        "startHint": "The unit will switch to Under maintenance and stop accepting reservations until it is reopened.",
+        "reopenHint": "Confirm the unit has been cleaned / fixed. It will return to Available and accept reservations again.",
+        "notesLabel": "Unit notes",
+        "startPlaceholder": "E.g. Ceiling leak, waiting for repair...",
+        "reopenPlaceholder": "E.g. Cleaned and door lock checked...",
+        "notesMax": "Notes must not exceed {max} characters",
+        "blocked": {
+          "reserved": "This unit is reserved, so it cannot be put under maintenance.",
+          "occupied": "This unit is rented out, so it cannot be put under maintenance.",
+          "inactive": "This unit is inactive. Edit its status before starting maintenance."
+        },
+        "close": "Close",
+        "confirmStart": "Start maintenance",
+        "confirmReopen": "Finish & Reopen",
+        "saving": "Updating...",
+        "successStart": "Unit {unitNumber} is now under maintenance",
+        "successReopen": "Unit {unitNumber} has been reopened",
+        "errors": {
+          "invalidStatus": "The unit status has changed, so maintenance cannot be toggled. Please refresh and try again."
+        }
       }
     },
     "requests": {

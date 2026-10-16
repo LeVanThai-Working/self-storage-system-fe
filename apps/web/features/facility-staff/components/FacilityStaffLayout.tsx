@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Bell, Building2, FileSignature } from "lucide-react";
+import { Bell, Boxes, Building2, FileSignature } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -33,6 +33,11 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
       href: `/${locale}/facility-staff/contracts`,
       label: t("nav.contracts"),
       icon: FileSignature,
+    },
+    {
+      href: `/${locale}/facility-staff/storage-units`,
+      label: t("nav.storageUnits"),
+      icon: Boxes,
     },
   ];
 
