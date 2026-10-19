@@ -2,8 +2,17 @@
 
 import React, { useState } from "react";
 import { useUsers, useCreateUser, useUpdateUser, useUser, useDeleteUser } from "../hooks";
-import { USER_ROLE } from "@self-storage-system-fe/shared";
-import { Edit2, Lock, Unlock, Search, Trash2 } from "lucide-react";
+import { USER_ROLE, RoleEnum } from "@self-storage-system-fe/shared";
+import {
+  Edit2,
+  Lock,
+  Unlock,
+  Search,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   Dialog,
@@ -15,30 +24,36 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-const getRoleBadge = (role: USER_ROLE | string, t: ReturnType<typeof useTranslations>) => {
-  switch (role) {
-    case USER_ROLE.SYSTEM_ADMIN:
+const getRoleBadge = (
+  role: USER_ROLE | RoleEnum | string,
+  t: ReturnType<typeof useTranslations>
+) => {
+  const normalized = String(role).toLowerCase();
+  switch (normalized) {
     case "system_admin":
       return (
         <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium">
           {t("userTable.roles.systemAdmin")}
         </span>
       );
-    case USER_ROLE.FACILITY_MANAGER:
+    case "business_ops_manager":
+      return (
+        <span className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-medium">
+          {t("userTable.roles.businessOpsManager")}
+        </span>
+      );
     case "facility_manager":
       return (
         <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
           {t("userTable.roles.facilityManager")}
         </span>
       );
-    case USER_ROLE.FACILITY_STAFF:
     case "facility_staff":
       return (
         <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium">
           {t("userTable.roles.facilityStaff")}
         </span>
       );
-    case USER_ROLE.CUSTOMER:
     case "customer":
       return (
         <span className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-medium">
@@ -148,6 +163,9 @@ const EditUserModal = ({
                 <option value="customer">{t("userTable.roles.customer")}</option>
                 <option value="facility_staff">{t("userTable.roles.facilityStaff")}</option>
                 <option value="facility_manager">{t("userTable.roles.facilityManager")}</option>
+                <option value="business_ops_manager">
+                  {t("userTable.roles.businessOpsManager")}
+                </option>
                 <option value="system_admin">{t("userTable.roles.systemAdmin")}</option>
               </select>
             </div>
@@ -194,7 +212,15 @@ const EditUserModal = ({
 export const UserTable = () => {
   const t = useTranslations("systemAdmin");
   const [search, setSearch] = useState("");
-  const { data, isLoading } = useUsers({ search });
+  const [page, setPage] = useState<number>(1);
+  const [pageSize] = useState<number>(10);
+  const [roleFilter, setRoleFilter] = useState<string>("ALL");
+
+  const { data, isLoading } = useUsers({
+    page,
+    limit: pageSize,
+    search: search || undefined,
+  });
   const createUser = useCreateUser();
   const updateUser = useUpdateUser();
   const deleteUser = useDeleteUser();
@@ -353,6 +379,9 @@ export const UserTable = () => {
                   <option value="customer">{t("userTable.roles.customer")}</option>
                   <option value="facility_staff">{t("userTable.roles.facilityStaff")}</option>
                   <option value="facility_manager">{t("userTable.roles.facilityManager")}</option>
+                  <option value="business_ops_manager">
+                    {t("userTable.roles.businessOpsManager")}
+                  </option>
                   <option value="system_admin">{t("userTable.roles.systemAdmin")}</option>
                 </select>
               </div>
@@ -417,17 +446,41 @@ export const UserTable = () => {
 
       {/* Table Container */}
       <div className="bg-white rounded-2xl shadow-sm border-none overflow-hidden">
-        {/* Toolbar / Search */}
-        <div className="p-5 border-b border-slate-100 flex items-center gap-4">
+        {/* Toolbar / Search & Role Filter */}
+        <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div className="relative max-w-sm w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
             <input
               type="text"
               placeholder={t("userTable.searchPlaceholder")}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-50 border-none rounded-full py-2 pl-10 pr-4 text-sm text-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none"
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200/80 rounded-xl py-2 pl-10 pr-4 text-sm text-slate-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
             />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-slate-400 hidden sm:block" />
+            <select
+              value={roleFilter}
+              onChange={(e) => {
+                setRoleFilter(e.target.value);
+                setPage(1);
+              }}
+              className="bg-slate-50 hover:bg-slate-100/70 border border-slate-200/80 rounded-xl py-2 px-3 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 cursor-pointer"
+            >
+              <option value="ALL">{t("userTable.roleFilter.all")}</option>
+              <option value="customer">{t("userTable.roles.customer")}</option>
+              <option value="facility_staff">{t("userTable.roles.facilityStaff")}</option>
+              <option value="facility_manager">{t("userTable.roles.facilityManager")}</option>
+              <option value="business_ops_manager">
+                {t("userTable.roles.businessOpsManager")}
+              </option>
+              <option value="system_admin">{t("userTable.roles.systemAdmin")}</option>
+            </select>
           </div>
         </div>
 
@@ -451,94 +504,173 @@ export const UserTable = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
-                    {t("userTable.loading")}
-                  </td>
-                </tr>
-              ) : data?.data.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
-                    {t("userTable.empty")}
-                  </td>
-                </tr>
-              ) : (
-                data?.data.map((user) => {
+              {(() => {
+                const rawUsers = data?.data || [];
+                const filteredUsers =
+                  roleFilter === "ALL"
+                    ? rawUsers
+                    : rawUsers.filter((u) => {
+                        const r = String(u.role).toLowerCase();
+                        return r === roleFilter.toLowerCase();
+                      });
+                const pagination = data?.pagination || {
+                  page,
+                  limit: pageSize,
+                  totalItems: filteredUsers.length,
+                  totalPages: Math.ceil(filteredUsers.length / pageSize) || 1,
+                  hasNextPage: false,
+                  hasPrevPage: false,
+                };
+
+                if (isLoading) {
                   return (
-                    <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold flex-shrink-0">
-                            {user.name.charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <div className="font-semibold text-slate-800">{user.name}</div>
-                            <div className="text-sm text-slate-500">{user.email}</div>
-                            {user.phoneNumber && (
-                              <div className="text-xs text-slate-400 mt-0.5">
-                                {user.phoneNumber}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">{getRoleBadge(user.role, t)}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`w-2 h-2 rounded-full ${user.status === "active" ? "bg-emerald-500" : "bg-red-500"}`}
-                          ></span>
-                          <span
-                            className={`text-sm font-medium ${user.status === "active" ? "text-emerald-600" : "text-red-600"}`}
-                          >
-                            {user.status === "active"
-                              ? t("userTable.status.active")
-                              : t("userTable.status.inactive")}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => setEditingUserId(user.id)}
-                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                            title={t("userTable.edit")}
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleToggleStatus(user)}
-                            disabled={updateUser.isPending}
-                            className={`p-2 transition-colors rounded-lg ${user.status === "active" ? "text-slate-400 hover:text-red-600 hover:bg-red-50" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"} disabled:opacity-50`}
-                            title={
-                              user.status === "active"
-                                ? t("userTable.lockAccount")
-                                : t("userTable.unlockAccount")
-                            }
-                          >
-                            {user.status === "active" ? (
-                              <Lock className="w-4 h-4" />
-                            ) : (
-                              <Unlock className="w-4 h-4" />
-                            )}
-                          </button>
-                          <button
-                            onClick={() => setDeletingUser({ id: user.id, name: user.name })}
-                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title={t("userTable.deleteAccount")}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                    <tr>
+                      <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
+                        {t("userTable.loading")}
                       </td>
                     </tr>
                   );
-                })
-              )}
+                }
+
+                if (filteredUsers.length === 0) {
+                  return (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
+                        {t("userTable.empty")}
+                      </td>
+                    </tr>
+                  );
+                }
+
+                return filteredUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold flex-shrink-0">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <div className="font-semibold text-slate-800">{user.name}</div>
+                          <div className="text-sm text-slate-500">{user.email}</div>
+                          {user.phoneNumber && (
+                            <div className="text-xs text-slate-400 mt-0.5">{user.phoneNumber}</div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">{getRoleBadge(user.role, t)}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`w-2 h-2 rounded-full ${user.status === "active" ? "bg-emerald-500" : "bg-red-500"}`}
+                        ></span>
+                        <span
+                          className={`text-sm font-medium ${user.status === "active" ? "text-emerald-600" : "text-red-600"}`}
+                        >
+                          {user.status === "active"
+                            ? t("userTable.status.active")
+                            : t("userTable.status.inactive")}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setEditingUserId(user.id)}
+                          className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                          title={t("userTable.edit")}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleToggleStatus(user)}
+                          disabled={updateUser.isPending}
+                          className={`p-2 transition-colors rounded-lg ${user.status === "active" ? "text-slate-400 hover:text-red-600 hover:bg-red-50" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"} disabled:opacity-50`}
+                          title={
+                            user.status === "active"
+                              ? t("userTable.lockAccount")
+                              : t("userTable.unlockAccount")
+                          }
+                        >
+                          {user.status === "active" ? (
+                            <Lock className="w-4 h-4" />
+                          ) : (
+                            <Unlock className="w-4 h-4" />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => setDeletingUser({ id: user.id, name: user.name })}
+                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title={t("userTable.deleteAccount")}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ));
+              })()}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {(() => {
+          const rawUsers = data?.data || [];
+          const filteredUsers =
+            roleFilter === "ALL"
+              ? rawUsers
+              : rawUsers.filter((u) => {
+                  const r = String(u.role).toLowerCase();
+                  return r === roleFilter.toLowerCase();
+                });
+          const pagination = data?.pagination || {
+            page,
+            limit: pageSize,
+            totalItems: filteredUsers.length,
+            totalPages: Math.ceil(filteredUsers.length / pageSize) || 1,
+            hasNextPage: false,
+            hasPrevPage: false,
+          };
+
+          return (
+            <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+              <div>
+                {t("userTable.pagination.page")}{" "}
+                <span className="font-bold text-slate-800">{pagination.page}</span> /{" "}
+                <span className="font-bold text-slate-800">{pagination.totalPages || 1}</span> (
+                <span className="font-bold text-slate-800">{pagination.totalItems}</span>{" "}
+                {t("userTable.pagination.users")})
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={!pagination.hasPrevPage || page <= 1}
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  {t("userTable.pagination.prev")}
+                </button>
+
+                <div className="px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-200/60">
+                  {pagination.page} / {pagination.totalPages || 1}
+                </div>
+
+                <button
+                  type="button"
+                  disabled={!pagination.hasNextPage || page >= pagination.totalPages}
+                  onClick={() => setPage((prev) => prev + 1)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                >
+                  {t("userTable.pagination.next")}
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

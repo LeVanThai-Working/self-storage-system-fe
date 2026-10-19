@@ -161,9 +161,20 @@
       },
       "roles": {
         "systemAdmin": "System Admin",
+        "businessOpsManager": "Business Ops Manager",
         "facilityManager": "Facility Manager",
         "facilityStaff": "Staff",
         "customer": "Customer"
+      },
+      "pagination": {
+        "page": "Page",
+        "of": "of",
+        "users": "users",
+        "prev": "Prev",
+        "next": "Next"
+      },
+      "roleFilter": {
+        "all": "All Roles"
       },
       "loading": "Loading data...",
       "empty": "No users found.",

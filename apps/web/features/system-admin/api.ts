@@ -1,32 +1,62 @@
 import api from "@/lib/api/axios";
-import { User, UserQueryParams, CreateUserPayload } from "./types";
+import { User, UserQueryParams, CreateUserPayload, UserListResponse } from "./types";
 
-export const fetchUsers = async (
-  params?: UserQueryParams
-): Promise<{ data: User[]; total: number }> => {
+export const fetchUsers = async (params?: UserQueryParams): Promise<UserListResponse> => {
+  const page = params?.page || 1;
+  const limit = params?.limit || 10;
   try {
     // Nếu có từ khóa search thì gọi endpoint /users/search, ngược lại gọi /users
-    const endpoint = params?.search ? "/users/search" : "/users";
+    const endpoint = params?.search?.trim() ? "/users/search" : "/users";
 
     // Đảm bảo truyền đủ các tham số bắt buộc theo yêu cầu của Swagger
-    const queryParams = {
-      page: params?.page || 1,
-      limit: params?.limit || 10,
+    const queryParams: Record<string, unknown> = {
+      page,
+      limit,
       sortBy: params?.sortBy || "createdAt",
       sortOrder: params?.sortOrder || "desc",
-      ...params,
     };
 
+    if (params?.search?.trim()) {
+      queryParams.search = params.search.trim();
+    }
+
     const { data } = await api.get(endpoint, { params: queryParams });
-    // Dữ liệu trả về từ backend nằm trong data.data.items
+    const items: User[] = data.data?.items || [];
+    const pagination = data.data?.pagination || {
+      page,
+      limit,
+      totalItems: items.length,
+      totalPages: Math.ceil(items.length / limit) || 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+    };
+
     return {
-      data: data.data?.items || [],
-      total: data.data?.pagination?.totalItems || 0,
+      data: items,
+      total: pagination.totalItems ?? items.length,
+      pagination: {
+        page: pagination.page ?? page,
+        limit: pagination.limit ?? limit,
+        totalItems: pagination.totalItems ?? items.length,
+        totalPages: pagination.totalPages ?? 1,
+        hasNextPage: Boolean(pagination.hasNextPage),
+        hasPrevPage: Boolean(pagination.hasPrevPage),
+      },
     };
   } catch (error) {
     console.warn("API GET /users failed", error);
-    // Trả về mảng rỗng nếu gọi API thất bại (tránh vỡ giao diện)
-    return { data: [], total: 0 };
+    return {
+      data: [],
+      total: 0,
+      pagination: {
+        page,
+        limit,
+        totalItems: 0,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+      },
+    };
   }
 };
 
