@@ -1,93 +1,113 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import { Lock, Wrench } from "lucide-react-native";
-import { RackTierStatusEnum, type TreeTier } from "@self-storage-system-fe/shared";
+import { ChevronRight, Circle, Lock, Package, TriangleAlert, Wrench } from "lucide-react-native";
+import type { TreeTier } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
-import { buildLocationLabel, getTierVisual, getTierWeight } from "../utils/rackMapFormat";
+import { getTierBarVariant, type TierBarVariant } from "../utils/rackMapFormat";
 import { TierHighlightPulse } from "./TierHighlightPulse";
 
-const MAX_VISIBLE_CHIPS = 2;
+const BAR_STYLE: Record<
+  TierBarVariant,
+  { container: string; text: string; extraBg: string; extraText: string; iconColor: string }
+> = {
+  occupied: {
+    container: "bg-brand",
+    text: "text-white",
+    extraBg: "bg-white/25",
+    extraText: "text-white",
+    iconColor: "#FFFFFF",
+  },
+  warning: {
+    container: "border border-cta bg-cta-light dark:bg-cta/20",
+    text: "text-cta-dark",
+    extraBg: "bg-white/80",
+    extraText: "text-cta-dark",
+    iconColor: "#D34D0F",
+  },
+  available: {
+    container: "bg-neutral-100 dark:bg-neutral-800",
+    text: "text-neutral-muted",
+    extraBg: "bg-white",
+    extraText: "text-neutral-muted",
+    iconColor: "#94A3B8",
+  },
+  maintenance: {
+    container: "border border-dashed border-cta/60 bg-cta-light/60 dark:bg-cta/15",
+    text: "text-cta-dark",
+    extraBg: "bg-white/80",
+    extraText: "text-cta-dark",
+    iconColor: "#D34D0F",
+  },
+  inactive: {
+    container: "border border-red-200 bg-red-100 dark:border-red-900 dark:bg-red-950/40",
+    text: "text-red-700 dark:text-red-300",
+    extraBg: "bg-white/80",
+    extraText: "text-red-700",
+    iconColor: "#DC2626",
+  },
+};
 
 interface TierCellProps {
   tier: TreeTier;
-  unitNumber?: string;
   highlighted?: boolean;
   onPress: (tier: TreeTier) => void;
 }
 
-export function TierCell({ tier, unitNumber, highlighted = false, onPress }: TierCellProps) {
+/** One shelf of the 2D rack: a colored bar showing the main item and the tier state. */
+export function TierCell({ tier, highlighted = false, onPress }: TierCellProps) {
   const { t } = useTranslation();
-  const visual = getTierVisual(tier.status);
-  const weight = getTierWeight(tier);
-  const visibleItems = tier.items.slice(0, MAX_VISIBLE_CHIPS);
-  const hiddenCount = tier.items.length - visibleItems.length;
+  const variant = getTierBarVariant(tier);
+  const style = BAR_STYLE[variant];
+  const firstItem = tier.items[0];
+  const extraCount = tier.items.length - 1;
+
+  const label = firstItem
+    ? t("rackMap.itemChip", { code: firstItem.sku.skuCode, qty: firstItem.quantity })
+    : variant === "maintenance"
+      ? t("rackMap.status.maintenance")
+      : variant === "inactive"
+        ? t("rackMap.status.inactive")
+        : t("rackMap.empty");
+
+  const leadingIcon =
+    variant === "available" ? (
+      <Circle size={14} color={style.iconColor} />
+    ) : variant === "maintenance" && !firstItem ? (
+      <Wrench size={14} color={style.iconColor} />
+    ) : (
+      <Package size={14} color={style.iconColor} />
+    );
+
+  const trailingIcon =
+    variant === "occupied" ? (
+      <ChevronRight size={16} color={style.iconColor} />
+    ) : variant === "warning" ? (
+      <TriangleAlert size={16} color={style.iconColor} />
+    ) : variant === "maintenance" && firstItem ? (
+      <Wrench size={15} color={style.iconColor} />
+    ) : variant === "inactive" ? (
+      <Lock size={15} color={style.iconColor} />
+    ) : null;
 
   return (
     <Pressable
       onPress={() => onPress(tier)}
-      className={`rounded-2xl px-3.5 py-3 gap-2 active:opacity-80 ${visual.containerClassName}`}
+      className={`h-11 flex-row items-center gap-2 rounded-xl px-3 active:opacity-80 ${style.container}`}
     >
-      <View className="flex-row items-center justify-between gap-2">
-        <View className="flex-row items-center gap-1.5 flex-1">
-          {tier.status === RackTierStatusEnum.MAINTENANCE ? (
-            <Wrench size={13} color="#D34D0F" />
-          ) : tier.status === RackTierStatusEnum.INACTIVE ? (
-            <Lock size={13} color="#647B80" />
-          ) : null}
-          <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-            {t("rackMap.tierTitle", { number: tier.tierNumber })}
-          </Text>
-          <Text numberOfLines={1} className="flex-1 font-mono text-[11px] text-neutral-muted">
-            {buildLocationLabel(unitNumber, tier.tierCode)}
+      {leadingIcon}
+      <Text numberOfLines={1} className={`flex-shrink text-xs font-bold ${style.text}`}>
+        {label}
+      </Text>
+      {firstItem && extraCount > 0 ? (
+        <View className={`rounded-full px-1.5 py-0.5 ${style.extraBg}`}>
+          <Text className={`text-[10px] font-bold ${style.extraText}`}>
+            {t("rackMap.moreItems", { count: extraCount })}
           </Text>
         </View>
-        {weight.level === "over" || weight.level === "near" ? (
-          <View
-            className={`rounded-full px-2 py-0.5 ${
-              weight.level === "over" ? "bg-cta" : "bg-cta-light"
-            }`}
-          >
-            <Text
-              className={`text-[10px] font-bold ${
-                weight.level === "over" ? "text-white" : "text-cta-dark"
-              }`}
-            >
-              {t(weight.level === "over" ? "rackMap.weight.over" : "rackMap.weight.nearFull")}
-            </Text>
-          </View>
-        ) : null}
-      </View>
-
-      {visual.locked ? (
-        <Text className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-300">
-          {t(visual.labelKey)}
-        </Text>
-      ) : tier.items.length === 0 ? (
-        <Text variant="muted" className="text-[11px]">
-          {t("rackMap.empty")}
-        </Text>
-      ) : (
-        <View className="flex-row flex-wrap gap-1.5">
-          {visibleItems.map((item) => (
-            <View
-              key={item.inventoryId}
-              className="rounded-lg border border-brand/30 bg-white dark:bg-neutral-900 px-2 py-0.5"
-            >
-              <Text className="text-[11px] font-bold text-brand-dark dark:text-brand-light">
-                {t("rackMap.itemChip", { code: item.sku.skuCode, qty: item.quantity })}
-              </Text>
-            </View>
-          ))}
-          {hiddenCount > 0 ? (
-            <View className="rounded-lg bg-brand-light dark:bg-brand/20 px-2 py-0.5">
-              <Text className="text-[11px] font-bold text-brand">
-                {t("rackMap.moreItems", { count: hiddenCount })}
-              </Text>
-            </View>
-          ) : null}
-        </View>
-      )}
+      ) : null}
+      <View className="flex-1" />
+      {trailingIcon}
       {highlighted ? <TierHighlightPulse /> : null}
     </Pressable>
   );

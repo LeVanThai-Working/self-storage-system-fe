@@ -6,9 +6,16 @@ import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
 import { useStockOut } from "../hooks/useCustomerInventory";
 import type { StockFormBaseProps } from "../types/rackMap.types";
-import { INVENTORY_ERROR, getPositionLabel, resolveInventoryError } from "../utils/rackMapFormat";
+import {
+  INVENTORY_ERROR,
+  getPositionItems,
+  getPositionLabel,
+  resolveInventoryError,
+} from "../utils/rackMapFormat";
 import { FieldError, FieldLabel, InventoryFormSheet } from "./InventoryFormSheet";
+import { PositionCard } from "./PositionCard";
 import { QuantityStepper } from "./QuantityStepper";
+import { SkuSelectField } from "./SkuSelect";
 
 export function StockOutModal({
   visible,
@@ -24,16 +31,26 @@ export function StockOutModal({
   const toast = useToast();
   const stockOutMutation = useStockOut(storageUnitId);
 
-  const item = target.item;
+  const items = getPositionItems(tree, target.tierId);
+  const options = items.map((entry) => ({ sku: entry.sku, quantity: entry.quantity }));
+  const [skuId, setSkuId] = useState<string | null>(
+    target.item?.sku.id ?? (items.length === 1 ? items[0].sku.id : null)
+  );
+  const item = items.find((entry) => entry.sku.id === skuId) ?? null;
   const maxQuantity = item?.quantity ?? 0;
+
   const [quantity, setQuantity] = useState(1);
   const [reason, setReason] = useState("");
+  const [skuError, setSkuError] = useState<string | null>(null);
   const [quantityError, setQuantityError] = useState<string | null>(null);
 
   const locationLabel = getPositionLabel(tree, target.tierId, t("rackMap.form.floor"));
 
   const handleConfirm = async () => {
-    if (!item) return;
+    if (!item) {
+      setSkuError(t("rackMap.form.skuRequired"));
+      return;
+    }
     if (quantity < 1) {
       setQuantityError(t("rackMap.form.quantityMin"));
       return;
@@ -82,34 +99,40 @@ export function StockOutModal({
     <InventoryFormSheet
       visible={visible}
       title={t("rackMap.form.stockOutTitle")}
-      subtitle={t("rackMap.form.positionLabel", { location: locationLabel })}
       isPending={stockOutMutation.isPending}
       onClose={onClose}
       onConfirm={handleConfirm}
     >
-      {item ? (
-        <View className="rounded-2xl border border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800 p-3.5">
-          <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
-            {item.sku.skuCode}
-          </Text>
-          <Text variant="muted" className="text-xs">
-            {item.sku.name}
-          </Text>
-          <Text className="mt-1 text-xs font-semibold text-brand">
-            {t("rackMap.form.currentQuantity", { qty: item.quantity, uom: item.sku.uom })}
-          </Text>
-        </View>
-      ) : null}
+      <PositionCard tree={tree} tierId={target.tierId} />
 
-      <View>
+      <View className="gap-2">
+        <FieldLabel>{t("rackMap.form.chooseSku")}</FieldLabel>
+        <SkuSelectField
+          options={options}
+          selectedId={skuId}
+          emptyText={t("rackMap.detail.emptyItems")}
+          onSelect={(id) => {
+            setSkuId(id);
+            setQuantity(1);
+            setSkuError(null);
+            setQuantityError(null);
+          }}
+        />
+        <FieldError message={skuError} />
+      </View>
+
+      <View className="gap-2">
         <View className="flex-row items-center justify-between">
           <FieldLabel>{t("rackMap.form.quantity")}</FieldLabel>
           <Pressable
+            disabled={!item}
             onPress={() => {
               setQuantity(maxQuantity);
               setQuantityError(null);
             }}
-            className="mb-2 rounded-lg border border-brand/40 bg-brand-light/30 px-2.5 py-1"
+            className={`rounded-lg border border-brand/40 bg-brand-light/30 px-2.5 py-1 ${
+              item ? "" : "opacity-40"
+            }`}
           >
             <Text className="text-[11px] font-bold text-brand">{t("rackMap.form.takeAll")}</Text>
           </Pressable>
@@ -118,19 +141,21 @@ export function StockOutModal({
           value={quantity}
           min={1}
           max={maxQuantity}
-          unitLabel={item?.sku.uom}
+          disabled={!item}
           onChange={(value) => {
             setQuantity(value);
             setQuantityError(null);
           }}
         />
-        <Text variant="muted" className="mt-1 text-[11px]">
-          {t("rackMap.form.maxQuantity", { max: maxQuantity, uom: item?.sku.uom ?? "" })}
-        </Text>
+        {item ? (
+          <Text variant="muted" className="text-[11px]">
+            {t("rackMap.form.maxQuantity", { max: maxQuantity, uom: item.sku.uom })}
+          </Text>
+        ) : null}
         <FieldError message={quantityError} />
       </View>
 
-      <View>
+      <View className="gap-2">
         <FieldLabel>{t("rackMap.form.reasonOptional")}</FieldLabel>
         <TextInput
           value={reason}
@@ -138,8 +163,9 @@ export function StockOutModal({
           multiline
           numberOfLines={2}
           textAlignVertical="top"
+          placeholder={t("rackMap.form.reasonPlaceholder")}
           placeholderTextColor="#94A3B8"
-          className="min-h-[64px] rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 p-3.5 text-xs text-neutral-dark dark:text-neutral-100"
+          className="min-h-[64px] rounded-xl border border-neutral-border bg-white p-3.5 text-xs text-neutral-dark dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
         />
       </View>
     </InventoryFormSheet>

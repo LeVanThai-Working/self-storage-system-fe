@@ -31,11 +31,11 @@ export interface TierWeightInfo {
   level: TierWeightLevel;
 }
 
-export interface TierVisual {
-  containerClassName: string;
-  labelKey: string;
-  locked: boolean;
-}
+/** Status shown to the customer (an "available" tier that still holds items counts as occupied). */
+export type TierDisplayStatus = "available" | "occupied" | "maintenance" | "inactive";
+
+/** Visual variant of a tier bar on the 2D rack map. */
+export type TierBarVariant = TierDisplayStatus | "warning";
 
 export interface RoomSkuOption {
   sku: TreeTierItemSku;
@@ -47,8 +47,28 @@ export function buildLocationLabel(unitNumber: string | undefined, tierCode: str
   return unitNumber ? `${unitNumber}-${tierCode}` : tierCode;
 }
 
+/** Short tier label used next to the rack drawing, e.g. "T04". */
+export function formatTierShort(tierNumber: number): string {
+  return `T${String(tierNumber).padStart(2, "0")}`;
+}
+
+/** Highest tier first, like a physical rack seen from the front. */
+export function sortTiersTopDown(tiers: TreeTier[]): TreeTier[] {
+  return [...tiers].sort((a, b) => b.tierNumber - a.tierNumber);
+}
+
 export function isTierLocked(status?: RackTierStatusEnum | null): boolean {
   return status === RackTierStatusEnum.MAINTENANCE || status === RackTierStatusEnum.INACTIVE;
+}
+
+export function getTierDisplayStatus(
+  status?: RackTierStatusEnum | null,
+  itemCount = 0
+): TierDisplayStatus {
+  if (status === RackTierStatusEnum.MAINTENANCE) return "maintenance";
+  if (status === RackTierStatusEnum.INACTIVE) return "inactive";
+  if (itemCount > 0 || status === RackTierStatusEnum.OCCUPIED) return "occupied";
+  return "available";
 }
 
 export function getWeightLevel(weightKg: number, maxWeightKg?: number | null): TierWeightInfo {
@@ -65,49 +85,29 @@ export function sumItemsWeight(items: TreeTierItem[]): number {
   return items.reduce((sum, item) => sum + item.quantity * (item.sku.weightKg ?? 0), 0);
 }
 
+export function sumItemsQuantity(items: TreeTierItem[]): number {
+  return items.reduce((sum, item) => sum + item.quantity, 0);
+}
+
 export function getTierWeight(tier: TreeTier): TierWeightInfo {
   return getWeightLevel(sumItemsWeight(tier.items), tier.maxWeightKg);
+}
+
+export function getTierBarVariant(tier: TreeTier): TierBarVariant {
+  const status = getTierDisplayStatus(tier.status, tier.items.length);
+  if (status !== "occupied") return status;
+  if (tier.items.length === 0) return "available";
+  const level = getTierWeight(tier).level;
+  return level === "near" || level === "over" ? "warning" : "occupied";
 }
 
 export function formatWeightKg(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
-export function getTierVisual(status?: RackTierStatusEnum | null): TierVisual {
-  switch (status) {
-    case RackTierStatusEnum.OCCUPIED:
-      return {
-        containerClassName:
-          "border border-brand/30 border-l-4 border-l-brand bg-brand-bg dark:bg-brand/10",
-        labelKey: "rackMap.status.occupied",
-        locked: false,
-      };
-    case RackTierStatusEnum.MAINTENANCE:
-      return {
-        containerClassName: "border border-cta/40 bg-cta-light dark:bg-cta/15",
-        labelKey: "rackMap.status.maintenance",
-        locked: true,
-      };
-    case RackTierStatusEnum.INACTIVE:
-      return {
-        containerClassName:
-          "border border-neutral-border dark:border-neutral-700 bg-neutral-border dark:bg-neutral-800 opacity-60",
-        labelKey: "rackMap.status.inactive",
-        locked: true,
-      };
-    default:
-      return {
-        containerClassName:
-          "border border-dashed border-neutral-border dark:border-neutral-700 bg-white dark:bg-neutral-900",
-        labelKey: "rackMap.status.available",
-        locked: false,
-      };
-  }
-}
-
 export function findTierInTree(
   tree: StorageUnitInventoryTreeResponse | undefined,
-  tierId: string | null
+  tierId: string | null | undefined
 ): { rack: TreeRack; tier: TreeTier } | null {
   if (!tree || !tierId) return null;
   for (const rack of tree.racks) {

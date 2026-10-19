@@ -6,9 +6,11 @@ import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
 import { useStockAdjust } from "../hooks/useCustomerInventory";
 import type { StockFormBaseProps } from "../types/rackMap.types";
-import { getPositionLabel, resolveInventoryError } from "../utils/rackMapFormat";
+import { getPositionItems, getPositionLabel, resolveInventoryError } from "../utils/rackMapFormat";
 import { FieldError, FieldLabel, InventoryFormSheet } from "./InventoryFormSheet";
+import { PositionCard } from "./PositionCard";
 import { QuantityStepper } from "./QuantityStepper";
+import { SkuSelectField } from "./SkuSelect";
 
 const REASON_MIN_LENGTH = 3;
 const REASON_CHIP_KEYS = [
@@ -31,17 +33,27 @@ export function StockAdjustModal({
   const toast = useToast();
   const stockAdjustMutation = useStockAdjust(storageUnitId);
 
-  const item = target.item;
+  const items = getPositionItems(tree, target.tierId);
+  const options = items.map((entry) => ({ sku: entry.sku, quantity: entry.quantity }));
+  const initialItem = target.item ?? (items.length === 1 ? items[0] : null);
+  const [skuId, setSkuId] = useState<string | null>(initialItem?.sku.id ?? null);
+  const item = items.find((entry) => entry.sku.id === skuId) ?? null;
   const currentQuantity = item?.quantity ?? 0;
-  const [newQuantity, setNewQuantity] = useState(currentQuantity);
+
+  const [newQuantity, setNewQuantity] = useState(initialItem?.quantity ?? 0);
   const [reason, setReason] = useState("");
+  const [skuError, setSkuError] = useState<string | null>(null);
   const [reasonError, setReasonError] = useState<string | null>(null);
 
   const locationLabel = getPositionLabel(tree, target.tierId, t("rackMap.form.floor"));
-  const unchanged = newQuantity === currentQuantity;
+  const unchanged = !item || newQuantity === currentQuantity;
 
   const handleConfirm = async () => {
-    if (!item || unchanged) return;
+    if (!item) {
+      setSkuError(t("rackMap.form.skuRequired"));
+      return;
+    }
+    if (unchanged) return;
     const trimmed = reason.trim();
     if (trimmed.length < REASON_MIN_LENGTH) {
       setReasonError(t("rackMap.form.reasonMin"));
@@ -83,30 +95,49 @@ export function StockAdjustModal({
     <InventoryFormSheet
       visible={visible}
       title={t("rackMap.form.adjustTitle")}
-      subtitle={item ? `${item.sku.skuCode} · ${locationLabel}` : locationLabel}
       isPending={stockAdjustMutation.isPending}
       confirmDisabled={unchanged}
       onClose={onClose}
       onConfirm={handleConfirm}
     >
-      <View>
-        <FieldLabel>{t("rackMap.form.actualQuantity")}</FieldLabel>
-        <QuantityStepper
-          value={newQuantity}
-          min={0}
-          unitLabel={item?.sku.uom}
-          onChange={setNewQuantity}
+      <PositionCard tree={tree} tierId={target.tierId} />
+
+      <View className="gap-2">
+        <FieldLabel>{t("rackMap.form.current")}</FieldLabel>
+        <SkuSelectField
+          options={options}
+          selectedId={skuId}
+          emptyText={t("rackMap.detail.emptyItems")}
+          onSelect={(id) => {
+            setSkuId(id);
+            setNewQuantity(items.find((entry) => entry.sku.id === id)?.quantity ?? 0);
+            setSkuError(null);
+          }}
         />
-        <Text variant="muted" className="mt-1 text-[11px]">
-          {unchanged
-            ? t("rackMap.form.unchanged")
-            : t("rackMap.form.currentQuantity", { qty: currentQuantity, uom: item?.sku.uom ?? "" })}
-        </Text>
+        <FieldError message={skuError} />
       </View>
 
-      <View>
+      <View className="gap-2">
+        <FieldLabel>{t("rackMap.form.actualQuantity")}</FieldLabel>
+        <QuantityStepper
+          size="lg"
+          value={newQuantity}
+          min={0}
+          disabled={!item}
+          onChange={setNewQuantity}
+        />
+        {item ? (
+          <Text variant="muted" className="text-[11px]">
+            {newQuantity === currentQuantity
+              ? t("rackMap.form.unchanged")
+              : t("rackMap.form.currentQuantity", { qty: currentQuantity, uom: item.sku.uom })}
+          </Text>
+        ) : null}
+      </View>
+
+      <View className="gap-2">
         <FieldLabel>{t("rackMap.form.reason")}</FieldLabel>
-        <View className="flex-row flex-wrap gap-2 mb-2.5">
+        <View className="flex-row flex-wrap gap-2">
           {REASON_CHIP_KEYS.map((key) => {
             const label = t(key);
             const selected = reason === label;
@@ -117,10 +148,10 @@ export function StockAdjustModal({
                   setReason(label);
                   setReasonError(null);
                 }}
-                className={`rounded-xl border px-3 py-1.5 ${
+                className={`rounded-full border px-3 py-1.5 ${
                   selected
                     ? "border-brand bg-brand-light/40 dark:bg-brand/20"
-                    : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800"
+                    : "border-neutral-border bg-white dark:border-neutral-800 dark:bg-neutral-900"
                 }`}
               >
                 <Text
@@ -143,8 +174,9 @@ export function StockAdjustModal({
           multiline
           numberOfLines={3}
           textAlignVertical="top"
+          placeholder={t("rackMap.form.reasonPlaceholder")}
           placeholderTextColor="#94A3B8"
-          className="min-h-[72px] rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 p-3.5 text-xs text-neutral-dark dark:text-neutral-100"
+          className="min-h-[80px] rounded-xl border border-neutral-border bg-white p-3.5 text-xs text-neutral-dark dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
         />
         <FieldError message={reasonError} />
       </View>

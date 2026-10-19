@@ -1,62 +1,70 @@
 import React from "react";
 import { View, Pressable, TextInput } from "react-native";
 import { Minus, Plus } from "lucide-react-native";
-import { Text } from "@/components/ui/text";
+
+const SIZE = {
+  sm: { box: "h-11", button: "w-11", text: "text-base", icon: 16 },
+  lg: { box: "h-14", button: "w-14", text: "text-xl", icon: 20 },
+};
 
 interface QuantityStepperProps {
   value: number;
   onChange: (value: number) => void;
   min?: number;
   max?: number;
-  unitLabel?: string;
   disabled?: boolean;
+  size?: keyof typeof SIZE;
 }
 
+/** Segmented "[ − | value | + ]" quantity input. */
 export function QuantityStepper({
   value,
   onChange,
   min = 0,
   max,
-  unitLabel,
   disabled = false,
+  size = "sm",
 }: QuantityStepperProps) {
+  const style = SIZE[size];
   const canDecrease = !disabled && value > min;
   const canIncrease = !disabled && (max === undefined || value < max);
 
   return (
-    <View className="flex-row items-center gap-2.5">
+    <View
+      className={`flex-row overflow-hidden rounded-xl border border-neutral-border bg-white dark:border-neutral-700 dark:bg-neutral-900 ${style.box} ${
+        disabled ? "opacity-50" : ""
+      }`}
+    >
       <Pressable
         onPress={() => onChange(Math.max(min, value - 1))}
         disabled={!canDecrease}
-        className={`h-11 w-11 items-center justify-center rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 ${
-          canDecrease ? "" : "opacity-40"
+        className={`${style.button} items-center justify-center border-r border-neutral-border dark:border-neutral-700 ${
+          canDecrease ? "active:bg-neutral-100 dark:active:bg-neutral-800" : "opacity-30"
         }`}
       >
-        <Minus size={16} color="#0F172A" />
+        <Minus size={style.icon} color="#647B80" />
       </Pressable>
 
-      <View className="flex-1 flex-row items-center justify-between rounded-xl border border-brand/40 bg-brand-light/20 px-3.5 py-2">
-        <TextInput
-          value={String(value)}
-          editable={!disabled}
-          onChangeText={(txt) => {
-            const digits = txt.replace(/[^0-9]/g, "");
-            onChange(digits ? Number(digits) : 0);
-          }}
-          keyboardType="number-pad"
-          className="text-base font-extrabold text-brand py-0 min-w-[48px]"
-        />
-        {unitLabel ? <Text className="text-xs font-bold text-brand">{unitLabel}</Text> : null}
-      </View>
+      <TextInput
+        value={String(value)}
+        editable={!disabled}
+        onChangeText={(txt) => {
+          const digits = txt.replace(/[^0-9]/g, "");
+          onChange(digits ? Number(digits) : 0);
+        }}
+        keyboardType="number-pad"
+        textAlign="center"
+        className={`flex-1 py-0 font-extrabold text-neutral-dark dark:text-neutral-100 ${style.text}`}
+      />
 
       <Pressable
         onPress={() => onChange(max === undefined ? value + 1 : Math.min(max, value + 1))}
         disabled={!canIncrease}
-        className={`h-11 w-11 items-center justify-center rounded-xl bg-brand ${
-          canIncrease ? "" : "opacity-40"
+        className={`${style.button} items-center justify-center border-l border-neutral-border dark:border-neutral-700 ${
+          canIncrease ? "active:bg-neutral-100 dark:active:bg-neutral-800" : "opacity-30"
         }`}
       >
-        <Plus size={16} color="#FFFFFF" />
+        <Plus size={style.icon} color="#647B80" />
       </Pressable>
     </View>
   );

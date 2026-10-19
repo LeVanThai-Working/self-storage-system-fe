@@ -1,66 +1,90 @@
 import React from "react";
-import { View, type LayoutChangeEvent } from "react-native";
-import { Layers } from "lucide-react-native";
+import { View, Pressable, type LayoutChangeEvent } from "react-native";
+import { ChevronDown, ChevronUp } from "lucide-react-native";
 import type { TreeRack, TreeTier } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
+import { formatTierShort, sortTiersTopDown } from "../utils/rackMapFormat";
 import { TierCell } from "./TierCell";
 
 interface RackCardProps {
   rack: TreeRack;
-  unitNumber?: string;
+  collapsed: boolean;
+  onToggle: () => void;
   highlightedTierIds?: Set<string>;
   onTierPress: (tier: TreeTier) => void;
   onLayout?: (event: LayoutChangeEvent) => void;
 }
 
+/** A rack drawn as a real shelf: highest tier on top, uprights on both sides. */
 export function RackCard({
   rack,
-  unitNumber,
+  collapsed,
+  onToggle,
   highlightedTierIds,
   onTierPress,
   onLayout,
 }: RackCardProps) {
   const { t } = useTranslation();
   const occupied = rack.tiers.filter((tier) => tier.items.length > 0).length;
+  const tiers = sortTiersTopDown(rack.tiers);
 
   return (
     <View
       onLayout={onLayout}
-      className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3"
+      className="rounded-3xl border border-neutral-border bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
     >
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-2 flex-1">
-          <View className="h-8 w-8 items-center justify-center rounded-xl bg-brand-light dark:bg-brand/20">
-            <Layers size={16} color="#0B927E" />
-          </View>
-          <View className="flex-1">
-            <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
-              {t("rackMap.rackTitle", { code: rack.rackCode })}
+      <Pressable onPress={onToggle} className="flex-row items-center gap-3 active:opacity-80">
+        <View className="flex-1">
+          <View className="flex-row items-baseline gap-2">
+            <Text className="text-base font-extrabold text-neutral-dark dark:text-neutral-100">
+              {rack.rackCode}
             </Text>
             {rack.name ? (
-              <Text numberOfLines={1} variant="muted" className="text-[11px]">
+              <Text numberOfLines={1} variant="muted" className="flex-1 text-xs">
                 {rack.name}
               </Text>
             ) : null}
           </View>
+          <Text variant="muted" className="mt-0.5 text-[11px]">
+            {t("rackMap.rackUsage", { used: occupied, total: rack.tiers.length })}
+          </Text>
         </View>
-        <Text className="text-[11px] font-semibold text-neutral-muted">
-          {t("rackMap.rackUsage", { used: occupied, total: rack.tiers.length })}
-        </Text>
-      </View>
+        <View className="h-8 w-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
+          {collapsed ? (
+            <ChevronDown size={16} color="#647B80" />
+          ) : (
+            <ChevronUp size={16} color="#647B80" />
+          )}
+        </View>
+      </Pressable>
 
-      <View className="gap-2">
-        {rack.tiers.map((tier) => (
-          <TierCell
-            key={tier.id}
-            tier={tier}
-            unitNumber={unitNumber}
-            highlighted={highlightedTierIds?.has(tier.id) ?? false}
-            onPress={onTierPress}
-          />
-        ))}
-      </View>
+      {collapsed ? null : (
+        <View className="mt-3 flex-row">
+          <View className="w-9">
+            {tiers.map((tier) => (
+              <View key={tier.id} className="h-14 justify-center pb-2 pt-1">
+                <Text className="text-[11px] font-bold text-neutral-muted">
+                  {formatTierShort(tier.tierNumber)}
+                </Text>
+              </View>
+            ))}
+          </View>
+
+          <View className="flex-1 rounded-sm border-x-4 border-neutral-dark px-1.5 dark:border-neutral-600">
+            {tiers.map((tier) => (
+              <View key={tier.id} className="h-14 justify-end">
+                <TierCell
+                  tier={tier}
+                  highlighted={highlightedTierIds?.has(tier.id) ?? false}
+                  onPress={onTierPress}
+                />
+                <View className="mt-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
     </View>
   );
 }
