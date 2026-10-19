@@ -1088,21 +1088,46 @@
       "title": "Bảng giá Loại kho theo Cơ sở",
       "subtitle": "Thiết lập loại kho được mở bán tại từng cơ sở kèm đơn giá, hệ số cọc và số ngày thuê tối thiểu.",
       "addOffering": "+ Mở bán loại kho",
+      "quickLookup": "Tra cứu nhanh",
       "refresh": "Làm mới",
+      "searchPlaceholder": "Tìm theo tên cơ sở, loại kho...",
+      "stats": {
+        "total": "Tổng gói giá",
+        "active": "Đang mở bán",
+        "inactive": "Ngừng bán",
+        "facilities": "Cơ sở áp dụng"
+      },
       "facilityFilter": {
         "all": "Tất cả cơ sở"
+      },
+      "unitTypeFilter": {
+        "all": "Tất cả loại kho"
+      },
+      "billingUnitFilter": {
+        "all": "Tất cả chu kỳ",
+        "day": "Theo ngày",
+        "month": "Theo tháng",
+        "one_time": "Một lần"
       },
       "statusFilter": {
         "all": "Tất cả trạng thái",
         "active": "Đang mở bán",
         "inactive": "Ngừng bán"
       },
+      "sort": {
+        "createdAtDesc": "Mới nhất",
+        "createdAtAsc": "Cũ nhất",
+        "priceDesc": "Giá cao đến thấp",
+        "priceAsc": "Giá thấp đến cao",
+        "minDaysDesc": "Ngày thuê giảm dần",
+        "minDaysAsc": "Ngày thuê tăng dần"
+      },
       "table": {
         "facility": "Cơ sở",
         "unitType": "Loại kho",
-        "price": "Đơn giá",
-        "deposit": "Hệ số cọc",
-        "minRentalDays": "Số ngày thuê tối thiểu",
+        "price": "Đơn giá niêm yết",
+        "deposit": "Chính sách cọc",
+        "minRentalDays": "Thuê tối thiểu",
         "status": "Trạng thái",
         "actions": "Thao tác"
       },
@@ -1116,6 +1141,7 @@
         "inactive": "Ngừng bán"
       },
       "actions": {
+        "view": "Xem chi tiết",
         "edit": "Chỉnh sửa",
         "delete": "Ngừng bán",
         "restore": "Mở bán lại"
@@ -1124,24 +1150,42 @@
         "title": "Chưa có bảng giá nào",
         "description": "Hãy mở bán loại kho đầu tiên cho một cơ sở."
       },
+      "emptySearch": {
+        "title": "Không tìm thấy bảng giá nào",
+        "description": "Không có bảng giá nào khớp với từ khóa \"{query}\". Vui lòng thử từ khóa khác hoặc xóa bộ lọc."
+      },
+      "searchButton": "Tìm",
+      "clearSearch": "Xóa tìm kiếm",
+      "clearFilter": "Xóa bộ lọc",
+      "searchResultsCount": "Tìm thấy {count} bảng giá phù hợp với \"{query}\"",
       "pagination": {
         "page": "Trang",
         "prev": "Trước",
         "next": "Sau"
       },
       "formModal": {
-        "createTitle": "Mở bán loại kho",
+        "createTitle": "Mở bán loại kho tại cơ sở",
         "editTitle": "Chỉnh sửa bảng giá",
-        "facilityLabel": "Cơ sở",
+        "facilityLabel": "Cơ sở áp dụng",
         "facilityPlaceholder": "Chọn cơ sở",
-        "unitTypeLabel": "Loại kho",
+        "unitTypeLabel": "Loại kho mở bán",
         "unitTypePlaceholder": "Chọn loại kho",
-        "priceLabel": "Đơn giá (VND)",
-        "billingUnitLabel": "Đơn vị tính",
+        "priceLabel": "Đơn giá niêm yết (VND)",
+        "pricePlaceholder": "vd: 1500000",
+        "billingUnitLabel": "Chu kỳ tính phí",
         "depositLabel": "Hệ số cọc",
+        "depositPlaceholder": "vd: 1",
+        "depositEst": "Tiền cọc ước tính:",
+        "depositHint": "Bội số của đơn giá (1 = cọc 1 chu kỳ, 2 = cọc 2 chu kỳ)",
         "minRentalDaysLabel": "Số ngày thuê tối thiểu",
-        "statusLabel": "Trạng thái",
-        "notesLabel": "Ghi chú",
+        "minRentalDaysPlaceholder": "vd: 30",
+        "minRentalDaysHint": "Khách hàng phải thuê ít nhất số ngày này",
+        "statusLabel": "Trạng thái mở bán",
+        "notesLabel": "Ghi chú & Chính sách riêng",
+        "notesPlaceholder": "Mô tả ưu đãi, ghi chú thêm về phòng kho tại cơ sở này...",
+        "duplicateWarning": "Cơ sở này đã được thiết lập bảng giá cho loại kho này rồi. Vui lòng chọn loại kho khác hoặc cập nhật bảng giá hiện có.",
+        "checkingDuplicate": "Đang kiểm tra tính khả dụng...",
+        "availablePair": "Hợp lệ: Loại kho này chưa từng mở bán tại cơ sở được chọn.",
         "billingUnit": {
           "day": "ngày",
           "month": "tháng",
@@ -1152,14 +1196,62 @@
           "inactive": "Ngừng bán"
         },
         "cancel": "Hủy bỏ",
-        "save": "Lưu",
+        "save": "Lưu & Mở bán",
+        "update": "Cập nhật bảng giá",
         "saving": "Đang lưu...",
-        "success": "Lưu thành công!",
-        "error": "Không thể lưu. Vui lòng thử lại sau.",
+        "success": "Thiết lập bảng giá thành công!",
+        "updateSuccess": "Cập nhật bảng giá thành công!",
+        "noChanges": "Bạn chưa thay đổi thông tin nào.",
+        "loadingDetail": "Đang tải thông tin bảng giá...",
+        "loadDetailError": "Không thể tải thông tin bảng giá.",
+        "retry": "Thử lại",
+        "fixedPairHint": "Cơ sở và loại kho không thể thay đổi sau khi tạo. Nếu cần, hãy ngừng bán và tạo bảng giá mới.",
+        "error": "Không thể lưu bảng giá. Vui lòng kiểm tra lại thông tin.",
         "validation": {
           "required": "Vui lòng chọn cơ sở và loại kho.",
-          "price": "Đơn giá không hợp lệ."
+          "price": "Đơn giá phải là số nguyên dương >= 0.",
+          "deposit": "Hệ số cọc phải >= 0.",
+          "minDays": "Số ngày thuê tối thiểu phải >= 1 ngày.",
+          "duplicate": "Bảng giá cho loại kho này tại cơ sở đã tồn tại."
         }
+      },
+      "detailModal": {
+        "title": "Chi tiết bảng giá",
+        "loading": "Đang tải chi tiết...",
+        "error": "Không tìm thấy hoặc không thể tải bảng giá này.",
+        "retry": "Thử lại",
+        "price": "Đơn giá niêm yết",
+        "facility": "Cơ sở",
+        "unitType": "Loại kho",
+        "deposit": "Hệ số cọc",
+        "minRentalDays": "Thuê tối thiểu",
+        "days": "ngày",
+        "billingUnit": "Chu kỳ",
+        "notes": "Ghi chú",
+        "noNotes": "Không có ghi chú",
+        "createdAt": "Tạo lúc",
+        "updatedAt": "Cập nhật lúc",
+        "close": "Đóng",
+        "edit": "Chỉnh sửa"
+      },
+      "lookupModal": {
+        "title": "Tra cứu nhanh bảng giá theo cơ sở & loại kho",
+        "description": "Truy vấn trực tiếp cấu hình giá của một loại kho tại cơ sở (GET /facility-unit-type-offerings/facility/:facilityId/unit-type/:unitTypeId).",
+        "facilityLabel": "Cơ sở",
+        "facilityPlaceholder": "Chọn cơ sở tra cứu",
+        "unitTypeLabel": "Loại kho",
+        "unitTypePlaceholder": "Chọn loại kho tra cứu",
+        "promptSelect": "Vui lòng chọn cơ sở và loại kho để bắt đầu tra cứu.",
+        "searching": "Đang tra cứu bảng giá...",
+        "price": "Đơn giá niêm yết",
+        "deposit": "Hệ số cọc",
+        "minRentalDays": "Thuê tối thiểu",
+        "viewDetail": "Xem chi tiết",
+        "edit": "Chỉnh sửa",
+        "notFoundTitle": "Chưa mở bán loại kho này tại cơ sở",
+        "notFoundDescription": "Cơ sở này hiện chưa có cấu hình bảng giá cho loại kho được chọn.",
+        "createNow": "+ Mở bán loại kho này ngay",
+        "close": "Đóng"
       },
       "confirmModal": {
         "deleteTitle": "Ngừng bán loại kho này?",
