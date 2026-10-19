@@ -1,6 +1,14 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import { ChevronRight, Circle, Lock, Package, TriangleAlert, Wrench } from "lucide-react-native";
+import {
+  ChevronRight,
+  Circle,
+  Lock,
+  MapPin,
+  Package,
+  TriangleAlert,
+  Wrench,
+} from "lucide-react-native";
 import type { TreeTier } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
@@ -50,12 +58,15 @@ const BAR_STYLE: Record<
 
 interface TierCellProps {
   tier: TreeTier;
+  /** The tier holds the SKU found by "find items". */
   highlighted?: boolean;
+  /** Another tier is highlighted, so this one fades out. */
+  dimmed?: boolean;
   onPress: (tier: TreeTier) => void;
 }
 
 /** One shelf of the 2D rack: a colored bar showing the main item and the tier state. */
-export function TierCell({ tier, highlighted = false, onPress }: TierCellProps) {
+export function TierCell({ tier, highlighted = false, dimmed = false, onPress }: TierCellProps) {
   const { t } = useTranslation();
   const variant = getTierBarVariant(tier);
   const style = BAR_STYLE[variant];
@@ -79,21 +90,27 @@ export function TierCell({ tier, highlighted = false, onPress }: TierCellProps) 
       <Package size={14} color={style.iconColor} />
     );
 
-  const trailingIcon =
-    variant === "occupied" ? (
-      <ChevronRight size={16} color={style.iconColor} />
-    ) : variant === "warning" ? (
-      <TriangleAlert size={16} color={style.iconColor} />
-    ) : variant === "maintenance" && firstItem ? (
-      <Wrench size={15} color={style.iconColor} />
-    ) : variant === "inactive" ? (
-      <Lock size={15} color={style.iconColor} />
-    ) : null;
+  const trailingIcon = highlighted ? (
+    <View className="flex-row items-center gap-1 rounded-full bg-cta px-2 py-0.5">
+      <MapPin size={11} color="#FFFFFF" />
+      <Text className="text-[10px] font-bold text-white">{t("rackMap.locate.here")}</Text>
+    </View>
+  ) : variant === "occupied" ? (
+    <ChevronRight size={16} color={style.iconColor} />
+  ) : variant === "warning" ? (
+    <TriangleAlert size={16} color={style.iconColor} />
+  ) : variant === "maintenance" && firstItem ? (
+    <Wrench size={15} color={style.iconColor} />
+  ) : variant === "inactive" ? (
+    <Lock size={15} color={style.iconColor} />
+  ) : null;
 
   return (
     <Pressable
       onPress={() => onPress(tier)}
-      className={`h-11 flex-row items-center gap-2 rounded-xl px-3 active:opacity-80 ${style.container}`}
+      className={`h-11 flex-row items-center gap-2 rounded-xl px-3 active:opacity-80 ${
+        style.container
+      } ${dimmed ? "opacity-30" : ""}`}
     >
       {leadingIcon}
       <Text numberOfLines={1} className={`flex-shrink text-xs font-bold ${style.text}`}>

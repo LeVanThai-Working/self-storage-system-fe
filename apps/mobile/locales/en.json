@@ -506,6 +506,7 @@
       "otherUnit": "another unit",
       "highlighting": "Highlighting %{sku} · %{count} locations",
       "clear": "Clear",
+      "here": "Here",
       "scan": "Scan barcode"
     },
     "scanner": {

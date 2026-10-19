@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Pressable, type LayoutChangeEvent } from "react-native";
-import { ChevronDown, ChevronUp } from "lucide-react-native";
+import { ChevronDown, ChevronUp, MapPin } from "lucide-react-native";
 import type { TreeRack, TreeTier } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
@@ -12,6 +12,8 @@ interface RackCardProps {
   collapsed: boolean;
   onToggle: () => void;
   highlightedTierIds?: Set<string>;
+  /** A "find items" result is shown, so tiers outside it fade out. */
+  highlightActive?: boolean;
   onTierPress: (tier: TreeTier) => void;
   onLayout?: (event: LayoutChangeEvent) => void;
 }
@@ -22,6 +24,7 @@ export function RackCard({
   collapsed,
   onToggle,
   highlightedTierIds,
+  highlightActive = false,
   onTierPress,
   onLayout,
 }: RackCardProps) {
@@ -61,27 +64,41 @@ export function RackCard({
 
       {collapsed ? null : (
         <View className="mt-3 flex-row">
-          <View className="w-9">
-            {tiers.map((tier) => (
-              <View key={tier.id} className="h-14 justify-center pb-2 pt-1">
-                <Text className="text-[11px] font-bold text-neutral-muted">
-                  {formatTierShort(tier.tierNumber)}
-                </Text>
-              </View>
-            ))}
+          <View className="w-10">
+            {tiers.map((tier) => {
+              const highlighted = highlightedTierIds?.has(tier.id) ?? false;
+              return (
+                <View key={tier.id} className="h-14 flex-row items-center gap-0.5 pb-2 pt-1">
+                  {highlighted ? <MapPin size={11} color="#FF702E" /> : null}
+                  <Text
+                    className={`text-[11px] ${
+                      highlighted
+                        ? "font-extrabold text-cta"
+                        : `font-bold text-neutral-muted ${highlightActive ? "opacity-40" : ""}`
+                    }`}
+                  >
+                    {formatTierShort(tier.tierNumber)}
+                  </Text>
+                </View>
+              );
+            })}
           </View>
 
           <View className="flex-1 rounded-sm border-x-4 border-neutral-dark px-1.5 dark:border-neutral-600">
-            {tiers.map((tier) => (
-              <View key={tier.id} className="h-14 justify-end">
-                <TierCell
-                  tier={tier}
-                  highlighted={highlightedTierIds?.has(tier.id) ?? false}
-                  onPress={onTierPress}
-                />
-                <View className="mt-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
-              </View>
-            ))}
+            {tiers.map((tier) => {
+              const highlighted = highlightedTierIds?.has(tier.id) ?? false;
+              return (
+                <View key={tier.id} className="h-14 justify-end">
+                  <TierCell
+                    tier={tier}
+                    highlighted={highlighted}
+                    dimmed={highlightActive && !highlighted}
+                    onPress={onTierPress}
+                  />
+                  <View className="mt-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+                </View>
+              );
+            })}
           </View>
         </View>
       )}

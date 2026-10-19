@@ -506,6 +506,7 @@
       "otherUnit": "phòng khác",
       "highlighting": "Đang đánh dấu %{sku} · %{count} vị trí",
       "clear": "Bỏ đánh dấu",
+      "here": "Ở đây",
       "scan": "Quét mã vạch"
     },
     "scanner": {

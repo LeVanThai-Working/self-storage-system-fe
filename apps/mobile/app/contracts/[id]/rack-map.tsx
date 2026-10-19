@@ -33,6 +33,7 @@ import type {
 import {
   INVENTORY_ERROR,
   resolveInventoryError,
+  sortTiersTopDown,
 } from "@/features/customer-inventory/utils/rackMapFormat";
 
 /** `undefined` = detail sheet closed, `null` = floor (unracked) items. */
@@ -40,6 +41,11 @@ type DetailTarget = string | null | undefined;
 
 /** Wait for expanded racks to lay out before scrolling to them. */
 const SCROLL_AFTER_LAYOUT_MS = 350;
+/** Rack card geometry used to scroll a located tier into view (see RackCard: h-14 rows). */
+const RACK_BODY_OFFSET = 70;
+const TIER_ROW_HEIGHT = 56;
+/** Keep some of the map above the located tier visible. */
+const SCROLL_CONTEXT_OFFSET = 160;
 
 export default function ContractRackMapScreen() {
   const router = useRouter();
@@ -98,6 +104,15 @@ export default function ContractRackMapScreen() {
     return ids;
   }, [locateResult, tree]);
 
+  const floorHighlighted = Boolean(
+    locateResult &&
+    tree &&
+    locateResult.locations.some(
+      (location) => location.storageUnit?.id === tree.storageUnit.id && !location.rackTier
+    )
+  );
+  const highlightActive = highlightedTierIds.size > 0 || floorHighlighted;
+
   const handleBack = () => {
     if (router.canGoBack()) {
       router.back();
@@ -143,9 +158,13 @@ export default function ContractRackMapScreen() {
     setLocateOpen(false);
     if (!tree) return;
 
+    const unitLocations = result.locations.filter(
+      (location) => location.storageUnit?.id === tree.storageUnit.id
+    );
+    if (unitLocations.length === 0) return;
+
     const unitTierIds = new Set(
-      result.locations
-        .filter((location) => location.storageUnit?.id === tree.storageUnit.id)
+      unitLocations
         .map((location) => location.rackTier?.id)
         .filter((id): id is string => Boolean(id))
     );
@@ -159,18 +178,26 @@ export default function ContractRackMapScreen() {
       return next;
     });
 
+    // Tier to bring into view: the tapped one, else the top-most located tier of the first rack.
+    const firstRack = targetRacks[0];
+    const scrollTierId =
+      focusTierId !== undefined
+        ? focusTierId
+        : firstRack
+          ? (sortTiersTopDown(firstRack.tiers).find((tier) => unitTierIds.has(tier.id))?.id ?? null)
+          : null;
+
     setTimeout(() => {
-      if (focusTierId === null) {
+      if (scrollTierId === null) {
         scrollRef.current?.scrollToEnd({ animated: true });
         return;
       }
-      const focusRack = focusTierId
-        ? tree.racks.find((rack) => rack.tiers.some((tier) => tier.id === focusTierId))
-        : targetRacks[0];
-      const offset = focusRack ? rackOffsetsRef.current.get(focusRack.id) : undefined;
-      if (offset !== undefined) {
-        scrollRef.current?.scrollTo({ y: Math.max(0, offset - 12), animated: true });
-      }
+      const rack = tree.racks.find((item) => item.tiers.some((tier) => tier.id === scrollTierId));
+      const rackOffset = rack ? rackOffsetsRef.current.get(rack.id) : undefined;
+      if (!rack || rackOffset === undefined) return;
+      const tierIndex = sortTiersTopDown(rack.tiers).findIndex((tier) => tier.id === scrollTierId);
+      const y = rackOffset + RACK_BODY_OFFSET + tierIndex * TIER_ROW_HEIGHT - SCROLL_CONTEXT_OFFSET;
+      scrollRef.current?.scrollTo({ y: Math.max(0, y), animated: true });
     }, SCROLL_AFTER_LAYOUT_MS);
   };
 
@@ -303,6 +330,7 @@ export default function ContractRackMapScreen() {
               collapsed={collapsedRackIds.has(rack.id)}
               onToggle={() => toggleRack(rack.id)}
               highlightedTierIds={highlightedTierIds}
+              highlightActive={highlightActive}
               onTierPress={handleTierPress}
               onLayout={(event) => {
                 rackOffsetsRef.current.set(rack.id, event.nativeEvent.layout.y);
@@ -318,7 +346,12 @@ export default function ContractRackMapScreen() {
           </View>
         )}
 
-        <UnrackedSection items={tree.unrackedItems} onPress={() => setDetailTarget(null)} />
+        <UnrackedSection
+          items={tree.unrackedItems}
+          highlighted={floorHighlighted}
+          dimmed={highlightActive && !floorHighlighted}
+          onPress={() => setDetailTarget(null)}
+        />
       </ScrollView>
     );
   };

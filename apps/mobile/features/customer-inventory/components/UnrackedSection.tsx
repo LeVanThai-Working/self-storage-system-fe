@@ -1,23 +1,35 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import { ChevronRight, PackageOpen } from "lucide-react-native";
+import { ChevronRight, MapPin, PackageOpen } from "lucide-react-native";
 import type { TreeTierItem } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
 import { sumItemsQuantity } from "../utils/rackMapFormat";
+import { TierHighlightPulse } from "./TierHighlightPulse";
 
 interface UnrackedSectionProps {
   items: TreeTierItem[];
   onPress: () => void;
+  /** The SKU found by "find items" is stored on the floor of this unit. */
+  highlighted?: boolean;
+  /** A "find items" result is shown elsewhere, so this card fades out. */
+  dimmed?: boolean;
 }
 
-export function UnrackedSection({ items, onPress }: UnrackedSectionProps) {
+export function UnrackedSection({
+  items,
+  onPress,
+  highlighted = false,
+  dimmed = false,
+}: UnrackedSectionProps) {
   const { t } = useTranslation();
 
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center gap-3 rounded-3xl border border-neutral-border bg-white p-4 shadow-sm active:opacity-90 dark:border-neutral-800 dark:bg-neutral-900"
+      className={`flex-row items-center gap-3 rounded-3xl border bg-white p-4 shadow-sm active:opacity-90 dark:bg-neutral-900 ${
+        highlighted ? "border-cta" : "border-neutral-border dark:border-neutral-800"
+      } ${dimmed ? "opacity-40" : ""}`}
     >
       <View className="h-11 w-11 items-center justify-center rounded-2xl bg-brand-light dark:bg-brand/20">
         <PackageOpen size={20} color="#0B927E" />
@@ -32,7 +44,15 @@ export function UnrackedSection({ items, onPress }: UnrackedSectionProps) {
             : t("rackMap.unracked.empty")}
         </Text>
       </View>
-      <ChevronRight size={18} color="#647B80" />
+      {highlighted ? (
+        <View className="flex-row items-center gap-1 rounded-full bg-cta px-2 py-0.5">
+          <MapPin size={11} color="#FFFFFF" />
+          <Text className="text-[10px] font-bold text-white">{t("rackMap.locate.here")}</Text>
+        </View>
+      ) : (
+        <ChevronRight size={18} color="#647B80" />
+      )}
+      {highlighted ? <TierHighlightPulse className="rounded-3xl" /> : null}
     </Pressable>
   );
 }

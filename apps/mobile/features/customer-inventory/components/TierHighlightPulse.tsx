@@ -8,37 +8,44 @@ import Animated, {
   cancelAnimation,
 } from "react-native-reanimated";
 
-const PULSE_DURATION_MS = 500;
-/** 3 blinks of ~1s each, then the border stays visible. */
-const PULSE_REPEAT = 3;
+const PULSE_DURATION_MS = 600;
 
-/** Orange border that blinks over a located tier (absolute overlay, does not capture touches). */
-export function TierHighlightPulse() {
-  const opacity = useSharedValue(1);
+interface TierHighlightPulseProps {
+  /** Corner radius class matching the highlighted element. */
+  className?: string;
+}
+
+/**
+ * Thick orange ring that keeps pulsing (fade + slight zoom) over a located element until the
+ * highlight is cleared. Absolute overlay, does not capture touches.
+ */
+export function TierHighlightPulse({ className = "rounded-2xl" }: TierHighlightPulseProps) {
+  const progress = useSharedValue(0);
 
   useEffect(() => {
-    opacity.value = withRepeat(
+    progress.value = withRepeat(
       withSequence(
-        withTiming(0.2, { duration: PULSE_DURATION_MS }),
-        withTiming(1, { duration: PULSE_DURATION_MS })
+        withTiming(1, { duration: PULSE_DURATION_MS }),
+        withTiming(0, { duration: PULSE_DURATION_MS })
       ),
-      PULSE_REPEAT
+      -1
     );
 
     return () => {
-      cancelAnimation(opacity);
+      cancelAnimation(progress);
     };
-  }, [opacity]);
+  }, [progress]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    opacity: 0.45 + progress.value * 0.55,
+    transform: [{ scale: 1 + progress.value * 0.03 }],
   }));
 
   return (
     <Animated.View
       pointerEvents="none"
       style={animatedStyle}
-      className="absolute -inset-0.5 rounded-2xl border-2 border-cta"
+      className={`absolute -inset-1 border-[3px] border-cta bg-cta/10 ${className}`}
     />
   );
 }
