@@ -1088,21 +1088,46 @@
       "title": "Facility Unit Type Offerings",
       "subtitle": "Configure which unit types are sold at each facility, with pricing, deposit multiplier and minimum rental days.",
       "addOffering": "+ Add Offering",
+      "quickLookup": "Quick Lookup",
       "refresh": "Refresh",
+      "searchPlaceholder": "Search by facility or unit type...",
+      "stats": {
+        "total": "Total Offerings",
+        "active": "Active",
+        "inactive": "Inactive",
+        "facilities": "Facilities"
+      },
       "facilityFilter": {
         "all": "All facilities"
+      },
+      "unitTypeFilter": {
+        "all": "All unit types"
+      },
+      "billingUnitFilter": {
+        "all": "All billing units",
+        "day": "Daily",
+        "month": "Monthly",
+        "one_time": "One-time"
       },
       "statusFilter": {
         "all": "All statuses",
         "active": "Active",
         "inactive": "Inactive"
       },
+      "sort": {
+        "createdAtDesc": "Newest first",
+        "createdAtAsc": "Oldest first",
+        "priceDesc": "Price: High to Low",
+        "priceAsc": "Price: Low to High",
+        "minDaysDesc": "Min Days: High to Low",
+        "minDaysAsc": "Min Days: Low to High"
+      },
       "table": {
         "facility": "Facility",
         "unitType": "Unit Type",
         "price": "Price",
-        "deposit": "Deposit",
-        "minRentalDays": "Min. Rental Days",
+        "deposit": "Deposit Policy",
+        "minRentalDays": "Min Rental Days",
         "status": "Status",
         "actions": "Actions"
       },
@@ -1116,6 +1141,7 @@
         "inactive": "Inactive"
       },
       "actions": {
+        "view": "View details",
         "edit": "Edit",
         "delete": "Deactivate",
         "restore": "Restore"
@@ -1124,24 +1150,42 @@
         "title": "No offerings yet",
         "description": "Add the first unit type offering for a facility."
       },
+      "emptySearch": {
+        "title": "No offerings found",
+        "description": "No offerings matched the query \"{query}\". Try a different search term or clear the filter."
+      },
+      "searchButton": "Search",
+      "clearSearch": "Clear search",
+      "clearFilter": "Clear filter",
+      "searchResultsCount": "Found {count} offerings matching \"{query}\"",
       "pagination": {
         "page": "Page",
         "prev": "Prev",
         "next": "Next"
       },
       "formModal": {
-        "createTitle": "Add Offering",
+        "createTitle": "Add Unit Type Offering",
         "editTitle": "Edit Offering",
-        "facilityLabel": "Facility",
+        "facilityLabel": "Target Facility",
         "facilityPlaceholder": "Select facility",
-        "unitTypeLabel": "Unit Type",
+        "unitTypeLabel": "Offered Unit Type",
         "unitTypePlaceholder": "Select unit type",
         "priceLabel": "Price (VND)",
+        "pricePlaceholder": "e.g. 1500000",
         "billingUnitLabel": "Billing Unit",
         "depositLabel": "Deposit Multiplier",
+        "depositPlaceholder": "e.g. 1",
+        "depositEst": "Estimated Deposit:",
+        "depositHint": "Multiplier of unit price (1 = 1 cycle deposit, 2 = 2 cycles)",
         "minRentalDaysLabel": "Minimum Rental Days",
-        "statusLabel": "Status",
-        "notesLabel": "Notes",
+        "minRentalDaysPlaceholder": "e.g. 30",
+        "minRentalDaysHint": "Customer must rent at least this many days",
+        "statusLabel": "Offering Status",
+        "notesLabel": "Notes & Terms",
+        "notesPlaceholder": "Describe promotions, specific conditions...",
+        "duplicateWarning": "This facility already offers this unit type. Please select another unit type or update the existing offering.",
+        "checkingDuplicate": "Checking availability...",
+        "availablePair": "Valid: This unit type is not yet offered at this facility.",
         "billingUnit": {
           "day": "day",
           "month": "month",
@@ -1152,14 +1196,62 @@
           "inactive": "Inactive"
         },
         "cancel": "Cancel",
-        "save": "Save",
+        "save": "Save & Publish",
+        "update": "Update Offering",
         "saving": "Saving...",
-        "success": "Saved successfully!",
-        "error": "Could not save. Please try again.",
+        "success": "Offering saved successfully!",
+        "updateSuccess": "Offering updated successfully!",
+        "noChanges": "You haven't changed anything.",
+        "loadingDetail": "Loading offering...",
+        "loadDetailError": "Could not load this offering.",
+        "retry": "Retry",
+        "fixedPairHint": "Facility and unit type cannot be changed after creation. Deactivate this offering and create a new one if needed.",
+        "error": "Could not save offering. Please verify the information.",
         "validation": {
           "required": "Please select a facility and unit type.",
-          "price": "Invalid price."
+          "price": "Price must be a valid number >= 0.",
+          "deposit": "Deposit multiplier must be >= 0.",
+          "minDays": "Minimum rental days must be >= 1.",
+          "duplicate": "An offering for this unit type at this facility already exists."
         }
+      },
+      "detailModal": {
+        "title": "Offering Details",
+        "loading": "Loading details...",
+        "error": "This offering was not found or could not be loaded.",
+        "retry": "Retry",
+        "price": "Listed Price",
+        "facility": "Facility",
+        "unitType": "Unit Type",
+        "deposit": "Deposit",
+        "minRentalDays": "Min. Rental",
+        "days": "days",
+        "billingUnit": "Billing",
+        "notes": "Notes",
+        "noNotes": "No notes",
+        "createdAt": "Created",
+        "updatedAt": "Updated",
+        "close": "Close",
+        "edit": "Edit"
+      },
+      "lookupModal": {
+        "title": "Quick Offering Lookup",
+        "description": "Directly query the pricing configuration of a unit type at the selected facility (GET /facility-unit-type-offerings/facility/:facilityId/unit-type/:unitTypeId).",
+        "facilityLabel": "Facility",
+        "facilityPlaceholder": "Select facility to look up",
+        "unitTypeLabel": "Unit Type",
+        "unitTypePlaceholder": "Select unit type to look up",
+        "promptSelect": "Please select a facility and a unit type to look up pricing.",
+        "searching": "Looking up offering...",
+        "price": "Listed Price",
+        "deposit": "Deposit",
+        "minRentalDays": "Min. Rental",
+        "viewDetail": "View Details",
+        "edit": "Edit",
+        "notFoundTitle": "Not offered at this facility yet",
+        "notFoundDescription": "This facility does not currently have a pricing configuration for the selected unit type.",
+        "createNow": "+ Offer This Unit Type Now",
+        "close": "Close"
       },
       "confirmModal": {
         "deleteTitle": "Deactivate this offering?",

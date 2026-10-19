@@ -21,9 +21,16 @@ export const fetchOfferings = async (
     sortOrder: params?.sortOrder || "desc",
   };
 
-  if (params?.facilityId) queryParams.facilityId = params.facilityId;
-  if (params?.unitTypeId) queryParams.unitTypeId = params.unitTypeId;
-  if (params?.status) queryParams.status = params.status;
+  if (params?.search?.trim()) queryParams.search = params.search.trim();
+  if (params?.facilityId && params.facilityId !== "ALL") queryParams.facilityId = params.facilityId;
+  if (params?.unitTypeId && params.unitTypeId !== "ALL") queryParams.unitTypeId = params.unitTypeId;
+  if (params?.billingUnit && (params.billingUnit as string) !== "ALL")
+    queryParams.billingUnit = params.billingUnit;
+  if (params?.status && (params.status as string) !== "ALL") queryParams.status = params.status;
+  if (typeof params?.minPrice === "number" && !isNaN(params.minPrice))
+    queryParams.minPrice = params.minPrice;
+  if (typeof params?.maxPrice === "number" && !isNaN(params.maxPrice))
+    queryParams.maxPrice = params.maxPrice;
 
   const { data } = await api.get<{ success: boolean; data: OfferingListResponse }>(
     "/facility-unit-type-offerings",
@@ -41,6 +48,42 @@ export const fetchOfferings = async (
       hasPrevPage: false,
     },
   };
+};
+
+/**
+ * Kiểm tra nhanh xem một cơ sở đã thiết lập bảng giá cho loại kho đó hay chưa.
+ * Endpoint: GET /facility-unit-type-offerings/facility/{facilityId}/unit-type/{unitTypeId}
+ * Trả về Offering nếu đã tồn tại, hoặc null nếu chưa có (404).
+ */
+export const fetchOfferingByFacilityAndUnitType = async (
+  facilityId: string,
+  unitTypeId: string
+): Promise<FacilityUnitTypeOfferingResponse | null> => {
+  try {
+    const { data } = await api.get<{
+      success: boolean;
+      data: FacilityUnitTypeOfferingResponse;
+    }>(`/facility-unit-type-offerings/facility/${facilityId}/unit-type/${unitTypeId}`);
+    return data.data;
+  } catch (err: unknown) {
+    const apiErr = err as { response?: { status?: number } };
+    if (apiErr.response?.status === 404) {
+      return null;
+    }
+    throw err;
+  }
+};
+
+/**
+ * Lấy chi tiết thông tin bảng giá theo ID.
+ * Endpoint: GET /facility-unit-type-offerings/{id}
+ */
+export const fetchOfferingById = async (id: string): Promise<FacilityUnitTypeOfferingResponse> => {
+  const { data } = await api.get<{
+    success: boolean;
+    data: FacilityUnitTypeOfferingResponse;
+  }>(`/facility-unit-type-offerings/${id}`);
+  return data.data;
 };
 
 /**
