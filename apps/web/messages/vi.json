@@ -642,6 +642,7 @@
       "unitTypes": "Quy cách kho chuẩn",
       "amenities": "Tiện ích & Dịch vụ",
       "offerings": "Bảng giá theo cơ sở",
+      "facilityAmenities": "Phân bổ tiện ích",
       "analytics": "Báo cáo & Phân tích",
       "sectionOperations": "VẬN HÀNH CHI NHÁNH"
     },
@@ -1262,6 +1263,222 @@
         "confirm": "Xác nhận",
         "processing": "Đang xử lý...",
         "error": "Không thể thực hiện. Vui lòng thử lại sau."
+      }
+    },
+    "facilityAmenities": {
+      "title": "Bảng phân bổ tiện ích cho từng cơ sở",
+      "subtitle": "Quản lý tiện ích trang bị tại từng cơ sở, theo dõi tồn kho (tổng, đang dùng, khả dụng) và đơn giá thuê.",
+      "addOffering": "+ Phân bổ tiện ích",
+      "quickLookup": "Tra cứu nhanh",
+      "refresh": "Làm mới",
+      "searchPlaceholder": "Tìm theo tên cơ sở, tiện ích, mô tả...",
+      "searchButton": "Tìm",
+      "clearSearch": "Xóa tìm kiếm",
+      "clearFilter": "Xóa bộ lọc",
+      "searchResultsCount": "Tìm thấy {count} tiện ích phù hợp với \"{query}\"",
+      "stats": {
+        "total": "Tổng gói tiện ích",
+        "active": "Đang phục vụ",
+        "inactive": "Tạm ngưng",
+        "facilities": "Cơ sở áp dụng"
+      },
+      "facilityFilter": {
+        "all": "Tất cả cơ sở"
+      },
+      "amenityFilter": {
+        "all": "Tất cả tiện ích"
+      },
+      "billingUnitFilter": {
+        "all": "Tất cả chu kỳ",
+        "day": "Theo ngày",
+        "month": "Theo tháng",
+        "one_time": "Một lần"
+      },
+      "stockFilter": {
+        "all": "Tất cả tồn kho",
+        "inStock": "Còn hàng",
+        "outOfStock": "Hết hàng"
+      },
+      "statusFilter": {
+        "all": "Tất cả trạng thái",
+        "active": "Đang phục vụ",
+        "inactive": "Tạm ngưng"
+      },
+      "sort": {
+        "createdAtDesc": "Mới nhất",
+        "createdAtAsc": "Cũ nhất",
+        "priceDesc": "Giá cao đến thấp",
+        "priceAsc": "Giá thấp đến cao",
+        "totalQtyDesc": "Tổng SL giảm dần",
+        "totalQtyAsc": "Tổng SL tăng dần",
+        "inUseDesc": "Đang dùng nhiều nhất"
+      },
+      "table": {
+        "facility": "Cơ sở",
+        "amenity": "Tiện ích & Loại",
+        "price": "Đơn giá thuê",
+        "inventory": "Tồn kho khả dụng",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "billingUnit": {
+        "day": "ngày",
+        "month": "tháng",
+        "one_time": "lần"
+      },
+      "status": {
+        "active": "Đang phục vụ",
+        "inactive": "Tạm ngưng",
+        "out_of_stock": "Hết hàng"
+      },
+      "stock": {
+        "inStock": "Còn hàng",
+        "lowStock": "Sắp hết",
+        "outOfStock": "Hết hàng"
+      },
+      "actions": {
+        "view": "Xem chi tiết",
+        "edit": "Chỉnh sửa",
+        "delete": "Ngừng cung cấp",
+        "restore": "Mở cung cấp lại"
+      },
+      "empty": {
+        "title": "Chưa có tiện ích nào được phân bổ",
+        "description": "Hãy phân bổ tiện ích đầu tiên cho một cơ sở."
+      },
+      "emptySearch": {
+        "title": "Không tìm thấy tiện ích nào",
+        "description": "Không có tiện ích nào khớp với từ khóa \"{query}\". Vui lòng thử từ khóa khác hoặc xóa bộ lọc."
+      },
+      "pagination": {
+        "page": "Trang",
+        "prev": "Trước",
+        "next": "Sau"
+      },
+      "formModal": {
+        "createTitle": "Phân bổ tiện ích cho cơ sở",
+        "editTitle": "Điều chỉnh số lượng & Đơn giá tiện ích",
+        "facilityLabel": "Cơ sở",
+        "facilityPlaceholder": "-- Chọn cơ sở --",
+        "amenityLabel": "Tiện ích",
+        "amenityPlaceholder": "-- Chọn tiện ích --",
+        "priceLabel": "Đơn giá thuê",
+        "pricePlaceholder": "Ví dụ: 50.000",
+        "billingUnitLabel": "Chu kỳ tính giá",
+        "billingUnit": {
+          "day": "Theo ngày (day)",
+          "month": "Theo tháng (month)",
+          "oneTime": "Một lần (one_time)"
+        },
+        "totalQuantityLabel": "Số lượng trang bị (Tổng tồn kho)",
+        "totalQuantityPlaceholder": "Ví dụ: 10",
+        "totalQuantityHint": "Tổng số lượng vật phẩm hoặc suất tiện ích này được trang bị tại cơ sở.",
+        "statusLabel": "Trạng thái",
+        "status": {
+          "active": "Đang phục vụ",
+          "inactive": "Tạm ngưng"
+        },
+        "amenityType": {
+          "physical": "Vật lý",
+          "service": "Dịch vụ"
+        },
+        "notesLabel": "Ghi chú phân bổ",
+        "notesPlaceholder": "Ghi chú điều kiện hoặc hướng dẫn lưu kho...",
+        "fixedPairHint": "Cơ sở và tiện ích cố định cho gói phân bổ này.",
+        "duplicateWarning": "Tiện ích này đã được phân bổ tại cơ sở này!",
+        "availablePair": "Tiện ích sẵn sàng để phân bổ vào cơ sở này.",
+        "checkingDuplicate": "Đang kiểm tra...",
+        "cancel": "Hủy bỏ",
+        "save": "Lưu phân bổ",
+        "update": "Cập nhật",
+        "saving": "Đang lưu...",
+        "success": "Phân bổ tiện ích thành công!",
+        "updateSuccess": "Cập nhật tiện ích thành công!",
+        "error": "Có lỗi xảy ra. Vui lòng kiểm tra lại.",
+        "noChanges": "Chưa có thông tin nào thay đổi.",
+        "loadingDetail": "Đang tải dữ liệu...",
+        "loadDetailError": "Không thể tải chi tiết gói tiện ích.",
+        "retry": "Thử lại",
+        "validation": {
+          "required": "Vui lòng chọn cơ sở và tiện ích.",
+          "duplicate": "Tiện ích này đã tồn tại ở cơ sở. Không thể tạo trùng lặp.",
+          "price": "Đơn giá phải là số lớn hơn hoặc bằng 0.",
+          "quantity": "Số lượng trang bị phải là số nguyên lớn hơn hoặc bằng 0.",
+          "quantityLessThanInUse": "Không thể giảm tổng số lượng xuống thấp hơn số lượng đang được khách thuê ({inUse})."
+        }
+      },
+      "detailModal": {
+        "title": "Chi tiết phân bổ tiện ích tại cơ sở",
+        "loading": "Đang nạp chi tiết...",
+        "error": "Không thể nạp thông tin tiện ích.",
+        "retry": "Thử lại",
+        "close": "Đóng",
+        "editButton": "Chỉnh sửa",
+        "deleteButton": "Ngừng cung cấp",
+        "restoreButton": "Khôi phục",
+        "status": {
+          "active": "Đang phục vụ",
+          "inactive": "Tạm ngưng",
+          "out_of_stock": "Hết hàng"
+        },
+        "stock": {
+          "inStock": "Còn hàng",
+          "lowStock": "Sắp hết",
+          "outOfStock": "Hết hàng"
+        },
+        "inventoryTitle": "Tình trạng tồn kho",
+        "totalQty": "Tổng trang bị",
+        "inUseQty": "Đang dùng",
+        "availableQty": "Khả dụng",
+        "priceLabel": "Đơn giá thuê",
+        "locationLabel": "Địa chỉ cơ sở",
+        "amenityDesc": "Mô tả tiện ích",
+        "notesLabel": "Ghi chú phân bổ",
+        "createdAt": "Ngày tạo",
+        "updatedAt": "Cập nhật",
+        "billingUnit": {
+          "day": "ngày",
+          "month": "tháng",
+          "one_time": "lần"
+        }
+      },
+      "lookupModal": {
+        "title": "Tra cứu tiện ích tại chi nhánh",
+        "description": "Truy vấn nhanh tiện ích của cơ sở hoặc kiểm tra danh sách tiện ích còn trống để cho thuê.",
+        "facilityLabel": "Cơ sở",
+        "selectFacilityPlaceholder": "-- Chọn cơ sở --",
+        "amenityLabel": "Tiện ích (tùy chọn)",
+        "selectAmenityPlaceholder": "-- Chọn tiện ích để tra cứu cụ thể --",
+        "lookingUp": "Đang tra cứu dữ liệu...",
+        "foundOffering": "Tiện ích đã được cấu hình tại cơ sở này",
+        "priceTitle": "Đơn giá",
+        "stockTitle": "Tồn kho",
+        "viewDetail": "Xem chi tiết",
+        "editOffering": "Chỉnh sửa",
+        "notConfiguredTitle": "Chưa được phân bổ",
+        "notConfiguredDescription": "Tiện ích này chưa được cấu hình tại cơ sở bạn đã chọn. Bạn có thể phân bổ ngay bên dưới.",
+        "createWithPreset": "+ Phân bổ tiện ích này ngay",
+        "availableListTitle": "Tiện ích còn trống tại chi nhánh này",
+        "loadingAvailable": "Đang tải danh sách còn trống...",
+        "noAvailableAmenities": "Không có tiện ích nào còn trống tại cơ sở này.",
+        "close": "Đóng",
+        "billingUnit": {
+          "day": "ngày",
+          "month": "tháng",
+          "one_time": "lần"
+        }
+      },
+      "confirmModal": {
+        "deleteTitle": "Ngừng cung cấp tiện ích này?",
+        "deleteDescription": "Tiện ích sẽ không còn khả dụng để khách thuê tại cơ sở này.",
+        "restoreTitle": "Mở cung cấp lại tiện ích này?",
+        "restoreDescription": "Tiện ích sẽ hiển thị trở lại để khách hàng có thể đăng ký thuê.",
+        "inUseWarning": "Cảnh báo: Hiện có {count} tiện ích này đang được khách thuê trong hợp đồng hiệu lực.",
+        "cancel": "Hủy bỏ",
+        "confirmDelete": "Xác nhận ngừng",
+        "confirmRestore": "Xác nhận khôi phục",
+        "processing": "Đang xử lý...",
+        "error": "Không thể xử lý yêu cầu. Vui lòng thử lại sau."
       }
     }
   },

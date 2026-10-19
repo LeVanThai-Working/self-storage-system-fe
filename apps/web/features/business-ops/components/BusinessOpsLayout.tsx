@@ -10,6 +10,7 @@ import {
   Layers,
   Sparkles,
   Tag,
+  Package,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -54,6 +55,12 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       exact: false,
       label: t("nav.offerings"),
       icon: Tag,
+    },
+    {
+      href: `/${locale}/business-ops/facility-amenities`,
+      exact: false,
+      label: t("nav.facilityAmenities"),
+      icon: Package,
     },
     {
       href: `/${locale}/business-ops/analytics`,

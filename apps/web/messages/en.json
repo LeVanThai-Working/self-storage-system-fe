@@ -642,6 +642,7 @@
       "unitTypes": "Unit Types",
       "amenities": "Amenities & Services",
       "offerings": "Facility Pricing",
+      "facilityAmenities": "Facility Amenities",
       "analytics": "Analytics & Reports",
       "sectionOperations": "BRANCH OPERATIONS"
     },
@@ -1262,6 +1263,222 @@
         "confirm": "Confirm",
         "processing": "Processing...",
         "error": "Could not process. Please try again."
+      }
+    },
+    "facilityAmenities": {
+      "title": "Facility Amenity Offerings",
+      "subtitle": "Manage amenity inventory allocation and pricing for each storage facility.",
+      "addOffering": "+ Add Amenity Offering",
+      "quickLookup": "Quick Lookup",
+      "refresh": "Refresh",
+      "searchPlaceholder": "Search by facility, amenity, description...",
+      "searchButton": "Search",
+      "clearSearch": "Clear search",
+      "clearFilter": "Clear filter",
+      "searchResultsCount": "Found {count} offerings matching \"{query}\"",
+      "stats": {
+        "total": "Total Offerings",
+        "active": "Active",
+        "inactive": "Inactive",
+        "facilities": "Facilities"
+      },
+      "facilityFilter": {
+        "all": "All facilities"
+      },
+      "amenityFilter": {
+        "all": "All amenities"
+      },
+      "billingUnitFilter": {
+        "all": "All billing units",
+        "day": "Daily",
+        "month": "Monthly",
+        "one_time": "One-time"
+      },
+      "stockFilter": {
+        "all": "All stock",
+        "inStock": "In Stock",
+        "outOfStock": "Out of Stock"
+      },
+      "statusFilter": {
+        "all": "All statuses",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "sort": {
+        "createdAtDesc": "Newest first",
+        "createdAtAsc": "Oldest first",
+        "priceDesc": "Price: High to Low",
+        "priceAsc": "Price: Low to High",
+        "totalQtyDesc": "Total: High to Low",
+        "totalQtyAsc": "Total: Low to High",
+        "inUseDesc": "In Use: High to Low"
+      },
+      "table": {
+        "facility": "Facility",
+        "amenity": "Amenity & Type",
+        "price": "Rental Price",
+        "inventory": "Available Stock",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "billingUnit": {
+        "day": "day",
+        "month": "month",
+        "one_time": "one-time"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "out_of_stock": "Out of Stock"
+      },
+      "stock": {
+        "inStock": "In Stock",
+        "lowStock": "Low Stock",
+        "outOfStock": "Out of Stock"
+      },
+      "actions": {
+        "view": "View details",
+        "edit": "Edit",
+        "delete": "Deactivate",
+        "restore": "Restore"
+      },
+      "empty": {
+        "title": "No amenity offerings yet",
+        "description": "Allocate the first amenity offering for a facility."
+      },
+      "emptySearch": {
+        "title": "No amenity offerings found",
+        "description": "No offerings matched the query \"{query}\". Try a different search term or clear the filter."
+      },
+      "pagination": {
+        "page": "Page",
+        "prev": "Prev",
+        "next": "Next"
+      },
+      "formModal": {
+        "createTitle": "Allocate Amenity to Facility",
+        "editTitle": "Adjust Amenity Quantity & Pricing",
+        "facilityLabel": "Facility",
+        "facilityPlaceholder": "-- Select Facility --",
+        "amenityLabel": "Amenity",
+        "amenityPlaceholder": "-- Select Amenity --",
+        "priceLabel": "Rental Price",
+        "pricePlaceholder": "e.g. 50000",
+        "billingUnitLabel": "Billing Unit",
+        "billingUnit": {
+          "day": "Daily (day)",
+          "month": "Monthly (month)",
+          "oneTime": "One-time (one_time)"
+        },
+        "totalQuantityLabel": "Total Quantity (Inventory)",
+        "totalQuantityPlaceholder": "e.g. 10",
+        "totalQuantityHint": "Total units of this amenity item equipped at the facility.",
+        "statusLabel": "Status",
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "amenityType": {
+          "physical": "Physical",
+          "service": "Service"
+        },
+        "notesLabel": "Allocation Notes",
+        "notesPlaceholder": "Optional storage requirements or usage notes...",
+        "fixedPairHint": "Facility and amenity are fixed for this allocated offering.",
+        "duplicateWarning": "This amenity has already been allocated to this facility!",
+        "availablePair": "Amenity is ready to be allocated to this facility.",
+        "checkingDuplicate": "Checking...",
+        "cancel": "Cancel",
+        "save": "Save Allocation",
+        "update": "Update",
+        "saving": "Saving...",
+        "success": "Amenity allocated successfully!",
+        "updateSuccess": "Amenity updated successfully!",
+        "error": "An error occurred. Please try again.",
+        "noChanges": "No changes were made.",
+        "loadingDetail": "Loading details...",
+        "loadDetailError": "Could not load amenity offering details.",
+        "retry": "Retry",
+        "validation": {
+          "required": "Please select both a facility and an amenity.",
+          "duplicate": "This amenity offering already exists for this facility.",
+          "price": "Price must be a valid number greater than or equal to 0.",
+          "quantity": "Quantity must be a valid integer greater than or equal to 0.",
+          "quantityLessThanInUse": "Total quantity cannot be reduced below the currently in-use quantity ({inUse})."
+        }
+      },
+      "detailModal": {
+        "title": "Facility Amenity Offering Details",
+        "loading": "Loading details...",
+        "error": "Could not load amenity details.",
+        "retry": "Retry",
+        "close": "Close",
+        "editButton": "Edit",
+        "deleteButton": "Deactivate",
+        "restoreButton": "Restore",
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive",
+          "out_of_stock": "Out of Stock"
+        },
+        "stock": {
+          "inStock": "In Stock",
+          "lowStock": "Low Stock",
+          "outOfStock": "Out of Stock"
+        },
+        "inventoryTitle": "Inventory Status",
+        "totalQty": "Total Equipped",
+        "inUseQty": "In Use",
+        "availableQty": "Available",
+        "priceLabel": "Rental Price",
+        "locationLabel": "Facility Location",
+        "amenityDesc": "Amenity Description",
+        "notesLabel": "Notes",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At",
+        "billingUnit": {
+          "day": "day",
+          "month": "month",
+          "one_time": "time"
+        }
+      },
+      "lookupModal": {
+        "title": "Lookup Facility Amenities",
+        "description": "Check if an amenity is configured at a branch or view available stock.",
+        "facilityLabel": "Facility",
+        "selectFacilityPlaceholder": "-- Select Facility --",
+        "amenityLabel": "Amenity (optional)",
+        "selectAmenityPlaceholder": "-- Select Amenity for specific check --",
+        "lookingUp": "Looking up...",
+        "foundOffering": "Amenity is already configured at this facility",
+        "priceTitle": "Rental Price",
+        "stockTitle": "Inventory",
+        "viewDetail": "View Details",
+        "editOffering": "Edit",
+        "notConfiguredTitle": "Not Yet Allocated",
+        "notConfiguredDescription": "This amenity has not been allocated to the selected facility yet. You can allocate it below.",
+        "createWithPreset": "+ Allocate this amenity now",
+        "availableListTitle": "Available Amenities at this Facility",
+        "loadingAvailable": "Loading available amenities...",
+        "noAvailableAmenities": "No amenities with available stock at this facility.",
+        "close": "Close",
+        "billingUnit": {
+          "day": "day",
+          "month": "month",
+          "one_time": "time"
+        }
+      },
+      "confirmModal": {
+        "deleteTitle": "Deactivate this amenity offering?",
+        "deleteDescription": "Customers will no longer be able to rent this amenity at this facility.",
+        "restoreTitle": "Restore this amenity offering?",
+        "restoreDescription": "This amenity will be available again for rental at this facility.",
+        "inUseWarning": "Warning: There are currently {count} units of this amenity in active rental contracts.",
+        "cancel": "Cancel",
+        "confirmDelete": "Deactivate",
+        "confirmRestore": "Restore",
+        "processing": "Processing...",
+        "error": "Could not process request. Please try again."
       }
     }
   },
