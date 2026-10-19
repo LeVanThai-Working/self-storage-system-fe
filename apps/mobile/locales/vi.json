@@ -389,5 +389,98 @@
     "amenitiesSelectedCount": "Đã chọn %{count}",
     "amenitiesCostLabel": "Phí tiện ích đi kèm:",
     "daysUnit": "ngày"
+  },
+  "rackMap": {
+    "title": "Sơ đồ kệ hàng",
+    "openButton": "Sơ đồ kệ hàng",
+    "unitSubtitle": "%{facility} · Phòng %{unit}",
+    "contractLabel": "Hợp đồng #%{code}",
+    "summary": {
+      "totalQuantity": "Tổng hàng",
+      "totalSkus": "Mã hàng",
+      "tiersUsed": "Tầng đã dùng",
+      "fillRate": "Đã dùng %{percent}% số tầng"
+    },
+    "rackTitle": "Kệ %{code}",
+    "rackUsage": "%{used}/%{total} tầng có hàng",
+    "tierTitle": "Tầng %{number}",
+    "empty": "(Trống)",
+    "moreItems": "+%{count}",
+    "itemChip": "%{code} × %{qty}",
+    "status": {
+      "available": "Trống",
+      "occupied": "Có hàng",
+      "maintenance": "Đang bảo trì",
+      "inactive": "Ngừng sử dụng"
+    },
+    "weight": {
+      "nearFull": "Gần đầy tải",
+      "over": "Vượt tải",
+      "warning": "Tổng tải dự kiến %{weight}/%{max} kg, vượt giới hạn khuyến nghị",
+      "load": "Tải hiện tại: %{weight}/%{max} kg"
+    },
+    "unracked": {
+      "title": "Hàng để sàn (không trên kệ)",
+      "stockIn": "Nhập hàng để sàn",
+      "empty": "Chưa có hàng để sàn",
+      "total": "Tổng cộng %{qty} món"
+    },
+    "noRacks": "Phòng kho này không có hệ thống kệ",
+    "readOnlyBanner": "Hợp đồng chưa hiệu lực, không thể thao tác hàng hóa",
+    "lockedTier": "Tầng này đang tạm khóa, chỉ có thể xem",
+    "forbidden": "Bạn không có quyền xem kho này",
+    "loadError": "Không tải được sơ đồ kệ hàng",
+    "retry": "Thử lại",
+    "detail": {
+      "itemsTitle": "Hàng trong ngăn",
+      "emptyItems": "Ngăn này đang trống"
+    },
+    "action": {
+      "stockIn": "Nhập hàng vào tầng này",
+      "stockOut": "Xuất",
+      "move": "Chuyển",
+      "adjust": "Kiểm kê"
+    },
+    "form": {
+      "stockInTitle": "Nhập hàng",
+      "stockOutTitle": "Xuất hàng",
+      "moveTitle": "Chuyển hàng",
+      "adjustTitle": "Kiểm kê",
+      "positionLabel": "Vị trí: %{location}",
+      "sku": "Mã hàng",
+      "selectSkuEmpty": "Phòng chưa có mã hàng nào để chọn.",
+      "skuRequired": "Vui lòng chọn mã hàng",
+      "quantity": "Số lượng",
+      "quantityMin": "Số lượng phải từ 1 trở lên",
+      "quantityMax": "Số lượng không được vượt quá %{max}",
+      "maxQuantity": "Tối đa %{max} %{uom}",
+      "takeAll": "Lấy hết",
+      "currentQuantity": "Hiện có: %{qty} %{uom}",
+      "actualQuantity": "Số lượng thực tế",
+      "unchanged": "Số lượng chưa thay đổi",
+      "destination": "Vị trí đích",
+      "destinationRequired": "Vui lòng chọn vị trí đích",
+      "samePosition": "Vị trí đích phải khác vị trí nguồn",
+      "floor": "Sàn kho",
+      "reason": "Lý do (bắt buộc)",
+      "reasonOptional": "Lý do (tùy chọn)",
+      "reasonMin": "Lý do cần tối thiểu 3 ký tự",
+      "referenceCode": "Mã tham chiếu",
+      "notes": "Ghi chú",
+      "moreInfo": "Thêm thông tin",
+      "confirm": "Xác nhận",
+      "cancel": "Hủy"
+    },
+    "reasonChip": {
+      "periodic": "Kiểm kê định kỳ",
+      "damaged": "Hàng hư hỏng",
+      "wrongEntry": "Nhập sai số lượng"
+    },
+    "toast": {
+      "stockIn": "Đã nhập %{qty} %{uom} %{sku} vào %{location}",
+      "stockOut": "Đã xuất %{qty} %{uom} %{sku} khỏi %{location}",
+      "move": "Đã chuyển %{qty} %{uom} %{sku} từ %{from} sang %{to}",
+      "adjust": "Đã cập nhật %{sku} tại %{location}: %{qty} %{uom}"
+    }
   }
 }

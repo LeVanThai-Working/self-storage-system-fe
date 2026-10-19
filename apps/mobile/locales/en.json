@@ -389,5 +389,98 @@
     "amenitiesSelectedCount": "%{count} selected",
     "amenitiesCostLabel": "Added Amenities Cost:",
     "daysUnit": "days"
+  },
+  "rackMap": {
+    "title": "Rack map",
+    "openButton": "Rack map",
+    "unitSubtitle": "%{facility} · Unit %{unit}",
+    "contractLabel": "Contract #%{code}",
+    "summary": {
+      "totalQuantity": "Total items",
+      "totalSkus": "SKUs",
+      "tiersUsed": "Tiers used",
+      "fillRate": "%{percent}% of tiers in use"
+    },
+    "rackTitle": "Rack %{code}",
+    "rackUsage": "%{used}/%{total} tiers occupied",
+    "tierTitle": "Tier %{number}",
+    "empty": "(Empty)",
+    "moreItems": "+%{count}",
+    "itemChip": "%{code} × %{qty}",
+    "status": {
+      "available": "Available",
+      "occupied": "Occupied",
+      "maintenance": "Under maintenance",
+      "inactive": "Inactive"
+    },
+    "weight": {
+      "nearFull": "Near weight limit",
+      "over": "Over weight limit",
+      "warning": "Estimated load %{weight}/%{max} kg exceeds the recommended limit",
+      "load": "Current load: %{weight}/%{max} kg"
+    },
+    "unracked": {
+      "title": "Floor items (not on racks)",
+      "stockIn": "Add floor items",
+      "empty": "No floor items yet",
+      "total": "%{qty} items in total"
+    },
+    "noRacks": "This unit has no rack system",
+    "readOnlyBanner": "Contract is not active, inventory actions are disabled",
+    "lockedTier": "This tier is locked and view-only",
+    "forbidden": "You do not have access to this unit",
+    "loadError": "Could not load the rack map",
+    "retry": "Retry",
+    "detail": {
+      "itemsTitle": "Items on this tier",
+      "emptyItems": "This tier is empty"
+    },
+    "action": {
+      "stockIn": "Add items to this tier",
+      "stockOut": "Take out",
+      "move": "Move",
+      "adjust": "Recount"
+    },
+    "form": {
+      "stockInTitle": "Add items",
+      "stockOutTitle": "Take out items",
+      "moveTitle": "Move items",
+      "adjustTitle": "Recount",
+      "positionLabel": "Location: %{location}",
+      "sku": "SKU",
+      "selectSkuEmpty": "There are no SKUs in this unit to choose from yet.",
+      "skuRequired": "Please choose an SKU",
+      "quantity": "Quantity",
+      "quantityMin": "Quantity must be at least 1",
+      "quantityMax": "Quantity cannot exceed %{max}",
+      "maxQuantity": "Up to %{max} %{uom}",
+      "takeAll": "Take all",
+      "currentQuantity": "Currently: %{qty} %{uom}",
+      "actualQuantity": "Actual quantity",
+      "unchanged": "Quantity has not changed",
+      "destination": "Destination",
+      "destinationRequired": "Please choose a destination",
+      "samePosition": "Destination must be different from the source",
+      "floor": "Floor",
+      "reason": "Reason (required)",
+      "reasonOptional": "Reason (optional)",
+      "reasonMin": "Reason must be at least 3 characters",
+      "referenceCode": "Reference code",
+      "notes": "Notes",
+      "moreInfo": "More details",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "reasonChip": {
+      "periodic": "Periodic count",
+      "damaged": "Damaged goods",
+      "wrongEntry": "Wrong quantity entered"
+    },
+    "toast": {
+      "stockIn": "Added %{qty} %{uom} of %{sku} to %{location}",
+      "stockOut": "Took %{qty} %{uom} of %{sku} out of %{location}",
+      "move": "Moved %{qty} %{uom} of %{sku} from %{from} to %{to}",
+      "adjust": "Updated %{sku} at %{location}: %{qty} %{uom}"
+    }
   }
 }

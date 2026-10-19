@@ -329,6 +329,9 @@ export default function MyStoragesScreen() {
               onPress={handleOpenDetail}
               onUnlockPress={handleUnlockSmartLock}
               onViewPinPress={(c) => setPinModalContract(c)}
+              onRackMapPress={(c) =>
+                router.push({ pathname: "/contracts/[id]/rack-map" as any, params: { id: c.id } })
+              }
               isUnlocking={openingContractId === item.id}
             />
           )}

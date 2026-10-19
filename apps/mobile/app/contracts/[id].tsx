@@ -44,6 +44,7 @@ import {
   Clock,
   FileSignature,
   FileText,
+  LayoutGrid,
   Layers,
   MapPin,
   Minus,
@@ -85,7 +86,7 @@ import {
 export default function ContractDetailScreen() {
   const router = useRouter();
   const toast = useToast();
-  const { locale } = useTranslation();
+  const { t, locale } = useTranslation();
   const currentLocale: MessageLocale = locale === "en" ? "en" : "vi";
   const isEn = currentLocale === "en";
 
@@ -820,6 +821,21 @@ export default function ContractDetailScreen() {
                 {contract.assignedStaff.name}
               </Text>
             </View>
+          ) : null}
+
+          {isActive ? (
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/contracts/[id]/rack-map" as any,
+                  params: { id: contract.id },
+                })
+              }
+              className="flex-row items-center justify-center gap-1.5 rounded-xl bg-brand py-2.5 px-3 active:opacity-90"
+            >
+              <LayoutGrid size={14} color="#FFFFFF" />
+              <Text className="text-xs font-bold text-white">{t("rackMap.openButton")}</Text>
+            </Pressable>
           ) : null}
         </View>
 
