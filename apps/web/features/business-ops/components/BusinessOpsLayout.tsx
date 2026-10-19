@@ -11,6 +11,7 @@ import {
   Sparkles,
   Tag,
   Package,
+  FileCheck2,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -61,6 +62,12 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       exact: false,
       label: t("nav.facilityAmenities"),
       icon: Package,
+    },
+    {
+      href: `/${locale}/business-ops/approvals`,
+      exact: false,
+      label: t("nav.approvals"),
+      icon: FileCheck2,
     },
     {
       href: `/${locale}/business-ops/analytics`,

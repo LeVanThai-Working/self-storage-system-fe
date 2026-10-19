@@ -643,6 +643,7 @@
       "amenities": "Amenities & Services",
       "offerings": "Facility Pricing",
       "facilityAmenities": "Facility Amenities",
+      "approvals": "Approval Center",
       "analytics": "Analytics & Reports",
       "sectionOperations": "BRANCH OPERATIONS"
     },
@@ -1479,6 +1480,147 @@
         "confirmRestore": "Restore",
         "processing": "Processing...",
         "error": "Could not process request. Please try again."
+      }
+    },
+    "approvals": {
+      "title": "Approval Center",
+      "subtitle": "Receive, inspect proposed changes (Diff View), and review requests from facility branch managers.",
+      "searchPlaceholder": "Search by reason, requester, facility...",
+      "searchButton": "Search",
+      "clearSearch": "Clear search",
+      "clearFilter": "Clear filter",
+      "refresh": "Refresh",
+      "searchResultsCount": "Found {count} requests matching \"{query}\"",
+      "stats": {
+        "pending": "Pending Review",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "total": "Total Requests"
+      },
+      "facilityFilter": {
+        "all": "All facilities"
+      },
+      "targetTypeFilter": {
+        "all": "All request types",
+        "offering": "Unit Offering Pricing",
+        "facilityAmenity": "Facility Amenity",
+        "unitType": "New Unit Type",
+        "amenity": "New Amenity"
+      },
+      "statusFilter": {
+        "all": "All statuses",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "cancelled": "Cancelled"
+      },
+      "sort": {
+        "createdAtDesc": "Newest first",
+        "createdAtAsc": "Oldest first",
+        "statusDesc": "By status",
+        "targetTypeDesc": "By request type"
+      },
+      "table": {
+        "facilityAndRequester": "Facility & Requester",
+        "targetAndAction": "Request & Action",
+        "reason": "Reason",
+        "status": "Status",
+        "createdAt": "Submitted",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No approval requests found",
+        "description": "There are no requests matching your current filters."
+      },
+      "pagination": {
+        "pageInfo": "Page {page} of {totalPages} ({totalItems} requests)",
+        "prev": "Previous",
+        "next": "Next"
+      },
+      "actions": {
+        "viewDiff": "View details",
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "cancelled": "Cancelled"
+      },
+      "targetType": {
+        "unit_type": "New Unit Type",
+        "facility_unit_type_offering": "Unit Offering Pricing",
+        "amenity": "New Amenity",
+        "facility_amenity_offering": "Facility Amenity"
+      },
+      "action": {
+        "create": "Create",
+        "update": "Update"
+      },
+      "diffModal": {
+        "title": "Approval Request Details & Diff View",
+        "subtitle": "Compare current facility configurations with newly proposed values from the branch.",
+        "loading": "Loading request details...",
+        "loadError": "Could not load request details.",
+        "retry": "Retry",
+        "close": "Close",
+        "requester": "Requester",
+        "targetType": "Target type",
+        "createdAt": "Submitted at",
+        "reasonLabel": "Requester's stated reason",
+        "diffTitleUpdate": "Changes Comparison (Current vs Proposed)",
+        "diffTitleCreate": "Proposed Configuration Values",
+        "currentDataCol": "Current (Before)",
+        "proposedDataCol": "Proposed (After)",
+        "changedBadge": "Modified",
+        "newEntityDetails": "New configuration parameters",
+        "alreadyApprovedTitle": "This request has been approved",
+        "alreadyRejectedTitle": "This request was rejected",
+        "approvedBy": "Approved by",
+        "rejectedBy": "Rejected by",
+        "rejectionReasonLabel": "Rejection reason",
+        "cancelledByRequester": "This request was cancelled by the branch manager prior to review.",
+        "approveButton": "Approve request",
+        "rejectButton": "Reject request",
+        "fields": {
+          "pricePerUnit": "Unit price",
+          "depositMultiplier": "Deposit multiplier",
+          "billingUnit": "Billing cycle",
+          "minRentalDays": "Min rental days",
+          "totalQuantity": "Allocated quantity",
+          "name": "Name",
+          "category": "Category",
+          "dimensions": "Dimensions (L × W × H)",
+          "area": "Floor area",
+          "volume": "Volume",
+          "description": "Description",
+          "notes": "Notes",
+          "status": "Status"
+        }
+      },
+      "reviewModal": {
+        "approveTitle": "Confirm Approval",
+        "approveSubtitle": "The system will automatically apply these configuration changes to the facility immediately.",
+        "rejectTitle": "Reject Request",
+        "rejectSubtitle": "Please provide a clear reason so the facility manager understands why this request was declined.",
+        "targetLabel": "Request type",
+        "actionLabel": "Action",
+        "facilityLabel": "Target facility",
+        "requesterLabel": "Requester",
+        "approveNotesLabel": "Approval notes",
+        "approveNotesPlaceholder": "Add optional notes for the branch (e.g. Approved effective today...)",
+        "approveAutoApplyNotice": "Note: Changes take effect in the database immediately upon approval.",
+        "rejectionReasonLabel": "Rejection reason",
+        "rejectionReasonPlaceholder": "State why this request is declined (e.g. Price does not match company guidelines...)",
+        "rejectionReasonRequired": "Please enter a reason before rejecting.",
+        "rejectWarning": "This request will be permanently marked as Rejected and cannot be undone.",
+        "cancel": "Cancel",
+        "confirmApprove": "Confirm Approval",
+        "confirmReject": "Confirm Rejection",
+        "processing": "Processing...",
+        "optional": "Optional",
+        "genericError": "Could not review request. Please try again."
       }
     }
   },
