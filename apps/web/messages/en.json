@@ -1397,6 +1397,7 @@
       "searchButton": "Search",
       "clearSearch": "Clear search",
       "clearFilter": "Clear filter",
+      "refresh": "Refresh",
       "searchResultsCount": "Found {count} requests matching \"{query}\"",
       "stats": {
         "pending": "Pending Review",

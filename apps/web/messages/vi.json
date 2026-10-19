@@ -1397,6 +1397,7 @@
       "searchButton": "Tìm",
       "clearSearch": "Xóa tìm kiếm",
       "clearFilter": "Xóa lọc",
+      "refresh": "Làm mới",
       "searchResultsCount": "Tìm thấy {count} đề xuất khớp với \"{query}\"",
       "stats": {
         "pending": "Chờ phê duyệt",
