@@ -1,11 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { View, Pressable, TextInput } from "react-native";
-import { AlertTriangle, ChevronDown, ChevronUp, Package } from "lucide-react-native";
-import { stockInRequestSchema, type MessageLocale } from "@self-storage-system-fe/shared";
+import { AlertTriangle, ChevronDown, ChevronUp, Package, ScanBarcode } from "lucide-react-native";
+import {
+  stockInRequestSchema,
+  type MessageLocale,
+  type TreeTierItemSku,
+} from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
-import { useStockIn } from "../hooks/useCustomerInventory";
+import { useLocateSku, useStockIn } from "../hooks/useCustomerInventory";
 import type { StockFormBaseProps } from "../types/rackMap.types";
 import {
   INVENTORY_ERROR,
@@ -17,6 +21,7 @@ import {
   resolveInventoryError,
   sumItemsWeight,
 } from "../utils/rackMapFormat";
+import { BarcodeScannerView } from "./BarcodeScannerView";
 import { FieldError, FieldLabel, InventoryFormSheet } from "./InventoryFormSheet";
 import { QuantityStepper } from "./QuantityStepper";
 
@@ -33,8 +38,20 @@ export function StockInModal({
   const currentLocale: MessageLocale = locale === "en" ? "en" : "vi";
   const toast = useToast();
   const stockInMutation = useStockIn(storageUnitId);
+  const { locateByBarcode } = useLocateSku();
 
-  const skuOptions = useMemo(() => getRoomSkuOptions(tree), [tree]);
+  // SKU picked by scanning that is not stored in this unit yet.
+  const [scannedSku, setScannedSku] = useState<TreeTierItemSku | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [lookingUp, setLookingUp] = useState(false);
+
+  const skuOptions = useMemo(() => {
+    const options = getRoomSkuOptions(tree);
+    if (scannedSku && !options.some((option) => option.sku.id === scannedSku.id)) {
+      return [{ sku: scannedSku, totalQuantity: 0 }, ...options];
+    }
+    return options;
+  }, [tree, scannedSku]);
   // The screen mounts a fresh form each time it opens, so state starts from the target.
   const [skuId, setSkuId] = useState<string | null>(target.item?.sku.id ?? null);
   const [quantity, setQuantity] = useState(1);
@@ -53,6 +70,21 @@ export function StockInModal({
     const added = quantity * (selectedSku?.weightKg ?? 0);
     return getWeightLevel(sumItemsWeight(tier.items) + added, tier.maxWeightKg);
   }, [tier, quantity, selectedSku]);
+
+  const handleScanned = async (barcode: string) => {
+    setLookingUp(true);
+    try {
+      const result = await locateByBarcode(barcode);
+      setScannedSku(result.sku);
+      setSkuId(result.sku.id);
+      setSkuError(null);
+      setScanning(false);
+    } catch (error) {
+      toast.error(resolveInventoryError(error, currentLocale).message);
+    } finally {
+      setLookingUp(false);
+    }
+  };
 
   const handleConfirm = async () => {
     let valid = true;
@@ -152,6 +184,23 @@ export function StockInModal({
             })}
           </View>
         )}
+        <View className="mt-2.5">
+          {scanning ? (
+            <BarcodeScannerView
+              busy={lookingUp}
+              onScanned={handleScanned}
+              onClose={() => setScanning(false)}
+            />
+          ) : (
+            <Pressable
+              onPress={() => setScanning(true)}
+              className="flex-row items-center justify-center gap-1.5 rounded-xl border border-brand/40 bg-brand-light/20 py-2.5 active:opacity-80"
+            >
+              <ScanBarcode size={14} color="#0B927E" />
+              <Text className="text-xs font-bold text-brand">{t("rackMap.form.scanBarcode")}</Text>
+            </Pressable>
+          )}
+        </View>
         <FieldError message={skuError} />
       </View>
 

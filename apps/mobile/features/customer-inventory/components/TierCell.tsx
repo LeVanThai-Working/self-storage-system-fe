@@ -5,16 +5,18 @@ import { RackTierStatusEnum, type TreeTier } from "@self-storage-system-fe/share
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
 import { buildLocationLabel, getTierVisual, getTierWeight } from "../utils/rackMapFormat";
+import { TierHighlightPulse } from "./TierHighlightPulse";
 
 const MAX_VISIBLE_CHIPS = 2;
 
 interface TierCellProps {
   tier: TreeTier;
   unitNumber?: string;
+  highlighted?: boolean;
   onPress: (tier: TreeTier) => void;
 }
 
-export function TierCell({ tier, unitNumber, onPress }: TierCellProps) {
+export function TierCell({ tier, unitNumber, highlighted = false, onPress }: TierCellProps) {
   const { t } = useTranslation();
   const visual = getTierVisual(tier.status);
   const weight = getTierWeight(tier);
@@ -86,6 +88,7 @@ export function TierCell({ tier, unitNumber, onPress }: TierCellProps) {
           ) : null}
         </View>
       )}
+      {highlighted ? <TierHighlightPulse /> : null}
     </Pressable>
   );
 }

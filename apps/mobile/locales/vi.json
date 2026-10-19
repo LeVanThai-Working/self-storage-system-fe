@@ -448,7 +448,7 @@
       "adjustTitle": "Kiểm kê",
       "positionLabel": "Vị trí: %{location}",
       "sku": "Mã hàng",
-      "selectSkuEmpty": "Phòng chưa có mã hàng nào để chọn.",
+      "selectSkuEmpty": "Phòng chưa có mã hàng nào. Hãy quét mã vạch để chọn mã hàng.",
       "skuRequired": "Vui lòng chọn mã hàng",
       "quantity": "Số lượng",
       "quantityMin": "Số lượng phải từ 1 trở lên",
@@ -469,7 +469,8 @@
       "notes": "Ghi chú",
       "moreInfo": "Thêm thông tin",
       "confirm": "Xác nhận",
-      "cancel": "Hủy"
+      "cancel": "Hủy",
+      "scanBarcode": "Quét mã vạch"
     },
     "reasonChip": {
       "periodic": "Kiểm kê định kỳ",
@@ -481,6 +482,37 @@
       "stockOut": "Đã xuất %{qty} %{uom} %{sku} khỏi %{location}",
       "move": "Đã chuyển %{qty} %{uom} %{sku} từ %{from} sang %{to}",
       "adjust": "Đã cập nhật %{sku} tại %{location}: %{qty} %{uom}"
+    },
+    "locate": {
+      "title": "Tìm vị trí hàng",
+      "scan": "Quét mã vạch",
+      "pick": "Chọn mã hàng trong phòng",
+      "pickEmpty": "Phòng chưa có mã hàng nào để tìm.",
+      "result": "%{sku} có ở %{count} vị trí",
+      "resultNone": "%{sku} hiện không còn trong kho",
+      "otherUnit": "phòng khác",
+      "clear": "Bỏ đánh dấu"
+    },
+    "scanner": {
+      "permissionTitle": "Cần quyền truy cập camera",
+      "permissionDesc": "Cho phép dùng camera để quét mã vạch trên thùng hàng.",
+      "permissionDenied": "Quyền camera đang bị tắt. Hãy bật lại trong Cài đặt của thiết bị.",
+      "grant": "Cho phép camera",
+      "openSettings": "Mở Cài đặt",
+      "hint": "Đưa mã vạch vào khung màu cam",
+      "close": "Tắt camera"
+    },
+    "history": {
+      "title": "Lịch sử tầng",
+      "link": "Xem lịch sử tầng",
+      "empty": "Chưa có biến động nào",
+      "change": "%{from} → %{to}",
+      "type": {
+        "in": "Nhập",
+        "out": "Xuất",
+        "move": "Chuyển",
+        "adjust": "Kiểm kê"
+      }
     }
   }
 }

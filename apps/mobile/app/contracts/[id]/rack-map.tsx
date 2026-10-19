@@ -1,11 +1,20 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { View, ScrollView, Pressable, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { AlertCircle, ArrowLeft, Info, LayoutGrid, ShieldAlert } from "lucide-react-native";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Clock,
+  Info,
+  LayoutGrid,
+  Search,
+  ShieldAlert,
+} from "lucide-react-native";
 import {
   ContractStatusEnum,
   type MessageLocale,
+  type SkuLocationsResponse,
   type TreeTier,
   type TreeTierItem,
 } from "@self-storage-system-fe/shared";
@@ -23,6 +32,9 @@ import { StockInModal } from "@/features/customer-inventory/components/StockInMo
 import { StockOutModal } from "@/features/customer-inventory/components/StockOutModal";
 import { StockMoveModal } from "@/features/customer-inventory/components/StockMoveModal";
 import { StockAdjustModal } from "@/features/customer-inventory/components/StockAdjustModal";
+import { LocateSheet } from "@/features/customer-inventory/components/LocateSheet";
+import { LocateResultBanner } from "@/features/customer-inventory/components/LocateResultBanner";
+import { TierHistoryModal } from "@/features/customer-inventory/components/TierHistoryModal";
 import type {
   StockActionType,
   StockFormTarget,
@@ -52,6 +64,12 @@ export default function ContractRackMapScreen() {
   const [forcedReadOnly, setForcedReadOnly] = useState(false);
   const [detailTarget, setDetailTarget] = useState<DetailTarget>(undefined);
   const [stockForm, setStockForm] = useState<StockFormTarget | null>(null);
+  const [historyTierId, setHistoryTierId] = useState<string | null>(null);
+  const [locateOpen, setLocateOpen] = useState(false);
+  const [locateResult, setLocateResult] = useState<SkuLocationsResponse | null>(null);
+
+  const scrollRef = useRef<ScrollView>(null);
+  const rackOffsetsRef = useRef<Map<string, number>>(new Map());
 
   const readOnly = forcedReadOnly || contract?.status !== ContractStatusEnum.ACTIVE;
   const { refetch: refetchContract } = contractQuery;
@@ -102,6 +120,38 @@ export default function ContractRackMapScreen() {
     }
   };
 
+  const highlightedTierIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (!locateResult || !tree) return ids;
+    locateResult.locations.forEach((location) => {
+      if (location.storageUnit?.id === tree.storageUnit.id && location.rackTier) {
+        ids.add(location.rackTier.id);
+      }
+    });
+    return ids;
+  }, [locateResult, tree]);
+
+  const handleLocated = (result: SkuLocationsResponse) => {
+    setLocateResult(result);
+    setLocateOpen(false);
+    if (!tree) return;
+
+    const offsets = tree.racks
+      .filter((rack) =>
+        rack.tiers.some((tier) =>
+          result.locations.some(
+            (location) =>
+              location.storageUnit?.id === tree.storageUnit.id && location.rackTier?.id === tier.id
+          )
+        )
+      )
+      .map((rack) => rackOffsetsRef.current.get(rack.id))
+      .filter((offset): offset is number => offset !== undefined);
+    if (offsets.length > 0) {
+      scrollRef.current?.scrollTo({ y: Math.max(0, Math.min(...offsets) - 12), animated: true });
+    }
+  };
+
   const handleTierPress = (tier: TreeTier) => setDetailTarget(tier.id);
 
   const handleAction = (type: StockActionType, item?: TreeTierItem) => {
@@ -142,6 +192,15 @@ export default function ContractRackMapScreen() {
           </Text>
         ) : null}
       </View>
+      {tree ? (
+        <Pressable
+          onPress={() => setLocateOpen(true)}
+          hitSlop={10}
+          className="h-9 w-9 items-center justify-center rounded-xl bg-brand-light dark:bg-brand/20 active:opacity-70"
+        >
+          <Search size={18} color="#0B927E" />
+        </Pressable>
+      ) : null}
     </View>
   );
 
@@ -193,7 +252,8 @@ export default function ContractRackMapScreen() {
 
     return (
       <ScrollView
-        contentContainerClassName="p-4 pb-16 gap-4"
+        ref={scrollRef}
+        contentContainerClassName={`p-4 gap-4 ${locateResult ? "pb-48" : "pb-16"}`}
         refreshControl={
           <RefreshControl
             refreshing={treeQuery.isRefetching}
@@ -221,7 +281,11 @@ export default function ContractRackMapScreen() {
                 key={rack.id}
                 rack={rack}
                 unitNumber={tree.storageUnit.unitNumber}
+                highlightedTierIds={highlightedTierIds}
                 onTierPress={handleTierPress}
+                onLayout={(event) => {
+                  rackOffsetsRef.current.set(rack.id, event.nativeEvent.layout.y);
+                }}
               />
             ))}
           </>
@@ -259,12 +323,51 @@ export default function ContractRackMapScreen() {
 
       {tree ? (
         <TierDetailModal
-          visible={detailTarget !== undefined && !stockForm}
+          visible={detailTarget !== undefined && !stockForm && !historyTierId}
           onClose={() => setDetailTarget(undefined)}
           tree={tree}
           tierId={detailTarget ?? null}
           readOnly={readOnly}
           onAction={handleAction}
+          footerAccessory={
+            typeof detailTarget === "string" ? (
+              <Pressable
+                onPress={() => setHistoryTierId(detailTarget)}
+                className="flex-row items-center justify-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 py-2.5 active:opacity-80"
+              >
+                <Clock size={14} color="#647B80" />
+                <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-200">
+                  {t("rackMap.history.link")}
+                </Text>
+              </Pressable>
+            ) : null
+          }
+        />
+      ) : null}
+
+      {tree && historyTierId ? (
+        <TierHistoryModal
+          visible
+          onClose={() => setHistoryTierId(null)}
+          tree={tree}
+          tierId={historyTierId}
+        />
+      ) : null}
+
+      {tree ? (
+        <LocateSheet
+          visible={locateOpen}
+          onClose={() => setLocateOpen(false)}
+          tree={tree}
+          onLocated={handleLocated}
+        />
+      ) : null}
+
+      {tree && locateResult ? (
+        <LocateResultBanner
+          result={locateResult}
+          currentStorageUnitId={tree.storageUnit.id}
+          onClear={() => setLocateResult(null)}
         />
       ) : null}
 

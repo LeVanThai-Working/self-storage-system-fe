@@ -448,7 +448,7 @@
       "adjustTitle": "Recount",
       "positionLabel": "Location: %{location}",
       "sku": "SKU",
-      "selectSkuEmpty": "There are no SKUs in this unit to choose from yet.",
+      "selectSkuEmpty": "There are no SKUs in this unit yet. Scan a barcode to choose one.",
       "skuRequired": "Please choose an SKU",
       "quantity": "Quantity",
       "quantityMin": "Quantity must be at least 1",
@@ -469,7 +469,8 @@
       "notes": "Notes",
       "moreInfo": "More details",
       "confirm": "Confirm",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "scanBarcode": "Scan barcode"
     },
     "reasonChip": {
       "periodic": "Periodic count",
@@ -481,6 +482,37 @@
       "stockOut": "Took %{qty} %{uom} of %{sku} out of %{location}",
       "move": "Moved %{qty} %{uom} of %{sku} from %{from} to %{to}",
       "adjust": "Updated %{sku} at %{location}: %{qty} %{uom}"
+    },
+    "locate": {
+      "title": "Find items",
+      "scan": "Scan barcode",
+      "pick": "Pick an SKU in this unit",
+      "pickEmpty": "There are no SKUs in this unit to find yet.",
+      "result": "%{sku} is in %{count} locations",
+      "resultNone": "%{sku} is not in storage right now",
+      "otherUnit": "another unit",
+      "clear": "Clear highlight"
+    },
+    "scanner": {
+      "permissionTitle": "Camera access needed",
+      "permissionDesc": "Allow camera access to scan barcodes on your boxes.",
+      "permissionDenied": "Camera access is turned off. Turn it on again in your device Settings.",
+      "grant": "Allow camera",
+      "openSettings": "Open Settings",
+      "hint": "Fit the barcode inside the orange frame",
+      "close": "Close camera"
+    },
+    "history": {
+      "title": "Tier history",
+      "link": "View tier history",
+      "empty": "No movements yet",
+      "change": "%{from} → %{to}",
+      "type": {
+        "in": "Stock in",
+        "out": "Stock out",
+        "move": "Move",
+        "adjust": "Recount"
+      }
     }
   }
 }

@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import type {
   StockAdjustRequest,
@@ -6,6 +7,9 @@ import type {
   StockOutRequest,
 } from "@self-storage-system-fe/shared";
 import {
+  getInventoryMovementsApi,
+  getSkuLocationsApi,
+  getSkuLocationsByBarcodeApi,
   getStorageUnitTreeApi,
   stockAdjustApi,
   stockInApi,
@@ -72,5 +76,46 @@ export function useStockAdjust(storageUnitId?: string) {
   return useMutation({
     mutationFn: (payload: StockAdjustRequest) => stockAdjustApi(payload),
     onSuccess: () => invalidateAfterStockChange(qc, storageUnitId),
+  });
+}
+
+/** Imperative SKU location lookups (by SKU id or scanned barcode), cached under the shared keys. */
+export function useLocateSku() {
+  const qc = useQueryClient();
+
+  const locateBySkuId = useCallback(
+    (skuId: string) =>
+      qc.fetchQuery({
+        queryKey: customerInventoryKeys.skuLocations(skuId),
+        queryFn: () => getSkuLocationsApi(skuId),
+      }),
+    [qc]
+  );
+
+  const locateByBarcode = useCallback(
+    (barcode: string) =>
+      qc.fetchQuery({
+        queryKey: customerInventoryKeys.barcodeLocations(barcode),
+        queryFn: () => getSkuLocationsByBarcodeApi(barcode),
+        retry: false,
+      }),
+    [qc]
+  );
+
+  return { locateBySkuId, locateByBarcode };
+}
+
+export function useTierMovements(rackTierId?: string) {
+  return useQuery({
+    queryKey: customerInventoryKeys.tierMovements(rackTierId),
+    queryFn: () =>
+      getInventoryMovementsApi({
+        rackTierId,
+        page: 1,
+        limit: TIER_HISTORY_LIMIT,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+      }),
+    enabled: Boolean(rackTierId),
   });
 }

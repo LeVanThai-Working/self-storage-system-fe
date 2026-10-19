@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { View, type LayoutChangeEvent } from "react-native";
 import { Layers } from "lucide-react-native";
 import type { TreeRack, TreeTier } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
@@ -9,15 +9,26 @@ import { TierCell } from "./TierCell";
 interface RackCardProps {
   rack: TreeRack;
   unitNumber?: string;
+  highlightedTierIds?: Set<string>;
   onTierPress: (tier: TreeTier) => void;
+  onLayout?: (event: LayoutChangeEvent) => void;
 }
 
-export function RackCard({ rack, unitNumber, onTierPress }: RackCardProps) {
+export function RackCard({
+  rack,
+  unitNumber,
+  highlightedTierIds,
+  onTierPress,
+  onLayout,
+}: RackCardProps) {
   const { t } = useTranslation();
   const occupied = rack.tiers.filter((tier) => tier.items.length > 0).length;
 
   return (
-    <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3">
+    <View
+      onLayout={onLayout}
+      className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3"
+    >
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2 flex-1">
           <View className="h-8 w-8 items-center justify-center rounded-xl bg-brand-light dark:bg-brand/20">
@@ -41,7 +52,13 @@ export function RackCard({ rack, unitNumber, onTierPress }: RackCardProps) {
 
       <View className="gap-2">
         {rack.tiers.map((tier) => (
-          <TierCell key={tier.id} tier={tier} unitNumber={unitNumber} onPress={onTierPress} />
+          <TierCell
+            key={tier.id}
+            tier={tier}
+            unitNumber={unitNumber}
+            highlighted={highlightedTierIds?.has(tier.id) ?? false}
+            onPress={onTierPress}
+          />
         ))}
       </View>
     </View>
