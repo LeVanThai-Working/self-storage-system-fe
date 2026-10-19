@@ -643,6 +643,7 @@
       "amenities": "Tiện ích & Dịch vụ",
       "offerings": "Bảng giá theo cơ sở",
       "facilityAmenities": "Phân bổ tiện ích",
+      "approvals": "Phê duyệt đề xuất",
       "analytics": "Báo cáo & Phân tích",
       "sectionOperations": "VẬN HÀNH CHI NHÁNH"
     },
@@ -1387,6 +1388,146 @@
         "confirmRestore": "Xác nhận khôi phục",
         "processing": "Đang xử lý...",
         "error": "Không thể xử lý yêu cầu. Vui lòng thử lại sau."
+      }
+    },
+    "approvals": {
+      "title": "Trung tâm Phê duyệt Đề xuất",
+      "subtitle": "Tiếp nhận, kiểm tra dữ liệu thay đổi (Diff View) và phê duyệt các yêu cầu từ Quản lý chi nhánh.",
+      "searchPlaceholder": "Tìm theo lý do, người gửi, chi nhánh...",
+      "searchButton": "Tìm",
+      "clearSearch": "Xóa tìm kiếm",
+      "clearFilter": "Xóa lọc",
+      "searchResultsCount": "Tìm thấy {count} đề xuất khớp với \"{query}\"",
+      "stats": {
+        "pending": "Chờ phê duyệt",
+        "approved": "Đã phê duyệt",
+        "rejected": "Đã từ chối",
+        "total": "Tổng số đề xuất"
+      },
+      "facilityFilter": {
+        "all": "Tất cả cơ sở"
+      },
+      "targetTypeFilter": {
+        "all": "Tất cả loại đối tượng",
+        "offering": "Bảng giá loại kho",
+        "facilityAmenity": "Tiện ích cơ sở",
+        "unitType": "Loại kho mới",
+        "amenity": "Tiện ích mới"
+      },
+      "statusFilter": {
+        "all": "Tất cả trạng thái",
+        "pending": "Chờ phê duyệt",
+        "approved": "Đã duyệt",
+        "rejected": "Đã từ chối",
+        "cancelled": "Đã hủy"
+      },
+      "sort": {
+        "createdAtDesc": "Mới nhất",
+        "createdAtAsc": "Cũ nhất",
+        "statusDesc": "Theo trạng thái",
+        "targetTypeDesc": "Theo loại đề xuất"
+      },
+      "table": {
+        "facilityAndRequester": "Cơ sở & Người gửi",
+        "targetAndAction": "Đề xuất & Hành động",
+        "reason": "Lý do đề xuất",
+        "status": "Trạng thái",
+        "createdAt": "Ngày gửi",
+        "actions": "Thao tác"
+      },
+      "empty": {
+        "title": "Chưa có đề xuất nào",
+        "description": "Hiện tại không có đề xuất nào phù hợp với bộ lọc tìm kiếm của bạn."
+      },
+      "pagination": {
+        "pageInfo": "Trang {page} / {totalPages} ({totalItems} đề xuất)",
+        "prev": "Trước",
+        "next": "Sau"
+      },
+      "actions": {
+        "viewDiff": "Xem chi tiết",
+        "approve": "Duyệt",
+        "reject": "Từ chối"
+      },
+      "status": {
+        "pending": "Chờ phê duyệt",
+        "approved": "Đã duyệt",
+        "rejected": "Đã từ chối",
+        "cancelled": "Đã hủy"
+      },
+      "targetType": {
+        "unit_type": "Loại kho mới",
+        "facility_unit_type_offering": "Bảng giá loại kho",
+        "amenity": "Tiện ích mới",
+        "facility_amenity_offering": "Tiện ích tại cơ sở"
+      },
+      "action": {
+        "create": "Tạo mới",
+        "update": "Điều chỉnh"
+      },
+      "diffModal": {
+        "title": "Chi tiết Đề xuất & So sánh Thay đổi (Diff View)",
+        "subtitle": "So sánh đối chiếu dữ liệu hiện tại và thông số đề xuất mới từ chi nhánh cơ sở.",
+        "loading": "Đang tải chi tiết đề xuất...",
+        "loadError": "Không thể tải chi tiết đề xuất.",
+        "retry": "Thử lại",
+        "close": "Đóng",
+        "requester": "Người đề xuất",
+        "targetType": "Loại đề xuất",
+        "createdAt": "Thời gian gửi",
+        "reasonLabel": "Lý do đề xuất từ chi nhánh",
+        "diffTitleUpdate": "So sánh Thay đổi (Dữ liệu cũ vs Đề xuất mới)",
+        "diffTitleCreate": "Thông số Kỹ thuật & Giá Đề xuất Mới",
+        "currentDataCol": "Dữ liệu Hiện tại (Cũ)",
+        "proposedDataCol": "Đề xuất Mới (Sau thay đổi)",
+        "changedBadge": "Thay đổi",
+        "newEntityDetails": "Chi tiết gói đề xuất xin mở mới",
+        "alreadyApprovedTitle": "Đề xuất này đã được phê duyệt",
+        "alreadyRejectedTitle": "Đề xuất này đã bị từ chối",
+        "approvedBy": "Người duyệt",
+        "rejectedBy": "Người từ chối",
+        "rejectionReasonLabel": "Lý do từ chối",
+        "cancelledByRequester": "Đề xuất này đã được chi nhánh tự động rút lại/hủy trước khi xử lý.",
+        "approveButton": "Duyệt đề xuất",
+        "rejectButton": "Từ chối đề xuất",
+        "fields": {
+          "pricePerUnit": "Đơn giá",
+          "depositMultiplier": "Hệ số cọc",
+          "billingUnit": "Chu kỳ tính phí",
+          "minRentalDays": "Ngày thuê tối thiểu",
+          "totalQuantity": "Số lượng trang bị",
+          "name": "Tên",
+          "category": "Danh mục",
+          "dimensions": "Kích thước (D × R × C)",
+          "area": "Diện tích",
+          "volume": "Thể tích",
+          "description": "Mô tả",
+          "notes": "Ghi chú",
+          "status": "Trạng thái"
+        }
+      },
+      "reviewModal": {
+        "approveTitle": "Xác nhận Phê duyệt Đề xuất",
+        "approveSubtitle": "Hệ thống sẽ tự động cập nhật cơ sở dữ liệu và áp dụng cấu hình này vào chi nhánh ngay lập tức.",
+        "rejectTitle": "Xác nhận Từ chối Đề xuất",
+        "rejectSubtitle": "Vui lòng nhập lý do từ chối rõ ràng để gửi phản hồi về cho người gửi đề xuất tại chi nhánh.",
+        "targetLabel": "Loại đề xuất",
+        "actionLabel": "Hành động",
+        "facilityLabel": "Cơ sở áp dụng",
+        "requesterLabel": "Người gửi",
+        "approveNotesLabel": "Ghi chú phê duyệt",
+        "approveNotesPlaceholder": "Nhập ghi chú cho chi nhánh (ví dụ: Đồng ý mức giá mới, có hiệu lực từ hôm nay...)",
+        "approveAutoApplyNotice": "Lưu ý: Thay đổi sẽ có hiệu lực trực tiếp trên hệ thống ngay khi xác nhận.",
+        "rejectionReasonLabel": "Lý do từ chối",
+        "rejectionReasonPlaceholder": "Nêu rõ nguyên nhân không duyệt (ví dụ: Giá đề xuất chưa phù hợp chính sách, sai thông số kho...)",
+        "rejectionReasonRequired": "Vui lòng nhập lý do từ chối trước khi tiếp tục.",
+        "rejectWarning": "Đề xuất sẽ chuyển sang trạng thái Bị từ chối và không thể hoàn tác.",
+        "cancel": "Hủy bỏ",
+        "confirmApprove": "Xác nhận Duyệt",
+        "confirmReject": "Xác nhận Từ chối",
+        "processing": "Đang xử lý...",
+        "optional": "Không bắt buộc",
+        "genericError": "Không thể xử lý đề xuất. Vui lòng thử lại sau."
       }
     }
   },
