@@ -78,7 +78,7 @@ export const ConfirmFacilityAmenityModal = ({
           {/* Info Card */}
           <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
             <div className="font-extrabold text-slate-900 flex items-center gap-2">
-              <Package className="w-4 h-4 text-purple-600" />
+              <Package className="w-4 h-4 text-emerald-600" />
               {offering.amenity.name}
             </div>
             <div className="text-xs text-slate-500">

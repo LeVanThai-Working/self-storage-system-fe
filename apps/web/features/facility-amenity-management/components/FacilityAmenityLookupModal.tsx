@@ -36,7 +36,7 @@ interface FacilityAmenityLookupModalProps {
 }
 
 const inputClass =
-  "w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-sm font-medium text-slate-800 py-2.5 px-3.5 rounded-xl border border-slate-200/80 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none transition-all";
+  "w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-sm font-medium text-slate-800 py-2.5 px-3.5 rounded-xl border border-slate-200/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all";
 
 export const FacilityAmenityLookupModal = ({
   isOpen,
@@ -82,7 +82,7 @@ export const FacilityAmenityLookupModal = ({
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto p-6 rounded-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2.5 text-lg font-bold text-slate-900">
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
             {t("title")}
@@ -138,7 +138,7 @@ export const FacilityAmenityLookupModal = ({
             <div className="p-4 rounded-2xl border transition-all">
               {lookupQuery.isLoading ? (
                 <div className="py-8 flex items-center justify-center gap-2 text-xs text-slate-500">
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
+                  <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
                   {t("lookingUp")}
                 </div>
               ) : lookupQuery.data ? (
@@ -204,7 +204,7 @@ export const FacilityAmenityLookupModal = ({
                         onClose();
                         onEdit(lookupQuery.data!.id);
                       }}
-                      className="rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold"
+                      className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold"
                     >
                       <Pencil className="w-3.5 h-3.5 mr-1" />
                       {t("editOffering")}
@@ -227,7 +227,7 @@ export const FacilityAmenityLookupModal = ({
                       onClose();
                       onCreateWithPreset(facilityId, amenityId);
                     }}
-                    className="mt-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-purple-600/20"
+                    className="mt-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20"
                   >
                     <Plus className="w-3.5 h-3.5 mr-1.5" />
                     {t("createWithPreset")}
@@ -242,7 +242,7 @@ export const FacilityAmenityLookupModal = ({
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                  <Package className="w-3.5 h-3.5 text-purple-600" />
+                  <Package className="w-3.5 h-3.5 text-emerald-600" />
                   {t("availableListTitle")}
                 </span>
                 <span className="text-xs text-slate-400">
@@ -252,7 +252,7 @@ export const FacilityAmenityLookupModal = ({
 
               {availableQuery.isLoading ? (
                 <div className="py-8 flex items-center justify-center gap-2 text-xs text-slate-500">
-                  <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
+                  <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
                   {t("loadingAvailable")}
                 </div>
               ) : availableQuery.data && availableQuery.data.length > 0 ? (
@@ -280,7 +280,7 @@ export const FacilityAmenityLookupModal = ({
                             onClose();
                             onViewDetail(item.id);
                           }}
-                          className="h-8 px-2 text-slate-600 hover:text-purple-600 rounded-lg"
+                          className="h-8 px-2 text-slate-600 hover:text-emerald-600 rounded-lg"
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </Button>

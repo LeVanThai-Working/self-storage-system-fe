@@ -246,7 +246,7 @@ export const FacilityAmenityFormModal = ({
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto p-6 rounded-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2.5 text-lg font-bold text-slate-900">
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
             {isEdit ? t("editTitle") : t("createTitle")}
@@ -342,7 +342,7 @@ export const FacilityAmenityFormModal = ({
                   <div className="p-3 rounded-2xl bg-slate-50/80 border border-slate-200/60 flex items-center justify-between text-xs text-slate-600">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-slate-800">{selectedAmenity.name}</span>
-                      <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 font-bold uppercase text-[10px]">
+                      <span className="px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 font-bold uppercase text-[10px]">
                         {selectedAmenity.type}
                       </span>
                     </div>
@@ -498,7 +498,7 @@ export const FacilityAmenityFormModal = ({
               <Button
                 type="submit"
                 disabled={isPending || isDuplicate || Boolean(success)}
-                className="rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold shadow-md shadow-purple-600/20 disabled:opacity-50 cursor-pointer"
+                className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold shadow-md shadow-emerald-600/20 disabled:opacity-50 cursor-pointer"
               >
                 {isPending ? (
                   <>

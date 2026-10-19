@@ -98,7 +98,7 @@ export const FacilityAmenityDetailModal = ({
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto p-6 rounded-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2.5 text-lg font-bold text-slate-900">
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
             {t("title")}
@@ -107,7 +107,7 @@ export const FacilityAmenityDetailModal = ({
 
         {isLoading ? (
           <div className="py-14 flex flex-col items-center justify-center gap-3 text-sm text-slate-500">
-            <Loader2 className="w-7 h-7 animate-spin text-purple-600" />
+            <Loader2 className="w-7 h-7 animate-spin text-emerald-600" />
             <span>{t("loading")}</span>
           </div>
         ) : isError || !offering ? (
@@ -132,7 +132,7 @@ export const FacilityAmenityDetailModal = ({
                   <span className="font-extrabold text-base text-slate-900">
                     {offering.amenity.name}
                   </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-purple-100 text-purple-800">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
                     {offering.amenity.type}
                   </span>
                 </div>
@@ -174,7 +174,7 @@ export const FacilityAmenityDetailModal = ({
               {/* Progress bar */}
               <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden flex">
                 <div
-                  className="bg-purple-600 h-2.5 transition-all duration-300"
+                  className="bg-amber-500 h-2.5 transition-all duration-300"
                   style={{
                     width: `${
                       offering.totalQuantity > 0
@@ -205,9 +205,9 @@ export const FacilityAmenityDetailModal = ({
                     {offering.totalQuantity}
                   </div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-purple-50/60 border border-purple-100">
-                  <div className="text-[11px] text-purple-600 font-semibold">{t("inUseQty")}</div>
-                  <div className="text-base font-extrabold text-purple-700 mt-0.5">
+                <div className="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200/70">
+                  <div className="text-[11px] text-amber-700 font-semibold">{t("inUseQty")}</div>
+                  <div className="text-base font-extrabold text-amber-800 mt-0.5">
                     {offering.inUseQuantity}
                   </div>
                 </div>
@@ -337,7 +337,7 @@ export const FacilityAmenityDetailModal = ({
                     onClose();
                     onEdit(offering.id);
                   }}
-                  className="rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold shadow-md shadow-purple-600/20"
+                  className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold shadow-md shadow-emerald-600/20"
                 >
                   <Pencil className="w-3.5 h-3.5 mr-1.5" />
                   {t("editButton")}
