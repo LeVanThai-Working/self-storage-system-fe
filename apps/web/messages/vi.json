@@ -161,9 +161,20 @@
       },
       "roles": {
         "systemAdmin": "Quản trị HT",
+        "businessOpsManager": "Quản lý vận hành",
         "facilityManager": "Quản lý cơ sở",
         "facilityStaff": "Nhân viên",
         "customer": "Khách hàng"
+      },
+      "pagination": {
+        "page": "Trang",
+        "of": "trên",
+        "users": "người dùng",
+        "prev": "Trước",
+        "next": "Sau"
+      },
+      "roleFilter": {
+        "all": "Tất cả vai trò"
       },
       "loading": "Đang tải dữ liệu...",
       "empty": "Không tìm thấy người dùng nào.",
