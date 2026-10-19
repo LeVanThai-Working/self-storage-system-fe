@@ -20,8 +20,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useFacilities } from "@/features/facility-management/hooks";
-import { useApprovalRequests } from "../hooks";
+import { useApprovalRequests, useApprovalStats, approvalCenterKeys } from "../hooks";
 import {
   ApprovalRequestActionEnum,
   ApprovalRequestStatusEnum,
@@ -34,6 +35,7 @@ import { ReviewConfirmModal } from "./ReviewConfirmModal";
 
 export const ApprovalTable = () => {
   const t = useTranslations("businessOps.approvals");
+  const queryClient = useQueryClient();
 
   // Query state
   const [page, setPage] = useState<number>(1);
@@ -89,17 +91,13 @@ export const ApprovalTable = () => {
     hasPrevPage: false,
   };
 
-  // KPI Calculations
-  const pendingCount = requests.filter(
-    (r) => r.status === ApprovalRequestStatusEnum.PENDING
-  ).length;
-  const approvedCount = requests.filter(
-    (r) => r.status === ApprovalRequestStatusEnum.APPROVED
-  ).length;
-  const rejectedCount = requests.filter(
-    (r) => r.status === ApprovalRequestStatusEnum.REJECTED
-  ).length;
-  const totalCount = pagination.totalItems;
+  // KPI Calculations (Thống kê độc lập, không bị reset về 0 khi chọn tab lọc trạng thái)
+  const stats = useApprovalStats(facilityId);
+
+  const handleRefresh = () => {
+    refetch();
+    queryClient.invalidateQueries({ queryKey: approvalCenterKeys.all });
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -219,7 +217,7 @@ export const ApprovalTable = () => {
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               {t("stats.pending")}
             </div>
-            <div className="text-2xl font-black text-amber-600 mt-0.5">{pendingCount}</div>
+            <div className="text-2xl font-black text-amber-600 mt-0.5">{stats.pending}</div>
           </div>
         </div>
 
@@ -242,7 +240,7 @@ export const ApprovalTable = () => {
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               {t("stats.approved")}
             </div>
-            <div className="text-2xl font-black text-emerald-600 mt-0.5">{approvedCount}</div>
+            <div className="text-2xl font-black text-emerald-600 mt-0.5">{stats.approved}</div>
           </div>
         </div>
 
@@ -265,7 +263,7 @@ export const ApprovalTable = () => {
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               {t("stats.rejected")}
             </div>
-            <div className="text-2xl font-black text-rose-600 mt-0.5">{rejectedCount}</div>
+            <div className="text-2xl font-black text-rose-600 mt-0.5">{stats.rejected}</div>
           </div>
         </div>
 
@@ -286,7 +284,7 @@ export const ApprovalTable = () => {
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
               {t("stats.total")}
             </div>
-            <div className="text-2xl font-black text-slate-900 mt-0.5">{totalCount}</div>
+            <div className="text-2xl font-black text-slate-900 mt-0.5">{stats.total}</div>
           </div>
         </div>
       </div>
@@ -416,7 +414,7 @@ export const ApprovalTable = () => {
             {/* Refresh Button */}
             <button
               type="button"
-              onClick={() => refetch()}
+              onClick={handleRefresh}
               title={t("refresh")}
               className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
             >

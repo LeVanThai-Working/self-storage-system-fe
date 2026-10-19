@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getApprovalRequests, getApprovalRequestById, reviewApprovalRequest } from "./api";
 import type { ApprovalCenterQueryParams, ReviewApprovalRequestPayload } from "./types";
+import { ApprovalRequestStatusEnum } from "./types";
 
 export const approvalCenterKeys = {
   all: ["approval-requests"] as const,
@@ -15,6 +16,44 @@ export const useApprovalRequests = (params?: ApprovalCenterQueryParams) =>
     queryKey: approvalCenterKeys.list(params || {}),
     queryFn: () => getApprovalRequests(params),
   });
+
+/** Hook lấy thống kê KPI toàn diện (không bị reset về 0 khi chuyển tab) */
+export const useApprovalStats = (facilityId?: string) => {
+  const effectiveFacilityId = facilityId && facilityId !== "ALL" ? facilityId : undefined;
+
+  const { data: pendingData } = useApprovalRequests({
+    limit: 1,
+    page: 1,
+    status: ApprovalRequestStatusEnum.PENDING,
+    facilityId: effectiveFacilityId,
+  });
+
+  const { data: approvedData } = useApprovalRequests({
+    limit: 1,
+    page: 1,
+    status: ApprovalRequestStatusEnum.APPROVED,
+    facilityId: effectiveFacilityId,
+  });
+
+  const { data: rejectedData } = useApprovalRequests({
+    limit: 1,
+    page: 1,
+    status: ApprovalRequestStatusEnum.REJECTED,
+    facilityId: effectiveFacilityId,
+  });
+
+  const pending = pendingData?.pagination.totalItems ?? 0;
+  const approved = approvedData?.pagination.totalItems ?? 0;
+  const rejected = rejectedData?.pagination.totalItems ?? 0;
+  const total = pending + approved + rejected;
+
+  return {
+    pending,
+    approved,
+    rejected,
+    total,
+  };
+};
 
 /** Hook lấy chi tiết đề xuất kèm Diff View dữ liệu cũ vs dữ liệu mới */
 export const useApprovalRequestDetail = (id: string | null) =>
