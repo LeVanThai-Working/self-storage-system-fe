@@ -140,6 +140,7 @@
       "overview": "Overview",
       "userManagement": "User Management",
       "auditLogs": "Audit Logs",
+      "trash": "Trash & Restore",
       "facilityManagement": "Facility Management",
       "settings": "System Settings"
     },
@@ -303,6 +304,106 @@
         "none": "None",
         "metadata": "Additional Metadata",
         "errorMessage": "Failed to load log details. Please try again."
+      }
+    }
+  },
+  "trash": {
+    "title": "Trash & data restore",
+    "subtitle": "Soft-deleted records. The list is built from the audit log (latest 100 events per type).",
+    "tabs": {
+      "facility": "Facilities",
+      "unitType": "Unit types",
+      "storageUnit": "Storage units",
+      "amenity": "Amenities",
+      "offering": "Price lists",
+      "user": "Accounts"
+    },
+    "columns": {
+      "name": "Record",
+      "deletedAt": "Deleted at",
+      "deletedBy": "Deleted by",
+      "actions": "Actions"
+    },
+    "restore": "Restore",
+    "restored": "Record restored.",
+    "restoreFailed": "Could not restore the record.",
+    "empty": "Nothing in the trash.",
+    "loadFailed": "Could not load the list. Please try again.",
+    "retry": "Retry"
+  },
+  "customer": {
+    "roleLabel": "Customer",
+    "nav": {
+      "label": "Customer navigation",
+      "facilities": "Explore facilities",
+      "search": "Find available units"
+    }
+  },
+  "explore": {
+    "retry": "Retry",
+    "prev": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {total}",
+    "priceContact": "Contact for pricing",
+    "search": {
+      "title": "Find the right unit",
+      "subtitle": "Filter by facility, unit type, area, price and amenities to find available units.",
+      "facility": "Facility",
+      "unitType": "Unit type",
+      "categoryLabel": "Unit category",
+      "all": "All",
+      "area": "Area (m²)",
+      "price": "Price (VND)",
+      "min": "From",
+      "max": "To",
+      "amenities": "Desired amenities",
+      "apply": "Apply",
+      "reset": "Clear filters",
+      "count": "{count} units available",
+      "empty": "No available units match your filters.",
+      "error": "Could not load search data. Please try again.",
+      "availableUnits": "{count} left",
+      "reserveNow": "Reserve now",
+      "category": {
+        "locker": "Locker",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "climate_controlled": "Climate controlled",
+        "warehouse_rack": "Warehouse rack"
+      },
+      "billing": {
+        "day": "day",
+        "month": "month",
+        "one_time": "one-time"
+      }
+    },
+    "list": {
+      "title": "Explore storage facilities",
+      "subtitle": "Pick the facility closest to you for safe, flexible storage.",
+      "searchPlaceholder": "Search by facility name",
+      "searchButton": "Search",
+      "empty": "No matching facilities found.",
+      "error": "Could not load facilities. Please try again."
+    },
+    "detail": {
+      "back": "Back to list",
+      "error": "Could not load this facility. Please try again.",
+      "hoursUnknown": "Opening hours not available",
+      "amenities": "Amenities & services",
+      "freeAmenities": "Free amenities",
+      "paidAmenities": "Paid add-on services",
+      "noAmenities": "Nothing listed yet.",
+      "free": "Free",
+      "available": "{count} available",
+      "amenityType": {
+        "physical": "Amenity",
+        "service": "Service"
+      },
+      "billing": {
+        "day": "day",
+        "month": "month",
+        "one_time": "one-time"
       }
     }
   },

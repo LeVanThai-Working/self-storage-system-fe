@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Bell, Search, Users, Settings, LayoutDashboard, ScrollText } from "lucide-react";
+import { Bell, Search, Users, Settings, LayoutDashboard, ScrollText, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -33,6 +33,12 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
       exact: false,
       label: t("nav.auditLogs"),
       icon: ScrollText,
+    },
+    {
+      href: `/${locale}/system-admin/trash`,
+      exact: false,
+      label: t("nav.trash"),
+      icon: Trash2,
     },
     {
       href: `/${locale}/system-admin/settings`,

@@ -140,6 +140,7 @@
       "overview": "Tổng quan",
       "userManagement": "Quản lý Người dùng",
       "auditLogs": "Nhật ký hệ thống",
+      "trash": "Thùng rác & khôi phục",
       "facilityManagement": "Quản lý Cơ sở",
       "settings": "Cài đặt hệ thống"
     },
@@ -303,6 +304,106 @@
         "none": "Không có",
         "metadata": "Metadata bổ sung",
         "errorMessage": "Không thể tải chi tiết log. Vui lòng thử lại."
+      }
+    }
+  },
+  "trash": {
+    "title": "Thùng rác & khôi phục dữ liệu",
+    "subtitle": "Các bản ghi đã bị xóa mềm. Danh sách được tổng hợp từ nhật ký hệ thống (100 sự kiện gần nhất mỗi loại).",
+    "tabs": {
+      "facility": "Cơ sở",
+      "unitType": "Quy cách kho",
+      "storageUnit": "Ô kho",
+      "amenity": "Tiện ích",
+      "offering": "Bảng giá",
+      "user": "Tài khoản"
+    },
+    "columns": {
+      "name": "Bản ghi",
+      "deletedAt": "Thời điểm xóa",
+      "deletedBy": "Người xóa",
+      "actions": "Thao tác"
+    },
+    "restore": "Khôi phục",
+    "restored": "Đã khôi phục bản ghi.",
+    "restoreFailed": "Không thể khôi phục bản ghi.",
+    "empty": "Không có bản ghi nào đang nằm trong thùng rác.",
+    "loadFailed": "Không thể tải danh sách. Vui lòng thử lại.",
+    "retry": "Thử lại"
+  },
+  "customer": {
+    "roleLabel": "Khách hàng",
+    "nav": {
+      "label": "Điều hướng khách hàng",
+      "facilities": "Khám phá cơ sở",
+      "search": "Tìm kho trống"
+    }
+  },
+  "explore": {
+    "retry": "Thử lại",
+    "prev": "Trước",
+    "next": "Sau",
+    "pageOf": "Trang {page} / {total}",
+    "priceContact": "Liên hệ để biết giá",
+    "search": {
+      "title": "Tìm kho phù hợp",
+      "subtitle": "Lọc theo cơ sở, loại kho, diện tích, giá và tiện ích để tìm kho còn trống.",
+      "facility": "Cơ sở",
+      "unitType": "Loại kho",
+      "categoryLabel": "Nhóm kho",
+      "all": "Tất cả",
+      "area": "Diện tích (m²)",
+      "price": "Giá thuê (VNĐ)",
+      "min": "Từ",
+      "max": "Đến",
+      "amenities": "Tiện ích mong muốn",
+      "apply": "Áp dụng",
+      "reset": "Xóa lọc",
+      "count": "{count} kho còn trống",
+      "empty": "Không có kho trống phù hợp với bộ lọc.",
+      "error": "Không thể tải dữ liệu tìm kiếm. Vui lòng thử lại.",
+      "availableUnits": "Còn {count} phòng",
+      "reserveNow": "Đặt giữ chỗ ngay",
+      "category": {
+        "locker": "Tủ khóa",
+        "small": "Nhỏ",
+        "medium": "Vừa",
+        "large": "Lớn",
+        "climate_controlled": "Điều hòa nhiệt độ",
+        "warehouse_rack": "Kệ kho"
+      },
+      "billing": {
+        "day": "ngày",
+        "month": "tháng",
+        "one_time": "lần"
+      }
+    },
+    "list": {
+      "title": "Khám phá cơ sở kho",
+      "subtitle": "Chọn cơ sở gần bạn nhất để thuê kho an toàn, linh hoạt.",
+      "searchPlaceholder": "Tìm theo tên cơ sở",
+      "searchButton": "Tìm kiếm",
+      "empty": "Không tìm thấy cơ sở phù hợp.",
+      "error": "Không thể tải danh sách cơ sở. Vui lòng thử lại."
+    },
+    "detail": {
+      "back": "Quay lại danh sách",
+      "error": "Không thể tải thông tin cơ sở. Vui lòng thử lại.",
+      "hoursUnknown": "Chưa cập nhật giờ mở cửa",
+      "amenities": "Tiện ích & dịch vụ",
+      "freeAmenities": "Tiện ích miễn phí",
+      "paidAmenities": "Dịch vụ thuê thêm (có phí)",
+      "noAmenities": "Hiện chưa có mục nào.",
+      "free": "Miễn phí",
+      "available": "Còn {count}",
+      "amenityType": {
+        "physical": "Tiện ích",
+        "service": "Dịch vụ"
+      },
+      "billing": {
+        "day": "ngày",
+        "month": "tháng",
+        "one_time": "lần"
       }
     }
   },
