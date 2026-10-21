@@ -32,9 +32,12 @@ function AmenityCard({ offering }: { offering: PublicAmenityOfferingResponse }) 
             ? t("free")
             : `${formatCurrency(offering.pricePerUnit)} / ${t(`billing.${offering.billingUnit}`)}`}
         </span>
-        <span className="text-neutral-muted">
-          {t("available", { count: offering.availableQuantity })}
-        </span>
+        {/* Services have no stock, so the BE returns null for their quantity */}
+        {typeof offering.availableQuantity === "number" && (
+          <span className="text-neutral-muted">
+            {t("available", { count: offering.availableQuantity })}
+          </span>
+        )}
       </div>
     </li>
   );
