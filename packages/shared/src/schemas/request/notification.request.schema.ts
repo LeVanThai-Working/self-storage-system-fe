@@ -5,6 +5,7 @@ import {
   NotificationPriorityEnum,
   NotificationTypeEnum,
 } from "../../enums/notification.enum";
+import type { RoleEnum } from "../../enums/user.enum";
 
 export const notificationQuerySchema = paginationQuerySchema.extend({
   isRead: z
@@ -16,6 +17,10 @@ export const notificationQuerySchema = paginationQuerySchema.extend({
     .optional(),
   type: z.nativeEnum(NotificationTypeEnum).optional(),
   priority: z.nativeEnum(NotificationPriorityEnum).optional(),
+  facilityId: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid facility ID format")
+    .optional(),
 });
 
 export type NotificationQuery = z.infer<typeof notificationQuerySchema>;
@@ -28,6 +33,18 @@ export type NotificationIdParam = z.infer<typeof notificationIdParamSchema>;
 
 export interface CreateNotificationInput {
   recipientId: string;
+  facilityId?: string;
+  title: string;
+  content: string;
+  type: NotificationTypeEnum;
+  priority?: NotificationPriorityEnum;
+  channels?: NotificationChannelEnum[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface DispatchNotificationInput {
+  facilityId?: string;
+  roles?: RoleEnum[];
   title: string;
   content: string;
   type: NotificationTypeEnum;
