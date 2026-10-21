@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
   AlertCircle,
@@ -9,6 +9,8 @@ import {
   ChevronLeft,
   ChevronRight,
   DoorOpen,
+  LayoutGrid,
+  List,
   Lock,
   MapPin,
   Pencil,
@@ -26,6 +28,7 @@ import { DimensionBadge } from "@/components/common/DimensionBadge";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import {
   useDebouncedValue,
+  useFacilityMapLayout,
   useFacilityOfferings,
   useMyFacility,
   useRestoreStorageUnit,
@@ -34,21 +37,35 @@ import {
 } from "../hooks";
 import {
   StorageUnitStatusEnum,
+  canToggleMaintenance,
   isUnitLocked,
+  type StorageUnitPortalMode,
   type StorageUnitResponse,
   type StorageUnitSortBy,
+  type StorageUnitViewMode,
 } from "../types";
 import { StorageUnitFormModal } from "./StorageUnitFormModal";
 import { DeleteStorageUnitModal } from "./DeleteStorageUnitModal";
+import { StorageUnitMapView } from "./StorageUnitMapView";
+import { UnitMaintenanceDialog } from "./UnitMaintenanceDialog";
 
 const PAGE_SIZE = 10;
 
 const FILTER_CONTROL =
   "bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-xs sm:text-sm font-medium text-slate-700 py-2.5 px-3.5 rounded-xl border border-slate-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all";
 
-export const StorageUnitTable = () => {
+const includesIgnoreCase = (value: string | null | undefined, query: string) =>
+  (value ?? "").toLowerCase().includes(query.toLowerCase());
+
+interface StorageUnitTableProps {
+  mode?: StorageUnitPortalMode;
+}
+
+export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) => {
   const t = useTranslations("facilityManager.storageUnits");
   const getErrorMessage = useApiErrorMessage();
+  const isManager = mode === "manager";
+  const [viewMode, setViewMode] = useState<StorageUnitViewMode>("table");
 
   // Facility the logged-in manager is responsible for
   const facilityQuery = useMyFacility();
@@ -89,6 +106,7 @@ export const StorageUnitTable = () => {
   const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
   const [editingUnit, setEditingUnit] = useState<StorageUnitResponse | null>(null);
   const [deletingUnit, setDeletingUnit] = useState<{ id: string; unitNumber: string } | null>(null);
+  const [maintenanceUnit, setMaintenanceUnit] = useState<StorageUnitResponse | null>(null);
   const [lastDeletedUnit, setLastDeletedUnit] = useState<{
     id: string;
     unitNumber: string;
@@ -129,9 +147,30 @@ export const StorageUnitTable = () => {
   });
   const offeringsQuery = useFacilityOfferings(facilityId);
   const stats = useStorageUnitStats(facilityId);
+  const mapQuery = useFacilityMapLayout(facilityId, viewMode === "map");
 
   const offerings = offeringsQuery.data ?? [];
   const units = data?.items ?? [];
+
+  // The map shows every unit at once, so the same filters are applied client-side.
+  const mapUnits = useMemo(
+    () =>
+      (mapQuery.data ?? []).filter(
+        (unit) =>
+          (!debouncedSearch || includesIgnoreCase(unit.unitNumber, debouncedSearch)) &&
+          (floorFilter === undefined || unit.floor === floorFilter) &&
+          (!debouncedZone || includesIgnoreCase(unit.zone, debouncedZone)) &&
+          (unitTypeId === "ALL" || unit.unitTypeId === unitTypeId) &&
+          (selectedStatus === "ALL" || unit.status === selectedStatus)
+      ),
+    [mapQuery.data, debouncedSearch, floorFilter, debouncedZone, unitTypeId, selectedStatus]
+  );
+
+  const handleRefresh = () => {
+    if (viewMode === "map") mapQuery.refetch();
+    else refetch();
+  };
+  const isRefreshing = viewMode === "map" ? mapQuery.isFetching : isFetching;
   const pagination = data?.pagination ?? {
     page: 1,
     limit: PAGE_SIZE,
@@ -240,14 +279,43 @@ export const StorageUnitTable = () => {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsCreateOpen(true)}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md shadow-emerald-600/20 transition-all transform active:scale-95 cursor-pointer"
-        >
-          <Sparkles className="w-4 h-4" />
-          {t("addUnit")}
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Table / Floor-plan switch */}
+          <div className="inline-flex p-1 rounded-2xl bg-slate-100 border border-slate-200/80">
+            {(
+              [
+                { value: "table", icon: List, label: t("view.table") },
+                { value: "map", icon: LayoutGrid, label: t("view.map") },
+              ] as const
+            ).map(({ value, icon: Icon, label }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setViewMode(value)}
+                aria-pressed={viewMode === value}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  viewMode === value
+                    ? "bg-white text-teal-700 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {isManager && (
+            <button
+              type="button"
+              onClick={() => setIsCreateOpen(true)}
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md shadow-emerald-600/20 transition-all transform active:scale-95 cursor-pointer"
+            >
+              <Sparkles className="w-4 h-4" />
+              {t("addUnit")}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* KPI Stats Cards */}
@@ -345,19 +413,22 @@ export const StorageUnitTable = () => {
             ))}
           </select>
 
-          <select
-            value={sortBy}
-            onChange={(e) => {
-              setSortBy(e.target.value as StorageUnitSortBy);
-              setPage(1);
-            }}
-            className={`${FILTER_CONTROL} cursor-pointer`}
-          >
-            <option value="createdAt">{t("sortBy.createdAt")}</option>
-            <option value="unitNumber">{t("sortBy.unitNumber")}</option>
-            <option value="floor">{t("sortBy.floor")}</option>
-            <option value="status">{t("sortBy.status")}</option>
-          </select>
+          {/* The floor plan has its own fixed order (floor -> zone -> unit number) */}
+          {viewMode === "table" && (
+            <select
+              value={sortBy}
+              onChange={(e) => {
+                setSortBy(e.target.value as StorageUnitSortBy);
+                setPage(1);
+              }}
+              className={`${FILTER_CONTROL} cursor-pointer`}
+            >
+              <option value="createdAt">{t("sortBy.createdAt")}</option>
+              <option value="unitNumber">{t("sortBy.unitNumber")}</option>
+              <option value="floor">{t("sortBy.floor")}</option>
+              <option value="status">{t("sortBy.status")}</option>
+            </select>
+          )}
 
           {hasActiveFilters && (
             <button
@@ -372,232 +443,285 @@ export const StorageUnitTable = () => {
 
           <button
             type="button"
-            onClick={() => refetch()}
+            onClick={handleRefresh}
             title={t("refresh")}
             className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
           >
-            <RotateCw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
+            <RotateCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-teal-600" : ""}`} />
           </button>
         </div>
       </div>
 
+      {/* Floor-plan View */}
+      {viewMode === "map" && (
+        <StorageUnitMapView
+          units={mapUnits}
+          isLoading={mapQuery.isLoading}
+          isError={mapQuery.isError}
+          error={mapQuery.error}
+          hasActiveFilters={hasActiveFilters}
+          onRetry={() => mapQuery.refetch()}
+          onSelectUnit={setMaintenanceUnit}
+        />
+      )}
+
       {/* Storage Units Data Table */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                <th className="py-4 px-6">{t("table.unit")}</th>
-                <th className="py-4 px-6">{t("table.location")}</th>
-                <th className="py-4 px-6">{t("table.unitType")}</th>
-                <th className="py-4 px-6">{t("table.size")}</th>
-                <th className="py-4 px-6">{t("table.status")}</th>
-                <th className="py-4 px-6 text-right">{t("table.actions")}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50 text-sm">
-              {isLoading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <tr key={`skeleton-${i}`} className="animate-pulse">
-                    <td className="py-4 px-6">
-                      <div className="h-4 bg-slate-100 rounded-md w-24 mb-1.5" />
-                      <div className="h-3 bg-slate-50 rounded-md w-32" />
-                    </td>
-                    <td className="py-4 px-6">
-                      <div className="h-4 bg-slate-100 rounded-md w-28" />
-                    </td>
-                    <td className="py-4 px-6">
-                      <div className="h-4 bg-slate-100 rounded-md w-28" />
-                    </td>
-                    <td className="py-4 px-6">
-                      <div className="h-4 bg-slate-100 rounded-md w-24" />
-                    </td>
-                    <td className="py-4 px-6">
-                      <div className="h-5 bg-slate-100 rounded-full w-20" />
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <div className="h-8 bg-slate-100 rounded-lg w-16 ml-auto" />
-                    </td>
-                  </tr>
-                ))
-              ) : isError ? (
-                <tr>
-                  <td colSpan={6} className="py-16 text-center">
-                    <div className="w-16 h-16 rounded-3xl bg-rose-50 flex items-center justify-center mx-auto mb-4 text-rose-400">
-                      <AlertCircle className="w-8 h-8" />
-                    </div>
-                    <h3 className="text-base font-bold text-slate-800">{t("loadError.title")}</h3>
-                    <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
-                      {getErrorMessage(error)}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => refetch()}
-                      className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
-                    >
-                      <RotateCw className="w-3.5 h-3.5" />
-                      {t("retry")}
-                    </button>
-                  </td>
+      {viewMode === "table" && (
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <th className="py-4 px-6">{t("table.unit")}</th>
+                  <th className="py-4 px-6">{t("table.location")}</th>
+                  <th className="py-4 px-6">{t("table.unitType")}</th>
+                  <th className="py-4 px-6">{t("table.size")}</th>
+                  <th className="py-4 px-6">{t("table.status")}</th>
+                  <th className="py-4 px-6 text-right">{t("table.actions")}</th>
                 </tr>
-              ) : units.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-16 text-center">
-                    <div className="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center mx-auto mb-4 text-slate-300">
-                      <Boxes className="w-8 h-8" />
-                    </div>
-                    <h3 className="text-base font-bold text-slate-800">
-                      {hasActiveFilters ? t("empty.filteredTitle") : t("empty.title")}
-                    </h3>
-                    <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
-                      {hasActiveFilters ? t("empty.filteredDescription") : t("empty.description")}
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                units.map((unit: StorageUnitResponse) => {
-                  const locked = isUnitLocked(unit.status);
-                  return (
-                    <tr
-                      key={unit.id}
-                      className="hover:bg-slate-50/70 transition-colors duration-150 group"
-                    >
-                      {/* Unit number & notes */}
+              </thead>
+              <tbody className="divide-y divide-slate-50 text-sm">
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={`skeleton-${i}`} className="animate-pulse">
                       <td className="py-4 px-6">
-                        <div className="flex items-start gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-slate-100 group-hover:bg-teal-50 group-hover:text-teal-600 text-slate-500 flex items-center justify-center flex-shrink-0 transition-colors">
-                            <DoorOpen className="w-4 h-4" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-900 group-hover:text-teal-700 transition-colors font-mono">
-                              {unit.unitNumber}
-                            </div>
-                            {unit.notes && (
-                              <p
-                                title={unit.notes}
-                                className="text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-xs"
-                              >
-                                {unit.notes}
-                              </p>
-                            )}
-                          </div>
-                        </div>
+                        <div className="h-4 bg-slate-100 rounded-md w-24 mb-1.5" />
+                        <div className="h-3 bg-slate-50 rounded-md w-32" />
                       </td>
-
-                      {/* Floor / Zone */}
                       <td className="py-4 px-6">
-                        <div className="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
-                          <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
-                          <span>
-                            {t("location.floor", { floor: unit.floor })}
-                            {unit.zone ? ` · ${t("location.zone", { zone: unit.zone })}` : ""}
-                          </span>
-                        </div>
+                        <div className="h-4 bg-slate-100 rounded-md w-28" />
                       </td>
-
-                      {/* Unit type */}
                       <td className="py-4 px-6">
-                        <span className="text-xs font-semibold text-slate-800">
-                          {unit.unitType?.name ?? "—"}
-                        </span>
+                        <div className="h-4 bg-slate-100 rounded-md w-28" />
                       </td>
-
-                      {/* Size */}
                       <td className="py-4 px-6">
-                        {unit.unitType ? (
-                          <DimensionBadge
-                            area={unit.unitType.area}
-                            volume={unit.unitType.volume}
-                            dimensions={unit.unitType.dimensions}
-                          />
-                        ) : (
-                          <span className="text-xs text-slate-300 italic">—</span>
-                        )}
+                        <div className="h-4 bg-slate-100 rounded-md w-24" />
                       </td>
-
-                      {/* Status */}
                       <td className="py-4 px-6">
-                        <UnitStatusBadge status={unit.status} />
+                        <div className="h-5 bg-slate-100 rounded-full w-20" />
                       </td>
-
-                      {/* Actions */}
                       <td className="py-4 px-6 text-right">
-                        <div className="inline-flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                          <button
-                            type="button"
-                            onClick={() => setEditingUnit(unit)}
-                            title={t("actions.edit")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </button>
-
-                          <button
-                            type="button"
-                            disabled={locked}
-                            onClick={() =>
-                              setDeletingUnit({ id: unit.id, unitNumber: unit.unitNumber })
-                            }
-                            title={locked ? t("actions.deleteBlocked") : t("actions.delete")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                        <div className="h-8 bg-slate-100 rounded-lg w-16 ml-auto" />
                       </td>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                  ))
+                ) : isError ? (
+                  <tr>
+                    <td colSpan={6} className="py-16 text-center">
+                      <div className="w-16 h-16 rounded-3xl bg-rose-50 flex items-center justify-center mx-auto mb-4 text-rose-400">
+                        <AlertCircle className="w-8 h-8" />
+                      </div>
+                      <h3 className="text-base font-bold text-slate-800">{t("loadError.title")}</h3>
+                      <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
+                        {getErrorMessage(error)}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => refetch()}
+                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        <RotateCw className="w-3.5 h-3.5" />
+                        {t("retry")}
+                      </button>
+                    </td>
+                  </tr>
+                ) : units.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-16 text-center">
+                      <div className="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center mx-auto mb-4 text-slate-300">
+                        <Boxes className="w-8 h-8" />
+                      </div>
+                      <h3 className="text-base font-bold text-slate-800">
+                        {hasActiveFilters ? t("empty.filteredTitle") : t("empty.title")}
+                      </h3>
+                      <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
+                        {hasActiveFilters ? t("empty.filteredDescription") : t("empty.description")}
+                      </p>
+                    </td>
+                  </tr>
+                ) : (
+                  units.map((unit: StorageUnitResponse) => {
+                    const locked = isUnitLocked(unit.status);
+                    return (
+                      <tr
+                        key={unit.id}
+                        className="hover:bg-slate-50/70 transition-colors duration-150 group"
+                      >
+                        {/* Unit number & notes */}
+                        <td className="py-4 px-6">
+                          <div className="flex items-start gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-slate-100 group-hover:bg-teal-50 group-hover:text-teal-600 text-slate-500 flex items-center justify-center flex-shrink-0 transition-colors">
+                              <DoorOpen className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className="font-bold text-slate-900 group-hover:text-teal-700 transition-colors font-mono">
+                                {unit.unitNumber}
+                              </div>
+                              {unit.notes && (
+                                <p
+                                  title={unit.notes}
+                                  className="text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-xs"
+                                >
+                                  {unit.notes}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </td>
 
-        {/* Pagination Footer */}
-        {!isLoading && !isError && units.length > 0 && (
-          <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-            <div>
-              {t("pagination.showing")}{" "}
-              <span className="font-bold text-slate-800">
-                {(pagination.page - 1) * pagination.limit + 1}
-              </span>{" "}
-              {t("pagination.to")}{" "}
-              <span className="font-bold text-slate-800">
-                {Math.min(pagination.page * pagination.limit, pagination.totalItems)}
-              </span>{" "}
-              {t("pagination.of")}{" "}
-              <span className="font-bold text-slate-800">{pagination.totalItems}</span>{" "}
-              {t("pagination.units")}
-            </div>
+                        {/* Floor / Zone */}
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
+                            <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                            <span>
+                              {t("location.floor", { floor: unit.floor })}
+                              {unit.zone ? ` · ${t("location.zone", { zone: unit.zone })}` : ""}
+                            </span>
+                          </div>
+                        </td>
 
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                disabled={!pagination.hasPrevPage || isFetching}
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                {t("pagination.prev")}
-              </button>
+                        {/* Unit type */}
+                        <td className="py-4 px-6">
+                          <span className="text-xs font-semibold text-slate-800">
+                            {unit.unitType?.name ?? "—"}
+                          </span>
+                        </td>
 
-              <span className="px-3 py-1 font-bold text-slate-700 bg-slate-50 rounded-xl border border-slate-200/50">
-                {pagination.page} / {pagination.totalPages}
-              </span>
+                        {/* Size */}
+                        <td className="py-4 px-6">
+                          {unit.unitType ? (
+                            <DimensionBadge
+                              area={unit.unitType.area}
+                              volume={unit.unitType.volume}
+                              dimensions={unit.unitType.dimensions}
+                            />
+                          ) : (
+                            <span className="text-xs text-slate-300 italic">—</span>
+                          )}
+                        </td>
 
-              <button
-                type="button"
-                disabled={!pagination.hasNextPage || isFetching}
-                onClick={() => setPage((prev) => prev + 1)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
-              >
-                {t("pagination.next")}
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+                        {/* Status */}
+                        <td className="py-4 px-6">
+                          <UnitStatusBadge status={unit.status} />
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-4 px-6 text-right">
+                          <div className="inline-flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                            <button
+                              type="button"
+                              disabled={!canToggleMaintenance(unit.status)}
+                              onClick={() => setMaintenanceUnit(unit)}
+                              title={
+                                !canToggleMaintenance(unit.status)
+                                  ? t("actions.maintenanceBlocked")
+                                  : unit.status === StorageUnitStatusEnum.UNDER_MAINTENANCE
+                                    ? t("actions.reopen")
+                                    : t("actions.startMaintenance")
+                              }
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                            >
+                              <Wrench className="w-4 h-4" />
+                            </button>
+
+                            {isManager && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingUnit(unit)}
+                                  title={t("actions.edit")}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  disabled={locked}
+                                  onClick={() =>
+                                    setDeletingUnit({ id: unit.id, unitNumber: unit.unitNumber })
+                                  }
+                                  title={locked ? t("actions.deleteBlocked") : t("actions.delete")}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {/* Pagination Footer */}
+          {!isLoading && !isError && units.length > 0 && (
+            <div className="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+              <div>
+                {t("pagination.showing")}{" "}
+                <span className="font-bold text-slate-800">
+                  {(pagination.page - 1) * pagination.limit + 1}
+                </span>{" "}
+                {t("pagination.to")}{" "}
+                <span className="font-bold text-slate-800">
+                  {Math.min(pagination.page * pagination.limit, pagination.totalItems)}
+                </span>{" "}
+                {t("pagination.of")}{" "}
+                <span className="font-bold text-slate-800">{pagination.totalItems}</span>{" "}
+                {t("pagination.units")}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={!pagination.hasPrevPage || isFetching}
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  {t("pagination.prev")}
+                </button>
+
+                <span className="px-3 py-1 font-bold text-slate-700 bg-slate-50 rounded-xl border border-slate-200/50">
+                  {pagination.page} / {pagination.totalPages}
+                </span>
+
+                <button
+                  type="button"
+                  disabled={!pagination.hasNextPage || isFetching}
+                  onClick={() => setPage((prev) => prev + 1)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                >
+                  {t("pagination.next")}
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Modal: Unit detail & maintenance toggle (PATCH /storage-units/{id}/maintenance) */}
+      {maintenanceUnit && (
+        <UnitMaintenanceDialog
+          key={maintenanceUnit.id}
+          unit={maintenanceUnit}
+          isOpen={Boolean(maintenanceUnit)}
+          onClose={() => setMaintenanceUnit(null)}
+          onEdit={
+            isManager
+              ? (unit) => {
+                  setMaintenanceUnit(null);
+                  setEditingUnit(unit);
+                }
+              : undefined
+          }
+        />
+      )}
 
       {/* Modal: Create storage unit (POST /storage-units) */}
       {isCreateOpen && (

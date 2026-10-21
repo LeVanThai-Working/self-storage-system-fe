@@ -1722,7 +1722,10 @@
       "actions": {
         "edit": "Chỉnh sửa",
         "delete": "Xóa phòng kho",
-        "deleteBlocked": "Không thể xóa phòng đang được đặt chỗ hoặc đang cho thuê"
+        "deleteBlocked": "Không thể xóa phòng đang được đặt chỗ hoặc đang cho thuê",
+        "startMaintenance": "Bật bảo trì",
+        "reopen": "Hoàn tất bảo trì / Mở lại phòng",
+        "maintenanceBlocked": "Chỉ phòng Còn trống hoặc Đang bảo trì mới chuyển trạng thái bảo trì được"
       },
       "formModal": {
         "createTitle": "Thêm Phòng kho mới",
@@ -1778,6 +1781,39 @@
         "createRejected": "Không thể tạo phòng. Hãy kiểm tra cơ sở đã mở bán loại kho này và còn hoạt động.",
         "updateRejected": "Không thể cập nhật phòng. Phòng đang đặt chỗ/cho thuê không đổi được loại kho, hoặc loại kho này chưa được cơ sở mở bán.",
         "duplicateUnitNumber": "Số phòng này đã tồn tại trong cơ sở. Vui lòng chọn số phòng khác."
+      },
+      "view": {
+        "table": "Bảng",
+        "map": "Sơ đồ"
+      },
+      "map": {
+        "legend": "Chú thích",
+        "loadError": "Không thể tải sơ đồ mặt bằng",
+        "emptyDescription": "Cơ sở chưa có phòng kho nào để hiển thị trên sơ đồ.",
+        "unitCount": "{count} phòng",
+        "noZone": "Chưa phân dãy"
+      },
+      "maintenanceModal": {
+        "startHint": "Phòng sẽ chuyển sang Đang bảo trì và tạm ngừng nhận đặt chỗ cho đến khi được mở lại.",
+        "reopenHint": "Xác nhận phòng đã dọn dẹp / khắc phục xong. Phòng sẽ chuyển về Còn trống và nhận đặt chỗ trở lại.",
+        "notesLabel": "Ghi chú của phòng",
+        "startPlaceholder": "Ví dụ: Rò rỉ nước trần, chờ thợ sửa...",
+        "reopenPlaceholder": "Ví dụ: Đã vệ sinh và kiểm tra khóa cửa...",
+        "notesMax": "Ghi chú tối đa {max} ký tự",
+        "blocked": {
+          "reserved": "Phòng đang được giữ chỗ nên không thể bật bảo trì.",
+          "occupied": "Phòng đang cho thuê nên không thể bật bảo trì.",
+          "inactive": "Phòng đã ngừng sử dụng. Hãy chỉnh sửa trạng thái phòng trước khi bảo trì."
+        },
+        "close": "Đóng",
+        "confirmStart": "Bật bảo trì",
+        "confirmReopen": "Hoàn tất & Mở lại phòng",
+        "saving": "Đang cập nhật...",
+        "successStart": "Đã chuyển phòng {unitNumber} sang Đang bảo trì",
+        "successReopen": "Đã mở lại phòng {unitNumber}",
+        "errors": {
+          "invalidStatus": "Trạng thái phòng đã thay đổi nên không thể chuyển bảo trì. Vui lòng làm mới và thử lại."
+        }
       }
     },
     "requests": {

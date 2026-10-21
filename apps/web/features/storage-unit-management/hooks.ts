@@ -4,16 +4,19 @@ import {
   createStorageUnit,
   deleteStorageUnit,
   fetchActiveOfferings,
+  fetchFacilityMapLayout,
   fetchMyFacility,
   fetchStorageUnitCount,
   fetchStorageUnits,
   restoreStorageUnit,
+  toggleStorageUnitMaintenance,
   updateStorageUnit,
 } from "./api";
 import {
   StorageUnitStatusEnum,
   type CreateStorageUnitRequest,
   type StorageUnitFilters,
+  type ToggleMaintenanceRequest,
   type UpdateStorageUnitRequest,
 } from "./types";
 
@@ -23,6 +26,7 @@ export const storageUnitKeys = {
   list: (facilityId: string, filters: StorageUnitFilters) =>
     [...storageUnitKeys.lists(), facilityId, { filters }] as const,
   stats: (facilityId: string) => [...storageUnitKeys.all, "stats", facilityId] as const,
+  mapLayout: (facilityId: string) => [...storageUnitKeys.all, "map-layout", facilityId] as const,
   offerings: (facilityId: string) => ["storage-units", "offerings", facilityId] as const,
   myFacility: ["my-facility"] as const,
 };
@@ -116,6 +120,23 @@ export const useRestoreStorageUnit = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => restoreStorageUnit(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: storageUnitKeys.all }),
+  });
+};
+
+/** Every unit of the facility, used by the floor-plan view. Only fetched while the map is shown. */
+export const useFacilityMapLayout = (facilityId: string | undefined, enabled = true) =>
+  useQuery({
+    queryKey: storageUnitKeys.mapLayout(facilityId ?? ""),
+    queryFn: () => fetchFacilityMapLayout(facilityId!),
+    enabled: Boolean(facilityId) && enabled,
+  });
+
+export const useToggleMaintenance = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: ToggleMaintenanceRequest }) =>
+      toggleStorageUnitMaintenance(id, payload),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: storageUnitKeys.all }),
   });
 };
