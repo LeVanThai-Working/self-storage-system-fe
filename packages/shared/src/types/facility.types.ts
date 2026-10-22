@@ -16,6 +16,7 @@ export type IOperatingHours = OperatingHoursResponse;
 export interface FacilitySnapshot {
   id: string;
   name: string;
+  code?: string | null;
   city: string;
   address: string;
   phone?: string | null;
@@ -26,6 +27,7 @@ export interface FacilitySnapshot {
 export interface FacilityResponse {
   id: string;
   name: string;
+  code?: string | null;
   address: string;
   city: string;
   phone?: string | null;
@@ -101,6 +103,7 @@ export interface FacilityPublicDetailResponse {
 
 export interface CreateFacilityRequest {
   name: string;
+  code?: string;
   address: string;
   city: string;
   phone?: string;
@@ -111,6 +114,7 @@ export interface CreateFacilityRequest {
 
 export interface UpdateFacilityRequest {
   name?: string;
+  code?: string;
   address?: string;
   city?: string;
   phone?: string;

@@ -21,6 +21,7 @@ import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
 import { useLocateSku } from "../hooks/useCustomerInventory";
 import {
+  buildFloorLabel,
   buildLocationLabel,
   getRoomSkuOptions,
   getTierDisplayStatus,
@@ -81,9 +82,16 @@ export function LocateSheet({ visible, onClose, tree, onLocated }: LocateSheetPr
     if (!result) return null;
     const inUnit = location.storageUnit?.id === tree.storageUnit.id;
     const unitNumber = location.storageUnit?.unitNumber;
+    // Only the tree response carries the facility code, so other units fall back to it when BE adds it
+    const facilityCode = location.facility?.code ?? (inUnit ? tree.facility?.code : null);
     const title = location.rackTier
-      ? buildLocationLabel(unitNumber, location.rackTier.tierCode)
-      : `${unitNumber ?? ""} · ${t("rackMap.form.floor")}`;
+      ? buildLocationLabel({
+          facilityCode,
+          unitNumber,
+          rackCode: location.storageRack?.rackCode,
+          tierCode: location.rackTier.tierCode,
+        })
+      : buildFloorLabel(facilityCode, unitNumber);
     const position = location.rackTier
       ? t("rackMap.position.tierOfRack", {
           tier: location.rackTier.tierNumber,

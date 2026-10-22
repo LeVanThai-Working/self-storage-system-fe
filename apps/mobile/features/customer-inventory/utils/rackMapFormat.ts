@@ -42,9 +42,52 @@ export interface RoomSkuOption {
   totalQuantity: number;
 }
 
-/** Location label shown on the map, e.g. "A101-R01-T01" (no facility code available from BE). */
-export function buildLocationLabel(unitNumber: string | undefined, tierCode: string): string {
-  return unitNumber ? `${unitNumber}-${tierCode}` : tierCode;
+export interface LocationLabelParts {
+  facilityCode?: string | null;
+  unitNumber?: string | null;
+  rackCode?: string | null;
+  tierCode: string;
+}
+
+function joinLabelParts(parts: (string | null | undefined)[]): string {
+  return parts.filter((part): part is string => Boolean(part)).join("-");
+}
+
+/**
+ * Tier location label, e.g. "HN01-A101-R01-T01". Missing parts are skipped, so a facility
+ * without a code gives "A101-R01-T01". BE tier codes already carry the rack ("R01-T01"); the
+ * rack code is only added when the tier code does not start with it.
+ */
+export function buildLocationLabel({
+  facilityCode,
+  unitNumber,
+  rackCode,
+  tierCode,
+}: LocationLabelParts): string {
+  const rackPart = rackCode && !tierCode.startsWith(`${rackCode}-`) ? rackCode : null;
+  return joinLabelParts([facilityCode, unitNumber, rackPart, tierCode]);
+}
+
+/** Floor location label, e.g. "HN01-A101-FLOOR". */
+export function buildFloorLabel(
+  facilityCode: string | null | undefined,
+  unitNumber: string | null | undefined
+): string {
+  return joinLabelParts([facilityCode, unitNumber, "FLOOR"]);
+}
+
+/** Tier location label inside the unit of `tree`. */
+export function buildTreeTierLabel(
+  tree: StorageUnitInventoryTreeResponse,
+  rack: TreeRack,
+  tier: TreeTier
+): string {
+  return buildLocationLabel({
+    facilityCode: tree.facility?.code,
+    unitNumber: tree.storageUnit.unitNumber,
+    rackCode: rack.rackCode,
+    tierCode: tier.tierCode,
+  });
 }
 
 /** Short tier label used next to the rack drawing, e.g. "T04". */
@@ -123,9 +166,9 @@ export function getPositionLabel(
   tierId: string | null,
   floorLabel: string
 ): string {
-  if (tierId === null) return floorLabel;
+  if (tierId === null || !tree) return floorLabel;
   const found = findTierInTree(tree, tierId);
-  return found ? buildLocationLabel(tree?.storageUnit.unitNumber, found.tier.tierCode) : floorLabel;
+  return found ? buildTreeTierLabel(tree, found.rack, found.tier) : floorLabel;
 }
 
 /** Items at one position: a tier id, or `null` for floor (unracked) items. */

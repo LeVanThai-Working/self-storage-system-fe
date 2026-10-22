@@ -14,22 +14,6 @@ import {
   type StorageUnitInventoryTreeResponse,
 } from "@self-storage-system-fe/shared";
 
-type TierIdKey = "rackTierId" | "fromRackTierId" | "toRackTierId";
-const TIER_ID_KEYS: TierIdKey[] = ["rackTierId", "fromRackTierId", "toRackTierId"];
-
-/**
- * BE validates bodies twice: zod accepts `null` tier ids, but the generated tsoa model only
- * accepts strings. A floor position is therefore sent by omitting the field (BE treats a
- * missing tier id as the floor).
- */
-function omitNullTierIds<T extends Partial<Record<TierIdKey, string | null>>>(payload: T): T {
-  const body = { ...payload };
-  TIER_ID_KEYS.forEach((key) => {
-    if (body[key] === null) delete body[key];
-  });
-  return body;
-}
-
 /**
  * 1. GET /customer-inventories/unit/{storageUnitId}/tree
  * Fetches the Unit -> Racks -> Tiers -> SKUs tree of a storage unit (2D rack map source).
@@ -50,7 +34,7 @@ export async function getStorageUnitTreeApi(
 export async function stockInApi(payload: StockInRequest): Promise<CustomerInventoryResponse> {
   const response = await api.post<ApiResponse<CustomerInventoryResponse>>(
     "/customer-inventories/in",
-    omitNullTierIds(payload)
+    payload
   );
   return response.data.data;
 }
@@ -62,7 +46,7 @@ export async function stockInApi(payload: StockInRequest): Promise<CustomerInven
 export async function stockOutApi(payload: StockOutRequest): Promise<CustomerInventoryResponse> {
   const response = await api.post<ApiResponse<CustomerInventoryResponse>>(
     "/customer-inventories/out",
-    omitNullTierIds(payload)
+    payload
   );
   return response.data.data;
 }
@@ -74,7 +58,7 @@ export async function stockOutApi(payload: StockOutRequest): Promise<CustomerInv
 export async function stockMoveApi(payload: StockMoveRequest): Promise<CustomerInventoryResponse> {
   const response = await api.post<ApiResponse<CustomerInventoryResponse>>(
     "/customer-inventories/move",
-    omitNullTierIds(payload)
+    payload
   );
   return response.data.data;
 }
@@ -88,7 +72,7 @@ export async function stockAdjustApi(
 ): Promise<CustomerInventoryResponse> {
   const response = await api.post<ApiResponse<CustomerInventoryResponse>>(
     "/customer-inventories/adjust",
-    omitNullTierIds(payload)
+    payload
   );
   return response.data.data;
 }

@@ -28,6 +28,7 @@ export interface InventoryContractSnapshot {
 export interface InventoryFacilitySnapshot {
   id: string;
   name: string;
+  code?: string | null;
   city?: string | null;
   address?: string | null;
 }
@@ -181,6 +182,7 @@ export interface StorageUnitInventoryTreeContract extends InventoryContractSnaps
 }
 
 export interface StorageUnitInventoryTreeResponse {
+  facility?: InventoryFacilitySnapshot | null;
   storageUnit: InventoryStorageUnitSnapshot;
   contract?: StorageUnitInventoryTreeContract | null;
   summary: StorageUnitInventoryTreeSummary;

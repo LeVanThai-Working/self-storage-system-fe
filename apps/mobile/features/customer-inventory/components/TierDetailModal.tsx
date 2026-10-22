@@ -21,7 +21,8 @@ import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
 import type { StockActionType } from "../types/rackMap.types";
 import {
-  buildLocationLabel,
+  buildFloorLabel,
+  buildTreeTierLabel,
   findTierInTree,
   formatWeightKg,
   getPositionItems,
@@ -65,7 +66,8 @@ export function TierDetailModal({
   const [menuItemId, setMenuItemId] = useState<string | null>(null);
 
   const isFloor = tierId === null;
-  const tier = findTierInTree(tree, tierId)?.tier ?? null;
+  const found = findTierInTree(tree, tierId);
+  const tier = found?.tier ?? null;
   const items = getPositionItems(tree, tierId);
   const status = tier ? getTierDisplayStatus(tier.status, tier.items.length) : null;
   const locked = tier ? isTierLocked(tier.status) : false;
@@ -74,12 +76,11 @@ export function TierDetailModal({
   const weightPercent = weight && weight.ratio !== null ? Math.round(weight.ratio * 100) : 0;
 
   const title = isFloor ? t("rackMap.unracked.title") : (tier?.tierCode ?? "");
-  const subtitle = tier
-    ? `${buildLocationLabel(tree.storageUnit.unitNumber, tier.tierCode)} · ${t(
-        "rackMap.tierTitle",
-        { number: tier.tierNumber }
-      )}`
-    : undefined;
+  const subtitle = found
+    ? `${buildTreeTierLabel(tree, found.rack, found.tier)} · ${t("rackMap.tierTitle", {
+        number: found.tier.tierNumber,
+      })}`
+    : buildFloorLabel(tree.facility?.code, tree.storageUnit.unitNumber);
 
   return (
     <BottomSheet

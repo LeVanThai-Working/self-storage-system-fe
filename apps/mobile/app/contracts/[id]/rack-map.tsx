@@ -32,6 +32,7 @@ import type {
 } from "@/features/customer-inventory/types/rackMap.types";
 import {
   INVENTORY_ERROR,
+  buildFloorLabel,
   resolveInventoryError,
   sortTiersTopDown,
 } from "@/features/customer-inventory/utils/rackMapFormat";
@@ -214,6 +215,10 @@ export default function ContractRackMapScreen() {
   const forbidden = treeError?.messageCode === INVENTORY_ERROR.FORBIDDEN;
   const loadError = contractError ?? treeError;
 
+  const facilityName = tree?.facility?.name || contract?.facility?.name || "";
+  const facilityCode = tree?.facility?.code;
+  const facilityLabel = facilityCode ? `[${facilityCode}] ${facilityName}` : facilityName;
+
   const renderHeader = () => (
     <View className="gap-1 border-b border-neutral-border bg-white px-4 pb-3 pt-2 dark:border-neutral-800 dark:bg-neutral-900">
       <View className="flex-row items-center gap-2">
@@ -243,7 +248,7 @@ export default function ContractRackMapScreen() {
       {contract ? (
         <Text numberOfLines={1} variant="muted" className="pl-9 text-[11px]">
           {t("rackMap.unitSubtitle", {
-            facility: contract.facility?.name ?? "",
+            facility: facilityLabel,
             unit: tree?.storageUnit.unitNumber ?? contract.storageUnit?.unitNumber ?? "",
           })}
           {" · "}
@@ -348,6 +353,10 @@ export default function ContractRackMapScreen() {
 
         <UnrackedSection
           items={tree.unrackedItems}
+          locationLabel={buildFloorLabel(tree.facility?.code, tree.storageUnit.unitNumber)}
+          onStockIn={
+            !hasRacks && !readOnly ? () => setStockForm({ type: "in", tierId: null }) : undefined
+          }
           highlighted={floorHighlighted}
           dimmed={highlightActive && !floorHighlighted}
           onPress={() => setDetailTarget(null)}
