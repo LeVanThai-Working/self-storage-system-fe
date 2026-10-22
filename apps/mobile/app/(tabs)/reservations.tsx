@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   FlatList,
-  ScrollView,
   Pressable,
   TextInput,
   RefreshControl,
@@ -12,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FilterChips } from "@/components/ui/filter-chips";
 import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
 import { useDebounce } from "@/features/storage-explore/hooks/useDebounce";
@@ -329,34 +329,7 @@ export default function ReservationsTabScreen() {
             ) : null}
 
             {/* Horizontal Status Filter Tabs */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerClassName="gap-2"
-            >
-              {filterTabs.map((tab) => {
-                const active = filterTab === tab.key;
-                return (
-                  <Pressable
-                    key={tab.key}
-                    onPress={() => setFilterTab(tab.key)}
-                    className={`rounded-full border px-3.5 py-1.5 ${
-                      active
-                        ? "border-brand bg-brand"
-                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800"
-                    }`}
-                  >
-                    <Text
-                      className={`text-xs font-bold ${
-                        active ? "text-white" : "text-neutral-600 dark:text-neutral-300"
-                      }`}
-                    >
-                      {tab.label}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
+            <FilterChips options={filterTabs} value={filterTab} onChange={setFilterTab} />
           </View>
 
           {/* ── Section 2.2: Reservations List (Infinite Scroll & Pull-to-Refresh) ── */}
