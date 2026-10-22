@@ -389,5 +389,146 @@
     "amenitiesSelectedCount": "%{count} selected",
     "amenitiesCostLabel": "Added Amenities Cost:",
     "daysUnit": "days"
+  },
+  "rackMap": {
+    "title": "Rack map",
+    "openButton": "Rack map",
+    "unitSubtitle": "%{facility} · Unit %{unit}",
+    "contractLabel": "Contract #%{code}",
+    "summary": {
+      "totalQuantity": "Total items",
+      "totalSkus": "Distinct SKUs",
+      "tiersUsed": "Tiers used / total"
+    },
+    "rackUsage": "%{used}/%{total} tiers occupied",
+    "tierTitle": "Tier %{number}",
+    "empty": "(Empty)",
+    "moreItems": "+%{count}",
+    "itemChip": "%{code} × %{qty}",
+    "status": {
+      "available": "Empty",
+      "occupied": "Occupied",
+      "maintenance": "Maintenance",
+      "inactive": "Inactive"
+    },
+    "weight": {
+      "nearFull": "Near weight limit",
+      "over": "Over weight limit",
+      "warning": "Estimated load %{weight}/%{max} kg exceeds the recommended limit",
+      "load": "Current load: %{weight}/%{max} kg"
+    },
+    "unracked": {
+      "title": "Floor items",
+      "stockIn": "Add floor items",
+      "empty": "No floor items yet",
+      "summary": "Floor items (%{qty} items)",
+      "skuCount": "%{count} SKUs"
+    },
+    "position": {
+      "tierOfRack": "Tier %{tier} · Rack %{rack}",
+      "floorHint": "Placed directly on the floor"
+    },
+    "noRacks": "This unit has no rack system",
+    "readOnlyBanner": "Contract is not active, inventory actions are disabled",
+    "lockedTier": "This tier is locked and view-only",
+    "forbidden": "You do not have access to this unit",
+    "loadError": "Could not load the rack map",
+    "retry": "Retry",
+    "detail": {
+      "itemsCount": "Items (%{count})",
+      "emptyItems": "No items at this location yet"
+    },
+    "action": {
+      "stockIn": "Add items to this tier",
+      "stockOut": "Take out",
+      "move": "Move",
+      "adjust": "Recount"
+    },
+    "form": {
+      "stockInTitle": "Add items",
+      "stockOutTitle": "Take out items",
+      "moveTitle": "Move items",
+      "adjustTitle": "Recount",
+      "chooseSku": "Choose SKU",
+      "searchSku": "Search by code or name...",
+      "noSkuMatch": "No matching SKU",
+      "selectSkuEmpty": "There are no SKUs in this unit yet. Scan a barcode to choose one.",
+      "skuRequired": "Please choose an SKU",
+      "stock": "Stock: %{qty} %{uom}",
+      "quantity": "Quantity",
+      "unit": "Unit",
+      "quantityMin": "Quantity must be at least 1",
+      "quantityMax": "Quantity cannot exceed %{max}",
+      "maxQuantity": "Up to %{max} %{uom}",
+      "takeAll": "Take all",
+      "currentQuantity": "Currently: %{qty} %{uom}",
+      "current": "Current",
+      "actualQuantity": "Actual quantity",
+      "unchanged": "Quantity has not changed",
+      "from": "From",
+      "to": "To",
+      "chooseDestination": "Choose a destination",
+      "destinationRequired": "Please choose a destination",
+      "samePosition": "Destination must be different from the source",
+      "floor": "Floor",
+      "reason": "Reason (required)",
+      "reasonOptional": "Reason (optional)",
+      "reasonPlaceholder": "Enter a reason...",
+      "reasonMin": "Reason must be at least 3 characters",
+      "addReason": "Add a reason",
+      "referenceCode": "Reference code",
+      "notes": "Notes",
+      "notesPlaceholder": "Enter notes...",
+      "moreInfo": "More details",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "reasonChip": {
+      "periodic": "Periodic count",
+      "damaged": "Damaged goods",
+      "wrongEntry": "Wrong quantity entered"
+    },
+    "toast": {
+      "stockIn": "Added %{qty} %{uom} of %{sku} to %{location}",
+      "stockOut": "Took %{qty} %{uom} of %{sku} out of %{location}",
+      "move": "Moved %{qty} %{uom} of %{sku} from %{from} to %{to}",
+      "adjust": "Updated %{sku} at %{location}: %{qty} %{uom}"
+    },
+    "locate": {
+      "button": "Find items",
+      "title": "Find items",
+      "searchPlaceholder": "Enter an SKU code or name...",
+      "skuListTitle": "SKUs in this unit",
+      "pickEmpty": "There are no SKUs in this unit to find yet.",
+      "found": "Locations found (%{count})",
+      "total": "Total: %{qty} %{uom}",
+      "resultNone": "%{sku} is not in storage right now",
+      "otherUnit": "another unit",
+      "highlighting": "Highlighting %{sku} · %{count} locations",
+      "clear": "Clear",
+      "here": "Here",
+      "scan": "Scan barcode"
+    },
+    "scanner": {
+      "permissionTitle": "Camera access needed",
+      "permissionDesc": "Allow camera access to scan barcodes on your boxes.",
+      "permissionDenied": "Camera access is turned off. Turn it on again in your device Settings.",
+      "grant": "Allow camera",
+      "openSettings": "Open Settings",
+      "hint": "Fit the barcode inside the orange frame",
+      "close": "Close camera"
+    },
+    "history": {
+      "title": "Tier history",
+      "link": "View tier history",
+      "empty": "No movements yet",
+      "change": "%{from} → %{to}",
+      "type": {
+        "in": "Stock in",
+        "out": "Stock out",
+        "move": "Move",
+        "adjust": "Recount"
+      }
+    }
   }
 }

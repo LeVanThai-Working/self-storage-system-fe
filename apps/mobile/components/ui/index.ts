@@ -14,6 +14,9 @@ export type { ButtonProps } from "./button";
 
 export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./card";
 
+export { FilterChips } from "./filter-chips";
+export type { FilterChipOption, FilterChipsProps } from "./filter-chips";
+
 export { Input } from "./input";
 export type { InputProps } from "./input";
 

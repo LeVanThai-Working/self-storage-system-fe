@@ -127,3 +127,26 @@ export {
   type ContractIdParam,
   type ContractAddendumParam,
 } from "./request/contract.request.schema";
+
+export {
+  stockInRequestSchema,
+  stockOutRequestSchema,
+  stockMoveRequestSchema,
+  stockAdjustRequestSchema,
+  customerInventoryQuerySchema,
+  inventoryMovementQuerySchema,
+  inventoryIdParamSchema,
+  storageUnitTreeParamSchema,
+  skuLocationsParamSchema,
+  barcodeParamSchema,
+  type StockInRequest,
+  type StockOutRequest,
+  type StockMoveRequest,
+  type StockAdjustRequest,
+  type CustomerInventoryQuery,
+  type InventoryMovementQuery,
+  type InventoryIdParam,
+  type StorageUnitTreeParam,
+  type SkuLocationsParam,
+  type BarcodeParam,
+} from "./request/customerInventory.request.schema";

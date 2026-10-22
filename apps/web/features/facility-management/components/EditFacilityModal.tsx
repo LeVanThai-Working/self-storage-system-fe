@@ -12,6 +12,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Activity,
+  Hash,
 } from "lucide-react";
 import {
   Dialog,
@@ -40,6 +41,8 @@ const POPULAR_CITIES = [
   "Bà Rịa - Vũng Tàu",
 ];
 
+const FACILITY_CODE_REGEX = /^[A-Z0-9_-]{2,20}$/;
+
 export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityModalProps) => {
   const t = useTranslations("businessOps.facilities.editModal");
 
@@ -52,6 +55,7 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
 
   const [formData, setFormData] = useState({
     name: "",
+    code: "",
     city: "Hồ Chí Minh",
     address: "",
     phone: "",
@@ -64,6 +68,7 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
 
   const [errors, setErrors] = useState<{
     name?: string;
+    code?: string;
     city?: string;
     address?: string;
     phone?: string;
@@ -78,6 +83,7 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: facility.name || "",
+        code: facility.code || "",
         city: facility.city || "Hồ Chí Minh",
         address: facility.address || "",
         phone: facility.phone || "",
@@ -101,6 +107,7 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
   const validate = (): boolean => {
     const newErrors: typeof errors = {};
     const trimmedName = formData.name.trim();
+    const trimmedCode = formData.code.trim();
     const trimmedCity = formData.city.trim();
     const trimmedAddress = formData.address.trim();
     const cleanedPhone = formData.phone.replace(/[\s-]/g, "");
@@ -110,6 +117,10 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
       newErrors.name = "Vui lòng nhập tên cơ sở";
     } else if (trimmedName.length < 2) {
       newErrors.name = "Tên cơ sở cần tối thiểu 2 ký tự";
+    }
+
+    if (trimmedCode && !FACILITY_CODE_REGEX.test(trimmedCode)) {
+      newErrors.code = t("codeInvalid");
     }
 
     if (!trimmedCity) {
@@ -150,9 +161,13 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
     const cleanedPhone = formData.phone.replace(/[\s-]/g, "").trim();
     const cleanedEmail = formData.email.trim();
     const cleanedDescription = formData.description.trim();
+    const cleanedCode = formData.code.trim();
+    // BE cannot clear a code (empty string fails min length), so only send a new non-empty code
+    const codeChanged = Boolean(cleanedCode) && cleanedCode !== (facility?.code ?? "");
 
     const payload: UpdateFacilityRequest = {
       name: formData.name.trim(),
+      code: codeChanged ? cleanedCode : undefined,
       city: formData.city.trim(),
       address: formData.address.trim(),
       phone: cleanedPhone || undefined,
@@ -198,6 +213,7 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
           if (typeof item === "object" && item !== null && "field" in item) {
             const field = item.field;
             if (field === "name") fieldErrors.name = item.message;
+            else if (field === "code") fieldErrors.code = t("codeInvalid");
             else if (field === "city") fieldErrors.city = item.message;
             else if (field === "address")
               fieldErrors.address = "Địa chỉ cần chi tiết tối thiểu 5 ký tự";
@@ -211,7 +227,12 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
         apiErr.messageCode === "MESSAGE_CODE_105" ||
         backendMessage.toLowerCase().includes("already exists")
       ) {
-        fieldErrors.name = "Tên cơ sở này đã tồn tại trong hệ thống. Vui lòng chọn tên khác.";
+        // BE uses MESSAGE_CODE_105 ("{0} Already Exists") for both duplicate name and duplicate code
+        if (backendMessage.toLowerCase().includes("facility code")) {
+          fieldErrors.code = t("codeDuplicate");
+        } else {
+          fieldErrors.name = "Tên cơ sở này đã tồn tại trong hệ thống. Vui lòng chọn tên khác.";
+        }
       }
 
       if (Object.keys(fieldErrors).length > 0) {
@@ -279,26 +300,51 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
               </div>
             )}
 
-            {/* Facility Name */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-teal-600" />
-                <span>{t("name")}</span>
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50/50 text-slate-800 focus:bg-white focus:ring-2 outline-none transition-all ${
-                  errors.name
-                    ? "border-rose-400 focus:ring-rose-200"
-                    : "border-slate-200 focus:border-orange-500 focus:ring-orange-500/20"
-                }`}
-              />
-              {errors.name && (
-                <p className="text-[11px] text-rose-600 font-medium">{errors.name}</p>
-              )}
+            {/* Facility Name & Code */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-teal-600" />
+                  <span>{t("name")}</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-slate-50/50 text-slate-800 focus:bg-white focus:ring-2 outline-none transition-all ${
+                    errors.name
+                      ? "border-rose-400 focus:ring-rose-200"
+                      : "border-slate-200 focus:border-orange-500 focus:ring-orange-500/20"
+                  }`}
+                />
+                {errors.name && (
+                  <p className="text-[11px] text-rose-600 font-medium">{errors.name}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                  <Hash className="w-3.5 h-3.5 text-teal-600" />
+                  <span>{t("code")}</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.code}
+                  maxLength={20}
+                  onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+                  placeholder={t("codePlaceholder")}
+                  className={`w-full px-3.5 py-2.5 text-sm font-mono font-semibold uppercase rounded-xl border bg-slate-50/50 text-slate-800 placeholder:text-slate-400 placeholder:font-sans placeholder:font-normal focus:bg-white focus:ring-2 outline-none transition-all ${
+                    errors.code
+                      ? "border-rose-400 focus:ring-rose-200"
+                      : "border-slate-200 focus:border-orange-500 focus:ring-orange-500/20"
+                  }`}
+                />
+                {errors.code && (
+                  <p className="text-[11px] text-rose-600 font-medium">{errors.code}</p>
+                )}
+              </div>
             </div>
+            <p className="-mt-3 text-[11px] text-slate-500">{t("codeHint")}</p>
 
             {/* City, Address and Status Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

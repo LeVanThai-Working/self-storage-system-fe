@@ -389,5 +389,146 @@
     "amenitiesSelectedCount": "Đã chọn %{count}",
     "amenitiesCostLabel": "Phí tiện ích đi kèm:",
     "daysUnit": "ngày"
+  },
+  "rackMap": {
+    "title": "Sơ đồ kệ hàng",
+    "openButton": "Sơ đồ kệ hàng",
+    "unitSubtitle": "%{facility} · Phòng %{unit}",
+    "contractLabel": "HĐ #%{code}",
+    "summary": {
+      "totalQuantity": "Tổng số lượng hàng",
+      "totalSkus": "Mã hàng khác nhau",
+      "tiersUsed": "Tầng đã dùng / tổng tầng"
+    },
+    "rackUsage": "%{used}/%{total} tầng có hàng",
+    "tierTitle": "Tầng %{number}",
+    "empty": "(Trống)",
+    "moreItems": "+%{count}",
+    "itemChip": "%{code} × %{qty}",
+    "status": {
+      "available": "Trống",
+      "occupied": "Có hàng",
+      "maintenance": "Bảo trì",
+      "inactive": "Ngừng dùng"
+    },
+    "weight": {
+      "nearFull": "Gần đầy tải",
+      "over": "Vượt tải",
+      "warning": "Tổng tải dự kiến %{weight}/%{max} kg, vượt giới hạn khuyến nghị",
+      "load": "Tải hiện tại: %{weight}/%{max} kg"
+    },
+    "unracked": {
+      "title": "Hàng để sàn",
+      "stockIn": "Nhập hàng để sàn",
+      "empty": "Chưa có hàng để sàn",
+      "summary": "Hàng để sàn (%{qty} món)",
+      "skuCount": "%{count} mã hàng"
+    },
+    "position": {
+      "tierOfRack": "Tầng %{tier} · Kệ %{rack}",
+      "floorHint": "Đặt trực tiếp dưới sàn kho"
+    },
+    "noRacks": "Phòng kho này không có hệ thống kệ",
+    "readOnlyBanner": "Hợp đồng chưa hiệu lực, không thể thao tác hàng hóa",
+    "lockedTier": "Tầng này đang tạm khóa, chỉ có thể xem",
+    "forbidden": "Bạn không có quyền xem kho này",
+    "loadError": "Không tải được sơ đồ kệ hàng",
+    "retry": "Thử lại",
+    "detail": {
+      "itemsCount": "Hàng hóa (%{count})",
+      "emptyItems": "Chưa có hàng ở vị trí này"
+    },
+    "action": {
+      "stockIn": "Nhập hàng vào tầng này",
+      "stockOut": "Xuất",
+      "move": "Chuyển",
+      "adjust": "Kiểm kê"
+    },
+    "form": {
+      "stockInTitle": "Nhập hàng",
+      "stockOutTitle": "Xuất hàng",
+      "moveTitle": "Chuyển hàng",
+      "adjustTitle": "Kiểm kê",
+      "chooseSku": "Chọn SKU",
+      "searchSku": "Tìm theo mã hoặc tên...",
+      "noSkuMatch": "Không có mã hàng phù hợp",
+      "selectSkuEmpty": "Phòng chưa có mã hàng nào. Hãy quét mã vạch để chọn mã hàng.",
+      "skuRequired": "Vui lòng chọn mã hàng",
+      "stock": "Tồn: %{qty} %{uom}",
+      "quantity": "Số lượng",
+      "unit": "Đơn vị",
+      "quantityMin": "Số lượng phải từ 1 trở lên",
+      "quantityMax": "Số lượng không được vượt quá %{max}",
+      "maxQuantity": "Tối đa %{max} %{uom}",
+      "takeAll": "Lấy hết",
+      "currentQuantity": "Hiện có: %{qty} %{uom}",
+      "current": "Hiện tại",
+      "actualQuantity": "Số lượng thực tế",
+      "unchanged": "Số lượng chưa thay đổi",
+      "from": "Từ vị trí",
+      "to": "Đến vị trí",
+      "chooseDestination": "Chọn vị trí đích",
+      "destinationRequired": "Vui lòng chọn vị trí đích",
+      "samePosition": "Vị trí đích phải khác vị trí nguồn",
+      "floor": "Sàn kho",
+      "reason": "Lý do (bắt buộc)",
+      "reasonOptional": "Lý do (tùy chọn)",
+      "reasonPlaceholder": "Nhập lý do...",
+      "reasonMin": "Lý do cần tối thiểu 3 ký tự",
+      "addReason": "Thêm lý do",
+      "referenceCode": "Mã tham chiếu",
+      "notes": "Ghi chú",
+      "notesPlaceholder": "Nhập ghi chú...",
+      "moreInfo": "Thêm thông tin",
+      "confirm": "Xác nhận",
+      "cancel": "Hủy"
+    },
+    "reasonChip": {
+      "periodic": "Kiểm kê định kỳ",
+      "damaged": "Hàng hư hỏng",
+      "wrongEntry": "Nhập sai số lượng"
+    },
+    "toast": {
+      "stockIn": "Đã nhập %{qty} %{uom} %{sku} vào %{location}",
+      "stockOut": "Đã xuất %{qty} %{uom} %{sku} khỏi %{location}",
+      "move": "Đã chuyển %{qty} %{uom} %{sku} từ %{from} sang %{to}",
+      "adjust": "Đã cập nhật %{sku} tại %{location}: %{qty} %{uom}"
+    },
+    "locate": {
+      "button": "Tìm vị trí hàng",
+      "title": "Tìm vị trí hàng",
+      "searchPlaceholder": "Nhập mã hoặc tên hàng...",
+      "skuListTitle": "Mã hàng trong phòng",
+      "pickEmpty": "Phòng chưa có mã hàng nào để tìm.",
+      "found": "Vị trí tìm thấy (%{count})",
+      "total": "Tổng: %{qty} %{uom}",
+      "resultNone": "%{sku} hiện không còn trong kho",
+      "otherUnit": "phòng khác",
+      "highlighting": "Đang đánh dấu %{sku} · %{count} vị trí",
+      "clear": "Bỏ đánh dấu",
+      "here": "Ở đây",
+      "scan": "Quét mã vạch"
+    },
+    "scanner": {
+      "permissionTitle": "Cần quyền truy cập camera",
+      "permissionDesc": "Cho phép dùng camera để quét mã vạch trên thùng hàng.",
+      "permissionDenied": "Quyền camera đang bị tắt. Hãy bật lại trong Cài đặt của thiết bị.",
+      "grant": "Cho phép camera",
+      "openSettings": "Mở Cài đặt",
+      "hint": "Đưa mã vạch vào khung màu cam",
+      "close": "Tắt camera"
+    },
+    "history": {
+      "title": "Lịch sử tầng",
+      "link": "Xem lịch sử tầng",
+      "empty": "Chưa có biến động nào",
+      "change": "%{from} → %{to}",
+      "type": {
+        "in": "Nhập",
+        "out": "Xuất",
+        "move": "Chuyển",
+        "adjust": "Kiểm kê"
+      }
+    }
   }
 }
