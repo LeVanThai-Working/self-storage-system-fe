@@ -26,6 +26,28 @@ const ACTION_COLORS: Record<string, string> = {
   reject: "bg-red-50 text-red-600",
   cancel: "bg-red-50 text-red-500",
   assign_manager: "bg-purple-50 text-purple-700",
+  check_in: "bg-teal-50 text-teal-700",
+  check_out: "bg-slate-100 text-slate-600",
+  renew: "bg-green-50 text-green-700",
+  terminate: "bg-red-50 text-red-700",
+  add_amenity: "bg-emerald-50 text-emerald-700",
+  remove_amenity: "bg-red-50 text-red-500",
+  sign_contract: "bg-indigo-50 text-indigo-700",
+  create_addendum: "bg-indigo-50 text-indigo-600",
+  approve_addendum: "bg-green-50 text-green-700",
+  reject_addendum: "bg-red-50 text-red-600",
+  sign_addendum: "bg-indigo-50 text-indigo-700",
+  cancel_addendum: "bg-red-50 text-red-500",
+  confirm_payment: "bg-emerald-50 text-emerald-700",
+  receive_payment: "bg-emerald-50 text-emerald-600",
+  refund: "bg-red-50 text-red-600",
+  inventory_in: "bg-sky-50 text-sky-700",
+  inventory_out: "bg-cyan-50 text-cyan-700",
+  inventory_move: "bg-sky-50 text-sky-600",
+  inventory_adjust: "bg-amber-50 text-amber-700",
+  reassign_unit: "bg-purple-50 text-purple-600",
+  expire: "bg-slate-100 text-slate-600",
+  mark_overdue: "bg-orange-50 text-orange-700",
 };
 
 const ALL_ACTIONS = Object.keys(ACTION_COLORS);
@@ -274,13 +296,11 @@ export const AuditLogTable = () => {
                 !isError &&
                 items.map((log) => {
                   const colorClass = ACTION_COLORS[log.action] ?? "bg-gray-50 text-gray-600";
-                  // Translate action label — fall back to raw value if key is unknown
-                  const actionLabel = ALL_ACTIONS.includes(log.action)
-                    ? t(`actions.${log.action}` as Parameters<typeof t>[0])
-                    : log.action;
-                  // Translate resource type label
+                  // Translate labels — fall back to the raw BE value when a key is unknown
+                  const actionKey = `actions.${log.action}` as Parameters<typeof t>[0];
+                  const actionLabel = t.has(actionKey) ? t(actionKey) : log.action;
                   const resourceKey = `resources.${log.resourceType}` as Parameters<typeof t>[0];
-                  const resourceLabel = t(resourceKey, { default: log.resourceType });
+                  const resourceLabel = t.has(resourceKey) ? t(resourceKey) : log.resourceType;
                   const isSuccess = log.status === "success";
 
                   return (
