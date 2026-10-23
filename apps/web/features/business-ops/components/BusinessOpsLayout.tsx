@@ -10,19 +10,32 @@ import {
   Layers,
   Sparkles,
   Tag,
+  Package,
+  FileCheck2,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
+import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { useAuthStore } from "@/features/auth/store";
 
 interface BusinessOpsLayoutProps {
   children: React.ReactNode;
 }
 
+const getInitials = (name?: string) =>
+  (name ?? "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(-2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "OM";
+
 export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
   const locale = useLocale();
   const pathname = usePathname();
   const t = useTranslations("businessOps");
+  const currentUser = useAuthStore((state) => state.currentUser);
 
   const navItems = [
     {
@@ -54,6 +67,18 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       exact: false,
       label: t("nav.offerings"),
       icon: Tag,
+    },
+    {
+      href: `/${locale}/business-ops/facility-amenities`,
+      exact: false,
+      label: t("nav.facilityAmenities"),
+      icon: Package,
+    },
+    {
+      href: `/${locale}/business-ops/approvals`,
+      exact: false,
+      label: t("nav.approvals"),
+      icon: FileCheck2,
     },
     {
       href: `/${locale}/business-ops/analytics`,
@@ -154,12 +179,17 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
 
             <div className="flex items-center gap-3 pl-5 border-l border-slate-200">
               <div className="text-right hidden sm:block">
-                <div className="text-sm font-bold text-slate-800">Ops Manager</div>
+                <div className="text-sm font-bold text-slate-800">
+                  {currentUser?.name ?? "Ops Manager"}
+                </div>
                 <div className="text-xs text-orange-600 font-medium">Business Operations</div>
               </div>
               <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center shadow-md shadow-orange-500/20 border-2 border-white ring-2 ring-orange-50">
-                <span className="text-white font-bold text-sm">OM</span>
+                <span className="text-white font-bold text-sm">
+                  {getInitials(currentUser?.name)}
+                </span>
               </div>
+              <LogoutButton />
             </div>
           </div>
         </header>

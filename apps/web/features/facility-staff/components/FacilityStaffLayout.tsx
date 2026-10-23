@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Bell, Building2, CalendarCheck, FileSignature } from "lucide-react";
+import { Bell, Boxes, Building2, FileSignature, CalendarCheck } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -41,6 +41,11 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
       href: `/${locale}/facility-staff/contracts`,
       label: t("nav.contracts"),
       icon: FileSignature,
+    },
+    {
+      href: `/${locale}/facility-staff/storage-units`,
+      label: t("nav.storageUnits"),
+      icon: Boxes,
     },
   ];
 

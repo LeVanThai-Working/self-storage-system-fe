@@ -419,8 +419,15 @@ export const FacilityTable = () => {
                             </div>
                           )}
                           <div className="min-w-0">
-                            <div className="font-bold text-slate-900 group-hover:text-teal-600 transition-colors truncate">
-                              {facility.name}
+                            <div className="flex items-center gap-2 min-w-0">
+                              {facility.code && (
+                                <span className="shrink-0 px-1.5 py-0.5 rounded-md bg-teal-50 border border-teal-200/70 font-mono text-[11px] font-bold text-teal-700">
+                                  {facility.code}
+                                </span>
+                              )}
+                              <span className="font-bold text-slate-900 group-hover:text-teal-600 transition-colors truncate">
+                                {facility.name}
+                              </span>
                             </div>
                             <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5 truncate">
                               <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />

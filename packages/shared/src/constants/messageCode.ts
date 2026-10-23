@@ -112,6 +112,26 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_506: "MESSAGE_CODE_506",
   // Payment Already Settled
   MESSAGE_CODE_507: "MESSAGE_CODE_507",
+
+  // Customer Inventory Message Codes
+  // Rack Tier Not Found
+  MESSAGE_CODE_601: "MESSAGE_CODE_601",
+  // Customer SKU Not Found
+  MESSAGE_CODE_610: "MESSAGE_CODE_610",
+  // Inventory Record Not Found
+  MESSAGE_CODE_620: "MESSAGE_CODE_620",
+  // Insufficient Inventory Quantity
+  MESSAGE_CODE_621: "MESSAGE_CODE_621",
+  // Contract Must Be Active To Perform Inventory Operations
+  MESSAGE_CODE_622: "MESSAGE_CODE_622",
+  // Rack Tier Does Not Belong To Storage Unit
+  MESSAGE_CODE_624: "MESSAGE_CODE_624",
+  // Rack Tier Is Inactive Or Under Maintenance
+  MESSAGE_CODE_625: "MESSAGE_CODE_625",
+  // Destination Tier Must Be Different From Source Tier
+  MESSAGE_CODE_627: "MESSAGE_CODE_627",
+  // SKU Does Not Belong To Customer
+  MESSAGE_CODE_628: "MESSAGE_CODE_628",
 } as const;
 
 export type MessageCode = (typeof MESSAGE_CODE)[keyof typeof MESSAGE_CODE];
@@ -171,6 +191,15 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_505: "Order Is Not Awaiting Payment",
   MESSAGE_CODE_506: "Webhook Verification Failed",
   MESSAGE_CODE_507: "Payment Already Settled",
+  MESSAGE_CODE_601: "Rack Tier Not Found",
+  MESSAGE_CODE_610: "Customer SKU Not Found",
+  MESSAGE_CODE_620: "Inventory Record Not Found",
+  MESSAGE_CODE_621: "Insufficient Inventory Quantity",
+  MESSAGE_CODE_622: "Contract Must Be Active To Perform Inventory Operations",
+  MESSAGE_CODE_624: "Rack Tier Does Not Belong To Storage Unit",
+  MESSAGE_CODE_625: "Rack Tier Is Inactive Or Under Maintenance",
+  MESSAGE_CODE_627: "Destination Tier Must Be Different From Source Tier",
+  MESSAGE_CODE_628: "SKU Does Not Belong To Customer",
 };
 
 /**
@@ -228,6 +257,15 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_505: "Đơn chưa ở bước chờ thanh toán hoặc đã được thanh toán xong",
   MESSAGE_CODE_506: "Xác thực giao dịch thanh toán thất bại",
   MESSAGE_CODE_507: "Khoản thanh toán đã hoàn tất trước đó",
+  MESSAGE_CODE_601: "Không tìm thấy tầng kệ",
+  MESSAGE_CODE_610: "Không tìm thấy mã hàng",
+  MESSAGE_CODE_620: "Không tìm thấy bản ghi tồn kho",
+  MESSAGE_CODE_621: "Số lượng tồn kho không đủ",
+  MESSAGE_CODE_622: "Hợp đồng phải đang hiệu lực để thao tác tồn kho",
+  MESSAGE_CODE_624: "Tầng kệ không thuộc phòng kho này",
+  MESSAGE_CODE_625: "Tầng kệ đang ngừng hoạt động hoặc bảo trì",
+  MESSAGE_CODE_627: "Vị trí đích phải khác vị trí nguồn",
+  MESSAGE_CODE_628: "Mã hàng không thuộc về khách hàng",
 };
 
 export const MESSAGE_DICTIONARY = MESSAGE_DICTIONARY_EN;

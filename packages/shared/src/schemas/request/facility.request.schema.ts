@@ -7,8 +7,17 @@ const operatingHoursSchema = z.object({
   close: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Invalid time format HH:mm"),
 });
 
+const facilityCodeSchema = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .min(2, "Facility code must be at least 2 characters")
+  .max(20, "Facility code allows a maximum of 20 characters")
+  .regex(/^[A-Z0-9_-]+$/, "Facility code can only contain uppercase letters, numbers, and dashes");
+
 export const createFacilitySchema = z.object({
   name: z.string().min(2).max(100),
+  code: facilityCodeSchema.optional(),
   address: z.string().min(5).max(255),
   city: z.string().min(2).max(100),
   phone: z
@@ -27,6 +36,7 @@ export const createFacilitySchema = z.object({
 
 export const updateFacilitySchema = z.object({
   name: z.string().min(2).max(100).optional(),
+  code: facilityCodeSchema.optional(),
   address: z.string().min(5).max(255).optional(),
   city: z.string().min(2).max(100).optional(),
   phone: z

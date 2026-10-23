@@ -11,3 +11,4 @@ export * from "./reservation.types";
 export * from "./payment.types";
 export * from "./contract.types";
 export * from "./upload.types";
+export * from "./customerInventory.types";

@@ -1,4 +1,4 @@
-import { USER_ROLE } from "@self-storage-system-fe/shared";
+import { USER_ROLE, RoleEnum } from "@self-storage-system-fe/shared";
 
 export interface User {
   id: string;
@@ -6,19 +6,34 @@ export interface User {
   email: string;
   phoneNumber?: string;
   avatarUrl?: string;
-  role: USER_ROLE | string;
-  status: "active" | "inactive";
+  role: USER_ROLE | RoleEnum | string;
+  status: "active" | "inactive" | string;
   authProvider?: string;
   isEmailVerified?: boolean;
   createdAt: string;
   updatedAt?: string;
 }
 
+export interface UserPagination {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface UserListResponse {
+  data: User[];
+  total: number;
+  pagination: UserPagination;
+}
+
 export interface UserQueryParams {
   page?: number;
   limit?: number;
   search?: string;
-  role?: USER_ROLE;
+  role?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
@@ -28,5 +43,5 @@ export interface CreateUserPayload {
   email: string;
   password?: string;
   phoneNumber?: string;
-  role: USER_ROLE | string;
+  role: USER_ROLE | RoleEnum | string;
 }

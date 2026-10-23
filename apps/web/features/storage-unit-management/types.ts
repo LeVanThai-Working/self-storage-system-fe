@@ -4,6 +4,7 @@ import {
   type StorageUnitQuery,
   type CreateStorageUnitRequest,
   type UpdateStorageUnitRequest,
+  type ToggleMaintenanceRequest,
   type FacilityResponse,
   type FacilityUnitTypeOfferingResponse,
   type PaginatedData,
@@ -16,11 +17,17 @@ export type {
   StorageUnitQuery,
   CreateStorageUnitRequest,
   UpdateStorageUnitRequest,
+  ToggleMaintenanceRequest,
   FacilityResponse,
   FacilityUnitTypeOfferingResponse,
   PaginatedData,
   PaginationMeta,
 };
+
+export type StorageUnitViewMode = "table" | "map";
+
+/** Manager manages the full unit lifecycle; staff only operates maintenance. */
+export type StorageUnitPortalMode = "manager" | "staff";
 
 export type StorageUnitSortBy = "createdAt" | "unitNumber" | "floor" | "status";
 
@@ -44,3 +51,7 @@ export const LOCKED_STATUSES: StorageUnitStatusEnum[] = [
 
 export const isUnitLocked = (status: StorageUnitStatusEnum): boolean =>
   LOCKED_STATUSES.includes(status);
+
+/** Maintenance only switches between AVAILABLE and UNDER_MAINTENANCE. */
+export const canToggleMaintenance = (status: StorageUnitStatusEnum): boolean =>
+  status === StorageUnitStatusEnum.AVAILABLE || status === StorageUnitStatusEnum.UNDER_MAINTENANCE;

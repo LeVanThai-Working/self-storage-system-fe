@@ -12,3 +12,5 @@ export * from "./contract.enum";
 export * from "./notification.enum";
 export * from "./auditLog.enum";
 export * from "./upload.enum";
+export * from "./storageRack.enum";
+export * from "./customerInventory.enum";

@@ -117,6 +117,7 @@ function RootLayoutNav() {
         <Stack.Screen name="reservations/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="reservations/[id]/payment" options={{ headerShown: false }} />
         <Stack.Screen name="contracts/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="contracts/[id]/rack-map" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack>
       {/* Global floating toast notification overlay */}

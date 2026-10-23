@@ -6,6 +6,9 @@ export interface AmenitySnapshot {
   name: string;
   type: AmenityTypeEnum;
   status: AmenityStatusEnum;
+  description?: string | null;
+  images?: string[];
+  tags?: string[];
 }
 
 export interface AmenityResponse {

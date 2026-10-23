@@ -5,6 +5,8 @@ import { AmenitySnapshot } from "./amenity.types";
 
 export interface FacilityAmenityOfferingResponse {
   id: string;
+  facilityId?: string;
+  amenityId?: string;
   facility: FacilitySnapshot;
   amenity: AmenitySnapshot;
   pricePerUnit: number;
@@ -13,6 +15,7 @@ export interface FacilityAmenityOfferingResponse {
   inUseQuantity?: number | null;
   availableQuantity?: number | null;
   status: FacilityAmenityOfferingStatusEnum;
+  notes?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -24,6 +27,7 @@ export interface CreateFacilityAmenityOfferingRequest {
   billingUnit?: BillingUnitEnum;
   totalQuantity?: number | null;
   status?: FacilityAmenityOfferingStatusEnum;
+  notes?: string;
 }
 
 export interface UpdateFacilityAmenityOfferingRequest {
@@ -31,10 +35,15 @@ export interface UpdateFacilityAmenityOfferingRequest {
   billingUnit?: BillingUnitEnum;
   totalQuantity?: number | null;
   status?: FacilityAmenityOfferingStatusEnum;
+  notes?: string;
 }
 
 export interface FacilityAmenityOfferingQuery extends PaginationQuery {
   facilityId?: string;
   amenityId?: string;
+  billingUnit?: BillingUnitEnum;
   status?: FacilityAmenityOfferingStatusEnum;
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
 }

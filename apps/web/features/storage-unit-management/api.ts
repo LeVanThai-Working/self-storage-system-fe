@@ -8,6 +8,7 @@ import type {
   StorageUnitFilters,
   StorageUnitQuery,
   StorageUnitResponse,
+  ToggleMaintenanceRequest,
   UpdateStorageUnitRequest,
 } from "./types";
 
@@ -101,5 +102,33 @@ export const deleteStorageUnit = async (id: string): Promise<null> => {
 /** Khôi phục phòng đã xóa mềm. Endpoint: POST /storage-units/:id/restore */
 export const restoreStorageUnit = async (id: string): Promise<StorageUnitResponse> => {
   const { data } = await api.post<Envelope<StorageUnitResponse>>(`/storage-units/${id}/restore`);
+  return data.data;
+};
+
+/**
+ * Toàn bộ phòng kho của cơ sở (không phân trang) để vẽ sơ đồ mặt bằng.
+ * Endpoint: GET /storage-units/facility/:facilityId/map-layout
+ */
+export const fetchFacilityMapLayout = async (
+  facilityId: string
+): Promise<StorageUnitResponse[]> => {
+  const { data } = await api.get<Envelope<StorageUnitResponse[]>>(
+    `/storage-units/facility/${facilityId}/map-layout`
+  );
+  return data.data ?? [];
+};
+
+/**
+ * Bật/Tắt bảo trì (AVAILABLE <-> UNDER_MAINTENANCE).
+ * Endpoint: PATCH /storage-units/:id/maintenance
+ */
+export const toggleStorageUnitMaintenance = async (
+  id: string,
+  payload: ToggleMaintenanceRequest
+): Promise<StorageUnitResponse> => {
+  const { data } = await api.patch<Envelope<StorageUnitResponse>>(
+    `/storage-units/${id}/maintenance`,
+    payload
+  );
   return data.data;
 };

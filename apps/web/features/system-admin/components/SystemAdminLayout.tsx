@@ -6,13 +6,21 @@ import { Bell, Search, Users, Settings, LayoutDashboard, ScrollText } from "luci
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { useAuthStore } from "@/features/auth/store";
-import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { EditProfileModal } from "@/features/auth/components/EditProfileModal";
+import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { useAuthStore } from "@/features/auth/store";
 
 interface SystemAdminLayoutProps {
   children: React.ReactNode;
 }
+
+const getInitials = (name?: string) =>
+  (name ?? "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(-2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "SA";
 
 export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
   const locale = useLocale();
