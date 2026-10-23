@@ -9,9 +9,9 @@ export interface FacilityAmenityOfferingResponse {
   amenity: AmenitySnapshot;
   pricePerUnit: number;
   billingUnit: BillingUnitEnum;
-  totalQuantity: number;
-  inUseQuantity: number;
-  availableQuantity: number;
+  totalQuantity?: number | null;
+  inUseQuantity?: number | null;
+  availableQuantity?: number | null;
   status: FacilityAmenityOfferingStatusEnum;
   createdAt: string;
   updatedAt: string;
@@ -22,14 +22,14 @@ export interface CreateFacilityAmenityOfferingRequest {
   amenityId: string;
   pricePerUnit: number;
   billingUnit?: BillingUnitEnum;
-  totalQuantity: number;
+  totalQuantity?: number | null;
   status?: FacilityAmenityOfferingStatusEnum;
 }
 
 export interface UpdateFacilityAmenityOfferingRequest {
   pricePerUnit?: number;
   billingUnit?: BillingUnitEnum;
-  totalQuantity?: number;
+  totalQuantity?: number | null;
   status?: FacilityAmenityOfferingStatusEnum;
 }
 

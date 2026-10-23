@@ -11,6 +11,7 @@ export interface StorageUnitResponse {
   floor: number;
   zone?: string | null;
   status: StorageUnitStatusEnum;
+  images?: string[] | null;
   notes?: string | null;
   facility?: FacilitySnapshot | null;
   unitType?: UnitTypeSnapshot | null;
@@ -27,6 +28,7 @@ export interface CreateStorageUnitRequest {
   floor?: number;
   zone?: string;
   status?: StorageUnitStatusEnum;
+  images?: string[];
   notes?: string;
 }
 
@@ -36,6 +38,7 @@ export interface UpdateStorageUnitRequest {
   floor?: number;
   zone?: string;
   status?: StorageUnitStatusEnum;
+  images?: string[];
   notes?: string;
 }
 

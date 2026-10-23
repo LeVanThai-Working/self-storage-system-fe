@@ -33,6 +33,31 @@ export function formatDateOnly(iso?: string | null, locale = "vi"): string {
   }).format(date);
 }
 
+export function isCheckInDatePassed(dateStr?: string | null): boolean {
+  if (!dateStr) return false;
+  const targetDate = new Date(dateStr);
+  if (Number.isNaN(targetDate.getTime())) return false;
+
+  const now = new Date();
+  const utcNow = now.getTime() + now.getTimezoneOffset() * 60000;
+  const vnNow = new Date(utcNow + 7 * 3600000);
+  const startOfDayVn = new Date(vnNow.getFullYear(), vnNow.getMonth(), vnNow.getDate(), 0, 0, 0, 0);
+
+  const utcTarget = targetDate.getTime() + targetDate.getTimezoneOffset() * 60000;
+  const vnTarget = new Date(utcTarget + 7 * 3600000);
+  const targetDateOnly = new Date(
+    vnTarget.getFullYear(),
+    vnTarget.getMonth(),
+    vnTarget.getDate(),
+    0,
+    0,
+    0,
+    0
+  );
+
+  return targetDateOnly.getTime() < startOfDayVn.getTime();
+}
+
 export function formatHoldCountdown(
   expiresAt?: string | null,
   nowMs = Date.now(),
@@ -140,6 +165,13 @@ export function getReservationStatusTone(status: ReservationStatusEnum): StatusB
         dot: "bg-emerald-500",
         border: "border-emerald-200/80",
       };
+    case ReservationStatusEnum.OVERDUE:
+      return {
+        bg: "bg-amber-50",
+        text: "text-amber-700",
+        dot: "bg-amber-500",
+        border: "border-amber-200/80",
+      };
     case ReservationStatusEnum.COMPLETED:
       return {
         bg: "bg-indigo-50",
@@ -199,7 +231,9 @@ export function buildReservationTimelineSteps(
       ? ReservationStatusEnum.PENDING_PAYMENT
       : status;
 
-  const currentIdx = ORDERED_HAPPY_STATUSES.indexOf(normalizedCurrentStatus);
+  const currentIdx = ORDERED_HAPPY_STATUSES.indexOf(
+    normalizedCurrentStatus as ReservationStatusEnum
+  );
 
   const hasReached = (stepIdx: number, timestamp?: string | null): boolean => {
     if (timestamp) return true;

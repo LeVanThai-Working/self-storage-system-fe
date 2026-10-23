@@ -33,6 +33,7 @@ export interface FacilityResponse {
   description?: string | null;
   status: FacilityStatusEnum;
   managerId?: string | null;
+  images?: string[] | null;
   operatingHours?: OperatingHoursResponse | null;
   createdAt: string;
   updatedAt: string;
@@ -87,9 +88,9 @@ export interface PublicAmenityOfferingResponse {
   amenity: PublicAmenityDetail;
   pricePerUnit: number;
   billingUnit: BillingUnitEnum;
-  totalQuantity: number;
-  inUseQuantity: number;
-  availableQuantity: number;
+  totalQuantity?: number | null;
+  inUseQuantity?: number | null;
+  availableQuantity?: number | null;
   status: FacilityAmenityOfferingStatusEnum;
 }
 
@@ -106,6 +107,7 @@ export interface CreateFacilityRequest {
   phone?: string;
   email?: string;
   description?: string;
+  images?: string[];
   operatingHours?: OperatingHoursResponse;
 }
 
@@ -117,6 +119,7 @@ export interface UpdateFacilityRequest {
   email?: string;
   description?: string;
   status?: FacilityStatusEnum;
+  images?: string[];
   operatingHours?: OperatingHoursResponse;
 }
 

@@ -9,6 +9,7 @@ import {
   Boxes,
   Calendar,
   ClipboardCheck,
+  Clock,
   CreditCard,
   Eye,
   FileSignature,
@@ -538,7 +539,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                     contract.source === ContractSourceEnum.WALK_IN &&
                     !contract.depositPaidAt;
 
-                  const canQuickCheckIn = canCheckInContract(contract);
+                  const canQuickCheckIn = canCheckInContract(contract, currentUser?.role);
 
                   const durationDays = getContractDurationDays(
                     contract.startDate,
@@ -656,6 +657,32 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                             </button>
                           )}
 
+                          {isStaff &&
+                            contract.status === ContractStatusEnum.DRAFT &&
+                            !contract.staffSigned && (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                <Clock className="w-3 h-3 text-amber-500" />
+                                {isEn ? "Awaiting Manager Check-in" : "Chờ Quản lý ký bàn giao"}
+                              </span>
+                            )}
+
+                          {!isStaff &&
+                            contract.status === ContractStatusEnum.DRAFT &&
+                            !contract.staffSigned &&
+                            !contract.customerSigned && (
+                              <span
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200"
+                                title={
+                                  isEn
+                                    ? "Waiting for customer to sign terms on mobile app"
+                                    : "Chờ khách hàng ký điều khoản trên ứng dụng"
+                                }
+                              >
+                                <Clock className="w-3 h-3 text-slate-400" />
+                                {isEn ? "Awaiting Customer Signature" : "Chờ khách ký trên app"}
+                              </span>
+                            )}
+
                           {canQuickCheckIn && (
                             <button
                               type="button"
@@ -663,9 +690,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                               className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
                             >
                               <ClipboardCheck className="w-3.5 h-3.5" />
-                              {isEn
-                                ? "Handover & Sign (Staff)"
-                                : "Xác nhận bàn giao kho & Ký (Staff)"}
+                              {isEn ? "Handover & Sign (Manager)" : "Bàn giao & Ký (Quản lý)"}
                             </button>
                           )}
 

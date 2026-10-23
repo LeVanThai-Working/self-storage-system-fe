@@ -212,7 +212,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
     contract.source === ContractSourceEnum.WALK_IN &&
     !contract.depositPaidAt;
 
-  const canCheckIn = canCheckInContract(contract);
+  const canCheckIn = canCheckInContract(contract, userRole);
 
   const durationDays = getContractDurationDays(contract.startDate, contract.endDate);
 
@@ -405,16 +405,38 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               )}
 
               {/* Staff Sign & Handover button when deposit is satisfied and !staffSigned */}
-              {!contract.staffSigned && (
-                <button
-                  type="button"
-                  disabled={!canCheckIn}
-                  onClick={() => setIsCheckInOpen(true)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-500/20 disabled:opacity-40 transition-all"
-                >
-                  <ClipboardCheck className="w-4 h-4" />
-                  {isEn ? "Confirm Handover & Sign (Staff)" : "Xác nhận bàn giao kho & Ký (Staff)"}
-                </button>
+              {isStaff ? (
+                <span className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
+                  <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                  {isEn
+                    ? "Awaiting Facility Manager Handover & Signature"
+                    : "Chờ Quản lý cơ sở ký xác nhận & bàn giao kho"}
+                </span>
+              ) : (
+                !contract.staffSigned && (
+                  <button
+                    type="button"
+                    disabled={!canCheckIn}
+                    onClick={() => setIsCheckInOpen(true)}
+                    title={
+                      !contract.customerSigned
+                        ? isEn
+                          ? "Waiting for customer to sign terms on mobile app"
+                          : "Chờ khách hàng ký điều khoản trên ứng dụng"
+                        : undefined
+                    }
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-500/20 disabled:opacity-40 transition-all"
+                  >
+                    <ClipboardCheck className="w-4 h-4" />
+                    {!contract.customerSigned
+                      ? isEn
+                        ? "Handover (Waiting for Customer Signature)"
+                        : "Bàn giao kho (Chờ khách ký trên app)"
+                      : isEn
+                        ? "Confirm Handover & Sign (Manager)"
+                        : "Xác nhận bàn giao kho & Ký (Quản lý)"}
+                  </button>
+                )
               )}
 
               <button

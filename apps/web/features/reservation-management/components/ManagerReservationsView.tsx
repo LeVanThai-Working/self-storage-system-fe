@@ -22,11 +22,14 @@ import {
   ShieldCheck,
   Sparkles,
   User,
+  UserCheck,
   X,
   XCircle,
 } from "lucide-react";
 import { AppApiError } from "@/lib/api/axios";
 import { useApiErrorMessage } from "@/features/auth/error-message";
+import { useAuthStore } from "@/features/auth/store";
+import { RoleEnum } from "@self-storage-system-fe/shared";
 import { useFacilityOfferings, useMyFacility } from "@/features/storage-unit-management/hooks";
 import {
   useCompleteReservation,
@@ -45,6 +48,7 @@ import {
 import { formatDateOnly, formatDateTime, formatRentalScheduleLabel, formatVnd } from "../utils";
 import { AssignStorageUnitModal } from "./AssignStorageUnitModal";
 import {
+  AssignReservationStaffModal,
   CancelReservationModal,
   ConfirmReservationModal,
   ManualPaymentConfirmModal,
@@ -66,13 +70,20 @@ const ALL_RESERVATION_STATUSES: ReservationStatusEnum[] = [
   ReservationStatusEnum.PAYMENT_FAILED,
   ReservationStatusEnum.PAYMENT_SUCCESSFUL,
   ReservationStatusEnum.CONFIRMED,
+  ReservationStatusEnum.OVERDUE,
   ReservationStatusEnum.COMPLETED,
   ReservationStatusEnum.CANCELLED,
   ReservationStatusEnum.REJECTED,
   ReservationStatusEnum.EXPIRED,
 ];
 
-export const ManagerReservationsView: React.FC = () => {
+interface ManagerReservationsViewProps {
+  portalBase?: "facility-manager" | "facility-staff";
+}
+
+export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = ({
+  portalBase = "facility-manager",
+}) => {
   const t = useTranslations("facilityManager.reservations");
   const tActions = useTranslations("facilityManager.reservations.actions");
   const tStatuses = useTranslations("facilityManager.reservations.statuses");
@@ -80,6 +91,10 @@ export const ManagerReservationsView: React.FC = () => {
   const tErrors = useTranslations("facilityManager.reservations.errors");
   const locale = useLocale() === "en" ? "en" : "vi";
   const getErrorMessage = useApiErrorMessage();
+
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const isStaff = portalBase === "facility-staff" || currentUser?.role === RoleEnum.FACILITY_STAFF;
+  const isManager = !isStaff;
 
   const { data: facility, isLoading: isLoadingFacility } = useMyFacility();
   const facilityId = facility?.id;
@@ -165,6 +180,7 @@ export const ManagerReservationsView: React.FC = () => {
   const [confirmTarget, setConfirmTarget] = useState<ReservationResponse | null>(null);
   const [cancelTarget, setCancelTarget] = useState<ReservationResponse | null>(null);
   const [manualPaymentTarget, setManualPaymentTarget] = useState<ReservationResponse | null>(null);
+  const [assignStaffTarget, setAssignStaffTarget] = useState<ReservationResponse | null>(null);
   const [createContractTarget, setCreateContractTarget] = useState<ReservationResponse | null>(
     null
   );
@@ -703,8 +719,8 @@ export const ManagerReservationsView: React.FC = () => {
                       {/* 7. Quick Contextual Actions */}
                       <td className="py-4 px-4 text-right whitespace-nowrap">
                         <div className="inline-flex items-center justify-end gap-1.5 flex-wrap max-w-[260px]">
-                          {/* PENDING actions */}
-                          {st === ReservationStatusEnum.PENDING && (
+                          {/* PENDING actions (Manager only) */}
+                          {st === ReservationStatusEnum.PENDING && isManager && (
                             <>
                               <button
                                 type="button"
@@ -734,8 +750,8 @@ export const ManagerReservationsView: React.FC = () => {
                             </>
                           )}
 
-                          {/* RECEIVED actions */}
-                          {st === ReservationStatusEnum.RECEIVED && (
+                          {/* RECEIVED actions (Manager only) */}
+                          {st === ReservationStatusEnum.RECEIVED && isManager && (
                             <>
                               <button
                                 type="button"
@@ -756,30 +772,31 @@ export const ManagerReservationsView: React.FC = () => {
                             </>
                           )}
 
-                          {/* PENDING_PAYMENT / PAYMENT_FAILED actions */}
+                          {/* PENDING_PAYMENT / PAYMENT_FAILED actions (Manager only) */}
                           {(st === ReservationStatusEnum.PENDING_PAYMENT ||
-                            st === ReservationStatusEnum.PAYMENT_FAILED) && (
-                            <>
-                              <button
-                                type="button"
-                                onClick={() => setManualPaymentTarget(item)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-teal-50 text-teal-700 border border-teal-200 hover:bg-teal-100"
-                              >
-                                <CreditCard className="w-3 h-3" />
-                                {tActions("verifyPayment")}
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setCancelTarget(item)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100"
-                              >
-                                <XCircle className="w-3 h-3" />
-                                {tActions("cancel")}
-                              </button>
-                            </>
-                          )}
+                            st === ReservationStatusEnum.PAYMENT_FAILED) &&
+                            isManager && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => setManualPaymentTarget(item)}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-teal-50 text-teal-700 border border-teal-200 hover:bg-teal-100"
+                                >
+                                  <CreditCard className="w-3 h-3" />
+                                  {tActions("verifyPayment")}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setCancelTarget(item)}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100"
+                                >
+                                  <XCircle className="w-3 h-3" />
+                                  {tActions("cancel")}
+                                </button>
+                              </>
+                            )}
 
-                          {/* PAYMENT_SUCCESSFUL actions */}
+                          {/* PAYMENT_SUCCESSFUL actions (Staff & Manager) */}
                           {st === ReservationStatusEnum.PAYMENT_SUCCESSFUL && (
                             <button
                               type="button"
@@ -804,24 +821,65 @@ export const ManagerReservationsView: React.FC = () => {
                                   {tActions("createContractShort")}
                                 </button>
                               ) : (
+                                isManager && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleQuickComplete(item)}
+                                    disabled={completeMutation.isPending}
+                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm disabled:opacity-50"
+                                  >
+                                    <FileCheck2 className="w-3 h-3" />
+                                    {tActions("completeShort")}
+                                  </button>
+                                )
+                              )}
+                              {isManager && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => setAssignStaffTarget(item)}
+                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-teal-700 bg-teal-50 border border-teal-200 hover:bg-teal-100 transition-colors"
+                                    title={tActions("reassignStaff")}
+                                  >
+                                    <UserCheck className="w-3 h-3" />
+                                    {tActions("reassignStaffShort")}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setCancelTarget(item)}
+                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100"
+                                  >
+                                    <XCircle className="w-3 h-3" />
+                                    {tActions("cancel")}
+                                  </button>
+                                </>
+                              )}
+                            </>
+                          )}
+
+                          {/* OVERDUE actions */}
+                          {st === ReservationStatusEnum.OVERDUE && (
+                            <>
+                              {item.storageUnitId && (
                                 <button
                                   type="button"
-                                  onClick={() => handleQuickComplete(item)}
-                                  disabled={completeMutation.isPending}
-                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm disabled:opacity-50"
+                                  onClick={() => setCreateContractTarget(item)}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-sm"
                                 >
                                   <FileCheck2 className="w-3 h-3" />
-                                  {tActions("completeShort")}
+                                  {tActions("createContractShort")}
                                 </button>
                               )}
-                              <button
-                                type="button"
-                                onClick={() => setCancelTarget(item)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100"
-                              >
-                                <XCircle className="w-3 h-3" />
-                                {tActions("cancel")}
-                              </button>
+                              {isManager && (
+                                <button
+                                  type="button"
+                                  onClick={() => setCancelTarget(item)}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-100"
+                                >
+                                  <XCircle className="w-3 h-3" />
+                                  {tActions("cancel")}
+                                </button>
+                              )}
                             </>
                           )}
 
@@ -894,12 +952,14 @@ export const ManagerReservationsView: React.FC = () => {
         reservation={detailTarget}
         offerings={offerings}
         nowMs={nowMs}
+        portalBase={portalBase}
         onReceive={handleQuickReceive}
         onOpenAssignUnit={(r) => setAssignTarget(r)}
         onOpenReject={(r) => setRejectTarget(r)}
         onOpenConfirm={(r) => setConfirmTarget(r)}
         onOpenCancel={(r) => setCancelTarget(r)}
         onOpenManualPayment={(r) => setManualPaymentTarget(r)}
+        onOpenAssignStaff={(r) => setAssignStaffTarget(r)}
         onOpenCreateContract={(r) => setCreateContractTarget(r)}
         onComplete={handleQuickComplete}
         isReceiving={receiveMutation.isPending}
@@ -954,7 +1014,15 @@ export const ManagerReservationsView: React.FC = () => {
         isOpen={Boolean(createContractTarget)}
         onClose={() => setCreateContractTarget(null)}
         reservation={createContractTarget}
-        portalBase="facility-manager"
+        portalBase={portalBase}
+      />
+
+      {/* Section 5.6: Assign Reservation Staff Modal */}
+      <AssignReservationStaffModal
+        key={assignStaffTarget?.id ?? "assign-staff-modal"}
+        isOpen={Boolean(assignStaffTarget)}
+        onClose={() => setAssignStaffTarget(null)}
+        reservation={assignStaffTarget}
       />
     </div>
   );

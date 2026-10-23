@@ -40,6 +40,7 @@ export const confirmManualPaymentSchema = z.object({
     .default(PaymentMethodEnum.CASH),
   referenceCode: z.string().max(100).optional(),
   note: z.string().min(2, "Note is required for manual payment verification").max(1000),
+  proofImageUrl: z.string().url("Invalid image URL format").optional(),
 });
 
 export const cancelPaymentSchema = z.object({

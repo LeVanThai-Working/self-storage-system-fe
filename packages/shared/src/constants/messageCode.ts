@@ -66,8 +66,22 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_306: "MESSAGE_CODE_306",
   // Insufficient Amenity Quantity For {0}
   MESSAGE_CODE_307: "MESSAGE_CODE_307",
+  // Check-in Date Has Already Passed, Cannot Confirm Reservation
+  MESSAGE_CODE_319: "MESSAGE_CODE_319",
 
-  // Contract & Addendum Message Codes
+  // Contract Message Codes
+  // Contract Not Found
+  MESSAGE_CODE_400: "MESSAGE_CODE_400",
+  // Invalid Contract Status Transition
+  MESSAGE_CODE_401: "MESSAGE_CODE_401",
+  // Storage Unit Is Not Available For Contract
+  MESSAGE_CODE_402: "MESSAGE_CODE_402",
+  // Reservation Must Be Confirmed Or Completed To Create Contract
+  MESSAGE_CODE_406: "MESSAGE_CODE_406",
+  // Storage Unit Facility Mismatch
+  MESSAGE_CODE_407: "MESSAGE_CODE_407",
+  // Insufficient Amenity Quantity For Contract
+  MESSAGE_CODE_408: "MESSAGE_CODE_408",
   // Contract Addendum Not Found
   MESSAGE_CODE_409: "MESSAGE_CODE_409",
   // Invalid Contract Addendum Status Transition
@@ -78,6 +92,8 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_412: "MESSAGE_CODE_412",
   // Insufficient Contracted Amenity Quantity To Remove
   MESSAGE_CODE_413: "MESSAGE_CODE_413",
+  // Customer Must Sign Contract Before Check-In
+  MESSAGE_CODE_414: "MESSAGE_CODE_414",
 
   // Payment Message Codes
   // Payment Not Found / Invalid Session
@@ -134,11 +150,19 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_305: "Selected Storage Unit Is Not Available",
   MESSAGE_CODE_306: "Start Date Cannot Be In The Past",
   MESSAGE_CODE_307: "Insufficient Amenity Quantity For {0}",
+  MESSAGE_CODE_319: "Check-in Date Has Already Passed, Cannot Confirm Reservation",
+  MESSAGE_CODE_400: "Contract Not Found",
+  MESSAGE_CODE_401: "Invalid Contract Status Transition",
+  MESSAGE_CODE_402: "Storage Unit Is Not Available For Contract",
+  MESSAGE_CODE_406: "Reservation Must Be Confirmed Or Completed To Create Contract",
+  MESSAGE_CODE_407: "Storage Unit Facility Mismatch",
+  MESSAGE_CODE_408: "Insufficient Amenity Quantity For Contract",
   MESSAGE_CODE_409: "Contract Addendum Not Found",
   MESSAGE_CODE_410: "Invalid Contract Addendum Status Transition",
   MESSAGE_CODE_411: "Contract Terms Must Be Accepted",
   MESSAGE_CODE_412: "Party Has Already Signed",
   MESSAGE_CODE_413: "Insufficient Contracted Amenity Quantity To Remove",
+  MESSAGE_CODE_414: "Customer Must Sign Contract Before Check-In",
   MESSAGE_CODE_500: "Payment Session Not Found",
   MESSAGE_CODE_501: "Facility Bank Account Is Not Configured",
   MESSAGE_CODE_502: "Payment Has Expired",
@@ -183,11 +207,19 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_305: "Ô kho được chọn hiện không còn trống",
   MESSAGE_CODE_306: "Ngày bắt đầu thuê không được nằm trong quá khứ",
   MESSAGE_CODE_307: "Tiện ích {0} tại cơ sở không đủ số lượng tồn kho",
+  MESSAGE_CODE_319: "Đã quá ngày hẹn nhận kho, không thể xác nhận đơn",
+  MESSAGE_CODE_400: "Hợp đồng không tồn tại",
+  MESSAGE_CODE_401: "Chuyển trạng thái hợp đồng không hợp lệ",
+  MESSAGE_CODE_402: "Phòng kho không khả dụng để tạo hợp đồng",
+  MESSAGE_CODE_406: "Đơn đặt chỗ phải được xác nhận trước khi tạo hợp đồng",
+  MESSAGE_CODE_407: "Phòng kho không thuộc cơ sở đang chọn",
+  MESSAGE_CODE_408: "Tiện ích không đủ số lượng khả dụng trong kho cơ sở",
   MESSAGE_CODE_409: "Không tìm thấy phụ lục hợp đồng",
   MESSAGE_CODE_410: "Chuyển đổi trạng thái phụ lục hợp đồng không hợp lệ",
   MESSAGE_CODE_411: "Vui lòng đồng ý với các điều khoản trước khi ký xác nhận",
   MESSAGE_CODE_412: "Bên này đã ký xác nhận trước đó",
   MESSAGE_CODE_413: "Số lượng tiện ích yêu cầu tháo dỡ vượt quá số lượng đang thuê hợp lệ",
+  MESSAGE_CODE_414: "Khách hàng phải ký hợp đồng trước khi cơ sở ký bàn giao kho",
   MESSAGE_CODE_500: "Không tìm thấy phiên thanh toán",
   MESSAGE_CODE_501: "Cơ sở kho chưa cấu hình tài khoản ngân hàng nhận thanh toán",
   MESSAGE_CODE_502: "Mã QR thanh toán đã hết hạn",

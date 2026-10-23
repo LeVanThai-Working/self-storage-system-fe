@@ -11,6 +11,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { UnitStatusBadge } from "@/components/common/UnitStatusBadge";
+import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
+import { CloudinaryFolderEnum } from "@self-storage-system-fe/shared";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useCreateStorageUnit, useUpdateStorageUnit } from "../hooks";
 import {
@@ -65,6 +67,7 @@ export const StorageUnitFormModal = ({
     unit?.status ?? StorageUnitStatusEnum.AVAILABLE
   );
   const [notes, setNotes] = useState<string>(unit?.notes ?? "");
+  const [images, setImages] = useState<string[]>(unit?.images ? [...unit.images] : []);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -123,6 +126,12 @@ export const StorageUnitFormModal = ({
     if (!unitTypeId) newErrors.unitTypeId = t("validation.unitTypeRequired");
     if (notes.length > NOTES_MAX) newErrors.notes = t("validation.notesMax", { max: NOTES_MAX });
 
+    if (images.length > 0 && images.length < 3) {
+      newErrors.images = "Ngăn kho yêu cầu tối thiểu 3 ảnh (hoặc để trống nếu chưa có ảnh)";
+    } else if (images.length > 10) {
+      newErrors.images = "Ngăn kho cho phép tối đa 10 ảnh";
+    }
+
     return newErrors;
   };
 
@@ -148,6 +157,11 @@ export const StorageUnitFormModal = ({
         if (statusEditable && status !== unit.status) payload.status = status;
         if (notes.trim() !== (unit.notes ?? "")) payload.notes = notes.trim();
 
+        const initialImages = unit.images ?? [];
+        if (JSON.stringify(images) !== JSON.stringify(initialImages)) {
+          payload.images = images.length > 0 ? images : [];
+        }
+
         if (Object.keys(payload).length === 0) {
           onClose();
           return;
@@ -161,6 +175,7 @@ export const StorageUnitFormModal = ({
           floor: Number(floor),
           zone: zone.trim() || undefined,
           status,
+          images: images.length > 0 ? images : undefined,
           notes: notes.trim() || undefined,
         });
       }
@@ -365,6 +380,27 @@ export const StorageUnitFormModal = ({
                 {notes.length}/{NOTES_MAX}
               </span>
             </div>
+          </div>
+
+          {/* Storage Unit Images */}
+          <div>
+            <CloudinaryUploader
+              label="Hình ảnh ngăn kho (Tối thiểu 3, tối đa 10 ảnh)"
+              description="Tải lên ảnh thực tế của ngăn kho (cửa cuốn, bên trong ngăn kho...)"
+              folder={CloudinaryFolderEnum.FACILITIES}
+              value={images}
+              onChange={(urls) => {
+                setImages(urls);
+                clearError("images");
+              }}
+              multiple={true}
+              maxFiles={10}
+              accept="image/*"
+              disabled={isPending}
+            />
+            {errors.images && (
+              <p className="text-[11px] text-rose-600 font-medium mt-1">{errors.images}</p>
+            )}
           </div>
 
           {/* Footer Actions */}

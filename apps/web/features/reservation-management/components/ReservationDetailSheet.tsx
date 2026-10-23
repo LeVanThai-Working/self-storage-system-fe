@@ -19,9 +19,12 @@ import {
   RefreshCw,
   ShieldCheck,
   User,
+  UserCheck,
   XCircle,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useAuthStore } from "@/features/auth/store";
+import { RoleEnum } from "@self-storage-system-fe/shared";
 import { useReservationDetail } from "../hooks";
 import {
   BillingUnitEnum,
@@ -44,12 +47,14 @@ interface ReservationDetailSheetProps {
   reservation: ReservationResponse | null;
   offerings: FacilityUnitTypeOfferingResponse[];
   nowMs: number;
+  portalBase?: "facility-manager" | "facility-staff";
   onReceive: (reservation: ReservationResponse) => void;
   onOpenAssignUnit: (reservation: ReservationResponse) => void;
   onOpenReject: (reservation: ReservationResponse) => void;
   onOpenConfirm: (reservation: ReservationResponse) => void;
   onOpenCancel: (reservation: ReservationResponse) => void;
   onOpenManualPayment: (reservation: ReservationResponse) => void;
+  onOpenAssignStaff?: (reservation: ReservationResponse) => void;
   onOpenCreateContract: (reservation: ReservationResponse) => void;
   onComplete: (reservation: ReservationResponse) => void;
   isReceiving?: boolean;
@@ -62,12 +67,14 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   reservation: initialReservation,
   offerings,
   nowMs,
+  portalBase = "facility-manager",
   onReceive,
   onOpenAssignUnit,
   onOpenReject,
   onOpenConfirm,
   onOpenCancel,
   onOpenManualPayment,
+  onOpenAssignStaff,
   onOpenCreateContract,
   onComplete,
   isReceiving = false,
@@ -78,6 +85,10 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   const tBilling = useTranslations("facilityManager.reservations.billingUnit");
   const tStorageUnitStatus = useTranslations("storageUnitStatus");
   const locale = useLocale() === "en" ? "en" : "vi";
+
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const isStaff = portalBase === "facility-staff" || currentUser?.role === RoleEnum.FACILITY_STAFF;
+  const isManager = !isStaff;
 
   const detailQuery = useReservationDetail(isOpen ? (initialReservation?.id ?? null) : null);
   const reservation = detailQuery.data ?? initialReservation;
@@ -93,25 +104,33 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   const timelineSteps = buildReservationTimelineSteps(reservation, locale);
   const status = reservation.status;
 
-  const canReceive = status === ReservationStatusEnum.PENDING;
+  const canReceive = isManager && status === ReservationStatusEnum.PENDING;
   const canAssignUnit =
-    status === ReservationStatusEnum.PENDING || status === ReservationStatusEnum.RECEIVED;
+    isManager &&
+    (status === ReservationStatusEnum.PENDING || status === ReservationStatusEnum.RECEIVED);
   const canReject =
-    status === ReservationStatusEnum.PENDING || status === ReservationStatusEnum.RECEIVED;
+    isManager &&
+    (status === ReservationStatusEnum.PENDING || status === ReservationStatusEnum.RECEIVED);
   const canManualPayment =
-    status === ReservationStatusEnum.PENDING_PAYMENT ||
-    status === ReservationStatusEnum.PAYMENT_FAILED;
+    isManager &&
+    (status === ReservationStatusEnum.PENDING_PAYMENT ||
+      status === ReservationStatusEnum.PAYMENT_FAILED);
   const canConfirm = status === ReservationStatusEnum.PAYMENT_SUCCESSFUL;
   const canCreateContract =
-    status === ReservationStatusEnum.CONFIRMED && Boolean(reservation.storageUnitId);
-  const canComplete = status === ReservationStatusEnum.CONFIRMED;
+    (status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE) &&
+    Boolean(reservation.storageUnitId);
+  const canAssignStaff =
+    isManager && status === ReservationStatusEnum.CONFIRMED && Boolean(onOpenAssignStaff);
+  const canComplete = isManager && status === ReservationStatusEnum.CONFIRMED;
   const canCancel =
-    status === ReservationStatusEnum.PENDING ||
-    status === ReservationStatusEnum.RECEIVED ||
-    status === ReservationStatusEnum.PENDING_PAYMENT ||
-    status === ReservationStatusEnum.PAYMENT_FAILED ||
-    status === ReservationStatusEnum.PAYMENT_SUCCESSFUL ||
-    status === ReservationStatusEnum.CONFIRMED;
+    isManager &&
+    (status === ReservationStatusEnum.PENDING ||
+      status === ReservationStatusEnum.RECEIVED ||
+      status === ReservationStatusEnum.PENDING_PAYMENT ||
+      status === ReservationStatusEnum.PAYMENT_FAILED ||
+      status === ReservationStatusEnum.PAYMENT_SUCCESSFUL ||
+      status === ReservationStatusEnum.CONFIRMED ||
+      status === ReservationStatusEnum.OVERDUE);
 
   // Calculate base storage subtotal
   const durationMultiplier =
@@ -230,6 +249,20 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
               </div>
               <p>
                 {t("terminal.expiredAt")}: {formatDateTime(reservation.expiresAt, locale)}
+              </p>
+            </div>
+          )}
+
+          {status === ReservationStatusEnum.OVERDUE && (
+            <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4 space-y-1 text-xs text-amber-900">
+              <div className="flex items-center gap-2 font-extrabold text-sm text-amber-950">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                {t("overdueWarning")}
+              </div>
+              <p className="text-amber-800">
+                {locale === "en"
+                  ? "The customer has passed the scheduled check-in window. Staff can still initialize contract draft or manager can process cancellation."
+                  : "Khách hàng đã quá khung giờ hẹn nhận phòng. Nhân sự vẫn có thể khởi tạo hợp đồng thuê hoặc Quản lý thực hiện hủy đơn."}
               </p>
             </div>
           )}
@@ -363,6 +396,67 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             )}
           </div>
 
+          {/* Assigned Receiving Staff Card */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 space-y-3.5">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-teal-600" />
+                {t("assignedStaffTitle")}
+              </h3>
+              {canAssignStaff && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenAssignStaff?.(reservation);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 hover:bg-teal-100 transition-colors"
+                >
+                  <UserCheck className="w-3.5 h-3.5" />
+                  {t("reassignStaffBtn")}
+                </button>
+              )}
+            </div>
+
+            {reservation.assignedStaff || reservation.assignedStaffId ? (
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                  <div className="p-3.5 rounded-xl bg-teal-50/50 border border-teal-100">
+                    <p className="text-slate-400 font-semibold">{t("assignedStaffName")}</p>
+                    <p className="font-bold text-slate-900 mt-1 text-sm break-words">
+                      {reservation.assignedStaff?.name || reservation.assignedStaffId}
+                    </p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-teal-50/50 border border-teal-100">
+                    <p className="text-slate-400 font-semibold flex items-center gap-1">
+                      <Phone className="w-3.5 h-3.5" /> {t("assignedStaffPhone")}
+                    </p>
+                    <p className="font-bold text-slate-900 mt-1 text-sm break-words">
+                      {reservation.assignedStaff?.phoneNumber || "—"}
+                    </p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-teal-50/50 border border-teal-100">
+                    <p className="text-slate-400 font-semibold flex items-center gap-1">
+                      <Mail className="w-3.5 h-3.5" /> {t("assignedStaffEmail")}
+                    </p>
+                    <p className="font-bold text-slate-900 mt-1 text-sm break-all">
+                      {reservation.assignedStaff?.email || "—"}
+                    </p>
+                  </div>
+                </div>
+                {reservation.assignedStaffAt && (
+                  <p className="text-[11px] text-slate-500">
+                    {t("assignedStaffAt")}: {formatDateTime(reservation.assignedStaffAt, locale)}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-xs text-slate-500 text-center">
+                {t("unassignedStaffText")}
+              </div>
+            )}
+          </div>
+
           {/* Assigned Storage Unit & Rental Schedule */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="rounded-2xl border border-slate-200/80 bg-white p-5 space-y-3">
@@ -419,6 +513,23 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                     {formatDateOnly(reservation.startDate, locale)}
                   </span>
                 </div>
+                {reservation.checkInDate && (
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-slate-500 shrink-0">{t("checkInDateLabel")}</span>
+                    <span className="font-bold text-teal-800 text-right">
+                      {formatDateOnly(reservation.checkInDate, locale)}
+                      {reservation.checkInTimeSlot ? ` (${reservation.checkInTimeSlot})` : ""}
+                    </span>
+                  </div>
+                )}
+                {reservation.graceExpiresAt && (
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-slate-500 shrink-0">{t("graceExpiresAtLabel")}</span>
+                    <span className="font-bold text-amber-700 text-right">
+                      {formatDateTime(reservation.graceExpiresAt, locale)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-slate-500 shrink-0">{t("durationLabel")}</span>
                   <span className="font-bold text-slate-900 text-right">
@@ -609,6 +720,20 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
               >
                 <FileCheck2 className="w-3.5 h-3.5" />
                 {tActions("createContract")}
+              </button>
+            )}
+
+            {canAssignStaff && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenAssignStaff?.(reservation);
+                }}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 hover:bg-teal-100 shadow-sm"
+              >
+                <UserCheck className="w-3.5 h-3.5" />
+                {t("reassignStaffBtn")}
               </button>
             )}
 

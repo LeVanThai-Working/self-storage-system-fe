@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
-import { Bell, Building2, FileSignature } from "lucide-react";
+import React, { useState } from "react";
+import Image from "next/image";
+import { Bell, Building2, CalendarCheck, FileSignature } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { EditProfileModal } from "@/features/auth/components/EditProfileModal";
 import { useAuthStore } from "@/features/auth/store";
 import { useMyFacility } from "@/features/storage-unit-management/hooks";
 
@@ -27,8 +29,14 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
   const t = useTranslations("facilityManager");
   const currentUser = useAuthStore((state) => state.currentUser);
   const { data: facility } = useMyFacility();
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const navItems = [
+    {
+      href: `/${locale}/facility-staff/reservations`,
+      label: t("nav.reservations"),
+      icon: CalendarCheck,
+    },
     {
       href: `/${locale}/facility-staff/contracts`,
       label: t("nav.contracts"),
@@ -120,17 +128,37 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
             </button>
 
             <div className="flex items-center gap-3 pl-5 border-l border-slate-200">
-              <div className="text-right hidden sm:block">
-                <div className="text-sm font-bold text-slate-800">
-                  {currentUser?.name ?? "Facility Staff"}
+              <button
+                type="button"
+                onClick={() => setIsProfileModalOpen(true)}
+                className="flex items-center gap-3 hover:opacity-85 transition-opacity cursor-pointer text-left group"
+                title="Chỉnh sửa hồ sơ & Avatar"
+              >
+                <div className="text-right hidden sm:block">
+                  <div className="text-sm font-bold text-slate-800 group-hover:text-emerald-700 transition-colors">
+                    {currentUser?.name ?? "Facility Staff"}
+                  </div>
+                  <div className="text-xs text-teal-600 font-medium">{roleLabel}</div>
                 </div>
-                <div className="text-xs text-teal-600 font-medium">{roleLabel}</div>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-500/20 border-2 border-white ring-2 ring-emerald-50">
-                <span className="text-white font-bold text-sm">
-                  {getInitials(currentUser?.name)}
-                </span>
-              </div>
+                {currentUser?.avatarUrl ? (
+                  <div className="relative w-10 h-10 rounded-xl overflow-hidden shadow-md shadow-emerald-500/20 border-2 border-white ring-2 ring-emerald-50">
+                    <Image
+                      src={currentUser.avatarUrl}
+                      alt={currentUser.name || "Avatar"}
+                      fill
+                      sizes="40px"
+                      unoptimized
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-500/20 border-2 border-white ring-2 ring-emerald-50">
+                    <span className="text-white font-bold text-sm">
+                      {getInitials(currentUser?.name)}
+                    </span>
+                  </div>
+                )}
+              </button>
               <LogoutButton />
             </div>
           </div>
@@ -138,6 +166,12 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
 
         {/* Page Content */}
         <main className="flex-1 p-8 overflow-y-auto">{children}</main>
+
+        {/* Profile Modal */}
+        <EditProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+        />
       </div>
     </div>
   );

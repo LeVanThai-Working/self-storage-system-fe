@@ -21,6 +21,16 @@ export const updateUserSchema = z.object({
     .optional(),
   role: z.enum(RoleEnum).optional(),
   status: z.enum(UserStatusEnum).optional(),
+  avatarUrl: z.string().url("Invalid avatar URL format").optional(),
+});
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(2).max(50).optional(),
+  phoneNumber: z
+    .string()
+    .regex(/^0(3|5|7|8|9)[0-9]{8}$/, "Invalid phone number format")
+    .optional(),
+  avatarUrl: z.string().url("Invalid avatar URL format").optional(),
 });
 
 export const userIdParamSchema = z.object({
@@ -37,5 +47,6 @@ export const userQuerySchema = paginationQuerySchema.extend({
 
 export type CreateUserRequest = z.infer<typeof createUserSchema>;
 export type UpdateUserRequest = z.infer<typeof updateUserSchema>;
+export type UpdateProfileRequest = z.infer<typeof updateProfileSchema>;
 export type UserIdParam = z.infer<typeof userIdParamSchema>;
 export type UserQuery = z.infer<typeof userQuerySchema>;

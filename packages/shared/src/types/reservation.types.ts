@@ -1,41 +1,12 @@
-import type { ReservationStatusEnum } from "../enums/reservation.enum";
+import type { RefundStatusEnum, ReservationStatusEnum } from "../enums/reservation.enum";
 import type { BillingUnitEnum } from "../enums/billing.enum";
+import type { OfferingSnapshot, StorageUnitSnapshot, UserSnapshot } from "./common.types";
+import type { FacilitySnapshot } from "./facility.types";
 
-export interface ReservationUserSnapshot {
-  id: string;
-  name: string;
-  email: string;
-  phoneNumber?: string | null;
-  role?: string | null;
-}
-
-export interface ReservationFacilitySnapshot {
-  id: string;
-  name: string;
-  city: string;
-  address: string;
-  phone?: string | null;
-  email?: string | null;
-  status?: string | null;
-}
-
-export interface ReservationOfferingSnapshot {
-  id: string;
-  unitTypeId?: string | null;
-  billingUnit: string;
-  pricePerUnit: number;
-  depositMultiplier?: number | null;
-  minRentalDays?: number | null;
-  status?: string | null;
-}
-
-export interface ReservationStorageUnitSnapshot {
-  id: string;
-  unitNumber: string;
-  floor: number;
-  zone?: string | null;
-  status: string;
-}
+export type ReservationUserSnapshot = UserSnapshot;
+export type ReservationFacilitySnapshot = FacilitySnapshot;
+export type ReservationOfferingSnapshot = OfferingSnapshot;
+export type ReservationStorageUnitSnapshot = StorageUnitSnapshot;
 
 export interface ReservationAmenityResponse {
   facilityAmenityOfferingId: string;
@@ -55,6 +26,8 @@ export interface ReservationResponse {
   facilityUnitTypeOfferingId: string;
   storageUnitId?: string | null;
   startDate: string;
+  checkInDate?: string;
+  checkInTimeSlot?: string | null;
   rentalDuration: number;
   billingUnit: BillingUnitEnum;
   basePrice: number;
@@ -63,26 +36,37 @@ export interface ReservationResponse {
   totalAmount: number;
   status: ReservationStatusEnum;
   expiresAt?: string | null;
-  receivedBy?: ReservationUserSnapshot | null;
+  graceExpiresAt?: string | null;
+  receivedBy?: UserSnapshot | null;
   receivedAt?: string | null;
-  assignedBy?: ReservationUserSnapshot | null;
+  assignedBy?: UserSnapshot | null;
   assignedAt?: string | null;
-  confirmedBy?: ReservationUserSnapshot | null;
+  confirmedBy?: UserSnapshot | null;
   confirmedAt?: string | null;
+  assignedStaffId?: string | null;
+  assignedStaff?: UserSnapshot | null;
+  assignedStaffAt?: string | null;
   rejectionReason?: string | null;
   cancellationReason?: string | null;
-  cancelledBy?: ReservationUserSnapshot | null;
+  cancelledBy?: UserSnapshot | null;
   cancelledAt?: string | null;
+  cancellationSource?: "customer" | "facility" | "system" | null;
   refundAmount: number;
+  forfeitedAmount?: number;
+  refundStatus?: RefundStatusEnum;
+  refundedAt?: string | null;
+  refundedBy?: UserSnapshot | null;
+  refundReference?: string | null;
+  refundNote?: string | null;
   paidAt?: string | null;
   paidAmount?: number | null;
   paymentId?: string | null;
   lastPaymentError?: string | null;
   notes?: string | null;
-  customer?: ReservationUserSnapshot | null;
-  facility?: ReservationFacilitySnapshot | null;
-  offering?: ReservationOfferingSnapshot | null;
-  storageUnit?: ReservationStorageUnitSnapshot | null;
+  customer?: UserSnapshot | null;
+  facility?: FacilitySnapshot | null;
+  offering?: OfferingSnapshot | null;
+  storageUnit?: StorageUnitSnapshot | null;
   createdAt: string;
   updatedAt: string;
 }

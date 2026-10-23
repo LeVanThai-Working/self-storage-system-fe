@@ -23,6 +23,7 @@ export interface AuthUserResponse {
   name: string;
   email: string;
   phoneNumber?: string;
+  avatarUrl?: string;
   role: RoleEnum | USER_ROLE;
   authProvider?: AuthProviderEnum | "local" | "google";
   status?: UserStatusEnum | "inactive" | "active" | "banned" | "deleted";

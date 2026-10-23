@@ -20,6 +20,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
+import { CloudinaryFolderEnum } from "@self-storage-system-fe/shared";
 import { useFacility, useUpdateFacility } from "../hooks";
 import { FacilityStatusEnum, type UpdateFacilityRequest } from "../types";
 
@@ -60,6 +62,7 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
     openTime: "08:00",
     closeTime: "21:00",
     description: "",
+    images: [] as string[],
   });
 
   const [errors, setErrors] = useState<{
@@ -68,6 +71,7 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
     address?: string;
     phone?: string;
     email?: string;
+    images?: string;
     general?: string;
   }>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -86,6 +90,7 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
         openTime: facility.operatingHours?.open || "08:00",
         closeTime: facility.operatingHours?.close || "21:00",
         description: facility.description || "",
+        images: facility.images || [],
       });
       setErrors({});
       setSuccessMessage(null);
@@ -136,6 +141,12 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
       }
     }
 
+    if (formData.images.length > 0 && formData.images.length < 3) {
+      newErrors.images = "Cơ sở kho yêu cầu tối thiểu 3 ảnh (hoặc để trống nếu chưa có ảnh)";
+    } else if (formData.images.length > 10) {
+      newErrors.images = "Cơ sở kho cho phép tối đa 10 ảnh";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -159,6 +170,7 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
       email: cleanedEmail || undefined,
       description: cleanedDescription || undefined,
       status: formData.status,
+      images: formData.images.length > 0 ? formData.images : undefined,
       operatingHours:
         formData.openTime && formData.closeTime
           ? {
@@ -454,6 +466,27 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition-all resize-none"
               />
+            </div>
+
+            {/* Facility Images Upload */}
+            <div className="space-y-1.5">
+              <CloudinaryUploader
+                label="Hình ảnh cơ sở kho (Tối thiểu 3, tối đa 10 ảnh)"
+                description="Cập nhật hình ảnh cơ sở kho (tối thiểu 3 ảnh)"
+                folder={CloudinaryFolderEnum.FACILITIES}
+                value={formData.images}
+                onChange={(urls) => {
+                  setFormData({ ...formData, images: urls });
+                  if (errors.images) setErrors({ ...errors, images: undefined });
+                }}
+                multiple={true}
+                maxFiles={10}
+                accept="image/*"
+                disabled={updateFacilityMutation.isPending}
+              />
+              {errors.images && (
+                <p className="text-[11px] text-rose-600 font-medium">{errors.images}</p>
+              )}
             </div>
 
             {/* Footer Actions */}

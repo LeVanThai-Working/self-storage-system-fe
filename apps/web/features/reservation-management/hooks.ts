@@ -1,5 +1,6 @@
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  assignReservationStaff,
   assignStorageUnitToReservation,
   cancelReservation,
   completeReservation,
@@ -16,6 +17,7 @@ import {
 } from "./api";
 import {
   ReservationStatusEnum,
+  type AssignReservationStaffRequest,
   type AssignStorageUnitRequest,
   type AvailableStorageUnitQuery,
   type CancelReservationRequest,
@@ -44,7 +46,7 @@ export const useManagerReservationStats = (facilityId: string | undefined) => {
   const results = useQueries({
     queries: [
       {
-        queryKey: [STATS_KEY, facilityId, "all"],
+        queryKey: [STATS_KEY, facilityId, "ALL"],
         queryFn: () => fetchManagerReservationStatusCount(facilityId!),
         enabled,
       },
@@ -178,6 +180,9 @@ function useInvalidateReservationQueries() {
     queryClient.invalidateQueries({ queryKey: [RESERVATION_PAYMENTS_KEY] });
     queryClient.invalidateQueries({ queryKey: ["storage-units"] });
     queryClient.invalidateQueries({ queryKey: ["storage-unit-stats"] });
+    queryClient.invalidateQueries({ queryKey: ["facility-contracts"] });
+    queryClient.invalidateQueries({ queryKey: ["facility-contract-stats"] });
+    queryClient.invalidateQueries({ queryKey: ["facility-contract-detail"] });
   };
 }
 
@@ -210,8 +215,17 @@ export const useRejectReservation = () => {
 export const useConfirmReservation = () => {
   const invalidateAll = useInvalidateReservationQueries();
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload?: ConfirmReservationRequest }) =>
+    mutationFn: ({ id, payload }: { id: string; payload: ConfirmReservationRequest }) =>
       confirmReservation(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useAssignReservationStaff = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: AssignReservationStaffRequest }) =>
+      assignReservationStaff(id, payload),
     onSuccess: invalidateAll,
   });
 };

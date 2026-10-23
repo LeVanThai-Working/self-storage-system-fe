@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
@@ -11,6 +11,7 @@ import {
   CreditCard,
   QrCode,
   ShieldCheck,
+  UserCheck,
   XCircle,
 } from "lucide-react";
 import {
@@ -20,8 +21,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
+import { CloudinaryFolderEnum, RoleEnum, UserStatusEnum } from "@self-storage-system-fe/shared";
 import { useApiErrorMessage } from "@/features/auth/error-message";
+import { useAuthStore } from "@/features/auth/store";
+import { useFacilityStaffs } from "@/features/contract-management/hooks";
 import {
+  useAssignReservationStaff,
   useCancelReservation,
   useConfirmManualPayment,
   useConfirmReservation,
@@ -33,6 +39,7 @@ import {
   PaymentMethodEnum,
   PaymentStatusEnum,
   ReservationStatusEnum,
+  assignReservationStaffSchema,
   cancelReservationSchema,
   confirmManualPaymentSchema,
   confirmReservationSchema,
@@ -40,7 +47,7 @@ import {
   type PaymentResponse,
   type ReservationResponse,
 } from "../types";
-import { formatDateOnly, formatDateTime, formatVnd } from "../utils";
+import { formatDateOnly, formatDateTime, formatVnd, isCheckInDatePassed } from "../utils";
 
 /* ============================================================================
  * 5.1. RejectReservationModal (POST /reservations/{id}/reject)
@@ -198,20 +205,62 @@ export const ConfirmReservationModal: React.FC<ConfirmReservationModalProps> = (
   const t = useTranslations("facilityManager.reservations.confirmModal");
   const tErrors = useTranslations("facilityManager.reservations.errors");
   const locale = useLocale() === "en" ? "en" : "vi";
+  const isEn = locale === "en";
   const getErrorMessage = useApiErrorMessage();
   const confirmMutation = useConfirmReservation();
+  const currentUser = useAuthStore((s) => s.currentUser);
 
+  const staffsQuery = useFacilityStaffs({ status: UserStatusEnum.ACTIVE, limit: 100 }, isOpen);
+  const staffList = useMemo(() => staffsQuery.data?.items ?? [], [staffsQuery.data?.items]);
+
+  const [assignedStaffId, setAssignedStaffId] = useState<string>("");
   const [notes, setNotes] = useState<string>(reservation?.notes ?? "");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (isOpen && reservation) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setNotes(reservation.notes ?? "");
+      setErrorMsg(null);
+      setSuccessMsg(null);
+      if (currentUser?.role === RoleEnum.FACILITY_STAFF && currentUser?.id) {
+        setAssignedStaffId(currentUser.id);
+      } else if (reservation.assignedStaffId) {
+        setAssignedStaffId(reservation.assignedStaffId);
+      } else if (staffList.length > 0) {
+        setAssignedStaffId(staffList[0].id);
+      }
+    }
+  }, [isOpen, reservation, currentUser, staffList]);
+
   if (!reservation) return null;
+
+  const targetDateStr = reservation.checkInDate || reservation.startDate;
+  const isPast = isCheckInDatePassed(targetDateStr);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
+    if (isPast) {
+      setErrorMsg(
+        isEn
+          ? "Check-in date has already passed. Cannot confirm reservation (Policy MESSAGE_CODE_319)."
+          : "Đã quá ngày hẹn nhận kho, không thể xác nhận đơn (Quy định MESSAGE_CODE_319)."
+      );
+      return;
+    }
+
+    if (!assignedStaffId) {
+      setErrorMsg(
+        isEn ? "Please select an assigned staff member." : "Vui lòng chọn nhân viên tiếp đón."
+      );
+      return;
+    }
+
     const parsed = confirmReservationSchema.safeParse({
+      assignedStaffId,
       notes: notes.trim() ? notes.trim() : undefined,
     });
     if (!parsed.success) {
@@ -230,6 +279,9 @@ export const ConfirmReservationModal: React.FC<ConfirmReservationModalProps> = (
       setErrorMsg(
         getErrorMessage(err, {
           [MESSAGE_CODE.MESSAGE_CODE_301]: tErrors("statusChanged"),
+          [MESSAGE_CODE.MESSAGE_CODE_319]: isEn
+            ? "Check-in date has already passed, cannot confirm reservation."
+            : "Đã quá ngày hẹn nhận kho, không thể xác nhận đơn.",
         })
       );
     }
@@ -286,6 +338,239 @@ export const ConfirmReservationModal: React.FC<ConfirmReservationModalProps> = (
                 {formatDateOnly(reservation.startDate, locale)}
               </span>
             </div>
+            {reservation.checkInDate && (
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">
+                  {isEn ? "Check-in Date" : "Ngày hẹn nhận kho"}
+                </span>
+                <span className="font-bold text-slate-800">
+                  {formatDateOnly(reservation.checkInDate, locale)}
+                  {reservation.checkInTimeSlot ? ` (${reservation.checkInTimeSlot})` : ""}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {isPast && (
+            <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <span>
+                {isEn
+                  ? "Check-in date has passed. Per system policy, this reservation cannot be confirmed and will be processed for deposit refund (MESSAGE_CODE_319)."
+                  : "Đã quá ngày hẹn nhận kho. Theo quy định hệ thống, không thể xác nhận đơn này và hệ thống sẽ tự động hoàn 100% tiền cọc cho khách (MESSAGE_CODE_319)."}
+              </span>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              {isEn ? "Assigned Staff" : "Nhân viên tiếp đón"}{" "}
+              <span className="text-rose-500">*</span>
+            </label>
+            <select
+              value={assignedStaffId}
+              onChange={(e) => setAssignedStaffId(e.target.value)}
+              disabled={isPast || confirmMutation.isPending}
+              required
+              className="w-full bg-slate-50 focus:bg-white text-sm text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+            >
+              <option value="" disabled>
+                {isEn ? "Select staff..." : "Chọn nhân viên tiếp đón..."}
+              </option>
+              {staffList.map((st) => (
+                <option key={st.id} value={st.id}>
+                  {st.name} ({st.email}) {st.phoneNumber ? `• ${st.phoneNumber}` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              {t("notesLabel")}
+            </label>
+            <textarea
+              rows={3}
+              maxLength={1000}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              disabled={isPast || confirmMutation.isPending}
+              placeholder={t("notesPlaceholder")}
+              className="w-full bg-slate-50 focus:bg-white text-sm text-slate-800 placeholder:text-slate-400 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none resize-none"
+            />
+          </div>
+
+          {errorMsg && (
+            <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
+          {successMsg && (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>{successMsg}</span>
+            </div>
+          )}
+
+          <DialogFooter className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={confirmMutation.isPending}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+            >
+              {t("cancel")}
+            </button>
+            <button
+              type="submit"
+              disabled={confirmMutation.isPending || isPast || !assignedStaffId}
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
+            >
+              {confirmMutation.isPending ? t("submitting") : t("confirmBtn")}
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+/* ============================================================================
+ * 5.2b. AssignReservationStaffModal (POST /reservations/{id}/assign-staff)
+ * ========================================================================== */
+interface AssignReservationStaffModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  reservation: ReservationResponse | null;
+}
+
+export const AssignReservationStaffModal: React.FC<AssignReservationStaffModalProps> = ({
+  isOpen,
+  onClose,
+  reservation,
+}) => {
+  const t = useTranslations("facilityManager.reservations.assignStaffModal");
+  const locale = useLocale() === "en" ? "en" : "vi";
+  const isEn = locale === "en";
+  const getErrorMessage = useApiErrorMessage();
+  const assignStaffMutation = useAssignReservationStaff();
+
+  const staffsQuery = useFacilityStaffs({ status: UserStatusEnum.ACTIVE, limit: 100 }, isOpen);
+  const staffList = useMemo(() => staffsQuery.data?.items ?? [], [staffsQuery.data?.items]);
+
+  const [staffId, setStaffId] = useState<string>("");
+  const [notes, setNotes] = useState<string>(reservation?.notes ?? "");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen && reservation) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStaffId(reservation.assignedStaffId || (staffList[0]?.id ?? ""));
+      setNotes("");
+      setErrorMsg(null);
+      setSuccessMsg(null);
+    }
+  }, [isOpen, reservation, staffList]);
+
+  if (!reservation) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg(null);
+
+    if (!staffId) {
+      setErrorMsg(t("validationStaffRequired"));
+      return;
+    }
+
+    const parsed = assignReservationStaffSchema.safeParse({
+      staffId,
+      notes: notes.trim() ? notes.trim() : undefined,
+    });
+    if (!parsed.success) {
+      setErrorMsg(
+        parsed.error.issues[0]?.message ?? (isEn ? "Invalid input" : "Dữ liệu không hợp lệ")
+      );
+      return;
+    }
+
+    try {
+      await assignStaffMutation.mutateAsync({
+        id: reservation.id,
+        payload: parsed.data,
+      });
+      setSuccessMsg(t("success"));
+      setTimeout(onClose, 800);
+    } catch (err: unknown) {
+      setErrorMsg(getErrorMessage(err));
+    }
+  };
+
+  return (
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => !open && !assignStaffMutation.isPending && onClose()}
+    >
+      <DialogContent className="sm:max-w-lg p-0 rounded-3xl border-slate-100 shadow-2xl overflow-hidden">
+        <DialogHeader className="p-6 pb-4 border-b border-slate-100 bg-teal-50/50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-teal-600 flex items-center justify-center text-white shadow-md shadow-teal-500/20">
+              <UserCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <DialogTitle className="text-lg font-extrabold text-slate-900">
+                {t("title")} • {reservation.reservationCode}
+              </DialogTitle>
+              <p className="text-xs text-slate-500 mt-0.5">{t("subtitle")}</p>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-2.5 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">{t("customerLabel")}</span>
+              <span className="font-bold text-slate-900">
+                {reservation.customer?.name ?? "—"} ({reservation.customer?.phoneNumber || "—"})
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">{t("assignedUnitLabel")}</span>
+              <span className="font-mono font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-200">
+                {reservation.storageUnit?.unitNumber ?? "—"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">{t("currentStaffLabel")}</span>
+              <span className="font-bold text-slate-800">
+                {reservation.assignedStaff?.name || reservation.assignedStaffId || "—"}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              {t("newStaffLabel")}
+            </label>
+            <select
+              value={staffId}
+              onChange={(e) => setStaffId(e.target.value)}
+              required
+              disabled={assignStaffMutation.isPending}
+              className="w-full bg-slate-50 focus:bg-white text-sm text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none"
+            >
+              <option value="" disabled>
+                {t("newStaffPlaceholder")}
+              </option>
+              {staffList.map((st) => (
+                <option key={st.id} value={st.id}>
+                  {st.name} ({st.email}) {st.phoneNumber ? `• ${st.phoneNumber}` : ""}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -320,17 +605,17 @@ export const ConfirmReservationModal: React.FC<ConfirmReservationModalProps> = (
             <button
               type="button"
               onClick={onClose}
-              disabled={confirmMutation.isPending}
+              disabled={assignStaffMutation.isPending}
               className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {t("cancel")}
             </button>
             <button
               type="submit"
-              disabled={confirmMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
+              disabled={assignStaffMutation.isPending || !staffId}
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm disabled:opacity-50"
             >
-              {confirmMutation.isPending ? t("submitting") : t("confirmBtn")}
+              {assignStaffMutation.isPending ? t("submitting") : t("confirmBtn")}
             </button>
           </DialogFooter>
         </form>
@@ -525,10 +810,12 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
   );
   const [referenceCode, setReferenceCode] = useState("");
   const [note, setNote] = useState("");
+  const [proofImageUrl, setProofImageUrl] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const handleCloseModal = () => {
+    setProofImageUrl("");
     setSubmitError(null);
     setSuccessMsg(null);
     onClose();
@@ -557,6 +844,10 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
       method,
       referenceCode: referenceCode.trim() ? referenceCode.trim() : undefined,
       note: note.trim(),
+      proofImageUrl:
+        method === PaymentMethodEnum.BANK_TRANSFER && proofImageUrl.trim()
+          ? proofImageUrl.trim()
+          : undefined,
     });
 
     if (!parsed.success) {
@@ -736,6 +1027,21 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
                       className="w-full bg-slate-50 focus:bg-white text-sm text-slate-800 placeholder:text-slate-400 px-3.5 py-2 rounded-xl border border-slate-200 focus:border-teal-500 outline-none resize-none"
                     />
                   </div>
+
+                  {/* Bank Transfer Receipt Upload */}
+                  {method === PaymentMethodEnum.BANK_TRANSFER && (
+                    <CloudinaryUploader
+                      label="Ủy nhiệm chi / Biên lai chuyển khoản (Tùy chọn)"
+                      description="Tải lên ảnh chụp màn hình chuyển khoản hoặc sao kê ngân hàng"
+                      folder={CloudinaryFolderEnum.CONTRACTS}
+                      value={proofImageUrl ? [proofImageUrl] : []}
+                      onChange={(urls) => setProofImageUrl(urls[0] || "")}
+                      multiple={false}
+                      maxFiles={1}
+                      accept="image/*,application/pdf"
+                      disabled={isPending}
+                    />
+                  )}
 
                   {submitError && (
                     <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">

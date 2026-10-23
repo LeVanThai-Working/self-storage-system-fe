@@ -15,10 +15,11 @@ import {
   getBillingUnitSuffix,
   getUnitCategoryLabel,
 } from "@/features/storage-explore/utils/storageFormat";
-import type {
-  MessageLocale,
-  PublicAmenityOfferingResponse,
-  PublicUnitTypeOfferingResponse,
+import {
+  AmenityTypeEnum,
+  type MessageLocale,
+  type PublicAmenityOfferingResponse,
+  type PublicUnitTypeOfferingResponse,
 } from "@self-storage-system-fe/shared";
 import {
   Building2,
@@ -139,7 +140,9 @@ export function CreateReservationView({
       handoffPayload?.facilityId === activeFacilityId && handoffPayload?.availableAmenities?.length
         ? handoffPayload.availableAmenities
         : (facilityDetailQuery.data?.amenityOfferings ?? []);
-    return raw.filter((item) => item.availableQuantity > 0);
+    return raw.filter(
+      (item) => item.amenity?.type === AmenityTypeEnum.SERVICE || (item.availableQuantity ?? 0) > 0
+    );
   }, [handoffPayload, activeFacilityId, facilityDetailQuery.data?.amenityOfferings]);
 
   const minRentalDays = Math.max(1, selectedOffering?.minRentalDays ?? 1);
@@ -748,7 +751,8 @@ export function CreateReservationView({
             {availableAmenities.map((item) => {
               const qty = amenityQuantities[item.id] ?? 0;
               const isSelected = qty > 0;
-              const maxQty = item.availableQuantity;
+              const isService = item.amenity?.type === AmenityTypeEnum.SERVICE;
+              const maxQty = isService ? 99 : (item.availableQuantity ?? 0);
               const itemTotalPrice = (item.pricePerUnit || 0) * qty;
 
               return (
@@ -785,7 +789,14 @@ export function CreateReservationView({
                                 item.billingUnit,
                                 t
                               )}`}{" "}
-                          • {isEn ? `Stock: ${maxQty}` : `Còn lại: ${maxQty}`}
+                          •{" "}
+                          {isService
+                            ? isEn
+                              ? "Service"
+                              : "Dịch vụ"
+                            : isEn
+                              ? `Stock: ${maxQty}`
+                              : `Còn lại: ${maxQty}`}
                         </Text>
                       </View>
                     </Pressable>

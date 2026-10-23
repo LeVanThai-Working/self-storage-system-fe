@@ -15,6 +15,7 @@ export interface UnitTypeSnapshot {
   volume: number;
   status: UnitTypeStatusEnum;
   dimensions: IDimensions;
+  imageUrl?: string | null;
 }
 
 export interface UnitTypeResponse {
@@ -26,6 +27,7 @@ export interface UnitTypeResponse {
   volume: number;
   category?: UnitTypeCategoryEnum | null;
   status: UnitTypeStatusEnum;
+  imageUrl?: string | null;
   images?: string[] | null;
   features?: string[] | null;
   createdAt: string;
@@ -37,6 +39,7 @@ export interface CreateUnitTypeRequest {
   description?: string;
   dimensions: IDimensions;
   category?: UnitTypeCategoryEnum;
+  imageUrl?: string;
   images?: string[];
   features?: string[];
 }
@@ -47,6 +50,7 @@ export interface UpdateUnitTypeRequest {
   dimensions?: IDimensions;
   category?: UnitTypeCategoryEnum;
   status?: UnitTypeStatusEnum;
+  imageUrl?: string;
   images?: string[];
   features?: string[];
 }

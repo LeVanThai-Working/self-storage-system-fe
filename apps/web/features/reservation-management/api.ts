@@ -2,6 +2,7 @@ import type { ApiResponse } from "@self-storage-system-fe/shared";
 import api from "@/lib/api/axios";
 import {
   PaymentPurposeEnum,
+  type AssignReservationStaffRequest,
   type AssignStorageUnitRequest,
   type AvailableStorageUnitQuery,
   type CancelReservationRequest,
@@ -25,7 +26,7 @@ function toIsoDateStringIfPresent(value?: string): string | undefined {
 }
 
 /**
- * 3.1. GET /reservations — Danh sách đơn đặt chỗ tại cơ sở của Facility Manager
+ * 3.1. GET /reservations — Danh sách đơn đặt chỗ tại cơ sở của Facility Staff / Manager
  */
 export async function fetchManagerReservations(
   params: ManagerReservationFilterParams
@@ -39,6 +40,9 @@ export async function fetchManagerReservations(
   };
 
   if (params.status) query.status = params.status;
+  if (params.refundStatus) query.refundStatus = params.refundStatus;
+  if (params.customerId) query.customerId = params.customerId;
+  if (params.storageUnitId) query.storageUnitId = params.storageUnitId;
   if (params.reservationCode?.trim()) query.reservationCode = params.reservationCode.trim();
   if (params.facilityUnitTypeOfferingId) {
     query.facilityUnitTypeOfferingId = params.facilityUnitTypeOfferingId;
@@ -48,6 +52,11 @@ export async function fetchManagerReservations(
   const isoTo = toIsoDateStringIfPresent(params.startDateTo);
   if (isoFrom) query.startDateFrom = isoFrom;
   if (isoTo) query.startDateTo = isoTo;
+
+  const isoCheckInFrom = toIsoDateStringIfPresent(params.checkInDateFrom);
+  const isoCheckInTo = toIsoDateStringIfPresent(params.checkInDateTo);
+  if (isoCheckInFrom) query.checkInDateFrom = isoCheckInFrom;
+  if (isoCheckInTo) query.checkInDateTo = isoCheckInTo;
 
   const { data } = await api.get<ApiResponse<ReservationPaginatedResponse>>("/reservations", {
     params: query,
@@ -98,20 +107,17 @@ export async function fetchAvailableStorageUnitsForFacility(
   facilityId: string,
   query?: AvailableStorageUnitQuery
 ): Promise<StorageUnitListResponse> {
-  const params: Record<string, string | number> = {};
-  if (query?.unitTypeId) params.unitTypeId = query.unitTypeId;
-  if (query?.floor !== undefined && Number.isFinite(query.floor)) params.floor = query.floor;
-  if (query?.zone?.trim()) params.zone = query.zone.trim();
-
   const { data } = await api.get<ApiResponse<StorageUnitListResponse>>(
     `/storage-units/facility/${facilityId}/available`,
-    { params }
+    {
+      params: query,
+    }
   );
-  return data.data ?? [];
+  return data.data!;
 }
 
 /**
- * 3.5. POST /reservations/{id}/assign-unit — Phân bổ ô kho vật lý & Mở cổng cọc (PENDING/RECEIVED -> PENDING_PAYMENT)
+ * 3.5. POST /reservations/{id}/assign-unit — Gán ô kho vật lý và tạo thời hạn giữ chỗ
  */
 export async function assignStorageUnitToReservation(
   id: string,
@@ -139,15 +145,29 @@ export async function rejectReservation(
 }
 
 /**
- * 3.7. POST /reservations/{id}/confirm — Xác nhận chốt đơn sau khi khách đã cọc (PAYMENT_SUCCESSFUL -> CONFIRMED)
+ * 3.7. POST /reservations/{id}/confirm — Xác nhận đơn đặt chỗ & phân công nhân viên tiếp đón (PAYMENT_SUCCESSFUL -> CONFIRMED)
  */
 export async function confirmReservation(
   id: string,
-  payload?: ConfirmReservationRequest
+  payload: ConfirmReservationRequest
 ): Promise<ReservationResponse> {
   const { data } = await api.post<ApiResponse<ReservationResponse>>(
     `/reservations/${id}/confirm`,
-    payload ?? {}
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * POST /reservations/{id}/assign-staff — Phân công hoặc đổi nhân viên tiếp đón check-in
+ */
+export async function assignReservationStaff(
+  id: string,
+  payload: AssignReservationStaffRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/assign-staff`,
+    payload
   );
   return data.data!;
 }

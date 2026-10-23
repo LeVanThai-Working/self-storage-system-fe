@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useTransition } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import {
   Layers,
@@ -411,9 +412,22 @@ export const UnitTypeTable = () => {
                     {/* Name & Description */}
                     <td className="py-4 px-6">
                       <div className="flex items-start gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-slate-100 group-hover:bg-teal-50 group-hover:text-teal-600 text-slate-500 flex items-center justify-center flex-shrink-0 transition-colors">
-                          <Package className="w-4 h-4" />
-                        </div>
+                        {unitType.imageUrl || (unitType.images && unitType.images.length > 0) ? (
+                          <div className="relative w-9 h-9 rounded-xl overflow-hidden border border-slate-200 flex-shrink-0 bg-slate-50">
+                            <Image
+                              src={unitType.imageUrl || unitType.images![0]}
+                              alt={unitType.name}
+                              fill
+                              sizes="36px"
+                              unoptimized
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-9 h-9 rounded-xl bg-slate-100 group-hover:bg-teal-50 group-hover:text-teal-600 text-slate-500 flex items-center justify-center flex-shrink-0 transition-colors">
+                            <Package className="w-4 h-4" />
+                          </div>
+                        )}
                         <div>
                           <div className="font-bold text-slate-900 group-hover:text-teal-700 transition-colors">
                             {unitType.name}

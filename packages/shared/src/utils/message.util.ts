@@ -47,6 +47,8 @@ export const ENTITY_SUBJECT_DICTIONARY: Record<string, { vi: string; en: string 
   invoice: { vi: "Hóa đơn", en: "Invoice" },
   payment: { vi: "Thanh toán", en: "Payment" },
   manager: { vi: "Quản lý", en: "Manager" },
+  staff: { vi: "Nhân viên", en: "Staff" },
+  "assigned staff": { vi: "Nhân viên tiếp đón", en: "Assigned Staff" },
 };
 
 /**
