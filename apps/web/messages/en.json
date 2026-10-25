@@ -2367,5 +2367,61 @@
         "error": "Could not load the staff list."
       }
     }
+  },
+  "customerReservation": {
+    "form": {
+      "back": "Back to unit search",
+      "title": "Reserve a storage unit",
+      "missingParams": "The facility or unit type is missing. Pick a unit from the search page.",
+      "offeringUnavailable": "This unit type is no longer offered at the facility. Please choose another.",
+      "unit": {
+        "title": "1. Choose a unit",
+        "empty": "No free units of this type right now.",
+        "location": "Floor {floor} · Zone {zone}"
+      },
+      "schedule": {
+        "title": "2. Check-in and rental period",
+        "checkInDate": "Check-in date",
+        "checkInHint": "Pick a date within the next {days} days.",
+        "startDate": "Rental start date",
+        "startHint": "Not earlier than the check-in date.",
+        "timeSlot": "Check-in time slot",
+        "pickDateFirst": "Pick a check-in date to see the open time slots.",
+        "slotsError": "Could not load time slots. Please try again.",
+        "noSlots": "The facility has no time slots open for this date.",
+        "left": "{count} left",
+        "full": "full",
+        "duration": "Rental period ({unit})",
+        "durationHint": "Minimum {min}."
+      },
+      "amenities": {
+        "title": "3. Add-ons (optional)",
+        "note": "Add-on fees are not charged now; they are billed in the rental contract.",
+        "free": "Free",
+        "left": "{count} left",
+        "quantity": "Quantity of {name}"
+      },
+      "notes": {
+        "title": "Notes",
+        "placeholder": "Anything the facility should know (optional)"
+      },
+      "summary": {
+        "title": "Deposit estimate",
+        "price": "Unit price",
+        "multiplier": "Deposit multiplier",
+        "deposit": "Deposit due now",
+        "holdNote": "The unit and add-ons are held for 15 minutes after booking. If the deposit is not paid in time, the reservation expires.",
+        "submit": "Reserve and pay deposit",
+        "submitting": "Creating reservation…",
+        "cancel": "Cancel"
+      },
+      "errors": {
+        "unit": "Please choose a storage unit.",
+        "checkInDate": "Please choose a check-in date.",
+        "slot": "Please choose a time slot that still has room.",
+        "startDate": "The rental must start on or after the check-in date.",
+        "duration": "The minimum rental period is {min}."
+      }
+    }
   }
 }

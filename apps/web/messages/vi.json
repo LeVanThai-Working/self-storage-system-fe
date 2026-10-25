@@ -2367,5 +2367,61 @@
         "error": "Không thể tải danh sách nhân viên."
       }
     }
+  },
+  "customerReservation": {
+    "form": {
+      "back": "Quay lại tìm kho",
+      "title": "Đặt giữ chỗ phòng kho",
+      "missingParams": "Thiếu thông tin cơ sở hoặc loại kho. Hãy chọn kho từ trang tìm kho trống.",
+      "offeringUnavailable": "Loại kho này hiện không còn mở bán tại cơ sở. Vui lòng chọn kho khác.",
+      "unit": {
+        "title": "1. Chọn phòng kho",
+        "empty": "Hiện không còn phòng trống thuộc loại kho này.",
+        "location": "Tầng {floor} · Dãy {zone}"
+      },
+      "schedule": {
+        "title": "2. Lịch nhận kho & thời gian thuê",
+        "checkInDate": "Ngày đến nhận kho",
+        "checkInHint": "Chọn trong vòng {days} ngày tới.",
+        "startDate": "Ngày bắt đầu thuê",
+        "startHint": "Không sớm hơn ngày đến nhận kho.",
+        "timeSlot": "Khung giờ hẹn check-in",
+        "pickDateFirst": "Chọn ngày đến nhận kho để xem các khung giờ còn trống.",
+        "slotsError": "Không thể tải khung giờ. Vui lòng thử lại.",
+        "noSlots": "Cơ sở chưa mở khung giờ nào cho ngày này.",
+        "left": "còn {count} chỗ",
+        "full": "đã đầy",
+        "duration": "Thời hạn thuê ({unit})",
+        "durationHint": "Tối thiểu {min}."
+      },
+      "amenities": {
+        "title": "3. Tiện ích kèm theo (tuỳ chọn)",
+        "note": "Phí tiện ích không thu lúc đặt chỗ, sẽ được tính trong hợp đồng thuê.",
+        "free": "Miễn phí",
+        "left": "còn {count}",
+        "quantity": "Số lượng {name}"
+      },
+      "notes": {
+        "title": "Ghi chú",
+        "placeholder": "Ghi chú cho cơ sở (nếu có)"
+      },
+      "summary": {
+        "title": "Tạm tính tiền cọc",
+        "price": "Đơn giá",
+        "multiplier": "Hệ số cọc",
+        "deposit": "Tiền cọc cần thanh toán",
+        "holdNote": "Phòng và tiện ích được giữ cho bạn trong 15 phút kể từ khi đặt. Quá hạn mà chưa đóng cọc, đơn sẽ tự hết hạn.",
+        "submit": "Đặt giữ chỗ & thanh toán cọc",
+        "submitting": "Đang tạo đơn…",
+        "cancel": "Huỷ"
+      },
+      "errors": {
+        "unit": "Vui lòng chọn phòng kho.",
+        "checkInDate": "Vui lòng chọn ngày đến nhận kho.",
+        "slot": "Vui lòng chọn một khung giờ còn chỗ.",
+        "startDate": "Ngày bắt đầu thuê phải từ ngày đến nhận kho trở đi.",
+        "duration": "Thời hạn thuê tối thiểu là {min}."
+      }
+    }
   }
 }
