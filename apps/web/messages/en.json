@@ -1790,7 +1790,8 @@
       "contracts": "Lease Contracts",
       "storageUnits": "Storage units",
       "sectionFacility": "FACILITY OPERATIONS",
-      "requests": "Request Center"
+      "requests": "Request Center",
+      "dashboard": "Overview"
     },
     "sidebar": {
       "assignedFacility": "Assigned facility",
@@ -2337,6 +2338,33 @@
         "depositRequiredLabel": "Required Reservation Deposit",
         "paidDepositText": "Paid by customer",
         "close": "Close"
+      }
+    },
+    "dashboard": {
+      "title": "Facility overview",
+      "subtitle": "Current operations at {facility}.",
+      "noFacility": "You have not been assigned a facility yet, so there is no overview to show.",
+      "stats": {
+        "occupancy": "Occupancy rate",
+        "available": "Available units",
+        "inUse": "Reserved / rented units",
+        "maintenance": "Under maintenance"
+      },
+      "occupancyTitle": "Storage unit utilisation",
+      "totalUnits": "{count} units in total",
+      "occupancyNote": "Occupancy = (reserved + rented) / all units; units under maintenance still count toward the total.",
+      "amenities": {
+        "title": "Amenity stock",
+        "empty": "This facility has no active amenities.",
+        "error": "Could not load amenity stock.",
+        "stock": "{available}/{total} left",
+        "inUse": "{count} in use",
+        "noStock": "Service, no stock limit"
+      },
+      "staff": {
+        "title": "Assigned staff",
+        "empty": "No staff are assigned to this facility.",
+        "error": "Could not load the staff list."
       }
     }
   }

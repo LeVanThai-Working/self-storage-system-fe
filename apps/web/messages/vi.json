@@ -1790,7 +1790,8 @@
       "contracts": "Hợp đồng thuê kho",
       "storageUnits": "Phòng kho",
       "sectionFacility": "VẬN HÀNH CƠ SỞ",
-      "requests": "Yêu cầu đề xuất"
+      "requests": "Yêu cầu đề xuất",
+      "dashboard": "Tổng quan"
     },
     "sidebar": {
       "assignedFacility": "Cơ sở phụ trách",
@@ -2337,6 +2338,33 @@
         "depositRequiredLabel": "Tiền đặt cọc giữ chỗ cần thanh toán",
         "paidDepositText": "Khách đã thanh toán",
         "close": "Đóng"
+      }
+    },
+    "dashboard": {
+      "title": "Tổng quan cơ sở",
+      "subtitle": "Tình hình vận hành hiện tại của {facility}.",
+      "noFacility": "Bạn chưa được gán cơ sở nào để hiển thị tổng quan.",
+      "stats": {
+        "occupancy": "Tỷ lệ lấp đầy",
+        "available": "Phòng trống",
+        "inUse": "Phòng đã đặt / đang thuê",
+        "maintenance": "Phòng bảo trì"
+      },
+      "occupancyTitle": "Mức độ sử dụng phòng kho",
+      "totalUnits": "Tổng {count} phòng",
+      "occupancyNote": "Tỷ lệ lấp đầy = (đã đặt + đang thuê) / tổng số phòng, phòng bảo trì vẫn tính vào tổng.",
+      "amenities": {
+        "title": "Tồn kho tiện ích",
+        "empty": "Cơ sở chưa có tiện ích nào đang hoạt động.",
+        "error": "Không thể tải tồn kho tiện ích.",
+        "stock": "Còn {available}/{total}",
+        "inUse": "Đang dùng {count}",
+        "noStock": "Dịch vụ, không giới hạn số lượng"
+      },
+      "staff": {
+        "title": "Nhân viên trực thuộc",
+        "empty": "Cơ sở chưa có nhân viên nào.",
+        "error": "Không thể tải danh sách nhân viên."
       }
     }
   }
