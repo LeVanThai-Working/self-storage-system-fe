@@ -17,6 +17,7 @@ import {
   Clock,
   Droplets,
   KeyRound,
+  LayoutGrid,
   Lock,
   Sparkles,
   Thermometer,
@@ -40,6 +41,7 @@ interface ContractCardProps {
   onPress: (contract: ContractResponse) => void;
   onUnlockPress?: (contract: ContractResponse) => void;
   onViewPinPress?: (contract: ContractResponse) => void;
+  onRackMapPress?: (contract: ContractResponse) => void;
   isUnlocking?: boolean;
 }
 
@@ -51,6 +53,7 @@ export function ContractCard({
   onPress,
   onUnlockPress,
   onViewPinPress,
+  onRackMapPress,
   isUnlocking = false,
 }: ContractCardProps) {
   const isEn = locale === "en";
@@ -235,7 +238,7 @@ export function ContractCard({
       ) : null}
 
       {/* Smart Lock & PIN Controls for Active Contracts */}
-      {isActive && (onUnlockPress || onViewPinPress) ? (
+      {isActive && (onUnlockPress || onViewPinPress || onRackMapPress) ? (
         <View className="flex-row items-center gap-2 pt-0.5">
           {/* {onUnlockPress ? (
             <Pressable
@@ -270,6 +273,21 @@ export function ContractCard({
               <KeyRound size={14} color="#647B80" />
               <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200">
                 {isEn ? "PIN" : "Mã PIN"}
+              </Text>
+            </Pressable>
+          ) : null}
+
+          {onRackMapPress ? (
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
+                onRackMapPress(contract);
+              }}
+              className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3.5 py-2.5"
+            >
+              <LayoutGrid size={14} color="#647B80" />
+              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200">
+                {isEn ? "Rack map" : "Sơ đồ kệ"}
               </Text>
             </Pressable>
           ) : null}

@@ -30,7 +30,29 @@ export type AuditLogAction =
   | "toggle_maintenance"
   | "approve"
   | "reject"
-  | "cancel";
+  | "cancel"
+  | "check_in"
+  | "check_out"
+  | "renew"
+  | "terminate"
+  | "add_amenity"
+  | "remove_amenity"
+  | "sign_contract"
+  | "create_addendum"
+  | "approve_addendum"
+  | "reject_addendum"
+  | "sign_addendum"
+  | "cancel_addendum"
+  | "confirm_payment"
+  | "receive_payment"
+  | "inventory_in"
+  | "inventory_out"
+  | "inventory_move"
+  | "inventory_adjust"
+  | "reassign_unit"
+  | "expire"
+  | "mark_overdue"
+  | "refund";
 
 export type AuditLogStatus = "success" | "failure";
 

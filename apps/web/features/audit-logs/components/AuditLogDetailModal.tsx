@@ -163,14 +163,17 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
                           <span
                             className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide border truncate ${ACTION_COLORS[log.action] || "bg-slate-50 text-slate-700 border-slate-200"}`}
                           >
-                            {t(`actions.${log.action}` as Parameters<typeof t>[0]) || log.action}
+                            {t.has(`actions.${log.action}` as Parameters<typeof t>[0])
+                              ? t(`actions.${log.action}` as Parameters<typeof t>[0])
+                              : log.action}
                           </span>
                           <span className="text-slate-400 text-xs italic shrink-0">
                             {t("modal.on")}
                           </span>
                           <span className="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-teal-50 text-teal-700 border border-teal-100 truncate max-w-full">
-                            {t(`resources.${log.resourceType}` as Parameters<typeof t>[0]) ||
-                              log.resourceType}
+                            {t.has(`resources.${log.resourceType}` as Parameters<typeof t>[0])
+                              ? t(`resources.${log.resourceType}` as Parameters<typeof t>[0])
+                              : log.resourceType}
                           </span>
                         </div>
                         {log.resourceId && (
