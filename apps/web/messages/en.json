@@ -366,7 +366,8 @@
     "nav": {
       "label": "Customer navigation",
       "facilities": "Explore facilities",
-      "search": "Find available units"
+      "search": "Find available units",
+      "reservations": "My reservations"
     }
   },
   "explore": {
@@ -2369,6 +2370,15 @@
     }
   },
   "customerReservation": {
+    "status": {
+      "pending_payment": "Awaiting deposit",
+      "payment_successful": "Deposit paid",
+      "confirmed": "Confirmed",
+      "overdue": "Check-in overdue",
+      "completed": "Checked in",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
     "form": {
       "back": "Back to unit search",
       "title": "Reserve a storage unit",
@@ -2455,6 +2465,81 @@
         "title": "Reservation cancelled",
         "body": "This reservation was cancelled, so it can no longer be paid."
       }
+    },
+    "list": {
+      "title": "My reservations",
+      "subtitle": "Track the progress of your storage unit reservations.",
+      "bookNew": "Reserve a unit",
+      "filterLabel": "Filter by status",
+      "all": "All",
+      "searchPlaceholder": "Search by reservation code",
+      "search": "Search",
+      "empty": "You have no matching reservations.",
+      "error": "Could not load your reservations. Please try again.",
+      "retry": "Try again",
+      "unit": "Unit {unit} · Floor {floor}",
+      "checkIn": "Check-in {date} · {slot}",
+      "deposit": "Deposit {amount}",
+      "details": "Details",
+      "pay": "Pay deposit",
+      "cancel": "Cancel",
+      "prev": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}"
+    },
+    "detail": {
+      "back": "Back to my reservations",
+      "error": "Could not load the reservation.",
+      "retry": "Try again",
+      "code": "Reservation code",
+      "pay": "Pay deposit",
+      "cancel": "Cancel reservation",
+      "sections": {
+        "facility": "Facility and unit",
+        "schedule": "Check-in schedule",
+        "payment": "Payment",
+        "more": "Other details",
+        "amenities": "Add-ons"
+      },
+      "facility": "Facility",
+      "address": "Address",
+      "phone": "Hotline",
+      "unit": "Storage unit",
+      "unitValue": "{unit} · Floor {floor}",
+      "checkInDate": "Check-in date",
+      "checkInSlot": "Time slot",
+      "startDate": "Rental start date",
+      "duration": "Rental period",
+      "price": "Unit price",
+      "deposit": "Deposit",
+      "paid": "Paid",
+      "paidAt": "Paid at",
+      "refund": "Deposit refund",
+      "refundStatus": {
+        "pending": "Waiting for the facility to refund",
+        "refunded": "Refunded"
+      },
+      "forfeited": "Deposit forfeited",
+      "created": "Created",
+      "confirmedAt": "Confirmed at",
+      "cancelledAt": "Cancelled at",
+      "cancelReason": "Cancellation reason",
+      "notes": "Notes",
+      "amenitiesNote": "Add-on fees are billed in the rental contract, not with the deposit.",
+      "free": "Free"
+    },
+    "cancel": {
+      "title": "Cancel reservation {code}",
+      "outcome": {
+        "free": "No deposit has been paid yet, so it cancels immediately at no cost.",
+        "refund": "You are cancelling early (24 hours or more before check-in), so the {amount} deposit will be refunded by the facility.",
+        "forfeit": "You are cancelling close to check-in or late, so the {amount} deposit is forfeited and not refunded."
+      },
+      "reason": "Reason",
+      "reasonPlaceholder": "At least 3 characters",
+      "keep": "Keep reservation",
+      "confirm": "Confirm cancellation",
+      "cancelling": "Cancelling…"
     }
   }
 }
