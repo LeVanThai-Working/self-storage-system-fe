@@ -2422,6 +2422,39 @@
         "startDate": "The rental must start on or after the check-in date.",
         "duration": "The minimum rental period is {min}."
       }
+    },
+    "payment": {
+      "title": "Pay the deposit",
+      "subtitle": "Reservation {code}",
+      "holdLeft": "Time left to hold your unit",
+      "qrAlt": "QR code for the deposit transfer",
+      "scanHint": "Scan with your banking app to transfer.",
+      "bank": "Bank",
+      "accountNumber": "Account number",
+      "accountName": "Account holder",
+      "amount": "Amount",
+      "content": "Transfer note",
+      "partial": "Received {paid}. Please transfer the remaining {remaining} to finish.",
+      "waiting": "Waiting for the bank to confirm… this page updates by itself once the money arrives.",
+      "payLater": "View my reservation",
+      "retry": "Try again",
+      "loadError": "Could not load the reservation.",
+      "paymentError": "Could not create the payment. Please try again.",
+      "viewReservation": "View reservation",
+      "bookAgain": "Book another unit",
+      "backToList": "Back to my reservations",
+      "paid": {
+        "title": "Deposit received",
+        "body": "Thank you. Reservation {code} is waiting for the facility to confirm."
+      },
+      "expired": {
+        "title": "Reservation expired",
+        "body": "The hold ran out before the full deposit arrived. The unit has been released."
+      },
+      "cancelled": {
+        "title": "Reservation cancelled",
+        "body": "This reservation was cancelled, so it can no longer be paid."
+      }
     }
   }
 }

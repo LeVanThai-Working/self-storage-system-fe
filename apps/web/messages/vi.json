@@ -2422,6 +2422,39 @@
         "startDate": "Ngày bắt đầu thuê phải từ ngày đến nhận kho trở đi.",
         "duration": "Thời hạn thuê tối thiểu là {min}."
       }
+    },
+    "payment": {
+      "title": "Thanh toán tiền cọc",
+      "subtitle": "Đơn {code}",
+      "holdLeft": "Thời gian giữ chỗ còn lại",
+      "qrAlt": "Mã QR chuyển khoản tiền cọc",
+      "scanHint": "Quét mã bằng ứng dụng ngân hàng để chuyển khoản.",
+      "bank": "Ngân hàng",
+      "accountNumber": "Số tài khoản",
+      "accountName": "Chủ tài khoản",
+      "amount": "Số tiền",
+      "content": "Nội dung chuyển khoản",
+      "partial": "Đã nhận {paid}. Vui lòng chuyển nốt {remaining} để hoàn tất.",
+      "waiting": "Đang chờ ngân hàng xác nhận… Trang sẽ tự cập nhật khi nhận được tiền.",
+      "payLater": "Xem đơn của tôi",
+      "retry": "Thử lại",
+      "loadError": "Không thể tải thông tin đơn đặt chỗ.",
+      "paymentError": "Không thể tạo phiếu thanh toán. Vui lòng thử lại.",
+      "viewReservation": "Xem đơn đặt chỗ",
+      "bookAgain": "Đặt kho khác",
+      "backToList": "Về danh sách đơn",
+      "paid": {
+        "title": "Đã nhận tiền cọc",
+        "body": "Cảm ơn bạn. Đơn {code} đang chờ cơ sở xác nhận."
+      },
+      "expired": {
+        "title": "Đơn đã hết hạn",
+        "body": "Quá thời gian giữ chỗ mà chưa nhận đủ tiền cọc. Phòng kho đã được trả lại."
+      },
+      "cancelled": {
+        "title": "Đơn đã bị hủy",
+        "body": "Đơn đặt chỗ này đã bị hủy nên không thể thanh toán."
+      }
     }
   }
 }
