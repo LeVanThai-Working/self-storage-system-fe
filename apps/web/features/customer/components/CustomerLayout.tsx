@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Building2, Search } from "lucide-react";
+import { Building2, CalendarCheck, Search } from "lucide-react";
 import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
 import { Logo } from "@/components/common/Logo";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
@@ -27,6 +27,11 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { href: `/${locale}/customer/facilities`, label: t("nav.facilities"), icon: Building2 },
     { href: `/${locale}/customer/search`, label: t("nav.search"), icon: Search },
+    {
+      href: `/${locale}/customer/reservations`,
+      label: t("nav.reservations"),
+      icon: CalendarCheck,
+    },
   ];
   const isActive = (href: string) => pathname === href || pathname?.startsWith(`${href}/`);
 

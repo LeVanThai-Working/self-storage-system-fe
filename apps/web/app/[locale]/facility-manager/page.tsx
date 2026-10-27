@@ -6,5 +6,5 @@ export default async function FacilityManagerRootPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  redirect(`/${locale}/facility-manager/storage-units`);
+  redirect(`/${locale}/facility-manager/dashboard`);
 }

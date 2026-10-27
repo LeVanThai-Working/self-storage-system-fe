@@ -47,7 +47,6 @@ function ResultCard({ result }: { result: SearchResult }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const { unitType, facility } = result;
 
-  // TODO: the reservation form (FE-21) is not built yet; this is the hand-off point to the booking module.
   const bookingPath = `/${locale}/customer/reservations/new?facilityId=${facility.id}&unitTypeId=${result.unitTypeId}`;
   const href = isAuthenticated
     ? bookingPath

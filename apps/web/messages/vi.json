@@ -366,7 +366,8 @@
     "nav": {
       "label": "Điều hướng khách hàng",
       "facilities": "Khám phá cơ sở",
-      "search": "Tìm kho trống"
+      "search": "Tìm kho trống",
+      "reservations": "Đặt chỗ của tôi"
     }
   },
   "explore": {
@@ -1790,7 +1791,8 @@
       "contracts": "Hợp đồng thuê kho",
       "storageUnits": "Phòng kho",
       "sectionFacility": "VẬN HÀNH CƠ SỞ",
-      "requests": "Yêu cầu đề xuất"
+      "requests": "Yêu cầu đề xuất",
+      "dashboard": "Tổng quan"
     },
     "sidebar": {
       "assignedFacility": "Cơ sở phụ trách",
@@ -2338,6 +2340,206 @@
         "paidDepositText": "Khách đã thanh toán",
         "close": "Đóng"
       }
+    },
+    "dashboard": {
+      "title": "Tổng quan cơ sở",
+      "subtitle": "Tình hình vận hành hiện tại của {facility}.",
+      "noFacility": "Bạn chưa được gán cơ sở nào để hiển thị tổng quan.",
+      "stats": {
+        "occupancy": "Tỷ lệ lấp đầy",
+        "available": "Phòng trống",
+        "inUse": "Phòng đã đặt / đang thuê",
+        "maintenance": "Phòng bảo trì"
+      },
+      "occupancyTitle": "Mức độ sử dụng phòng kho",
+      "totalUnits": "Tổng {count} phòng",
+      "occupancyNote": "Tỷ lệ lấp đầy = (đã đặt + đang thuê) / tổng số phòng, phòng bảo trì vẫn tính vào tổng.",
+      "amenities": {
+        "title": "Tồn kho tiện ích",
+        "empty": "Cơ sở chưa có tiện ích nào đang hoạt động.",
+        "error": "Không thể tải tồn kho tiện ích.",
+        "stock": "Còn {available}/{total}",
+        "inUse": "Đang dùng {count}",
+        "noStock": "Dịch vụ, không giới hạn số lượng"
+      },
+      "staff": {
+        "title": "Nhân viên trực thuộc",
+        "empty": "Cơ sở chưa có nhân viên nào.",
+        "error": "Không thể tải danh sách nhân viên."
+      }
+    }
+  },
+  "customerReservation": {
+    "status": {
+      "pending_payment": "Chờ thanh toán cọc",
+      "payment_successful": "Đã đóng cọc",
+      "confirmed": "Đã xác nhận",
+      "overdue": "Quá hẹn nhận kho",
+      "completed": "Đã nhận kho",
+      "cancelled": "Đã hủy",
+      "expired": "Hết hạn"
+    },
+    "form": {
+      "back": "Quay lại tìm kho",
+      "title": "Đặt giữ chỗ phòng kho",
+      "missingParams": "Thiếu thông tin cơ sở hoặc loại kho. Hãy chọn kho từ trang tìm kho trống.",
+      "offeringUnavailable": "Loại kho này hiện không còn mở bán tại cơ sở. Vui lòng chọn kho khác.",
+      "unit": {
+        "title": "1. Chọn phòng kho",
+        "empty": "Hiện không còn phòng trống thuộc loại kho này.",
+        "location": "Tầng {floor} · Dãy {zone}"
+      },
+      "schedule": {
+        "title": "2. Lịch nhận kho & thời gian thuê",
+        "checkInDate": "Ngày đến nhận kho",
+        "checkInHint": "Chọn trong vòng {days} ngày tới.",
+        "startDate": "Ngày bắt đầu thuê",
+        "startHint": "Không sớm hơn ngày đến nhận kho.",
+        "timeSlot": "Khung giờ hẹn check-in",
+        "pickDateFirst": "Chọn ngày đến nhận kho để xem các khung giờ còn trống.",
+        "slotsError": "Không thể tải khung giờ. Vui lòng thử lại.",
+        "noSlots": "Cơ sở chưa mở khung giờ nào cho ngày này.",
+        "left": "còn {count} chỗ",
+        "full": "đã đầy",
+        "duration": "Thời hạn thuê ({unit})",
+        "durationHint": "Tối thiểu {min}."
+      },
+      "amenities": {
+        "title": "3. Tiện ích kèm theo (tuỳ chọn)",
+        "note": "Phí tiện ích không thu lúc đặt chỗ, sẽ được tính trong hợp đồng thuê.",
+        "free": "Miễn phí",
+        "left": "còn {count}",
+        "quantity": "Số lượng {name}"
+      },
+      "notes": {
+        "title": "Ghi chú",
+        "placeholder": "Ghi chú cho cơ sở (nếu có)"
+      },
+      "summary": {
+        "title": "Tạm tính tiền cọc",
+        "price": "Đơn giá",
+        "multiplier": "Hệ số cọc",
+        "deposit": "Tiền cọc cần thanh toán",
+        "holdNote": "Phòng và tiện ích được giữ cho bạn trong 15 phút kể từ khi đặt. Quá hạn mà chưa đóng cọc, đơn sẽ tự hết hạn.",
+        "submit": "Đặt giữ chỗ & thanh toán cọc",
+        "submitting": "Đang tạo đơn…",
+        "cancel": "Huỷ"
+      },
+      "errors": {
+        "unit": "Vui lòng chọn phòng kho.",
+        "checkInDate": "Vui lòng chọn ngày đến nhận kho.",
+        "slot": "Vui lòng chọn một khung giờ còn chỗ.",
+        "startDate": "Ngày bắt đầu thuê phải từ ngày đến nhận kho trở đi.",
+        "duration": "Thời hạn thuê tối thiểu là {min}."
+      }
+    },
+    "payment": {
+      "title": "Thanh toán tiền cọc",
+      "subtitle": "Đơn {code}",
+      "holdLeft": "Thời gian giữ chỗ còn lại",
+      "qrAlt": "Mã QR chuyển khoản tiền cọc",
+      "scanHint": "Quét mã bằng ứng dụng ngân hàng để chuyển khoản.",
+      "bank": "Ngân hàng",
+      "accountNumber": "Số tài khoản",
+      "accountName": "Chủ tài khoản",
+      "amount": "Số tiền",
+      "content": "Nội dung chuyển khoản",
+      "partial": "Đã nhận {paid}. Vui lòng chuyển nốt {remaining} để hoàn tất.",
+      "waiting": "Đang chờ ngân hàng xác nhận… Trang sẽ tự cập nhật khi nhận được tiền.",
+      "payLater": "Xem đơn của tôi",
+      "retry": "Thử lại",
+      "loadError": "Không thể tải thông tin đơn đặt chỗ.",
+      "paymentError": "Không thể tạo phiếu thanh toán. Vui lòng thử lại.",
+      "viewReservation": "Xem đơn đặt chỗ",
+      "bookAgain": "Đặt kho khác",
+      "backToList": "Về danh sách đơn",
+      "paid": {
+        "title": "Đã nhận tiền cọc",
+        "body": "Cảm ơn bạn. Đơn {code} đang chờ cơ sở xác nhận."
+      },
+      "expired": {
+        "title": "Đơn đã hết hạn",
+        "body": "Quá thời gian giữ chỗ mà chưa nhận đủ tiền cọc. Phòng kho đã được trả lại."
+      },
+      "cancelled": {
+        "title": "Đơn đã bị hủy",
+        "body": "Đơn đặt chỗ này đã bị hủy nên không thể thanh toán."
+      }
+    },
+    "list": {
+      "title": "Đặt chỗ của tôi",
+      "subtitle": "Theo dõi tiến độ các đơn giữ chỗ phòng kho của bạn.",
+      "bookNew": "Đặt kho mới",
+      "filterLabel": "Lọc theo trạng thái",
+      "all": "Tất cả",
+      "searchPlaceholder": "Tìm theo mã đơn",
+      "search": "Tìm",
+      "empty": "Bạn chưa có đơn đặt chỗ nào phù hợp.",
+      "error": "Không thể tải danh sách đơn. Vui lòng thử lại.",
+      "retry": "Thử lại",
+      "unit": "Phòng {unit} · Tầng {floor}",
+      "checkIn": "Nhận kho {date} · {slot}",
+      "deposit": "Tiền cọc {amount}",
+      "details": "Chi tiết",
+      "pay": "Thanh toán cọc",
+      "cancel": "Hủy đơn",
+      "prev": "Trước",
+      "next": "Sau",
+      "pageOf": "Trang {page} / {total}"
+    },
+    "detail": {
+      "back": "Về danh sách đơn",
+      "error": "Không thể tải đơn đặt chỗ.",
+      "retry": "Thử lại",
+      "code": "Mã đơn",
+      "pay": "Thanh toán cọc",
+      "cancel": "Hủy đơn",
+      "sections": {
+        "facility": "Cơ sở & phòng kho",
+        "schedule": "Lịch nhận kho",
+        "payment": "Thanh toán",
+        "more": "Thông tin khác",
+        "amenities": "Tiện ích kèm theo"
+      },
+      "facility": "Cơ sở",
+      "address": "Địa chỉ",
+      "phone": "Hotline",
+      "unit": "Phòng kho",
+      "unitValue": "{unit} · Tầng {floor}",
+      "checkInDate": "Ngày nhận kho",
+      "checkInSlot": "Khung giờ",
+      "startDate": "Ngày bắt đầu thuê",
+      "duration": "Thời hạn thuê",
+      "price": "Đơn giá",
+      "deposit": "Tiền cọc",
+      "paid": "Đã thanh toán",
+      "paidAt": "Thanh toán lúc",
+      "refund": "Hoàn cọc",
+      "refundStatus": {
+        "pending": "Chờ cơ sở hoàn tiền",
+        "refunded": "Đã hoàn tiền"
+      },
+      "forfeited": "Cọc bị khấu trừ",
+      "created": "Tạo lúc",
+      "confirmedAt": "Xác nhận lúc",
+      "cancelledAt": "Hủy lúc",
+      "cancelReason": "Lý do hủy",
+      "notes": "Ghi chú",
+      "amenitiesNote": "Phí tiện ích được tính trong hợp đồng thuê, không thu cùng tiền cọc.",
+      "free": "Miễn phí"
+    },
+    "cancel": {
+      "title": "Hủy đơn {code}",
+      "outcome": {
+        "free": "Đơn chưa đóng cọc nên hủy ngay, không phát sinh phí.",
+        "refund": "Bạn hủy sớm (còn từ 24 giờ trở lên trước ngày nhận kho), tiền cọc {amount} sẽ được cơ sở hoàn lại.",
+        "forfeit": "Bạn hủy sát giờ hoặc trễ hẹn, tiền cọc {amount} sẽ bị khấu trừ và không hoàn lại."
+      },
+      "reason": "Lý do hủy",
+      "reasonPlaceholder": "Ít nhất 3 ký tự",
+      "keep": "Giữ đơn",
+      "confirm": "Xác nhận hủy",
+      "cancelling": "Đang hủy…"
     }
   }
 }

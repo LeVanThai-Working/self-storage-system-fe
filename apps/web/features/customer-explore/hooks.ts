@@ -28,6 +28,7 @@ export const useFacilityPublicDetail = (id: string) =>
   useQuery({
     queryKey: exploreKeys.detail(id),
     queryFn: () => fetchFacilityPublicDetail(id),
+    enabled: Boolean(id),
   });
 
 /** Lowest/highest active offering price per facility id. */
