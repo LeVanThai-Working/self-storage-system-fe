@@ -26,6 +26,11 @@ export const createFacilitySchema = z.object({
     .optional(),
   email: z.email().optional(),
   description: z.string().max(1000).optional(),
+  images: z
+    .array(z.string().url("Invalid image URL format"))
+    .min(3, "Facility requires at least 3 images")
+    .max(10, "Facility allows a maximum of 10 images")
+    .optional(),
   operatingHours: operatingHoursSchema.optional(),
 });
 
@@ -41,6 +46,11 @@ export const updateFacilitySchema = z.object({
   email: z.email().optional(),
   description: z.string().max(1000).optional(),
   status: z.enum(FacilityStatusEnum).optional(),
+  images: z
+    .array(z.string().url("Invalid image URL format"))
+    .min(3, "Facility requires at least 3 images")
+    .max(10, "Facility allows a maximum of 10 images")
+    .optional(),
   operatingHours: operatingHoursSchema.optional(),
 });
 

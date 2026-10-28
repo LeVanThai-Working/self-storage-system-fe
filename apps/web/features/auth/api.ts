@@ -40,6 +40,12 @@ export const authApi = {
     return data;
   },
 
+  /** Update user profile (name, phone, avatarUrl). */
+  updateProfile: async (payload: { name?: string; phoneNumber?: string; avatarUrl?: string }) => {
+    const { data } = await api.patch<ApiResponse<AuthUser>>("/profile/me", payload);
+    return data;
+  },
+
   /** Full-page redirect URL for Google OAuth (handled by the backend). */
   googleLoginUrl: () => new URL("auth/google", API_BASE_URL).toString(),
 };

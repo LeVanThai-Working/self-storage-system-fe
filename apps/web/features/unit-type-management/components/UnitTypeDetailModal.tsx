@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import {
   Layers,
@@ -13,6 +14,7 @@ import {
   Lock,
   Package,
   Boxes,
+  ImageIcon,
 } from "lucide-react";
 import {
   Dialog,
@@ -216,6 +218,56 @@ export const UnitTypeDetailModal = ({ unitTypeId, isOpen, onClose }: UnitTypeDet
                       </span>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Cover Image & Images Gallery */}
+              {(unitType.imageUrl || (unitType.images && unitType.images.length > 0)) && (
+                <div className="space-y-3">
+                  {unitType.imageUrl && (
+                    <div>
+                      <div className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5 text-teal-600" />
+                        Ảnh đại diện chính
+                      </div>
+                      <div className="relative w-full h-44 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-xs">
+                        <Image
+                          src={unitType.imageUrl}
+                          alt={unitType.name}
+                          fill
+                          sizes="(max-width: 640px) 100vw, 500px"
+                          unoptimized
+                          className="object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {unitType.images && unitType.images.length > 0 && (
+                    <div>
+                      <div className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2 flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5 text-slate-500" />
+                        Hình ảnh chi tiết ({unitType.images.length})
+                      </div>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                        {unitType.images.map((imgUrl: string, idx: number) => (
+                          <div
+                            key={idx}
+                            className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 bg-slate-100 shadow-xs"
+                          >
+                            <Image
+                              src={imgUrl}
+                              alt={`${unitType.name} - ${idx + 1}`}
+                              fill
+                              sizes="100px"
+                              unoptimized
+                              className="object-cover hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

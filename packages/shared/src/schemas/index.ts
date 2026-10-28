@@ -67,6 +67,7 @@ export {
   assignStorageUnitSchema,
   rejectReservationSchema,
   confirmReservationSchema,
+  assignReservationStaffSchema,
   cancelReservationSchema,
   reservationQuerySchema,
   type CreateReservationRequest,
@@ -74,6 +75,7 @@ export {
   type AssignStorageUnitRequest,
   type RejectReservationRequest,
   type ConfirmReservationRequest,
+  type AssignReservationStaffRequest,
   type CancelReservationRequest,
   type ReservationQuery,
   type ReservationIdParam,
@@ -128,6 +130,10 @@ export {
   type ContractAddendumParam,
 } from "./request/contract.request.schema";
 
+export {
+  cloudinarySignatureRequestSchema,
+  type CloudinarySignatureRequest,
+} from "./request/upload.request.schema";
 export {
   stockInRequestSchema,
   stockOutRequestSchema,

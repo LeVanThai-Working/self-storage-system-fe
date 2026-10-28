@@ -135,9 +135,10 @@ export function FacilityDashboardView() {
             <ul className="space-y-4">
               {amenityItems.map((o) => {
                 // Services have no stock: the BE sends no quantities for them.
-                const hasStock = typeof o.totalQuantity === "number" && o.totalQuantity > 0;
+                const total = typeof o.totalQuantity === "number" ? o.totalQuantity : 0;
+                const hasStock = total > 0;
                 const usedPercent = hasStock
-                  ? Math.round(((o.inUseQuantity ?? 0) / o.totalQuantity) * 100)
+                  ? Math.round(((o.inUseQuantity ?? 0) / total) * 100)
                   : 0;
                 return (
                   <li key={o.id}>
@@ -147,7 +148,7 @@ export function FacilityDashboardView() {
                         {hasStock
                           ? t("amenities.stock", {
                               available: o.availableQuantity ?? 0,
-                              total: o.totalQuantity,
+                              total,
                             })
                           : t("amenities.noStock")}
                       </span>

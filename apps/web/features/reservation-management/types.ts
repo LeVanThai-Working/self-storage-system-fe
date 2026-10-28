@@ -4,13 +4,16 @@ import {
   PaymentMethodEnum,
   PaymentPurposeEnum,
   PaymentStatusEnum,
+  RefundStatusEnum,
   ReservationStatusEnum,
   StorageUnitStatusEnum,
+  assignReservationStaffSchema,
   assignStorageUnitSchema,
   cancelReservationSchema,
   confirmManualPaymentSchema,
   confirmReservationSchema,
   rejectReservationSchema,
+  type AssignReservationStaffRequest,
   type AssignStorageUnitRequest,
   type AvailableStorageUnitQuery,
   type BankInfoResponse,
@@ -40,13 +43,16 @@ export {
   PaymentMethodEnum,
   PaymentPurposeEnum,
   PaymentStatusEnum,
+  RefundStatusEnum,
   ReservationStatusEnum,
   StorageUnitStatusEnum,
+  assignReservationStaffSchema,
   assignStorageUnitSchema,
   cancelReservationSchema,
   confirmManualPaymentSchema,
   confirmReservationSchema,
   rejectReservationSchema,
+  type AssignReservationStaffRequest,
   type AssignStorageUnitRequest,
   type AvailableStorageUnitQuery,
   type BankInfoResponse,
@@ -76,19 +82,27 @@ export type ManagerReservationQuickTab =
   | "CONFIRMED"
   | "CLOSED";
 
-export type ReservationSortBy = "createdAt" | "startDate" | "totalAmount" | "updatedAt";
+export type ReservationSortBy =
+  "createdAt" | "startDate" | "checkInDate" | "totalAmount" | "updatedAt";
 
 export interface ManagerReservationFilterParams {
   facilityId: string;
   page?: number;
   limit?: number;
   status?: ReservationStatusEnum;
+  refundStatus?: RefundStatusEnum;
   reservationCode?: string;
   facilityUnitTypeOfferingId?: string;
+  storageUnitId?: string;
+  customerId?: string;
   /** ISO 8601 string */
   startDateFrom?: string;
   /** ISO 8601 string */
   startDateTo?: string;
+  /** ISO 8601 string */
+  checkInDateFrom?: string;
+  /** ISO 8601 string */
+  checkInDateTo?: string;
   sortBy?: ReservationSortBy;
   sortOrder?: "asc" | "desc";
 }

@@ -153,10 +153,12 @@ export const FacilityAmenityTable = () => {
 
     // Filter by Stock availability
     if (stockFilter === "IN_STOCK") {
-      result = result.filter((item: FacilityAmenityOfferingResponse) => item.availableQuantity > 0);
+      result = result.filter(
+        (item: FacilityAmenityOfferingResponse) => (item.availableQuantity ?? 0) > 0
+      );
     } else if (stockFilter === "OUT_OF_STOCK") {
       result = result.filter(
-        (item: FacilityAmenityOfferingResponse) => item.availableQuantity === 0
+        (item: FacilityAmenityOfferingResponse) => (item.availableQuantity ?? 0) === 0
       );
     }
 
@@ -567,10 +569,10 @@ export const FacilityAmenityTable = () => {
                 </tr>
               ) : (
                 offerings.map((offering: FacilityAmenityOfferingResponse) => {
-                  const percentUsed =
-                    offering.totalQuantity > 0
-                      ? Math.round((offering.inUseQuantity / offering.totalQuantity) * 100)
-                      : 0;
+                  const total = offering.totalQuantity ?? 0;
+                  const inUse = offering.inUseQuantity ?? 0;
+                  const available = offering.availableQuantity ?? 0;
+                  const percentUsed = total > 0 ? Math.round((inUse / total) * 100) : 0;
 
                   return (
                     <tr key={offering.id} className="hover:bg-slate-50/70 transition-colors group">
@@ -620,19 +622,19 @@ export const FacilityAmenityTable = () => {
                             Khả dụng:{" "}
                             <b
                               className={
-                                offering.availableQuantity === 0
+                                available === 0
                                   ? "text-rose-600 font-extrabold"
-                                  : offering.availableQuantity <= 2
+                                  : available <= 2
                                     ? "text-amber-600 font-extrabold"
                                     : "text-emerald-700 font-extrabold"
                               }
                             >
-                              {offering.availableQuantity}
+                              {available}
                             </b>
-                            /{offering.totalQuantity}
+                            /{total}
                           </span>
                           <span className="text-[11px] text-slate-400">
-                            Đang dùng: <b className="text-slate-700">{offering.inUseQuantity}</b>
+                            Đang dùng: <b className="text-slate-700">{inUse}</b>
                           </span>
                         </div>
 
@@ -641,29 +643,25 @@ export const FacilityAmenityTable = () => {
                           <div
                             className="bg-amber-500 h-2"
                             style={{ width: `${percentUsed}%` }}
-                            title={`Đang dùng: ${offering.inUseQuantity}`}
+                            title={`Đang dùng: ${inUse}`}
                           />
                           <div
                             className="bg-emerald-500 h-2"
                             style={{
-                              width: `${
-                                offering.totalQuantity > 0
-                                  ? (offering.availableQuantity / offering.totalQuantity) * 100
-                                  : 0
-                              }%`,
+                              width: `${total > 0 ? (available / total) * 100 : 0}%`,
                             }}
-                            title={`Khả dụng: ${offering.availableQuantity}`}
+                            title={`Khả dụng: ${available}`}
                           />
                         </div>
 
                         {/* Stock Tag */}
                         <div className="mt-1.5">
-                          {offering.availableQuantity === 0 ? (
+                          {available === 0 ? (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200">
                               <AlertCircle className="w-2.5 h-2.5" />
                               {t("stock.outOfStock")}
                             </span>
-                          ) : offering.availableQuantity <= 2 ? (
+                          ) : available <= 2 ? (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
                               <AlertTriangle className="w-2.5 h-2.5" />
                               {t("stock.lowStock")}

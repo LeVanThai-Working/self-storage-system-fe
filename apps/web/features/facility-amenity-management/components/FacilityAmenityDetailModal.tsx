@@ -144,7 +144,7 @@ export const FacilityAmenityDetailModal = ({
                 </div>
               </div>
               <div className="shrink-0 flex items-center gap-2">
-                {getStockStatusBadge(offering.availableQuantity, offering.totalQuantity)}
+                {getStockStatusBadge(offering.availableQuantity ?? 0, offering.totalQuantity ?? 0)}
                 <span
                   className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
                     offering.status === FacilityAmenityOfferingStatusEnum.ACTIVE
@@ -165,8 +165,8 @@ export const FacilityAmenityDetailModal = ({
                   {t("inventoryTitle")}
                 </span>
                 <span className="text-xs text-slate-500">
-                  {offering.totalQuantity > 0
-                    ? `${Math.round((offering.inUseQuantity / offering.totalQuantity) * 100)}% đang thuê`
+                  {(offering.totalQuantity ?? 0) > 0
+                    ? `${Math.round(((offering.inUseQuantity ?? 0) / (offering.totalQuantity || 1)) * 100)}% đang thuê`
                     : "0%"}
                 </span>
               </div>
@@ -177,23 +177,23 @@ export const FacilityAmenityDetailModal = ({
                   className="bg-amber-500 h-2.5 transition-all duration-300"
                   style={{
                     width: `${
-                      offering.totalQuantity > 0
-                        ? (offering.inUseQuantity / offering.totalQuantity) * 100
+                      (offering.totalQuantity ?? 0) > 0
+                        ? ((offering.inUseQuantity ?? 0) / (offering.totalQuantity || 1)) * 100
                         : 0
                     }%`,
                   }}
-                  title={`Đang dùng: ${offering.inUseQuantity}`}
+                  title={`Đang dùng: ${offering.inUseQuantity ?? 0}`}
                 />
                 <div
                   className="bg-emerald-500 h-2.5 transition-all duration-300"
                   style={{
                     width: `${
-                      offering.totalQuantity > 0
-                        ? (offering.availableQuantity / offering.totalQuantity) * 100
+                      (offering.totalQuantity ?? 0) > 0
+                        ? ((offering.availableQuantity ?? 0) / (offering.totalQuantity || 1)) * 100
                         : 0
                     }%`,
                   }}
-                  title={`Khả dụng: ${offering.availableQuantity}`}
+                  title={`Khả dụng: ${offering.availableQuantity ?? 0}`}
                 />
               </div>
 
@@ -202,13 +202,13 @@ export const FacilityAmenityDetailModal = ({
                 <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
                   <div className="text-[11px] text-slate-400 font-semibold">{t("totalQty")}</div>
                   <div className="text-base font-extrabold text-slate-800 mt-0.5">
-                    {offering.totalQuantity}
+                    {offering.totalQuantity ?? 0}
                   </div>
                 </div>
                 <div className="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200/70">
                   <div className="text-[11px] text-amber-700 font-semibold">{t("inUseQty")}</div>
                   <div className="text-base font-extrabold text-amber-800 mt-0.5">
-                    {offering.inUseQuantity}
+                    {offering.inUseQuantity ?? 0}
                   </div>
                 </div>
                 <div className="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
@@ -216,7 +216,7 @@ export const FacilityAmenityDetailModal = ({
                     {t("availableQty")}
                   </div>
                   <div className="text-base font-extrabold text-emerald-700 mt-0.5">
-                    {offering.availableQuantity}
+                    {offering.availableQuantity ?? 0}
                   </div>
                 </div>
               </div>

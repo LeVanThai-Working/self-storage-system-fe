@@ -63,3 +63,19 @@ export const useLogout = () => {
     },
   });
 };
+
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+  const setCurrentUser = useAuthStore((s) => s.setCurrentUser);
+
+  return useMutation({
+    mutationFn: authApi.updateProfile,
+    onSuccess: (res) => {
+      if (res?.data) {
+        setCurrentUser(res.data);
+        queryClient.setQueryData(authKeys.me(), res.data);
+      }
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
+    },
+  });
+};

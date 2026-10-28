@@ -26,6 +26,7 @@ export interface UnitTypeItem {
   volume: number;
   category: UnitTypeCategoryEnum | string;
   status: UnitTypeStatusEnum | string;
+  imageUrl?: string;
   images?: string[];
   features?: string[];
   createdAt: string;
@@ -65,6 +66,7 @@ export interface CreateUnitTypeRequest {
   status?: UnitTypeStatusEnum | string;
   dimensions: UnitTypeDimensions;
   features?: string[];
+  imageUrl?: string;
   images?: string[];
 }
 
@@ -75,5 +77,6 @@ export interface UpdateUnitTypeRequest {
   status?: UnitTypeStatusEnum | string;
   dimensions?: Partial<UnitTypeDimensions>;
   features?: string[];
+  imageUrl?: string;
   images?: string[];
 }

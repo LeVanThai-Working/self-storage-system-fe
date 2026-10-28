@@ -20,6 +20,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
+import { CloudinaryFolderEnum } from "@self-storage-system-fe/shared";
 import { useCreateFacility } from "../hooks";
 import type { CreateFacilityRequest } from "../types";
 
@@ -55,6 +57,7 @@ export const CreateFacilityModal = ({ isOpen, onClose }: CreateFacilityModalProp
     openTime: "08:00",
     closeTime: "21:00",
     description: "",
+    images: [] as string[],
   });
 
   const [errors, setErrors] = useState<{
@@ -64,6 +67,7 @@ export const CreateFacilityModal = ({ isOpen, onClose }: CreateFacilityModalProp
     address?: string;
     phone?: string;
     email?: string;
+    images?: string;
     general?: string;
   }>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -79,6 +83,7 @@ export const CreateFacilityModal = ({ isOpen, onClose }: CreateFacilityModalProp
       openTime: "08:00",
       closeTime: "21:00",
       description: "",
+      images: [],
     });
     setErrors({});
     setSuccessMessage(null);
@@ -132,6 +137,12 @@ export const CreateFacilityModal = ({ isOpen, onClose }: CreateFacilityModalProp
       }
     }
 
+    if (formData.images.length > 0 && formData.images.length < 3) {
+      newErrors.images = "Cơ sở kho yêu cầu tối thiểu 3 ảnh (hoặc để trống nếu chưa có ảnh)";
+    } else if (formData.images.length > 10) {
+      newErrors.images = "Cơ sở kho cho phép tối đa 10 ảnh";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -155,6 +166,7 @@ export const CreateFacilityModal = ({ isOpen, onClose }: CreateFacilityModalProp
       phone: cleanedPhone || undefined,
       email: cleanedEmail || undefined,
       description: cleanedDescription || undefined,
+      images: formData.images.length > 0 ? formData.images : undefined,
       operatingHours:
         formData.openTime && formData.closeTime
           ? {
@@ -446,6 +458,27 @@ export const CreateFacilityModal = ({ isOpen, onClose }: CreateFacilityModalProp
               placeholder={t("descriptionPlaceholder")}
               className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all resize-none"
             />
+          </div>
+
+          {/* Facility Images Upload */}
+          <div className="space-y-1.5">
+            <CloudinaryUploader
+              label="Hình ảnh cơ sở kho (Tối thiểu 3, tối đa 10 ảnh)"
+              description="Tải lên hình ảnh khuôn viên, cổng vào, khu vực gửi đồ (tối thiểu 3 ảnh)"
+              folder={CloudinaryFolderEnum.FACILITIES}
+              value={formData.images}
+              onChange={(urls) => {
+                setFormData({ ...formData, images: urls });
+                if (errors.images) setErrors({ ...errors, images: undefined });
+              }}
+              multiple={true}
+              maxFiles={10}
+              accept="image/*"
+              disabled={createFacilityMutation.isPending}
+            />
+            {errors.images && (
+              <p className="text-[11px] text-rose-600 font-medium">{errors.images}</p>
+            )}
           </div>
 
           {/* Footer Actions */}

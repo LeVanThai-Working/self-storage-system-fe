@@ -1,10 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import Image from "next/image";
 import { Bell, Search, Users, Settings, LayoutDashboard, ScrollText, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
+import { EditProfileModal } from "@/features/auth/components/EditProfileModal";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { useAuthStore } from "@/features/auth/store";
 
@@ -25,6 +27,7 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
   const pathname = usePathname();
   const t = useTranslations("systemAdmin");
   const currentUser = useAuthStore((state) => state.currentUser);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const navItems = [
     {
@@ -117,17 +120,37 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
               <span className="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full border border-white"></span>
             </button>
             <div className="flex items-center gap-3 pl-6 border-l border-slate-200">
-              <div className="text-right hidden sm:block">
-                <div className="text-sm font-bold text-slate-800">
-                  {currentUser?.name ?? "System Admin"}
+              <button
+                type="button"
+                onClick={() => setIsProfileModalOpen(true)}
+                className="flex items-center gap-3 hover:opacity-85 transition-opacity cursor-pointer text-left group"
+                title="Chỉnh sửa hồ sơ & Avatar"
+              >
+                <div className="text-right hidden sm:block">
+                  <div className="text-sm font-bold text-slate-800 group-hover:text-emerald-700 transition-colors">
+                    {currentUser?.name ?? "Admin User"}
+                  </div>
+                  <div className="text-xs text-slate-500 font-medium">System Admin</div>
                 </div>
-                <div className="text-xs text-slate-500 font-medium">System Admin</div>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-sm border-2 border-white ring-2 ring-emerald-50">
-                <span className="text-white font-bold text-sm">
-                  {getInitials(currentUser?.name)}
-                </span>
-              </div>
+                {currentUser?.avatarUrl ? (
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden shadow-sm border-2 border-white ring-2 ring-emerald-50">
+                    <Image
+                      src={currentUser.avatarUrl}
+                      alt={currentUser.name || "Avatar"}
+                      fill
+                      sizes="40px"
+                      unoptimized
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-sm border-2 border-white ring-2 ring-emerald-50">
+                    <span className="text-white font-bold text-sm">
+                      {getInitials(currentUser?.name)}
+                    </span>
+                  </div>
+                )}
+              </button>
               <LogoutButton />
             </div>
           </div>
@@ -135,6 +158,12 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
 
         {/* Page Content */}
         <main className="flex-1 p-8 overflow-y-auto">{children}</main>
+
+        {/* Profile Modal */}
+        <EditProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+        />
       </div>
     </div>
   );

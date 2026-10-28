@@ -7,6 +7,8 @@ import type {
   RentalUnitEnum,
 } from "../enums/contract.enum";
 import type { RoleEnum, UserStatusEnum } from "../enums/user.enum";
+import type { OfferingSnapshot, StorageUnitSnapshot, UserSnapshot } from "./common.types";
+import type { FacilitySnapshot } from "./facility.types";
 
 export interface FacilityStaffItem {
   id: string;
@@ -33,47 +35,10 @@ export interface FacilityStaffQuery {
   sortOrder?: "asc" | "desc";
 }
 
-export interface ContractUserSnapshot {
-  id: string;
-  name: string;
-  email: string;
-  phoneNumber?: string | null;
-  role?: string | null;
-}
-
-export type UserSnapshot = ContractUserSnapshot;
-
-export interface ContractFacilitySnapshot {
-  id: string;
-  name: string;
-  city: string;
-  address: string;
-  phone?: string | null;
-  email?: string | null;
-  status?: string | null;
-}
-
-export interface ContractOfferingSnapshot {
-  id: string;
-  unitTypeId: string;
-  billingUnit: string;
-  pricePerUnit: number;
-  depositMultiplier?: number | null;
-  minRentalDays?: number | null;
-  status?: string | null;
-}
-
-export type OfferingSnapshot = ContractOfferingSnapshot;
-
-export interface ContractStorageUnitSnapshot {
-  id: string;
-  unitNumber: string;
-  floor: number;
-  zone?: string | null;
-  status: string;
-}
-
-export type StorageUnitSnapshot = ContractStorageUnitSnapshot;
+export type ContractUserSnapshot = UserSnapshot;
+export type ContractFacilitySnapshot = FacilitySnapshot;
+export type ContractOfferingSnapshot = OfferingSnapshot;
+export type ContractStorageUnitSnapshot = StorageUnitSnapshot;
 
 export interface ContractAmenityItemResponse {
   facilityAmenityOfferingId: string;
@@ -92,7 +57,7 @@ export interface ContractRenewalItemResponse {
   previousEndDate: string;
   newEndDate: string;
   renewedAt: string;
-  renewedBy?: ContractUserSnapshot | null;
+  renewedBy?: UserSnapshot | null;
   note?: string | null;
   additionalDuration?: number;
   billingUnit?: BillingUnitEnum | RentalUnitEnum;
@@ -110,22 +75,22 @@ export interface ContractAddendumResponse {
   totalPeriodicPrice: number;
   damageFee: number;
   status: ContractAddendumStatusEnum;
-  requestedBy?: ContractUserSnapshot | null;
+  requestedBy?: UserSnapshot | null;
   requestedAt: string;
-  approvedBy?: ContractUserSnapshot | null;
+  approvedBy?: UserSnapshot | null;
   approvedAt?: string | null;
   assignedStaffId?: string | null;
-  assignedStaff?: ContractUserSnapshot | null;
+  assignedStaff?: UserSnapshot | null;
   customerSigned: boolean;
   customerSignedAt?: string | null;
   staffSigned: boolean;
   staffSignedAt?: string | null;
   completedAt?: string | null;
   rejectionReason?: string | null;
-  rejectedBy?: ContractUserSnapshot | null;
+  rejectedBy?: UserSnapshot | null;
   rejectedAt?: string | null;
   cancellationReason?: string | null;
-  cancelledBy?: ContractUserSnapshot | null;
+  cancelledBy?: UserSnapshot | null;
   cancelledAt?: string | null;
   notes?: string | null;
 }
@@ -136,16 +101,16 @@ export interface ContractResponse {
   source: ContractSourceEnum;
   reservationId?: string | null;
   customerId: string;
-  customer?: ContractUserSnapshot | null;
+  customer?: UserSnapshot | null;
   facilityId: string;
-  facility?: ContractFacilitySnapshot | null;
+  facility?: FacilitySnapshot | null;
   facilityUnitTypeOfferingId: string;
-  facilityUnitTypeOffering?: ContractOfferingSnapshot | null;
-  offering?: ContractOfferingSnapshot | null;
+  facilityUnitTypeOffering?: OfferingSnapshot | null;
+  offering?: OfferingSnapshot | null;
   storageUnitId: string;
-  storageUnit?: ContractStorageUnitSnapshot | null;
-  assignedStaffId: string;
-  assignedStaff?: ContractUserSnapshot | null;
+  storageUnit?: StorageUnitSnapshot | null;
+  assignedStaffId?: string | null;
+  assignedStaff?: UserSnapshot | null;
   billingUnit: BillingUnitEnum;
   startDate: string;
   endDate: string;
@@ -172,17 +137,17 @@ export interface ContractResponse {
   signedAt?: string | null;
   renewals: ContractRenewalItemResponse[];
   renewalCount?: number;
-  inspectedBy?: ContractUserSnapshot | null;
+  inspectedBy?: UserSnapshot | null;
   damageFee: number;
   overdueFee: number;
   refundAmount: number;
   additionalPaymentRequired: number;
   inspectionNotes?: string | null;
   cancellationReason?: string | null;
-  cancelledBy?: ContractUserSnapshot | null;
+  cancelledBy?: UserSnapshot | null;
   cancelledAt?: string | null;
   terminationReason?: string | null;
-  terminatedBy?: ContractUserSnapshot | null;
+  terminatedBy?: UserSnapshot | null;
   terminatedAt?: string | null;
   notes?: string | null;
   createdAt: string;

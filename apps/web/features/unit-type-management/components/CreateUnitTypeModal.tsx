@@ -20,6 +20,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
+import { CloudinaryFolderEnum } from "@self-storage-system-fe/shared";
 import { useCreateUnitType } from "../hooks";
 import { UnitTypeCategoryEnum, UnitTypeStatusEnum, type CreateUnitTypeRequest } from "../types";
 
@@ -42,6 +44,8 @@ export const CreateUnitTypeModal = ({ isOpen, onClose }: CreateUnitTypeModalProp
   const [description, setDescription] = useState<string>("");
   const [features, setFeatures] = useState<string[]>([]);
   const [featureInput, setFeatureInput] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [images, setImages] = useState<string[]>([]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -83,6 +87,8 @@ export const CreateUnitTypeModal = ({ isOpen, onClose }: CreateUnitTypeModalProp
     setDescription("");
     setFeatures([]);
     setFeatureInput("");
+    setImageUrl("");
+    setImages([]);
     setErrors({});
     setSuccessMessage(null);
   };
@@ -127,6 +133,8 @@ export const CreateUnitTypeModal = ({ isOpen, onClose }: CreateUnitTypeModalProp
       },
       description: description.trim() || undefined,
       features: finalFeatures.length > 0 ? finalFeatures : undefined,
+      imageUrl: imageUrl.trim() || undefined,
+      images: images.length > 0 ? images : undefined,
     };
 
     try {
@@ -436,6 +444,34 @@ export const CreateUnitTypeModal = ({ isOpen, onClose }: CreateUnitTypeModalProp
               </div>
             )}
           </div>
+
+          {/* Cover Image Upload (Single) */}
+          <CloudinaryUploader
+            label="Ảnh đại diện chính (Cover Image)"
+            description="Tải lên 1 ảnh đại diện chính cho loại ngăn kho này"
+            folder={CloudinaryFolderEnum.UNIT_TYPES}
+            value={imageUrl ? [imageUrl] : []}
+            onChange={(urls) => setImageUrl(urls[0] || "")}
+            multiple={false}
+            maxFiles={1}
+            accept="image/*"
+            maxSizeMB={5}
+            disabled={createMutation.isPending}
+          />
+
+          {/* Gallery Images Upload (Multiple) */}
+          <CloudinaryUploader
+            label="Hình ảnh chi tiết bổ sung (Gallery)"
+            description="Tải lên các hình ảnh chi tiết khác của loại ngăn kho (tối đa 5 ảnh)"
+            folder={CloudinaryFolderEnum.UNIT_TYPES}
+            value={images}
+            onChange={setImages}
+            multiple={true}
+            maxFiles={5}
+            accept="image/*"
+            maxSizeMB={5}
+            disabled={createMutation.isPending}
+          />
 
           {/* Footer Actions */}
           <DialogFooter className="pt-3 border-t border-slate-100 gap-2 sm:gap-0">

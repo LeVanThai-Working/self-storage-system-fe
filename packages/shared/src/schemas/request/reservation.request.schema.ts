@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { paginationQuerySchema } from "../common/pagination.schema";
-import { ReservationStatusEnum } from "../../enums/reservation.enum";
+import { RefundStatusEnum, ReservationStatusEnum } from "../../enums/reservation.enum";
 
 export const reservationIdParamSchema = z.object({
   id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid reservation ID format"),
@@ -46,6 +46,12 @@ export const rejectReservationSchema = z.object({
 });
 
 export const confirmReservationSchema = z.object({
+  assignedStaffId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid staff ID format"),
+  notes: z.string().max(1000).optional(),
+});
+
+export const assignReservationStaffSchema = z.object({
+  staffId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid staff ID format"),
   notes: z.string().max(1000).optional(),
 });
 
@@ -74,10 +80,15 @@ export const reservationQuerySchema = paginationQuerySchema.extend({
     .regex(/^[0-9a-fA-F]{24}$/)
     .optional(),
   status: z.nativeEnum(ReservationStatusEnum).optional(),
+  refundStatus: z.nativeEnum(RefundStatusEnum).optional(),
   reservationCode: z.string().optional(),
   startDateFrom: dateStringSchema.optional(),
   startDateTo: dateStringSchema.optional(),
-  sortBy: z.enum(["createdAt", "startDate", "totalAmount", "updatedAt"]).default("createdAt"),
+  checkInDateFrom: dateStringSchema.optional(),
+  checkInDateTo: dateStringSchema.optional(),
+  sortBy: z
+    .enum(["createdAt", "startDate", "checkInDate", "totalAmount", "updatedAt"])
+    .default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
@@ -86,6 +97,7 @@ export type UpdateReservationRequest = z.infer<typeof updateReservationSchema>;
 export type AssignStorageUnitRequest = z.infer<typeof assignStorageUnitSchema>;
 export type RejectReservationRequest = z.infer<typeof rejectReservationSchema>;
 export type ConfirmReservationRequest = z.infer<typeof confirmReservationSchema>;
+export type AssignReservationStaffRequest = z.infer<typeof assignReservationStaffSchema>;
 export type CancelReservationRequest = z.infer<typeof cancelReservationSchema>;
 export type ReservationQuery = z.infer<typeof reservationQuerySchema>;
 export type ReservationIdParam = z.infer<typeof reservationIdParamSchema>;

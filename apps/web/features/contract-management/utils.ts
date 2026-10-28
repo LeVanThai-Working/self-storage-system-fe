@@ -7,6 +7,7 @@ import {
   ContractStatusEnum,
   MESSAGE_CODE,
   RentalUnitEnum,
+  RoleEnum,
   type ContractAddendumResponse,
   type ContractResponse,
 } from "./types";
@@ -60,10 +61,17 @@ export function toDateInputString(iso?: string | null): string {
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Lấy ngày hôm nay theo định dạng YYYY-MM-DD
+ */
+export function getTodayDateInputString(): string {
+  return toDateInputString(new Date().toISOString());
 }
 
 /**
@@ -184,15 +192,26 @@ export function isContractFirstCyclePaid(contract: ContractResponse): boolean {
 }
 
 /**
- * Điều kiện cho phép Nhân viên bấm "Xác nhận bàn giao kho & Ký (Staff)" (POST /contracts/{id}/check-in):
+ * Điều kiện cho phép Quản lý bấm "Xác nhận bàn giao kho & Ký Check-in" (POST /contracts/{id}/check-in):
  * - status === 'draft'
  * - Đã thanh toán đủ tiền cọc (source === 'reservation' hoặc Boolean(contract.depositPaidAt))
+ * - Khách hàng đã ký điều khoản trên App Mobile (contract.customerSigned === true)
  * - !contract.staffSigned
+ * - Chỉ Quản lý cơ sở / Admin / Ops (facility_staff bị chặn 403)
  */
-export function canCheckInContract(contract: ContractResponse): boolean {
+export function canCheckInContract(contract: ContractResponse, userRole?: string | null): boolean {
+  const normalizedRole = String(userRole ?? "").toLowerCase();
+  const isManagerOrAdmin =
+    !userRole ||
+    normalizedRole === RoleEnum.FACILITY_MANAGER ||
+    normalizedRole === RoleEnum.BUSINESS_OPS_MANAGER ||
+    normalizedRole === RoleEnum.SYSTEM_ADMIN;
+
   return (
+    isManagerOrAdmin &&
     contract.status === ContractStatusEnum.DRAFT &&
     isContractDepositSatisfied(contract) &&
+    contract.customerSigned === true &&
     !contract.staffSigned
   );
 }
@@ -304,15 +323,25 @@ export function calculateCheckoutSettlementPreview(
  * Xử lý mã lỗi nghiệp vụ Hợp đồng & Phụ lục Hợp đồng
  */
 const CONTRACT_ERROR_MESSAGES_VI: Record<string, string> = {
+  [MESSAGE_CODE.MESSAGE_CODE_103]: "Bạn không có quyền thao tác trên cơ sở này.",
+  [MESSAGE_CODE.MESSAGE_CODE_104]: "Không tìm thấy dữ liệu yêu cầu.",
+  [MESSAGE_CODE.MESSAGE_CODE_105]: "Hợp đồng cho đơn đặt chỗ này đã tồn tại trong hệ thống.",
+  [MESSAGE_CODE.MESSAGE_CODE_319]: "Đã quá ngày hẹn nhận kho, không thể xác nhận đơn đặt chỗ.",
+  [MESSAGE_CODE.MESSAGE_CODE_400]: "Hợp đồng không tồn tại.",
+  [MESSAGE_CODE.MESSAGE_CODE_401]: "Chuyển trạng thái hợp đồng không hợp lệ.",
+  [MESSAGE_CODE.MESSAGE_CODE_402]: "Phòng kho không khả dụng để tạo hợp đồng.",
+  [MESSAGE_CODE.MESSAGE_CODE_406]: "Đơn đặt chỗ phải được xác nhận trước khi tạo hợp đồng.",
+  [MESSAGE_CODE.MESSAGE_CODE_407]: "Phòng kho không thuộc cơ sở đang chọn.",
+  [MESSAGE_CODE.MESSAGE_CODE_408]: "Tiện ích không đủ số lượng khả dụng trong kho cơ sở.",
   [MESSAGE_CODE.MESSAGE_CODE_409]:
     "Không thể ký hợp đồng trước khi hoàn tất thanh toán tiền thuê kỳ đầu tiên (firstCyclePaidAt).",
   [MESSAGE_CODE.MESSAGE_CODE_410]:
     "Bên này đã thực hiện ký xác nhận hợp đồng hoặc phụ lục hợp đồng trước đó.",
-  [MESSAGE_CODE.MESSAGE_CODE_411]: "Không tìm thấy phụ lục hợp đồng (Contract Addendum).",
-  [MESSAGE_CODE.MESSAGE_CODE_412]:
-    "Phụ lục hợp đồng không ở trạng thái hợp lệ để thực hiện thao tác này.",
+  [MESSAGE_CODE.MESSAGE_CODE_411]: "Vui lòng đồng ý với các điều khoản trước khi ký xác nhận.",
+  [MESSAGE_CODE.MESSAGE_CODE_412]: "Bên này đã ký xác nhận trước đó.",
   [MESSAGE_CODE.MESSAGE_CODE_413]:
     "Số lượng yêu cầu tháo dỡ / trả bớt vượt quá số lượng đang thuê trên hợp đồng (hoặc đang có yêu cầu tháo dỡ chờ xử lý).",
+  [MESSAGE_CODE.MESSAGE_CODE_414]: "Khách hàng phải ký hợp đồng trước khi cơ sở ký bàn giao kho.",
   [MESSAGE_CODE.MESSAGE_CODE_500]: "Hợp đồng không ở trạng thái hợp lệ để thực hiện thao tác này.",
   [MESSAGE_CODE.MESSAGE_CODE_501]:
     "Ngày kết thúc hợp đồng không hợp lệ (endDate phải sau startDate, hoặc newEndDate phải sau endDate hiện tại).",
@@ -324,20 +353,31 @@ const CONTRACT_ERROR_MESSAGES_VI: Record<string, string> = {
     "Bắt buộc phải đồng ý điều khoản (termsAccepted: true) khi ký xác nhận.",
   [MESSAGE_CODE.MESSAGE_CODE_506]:
     "Hợp đồng chưa được thanh toán tiền cọc (depositPaidAt === null), không thể ký xác nhận.",
-  [MESSAGE_CODE.MESSAGE_CODE_121]:
-    "Nhân viên được gán không thuộc cơ sở hiện tại hoặc không đúng vai trò.",
+  [MESSAGE_CODE.MESSAGE_CODE_121]: "Cần vai trò Quản lý cơ sở để thực hiện hành động này.",
   [MESSAGE_CODE.MESSAGE_CODE_122]:
     "Nhân viên được gán không thuộc cơ sở hiện tại hoặc bạn không có quyền thao tác trên cơ sở này.",
 };
 
 const CONTRACT_ERROR_MESSAGES_EN: Record<string, string> = {
+  [MESSAGE_CODE.MESSAGE_CODE_103]: "You do not have permission to operate on this facility.",
+  [MESSAGE_CODE.MESSAGE_CODE_104]: "Requested record was not found.",
+  [MESSAGE_CODE.MESSAGE_CODE_105]: "A contract for this reservation already exists.",
+  [MESSAGE_CODE.MESSAGE_CODE_319]: "Check-in date has already passed, cannot confirm reservation.",
+  [MESSAGE_CODE.MESSAGE_CODE_400]: "Contract not found.",
+  [MESSAGE_CODE.MESSAGE_CODE_401]: "Invalid contract status transition.",
+  [MESSAGE_CODE.MESSAGE_CODE_402]: "Storage unit is not available to create a contract.",
+  [MESSAGE_CODE.MESSAGE_CODE_406]:
+    "Reservation must be confirmed or completed to create a contract.",
+  [MESSAGE_CODE.MESSAGE_CODE_407]: "Storage unit facility mismatch.",
+  [MESSAGE_CODE.MESSAGE_CODE_408]: "Insufficient amenity quantity for contract.",
   [MESSAGE_CODE.MESSAGE_CODE_409]:
     "Cannot sign contract before first billing cycle payment is completed.",
   [MESSAGE_CODE.MESSAGE_CODE_410]: "This party has already signed the contract or addendum.",
-  [MESSAGE_CODE.MESSAGE_CODE_411]: "Contract addendum not found.",
-  [MESSAGE_CODE.MESSAGE_CODE_412]: "Contract addendum is not in a valid status for this operation.",
+  [MESSAGE_CODE.MESSAGE_CODE_411]: "Contract terms must be accepted before signing.",
+  [MESSAGE_CODE.MESSAGE_CODE_412]: "Party has already signed.",
   [MESSAGE_CODE.MESSAGE_CODE_413]:
     "Requested removal quantity exceeds active contract amenity quantity.",
+  [MESSAGE_CODE.MESSAGE_CODE_414]: "Customer must sign contract before check-in handover.",
   [MESSAGE_CODE.MESSAGE_CODE_500]:
     "The contract is not in a valid status to perform this operation.",
   [MESSAGE_CODE.MESSAGE_CODE_501]:
@@ -349,8 +389,7 @@ const CONTRACT_ERROR_MESSAGES_EN: Record<string, string> = {
   [MESSAGE_CODE.MESSAGE_CODE_505]: "Terms must be accepted (termsAccepted: true) upon signing.",
   [MESSAGE_CODE.MESSAGE_CODE_506]:
     "Contract deposit has not been paid (depositPaidAt === null). Cannot proceed with signing.",
-  [MESSAGE_CODE.MESSAGE_CODE_121]:
-    "Assigned staff does not belong to this facility or has an invalid role.",
+  [MESSAGE_CODE.MESSAGE_CODE_121]: "Facility Manager role required for this action.",
   [MESSAGE_CODE.MESSAGE_CODE_122]:
     "Assigned staff does not belong to this facility or you do not have permission for this facility.",
 };

@@ -12,7 +12,6 @@ import {
   X,
   FileText,
   Tag,
-  ImageIcon,
 } from "lucide-react";
 import {
   Dialog,
@@ -21,6 +20,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
+import { CloudinaryFolderEnum } from "@self-storage-system-fe/shared";
 import { useCreateAmenity } from "../hooks";
 import { AmenityTypeEnum, AmenityStatusEnum, type CreateAmenityRequest } from "../types";
 
@@ -43,9 +44,8 @@ export const CreateAmenityModal = ({ isOpen, onClose }: CreateAmenityModalProps)
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState<string>("");
 
-  // Images state
+  // Images state (Cloudinary URLs)
   const [images, setImages] = useState<string[]>([]);
-  const [imageInput, setImageInput] = useState<string>("");
 
   // Error & Feedback states
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -71,26 +71,6 @@ export const CreateAmenityModal = ({ isOpen, onClose }: CreateAmenityModalProps)
     }
   };
 
-  // Image handlers
-  const handleAddImage = () => {
-    const trimmed = imageInput.trim();
-    if (trimmed && !images.includes(trimmed)) {
-      setImages((prev) => [...prev, trimmed]);
-      setImageInput("");
-    }
-  };
-
-  const handleRemoveImage = (imgToRemove: string) => {
-    setImages((prev) => prev.filter((item) => item !== imgToRemove));
-  };
-
-  const handleImageKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddImage();
-    }
-  };
-
   // Reset form
   const resetForm = () => {
     setName("");
@@ -100,7 +80,6 @@ export const CreateAmenityModal = ({ isOpen, onClose }: CreateAmenityModalProps)
     setTags([]);
     setTagInput("");
     setImages([]);
-    setImageInput("");
     setErrors({});
     setSuccessMessage(null);
   };
@@ -127,15 +106,10 @@ export const CreateAmenityModal = ({ isOpen, onClose }: CreateAmenityModalProps)
     setErrors({});
     setSuccessMessage(null);
 
-    // Chuẩn bị tags và images (đảm bảo là array)
+    // Chuẩn bị tags
     const finalTags = [...tags];
     if (tagInput.trim() && !finalTags.includes(tagInput.trim().toLowerCase())) {
       finalTags.push(tagInput.trim().toLowerCase());
-    }
-
-    const finalImages = [...images];
-    if (imageInput.trim() && !finalImages.includes(imageInput.trim())) {
-      finalImages.push(imageInput.trim());
     }
 
     const payload: CreateAmenityRequest = {
@@ -144,7 +118,7 @@ export const CreateAmenityModal = ({ isOpen, onClose }: CreateAmenityModalProps)
       status,
       description: description.trim() || undefined,
       tags: finalTags,
-      images: finalImages,
+      images,
     };
 
     try {
@@ -447,57 +421,19 @@ export const CreateAmenityModal = ({ isOpen, onClose }: CreateAmenityModalProps)
             )}
           </div>
 
-          {/* Image URLs Input */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-              <span className="flex items-center gap-1.5">
-                <ImageIcon className="w-3.5 h-3.5 text-slate-500" />
-                {t("imagesLabel")}
-              </span>
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="url"
-                value={imageInput}
-                onChange={(e) => setImageInput(e.target.value)}
-                onKeyDown={handleImageKeyDown}
-                placeholder={t("imagesPlaceholder")}
-                className="flex-1 px-4 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 focus:bg-white transition-all"
-              />
-              <button
-                type="button"
-                onClick={handleAddImage}
-                className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                {t("addImage")}
-              </button>
-            </div>
-            {images.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2.5">
-                {images.map((imgUrl, idx) => (
-                  <div
-                    key={`${imgUrl}-${idx}`}
-                    className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-100 w-16 h-16 flex items-center justify-center"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={imgUrl}
-                      alt={`Amenity image ${idx + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(imgUrl)}
-                      className="absolute inset-0 bg-slate-900/60 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Cloudinary Image Upload */}
+          <CloudinaryUploader
+            label={t("imagesLabel")}
+            description={t("imagesPlaceholder")}
+            folder={CloudinaryFolderEnum.AMENITIES}
+            value={images}
+            onChange={setImages}
+            multiple={true}
+            maxFiles={5}
+            accept="image/*"
+            maxSizeMB={5}
+            disabled={createMutation.isPending}
+          />
 
           {/* Modal Footer Buttons */}
           <DialogFooter className="pt-3 border-t border-slate-100 sm:justify-end gap-2">

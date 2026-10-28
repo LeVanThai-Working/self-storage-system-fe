@@ -47,3 +47,29 @@ export interface PaginationQuery {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
+
+export interface UserSnapshot {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber?: string | null;
+  role?: string | null;
+}
+
+export interface OfferingSnapshot {
+  id: string;
+  unitTypeId?: string | null;
+  billingUnit: string;
+  pricePerUnit: number;
+  depositMultiplier?: number | null;
+  minRentalDays?: number | null;
+  status?: string | null;
+}
+
+export interface StorageUnitSnapshot {
+  id: string;
+  unitNumber: string;
+  floor: number;
+  zone?: string | null;
+  status: string;
+}

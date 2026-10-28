@@ -27,6 +27,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
+import { CloudinaryFolderEnum } from "@self-storage-system-fe/shared";
 import { useFacilityAmenityOfferings } from "@/features/request-center/hooks";
 import {
   useApproveContractAddendum,
@@ -106,6 +108,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
   const [method, setMethod] = useState<PaymentMethodEnum>(PaymentMethodEnum.CASH);
   const [referenceCode, setReferenceCode] = useState("");
   const [note, setNote] = useState("");
+  const [proofImageUrl, setProofImageUrl] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -160,6 +163,10 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
       note:
         note.trim() ||
         (isEn ? "Collected contract deposit at counter" : "Đã thu tiền cọc hợp đồng tại quầy"),
+      proofImageUrl:
+        method === PaymentMethodEnum.BANK_TRANSFER && proofImageUrl.trim()
+          ? proofImageUrl.trim()
+          : undefined,
     });
 
     if (!parsed.success) {
@@ -387,6 +394,28 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
                 className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none resize-none"
               />
             </div>
+
+            {method === PaymentMethodEnum.BANK_TRANSFER && (
+              <CloudinaryUploader
+                label={
+                  isEn
+                    ? "Bank Transfer Receipt / Slip (Optional)"
+                    : "Ảnh ủy nhiệm chi / Biên lai chuyển khoản (Tùy chọn)"
+                }
+                description={
+                  isEn
+                    ? "Upload transfer confirmation screenshot or bank slip"
+                    : "Tải lên ảnh chụp màn hình chuyển khoản hoặc sao kê ngân hàng"
+                }
+                folder={CloudinaryFolderEnum.CONTRACTS}
+                value={proofImageUrl ? [proofImageUrl] : []}
+                onChange={(urls) => setProofImageUrl(urls[0] || "")}
+                multiple={false}
+                maxFiles={1}
+                accept="image/*,application/pdf"
+                disabled={confirmManualMutation.isPending || createDepositMutation.isPending}
+              />
+            )}
           </div>
 
           {errorMsg && (

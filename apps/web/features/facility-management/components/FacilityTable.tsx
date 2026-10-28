@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import {
   Building2,
@@ -401,9 +402,22 @@ export const FacilityTable = () => {
                       {/* Facility Name & Address */}
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500/15 to-emerald-500/15 text-teal-700 flex items-center justify-center font-bold text-sm shrink-0 border border-teal-200/50 shadow-xs">
-                            <Building2 className="w-5 h-5" />
-                          </div>
+                          {facility.images && facility.images[0] ? (
+                            <div className="relative w-10 h-10 rounded-xl overflow-hidden shrink-0 border border-slate-200/80 shadow-xs bg-slate-100">
+                              <Image
+                                src={facility.images[0]}
+                                alt={facility.name}
+                                fill
+                                sizes="40px"
+                                unoptimized
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500/15 to-emerald-500/15 text-teal-700 flex items-center justify-center font-bold text-sm shrink-0 border border-teal-200/50 shadow-xs">
+                              <Building2 className="w-5 h-5" />
+                            </div>
+                          )}
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 min-w-0">
                               {facility.code && (
