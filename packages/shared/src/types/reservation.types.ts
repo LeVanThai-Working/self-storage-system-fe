@@ -14,7 +14,7 @@ export interface ReservationAmenityResponse {
   name: string;
   quantity: number;
   pricePerUnit: number;
-  billingUnit: BillingUnitEnum;
+  billingUnit: BillingUnitEnum | "day" | "month" | "one_time";
   totalPrice: number;
 }
 
@@ -29,12 +29,20 @@ export interface ReservationResponse {
   checkInDate?: string;
   checkInTimeSlot?: string | null;
   rentalDuration: number;
-  billingUnit: BillingUnitEnum;
+  billingUnit: BillingUnitEnum | "day" | "month" | "one_time";
   basePrice: number;
   depositAmount: number;
   amenities: ReservationAmenityResponse[];
   totalAmount: number;
-  status: ReservationStatusEnum;
+  status:
+    | ReservationStatusEnum
+    | "pending_payment"
+    | "payment_successful"
+    | "confirmed"
+    | "completed"
+    | "cancelled"
+    | "expired"
+    | "overdue";
   expiresAt?: string | null;
   graceExpiresAt?: string | null;
   receivedBy?: UserSnapshot | null;
@@ -53,7 +61,7 @@ export interface ReservationResponse {
   cancellationSource?: "customer" | "facility" | "system" | null;
   refundAmount: number;
   forfeitedAmount?: number;
-  refundStatus?: RefundStatusEnum;
+  refundStatus?: RefundStatusEnum | "none" | "pending" | "refunded";
   refundedAt?: string | null;
   refundedBy?: UserSnapshot | null;
   refundReference?: string | null;
