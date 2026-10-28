@@ -85,15 +85,15 @@ export const ConfirmFacilityAmenityModal = ({
               {offering.facility.name} ({offering.facility.city})
             </div>
             <div className="text-xs text-slate-400 pt-0.5">
-              Tồn kho: {offering.availableQuantity}/{offering.totalQuantity} • Đang dùng:{" "}
-              {offering.inUseQuantity}
+              Tồn kho: {offering.availableQuantity ?? 0}/{offering.totalQuantity ?? 0} • Đang dùng:{" "}
+              {offering.inUseQuantity ?? 0}
             </div>
           </div>
 
-          {isDelete && offering.inUseQuantity > 0 && (
+          {isDelete && (offering.inUseQuantity ?? 0) > 0 && (
             <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600" />
-              <span>{t("inUseWarning", { count: offering.inUseQuantity })}</span>
+              <span>{t("inUseWarning", { count: offering.inUseQuantity ?? 0 })}</span>
             </div>
           )}
 

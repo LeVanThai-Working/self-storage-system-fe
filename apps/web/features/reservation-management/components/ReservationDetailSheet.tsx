@@ -567,7 +567,8 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                     {offering?.unitType.name ?? t("storageRentalRow")}
                   </p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    {formatVnd(reservation.basePrice)} / {tBilling(reservation.billingUnit)} •{" "}
+                    {formatVnd(reservation.basePrice)} /{" "}
+                    {tBilling(reservation.billingUnit as "day" | "month" | "one_time")} •{" "}
                     {formatRentalScheduleLabel(
                       reservation.rentalDuration,
                       reservation.billingUnit,
@@ -588,9 +589,11 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                   </p>
                   {reservation.amenities.map((am) => {
                     const amMult =
-                      am.billingUnit === BillingUnitEnum.MONTH
+                      am.billingUnit === BillingUnitEnum.MONTH ||
+                      (am.billingUnit as string) === "month"
                         ? Math.max(1, reservation.rentalDuration / 30)
-                        : am.billingUnit === BillingUnitEnum.DAY
+                        : am.billingUnit === BillingUnitEnum.DAY ||
+                            (am.billingUnit as string) === "day"
                           ? reservation.rentalDuration
                           : 1;
                     const lineTotal = Math.round(am.pricePerUnit * am.quantity * amMult);
@@ -599,8 +602,8 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                         <div className="min-w-0">
                           <span className="font-semibold text-slate-800">{am.name}</span>{" "}
                           <span className="text-slate-500">
-                            × {am.quantity} ({formatVnd(am.pricePerUnit)}/{tBilling(am.billingUnit)}
-                            )
+                            × {am.quantity} ({formatVnd(am.pricePerUnit)}/
+                            {tBilling(am.billingUnit as "day" | "month" | "one_time")})
                           </span>
                         </div>
                         <span className="font-bold text-slate-800 shrink-0">

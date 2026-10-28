@@ -180,8 +180,8 @@ export const FacilityAmenityFormModal = ({
     }
 
     // Khi edit: không cho giảm tổng số lượng thấp hơn số lượng đang dùng
-    if (isEdit && offering && quantity < offering.inUseQuantity) {
-      setError(t("validation.quantityLessThanInUse", { inUse: offering.inUseQuantity }));
+    if (isEdit && offering && quantity < (offering.inUseQuantity ?? 0)) {
+      setError(t("validation.quantityLessThanInUse", { inUse: offering.inUseQuantity ?? 0 }));
       return;
     }
 
@@ -430,14 +430,15 @@ export const FacilityAmenityFormModal = ({
                 </label>
                 {isEdit && offering && (
                   <span className="text-[11px] text-slate-500">
-                    Đang được thuê: <b className="text-slate-800">{offering.inUseQuantity}</b> • Còn
-                    trống: <b className="text-emerald-700">{offering.availableQuantity}</b>
+                    Đang được thuê: <b className="text-slate-800">{offering.inUseQuantity ?? 0}</b>{" "}
+                    • Còn trống:{" "}
+                    <b className="text-emerald-700">{offering.availableQuantity ?? 0}</b>
                   </span>
                 )}
               </div>
               <input
                 type="number"
-                min={isEdit && offering ? offering.inUseQuantity : 0}
+                min={isEdit && offering ? (offering.inUseQuantity ?? 0) : 0}
                 step={1}
                 placeholder={t("totalQuantityPlaceholder")}
                 value={totalQuantity}

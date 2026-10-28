@@ -100,10 +100,13 @@ export function formatHoldCountdown(
 
 export function formatRentalScheduleLabel(
   rentalDuration: number,
-  billingUnit: BillingUnitEnum,
+  billingUnit: BillingUnitEnum | "day" | "month" | "one_time" | string,
   locale = "vi"
 ): string {
-  if (billingUnit === BillingUnitEnum.MONTH && rentalDuration % 30 === 0) {
+  if (
+    (billingUnit === BillingUnitEnum.MONTH || billingUnit === "month") &&
+    rentalDuration % 30 === 0
+  ) {
     const months = rentalDuration / 30;
     return locale === "en"
       ? `${months} ${months === 1 ? "month" : "months"} (${rentalDuration} days)`
@@ -121,7 +124,7 @@ export interface StatusBadgeTone {
   border: string;
 }
 
-export function getReservationStatusTone(status: ReservationStatusEnum): StatusBadgeTone {
+export function getReservationStatusTone(status: ReservationStatusEnum | string): StatusBadgeTone {
   switch (status) {
     case ReservationStatusEnum.PENDING:
       return {

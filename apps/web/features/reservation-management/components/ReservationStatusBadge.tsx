@@ -6,8 +6,21 @@ import { Clock } from "lucide-react";
 import { ReservationStatusEnum } from "../types";
 import { formatHoldCountdown, getReservationStatusTone } from "../utils";
 
+type ReservationStatusKey =
+  | "pending"
+  | "received"
+  | "pending_payment"
+  | "payment_failed"
+  | "payment_successful"
+  | "confirmed"
+  | "completed"
+  | "cancelled"
+  | "rejected"
+  | "expired"
+  | "overdue";
+
 interface ReservationStatusBadgeProps {
-  status: ReservationStatusEnum;
+  status: ReservationStatusEnum | string;
   expiresAt?: string | null;
   nowMs?: number;
   showCountdown?: boolean;
@@ -26,7 +39,9 @@ export const ReservationStatusBadge: React.FC<ReservationStatusBadgeProps> = ({
   const shouldShowHoldCountdown =
     showCountdown &&
     (status === ReservationStatusEnum.PENDING_PAYMENT ||
-      status === ReservationStatusEnum.PAYMENT_FAILED) &&
+      status === "pending_payment" ||
+      status === ReservationStatusEnum.PAYMENT_FAILED ||
+      status === "payment_failed") &&
     Boolean(expiresAt);
 
   const countdown = shouldShowHoldCountdown ? formatHoldCountdown(expiresAt, nowMs, locale) : null;
@@ -37,7 +52,7 @@ export const ReservationStatusBadge: React.FC<ReservationStatusBadgeProps> = ({
         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${tone.bg} ${tone.text} ${tone.border}`}
       >
         <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
-        {t(status)}
+        {t.has(status as ReservationStatusKey) ? t(status as ReservationStatusKey) : status}
       </span>
 
       {countdown && (

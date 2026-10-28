@@ -513,14 +513,6 @@ export const UserTable = () => {
                         const r = String(u.role).toLowerCase();
                         return r === roleFilter.toLowerCase();
                       });
-                const pagination = data?.pagination || {
-                  page,
-                  limit: pageSize,
-                  totalItems: filteredUsers.length,
-                  totalPages: Math.ceil(filteredUsers.length / pageSize) || 1,
-                  hasNextPage: false,
-                  hasPrevPage: false,
-                };
 
                 if (isLoading) {
                   return (

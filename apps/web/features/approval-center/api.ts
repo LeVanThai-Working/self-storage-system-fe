@@ -52,7 +52,7 @@ export const getApprovalRequests = async (
         hasPrevPage: false,
       },
     };
-  } catch (_error) {
+  } catch {
     // Backend fallback: Nếu DB có bản ghi unit_type bị lỗi reference/populate gây 500 khi query approved/ALL,
     // fallback truy vấn các targetType an toàn để lấy đầy đủ dữ liệu người dùng cần (vd: offering, amenity).
     try {

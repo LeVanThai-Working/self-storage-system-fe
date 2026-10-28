@@ -146,7 +146,7 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-sm border-2 border-white ring-2 ring-emerald-50">
                     <span className="text-white font-bold text-sm">
-                      {currentUser?.name ? currentUser.name[0]?.toUpperCase() : "SA"}
+                      {getInitials(currentUser?.name)}
                     </span>
                   </div>
                 )}

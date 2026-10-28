@@ -636,7 +636,8 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                       <td className="py-4 px-4">
                         <p className="font-bold text-slate-900">{unitTypeName}</p>
                         <p className="text-[11px] text-slate-600 mt-0.5">
-                          {formatVnd(item.basePrice)} / {tBilling(item.billingUnit)}
+                          {formatVnd(item.basePrice)} /{" "}
+                          {tBilling(item.billingUnit as "day" | "month" | "one_time")}
                         </p>
                         <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-1">
                           <Calendar className="w-3 h-3 text-teal-600 shrink-0" />
