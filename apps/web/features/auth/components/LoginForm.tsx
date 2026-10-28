@@ -26,12 +26,13 @@ function getSafeRedirect(value: string | null, fallback: string) {
   return value;
 }
 
-/** Portal per role; roles not listed (customer) stay on the public landing. */
+/** Portal per role. */
 const ROLE_HOME: Record<string, string> = {
   [RoleEnum.SYSTEM_ADMIN]: "system-admin",
   [RoleEnum.BUSINESS_OPS_MANAGER]: "business-ops",
   [RoleEnum.FACILITY_MANAGER]: "facility-manager",
   [RoleEnum.FACILITY_STAFF]: "facility-staff",
+  [RoleEnum.CUSTOMER]: "customer",
 };
 
 export function LoginForm() {

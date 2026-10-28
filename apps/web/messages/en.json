@@ -140,6 +140,7 @@
       "overview": "Overview",
       "userManagement": "User Management",
       "auditLogs": "Audit Logs",
+      "trash": "Trash & Restore",
       "facilityManagement": "Facility Management",
       "settings": "System Settings"
     },
@@ -333,6 +334,107 @@
         "none": "None",
         "metadata": "Additional Metadata",
         "errorMessage": "Failed to load log details. Please try again."
+      }
+    }
+  },
+  "trash": {
+    "title": "Trash & data restore",
+    "subtitle": "Soft-deleted records. The list is built from the audit log (latest 100 events per type).",
+    "tabs": {
+      "facility": "Facilities",
+      "unitType": "Unit types",
+      "storageUnit": "Storage units",
+      "amenity": "Amenities",
+      "offering": "Price lists",
+      "user": "Accounts"
+    },
+    "columns": {
+      "name": "Record",
+      "deletedAt": "Deleted at",
+      "deletedBy": "Deleted by",
+      "actions": "Actions"
+    },
+    "restore": "Restore",
+    "restored": "Record restored.",
+    "restoreFailed": "Could not restore the record.",
+    "empty": "Nothing in the trash.",
+    "loadFailed": "Could not load the list. Please try again.",
+    "retry": "Retry"
+  },
+  "customer": {
+    "roleLabel": "Customer",
+    "nav": {
+      "label": "Customer navigation",
+      "facilities": "Explore facilities",
+      "search": "Find available units",
+      "reservations": "My reservations"
+    }
+  },
+  "explore": {
+    "retry": "Retry",
+    "prev": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {total}",
+    "priceContact": "Contact for pricing",
+    "search": {
+      "title": "Find the right unit",
+      "subtitle": "Filter by facility, unit type, area, price and amenities to find available units.",
+      "facility": "Facility",
+      "unitType": "Unit type",
+      "categoryLabel": "Unit category",
+      "all": "All",
+      "area": "Area (m²)",
+      "price": "Price (VND)",
+      "min": "From",
+      "max": "To",
+      "amenities": "Desired amenities",
+      "apply": "Apply",
+      "reset": "Clear filters",
+      "count": "{count} units available",
+      "empty": "No available units match your filters.",
+      "error": "Could not load search data. Please try again.",
+      "availableUnits": "{count} left",
+      "reserveNow": "Reserve now",
+      "category": {
+        "locker": "Locker",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "climate_controlled": "Climate controlled",
+        "warehouse_rack": "Warehouse rack"
+      },
+      "billing": {
+        "day": "day",
+        "month": "month",
+        "one_time": "one-time"
+      }
+    },
+    "list": {
+      "title": "Explore storage facilities",
+      "subtitle": "Pick the facility closest to you for safe, flexible storage.",
+      "searchPlaceholder": "Search by facility name",
+      "searchButton": "Search",
+      "empty": "No matching facilities found.",
+      "error": "Could not load facilities. Please try again."
+    },
+    "detail": {
+      "back": "Back to list",
+      "error": "Could not load this facility. Please try again.",
+      "hoursUnknown": "Opening hours not available",
+      "amenities": "Amenities & services",
+      "freeAmenities": "Free amenities",
+      "paidAmenities": "Paid add-on services",
+      "noAmenities": "Nothing listed yet.",
+      "free": "Free",
+      "available": "{count} available",
+      "amenityType": {
+        "physical": "Amenity",
+        "service": "Service"
+      },
+      "billing": {
+        "day": "day",
+        "month": "month",
+        "one_time": "one-time"
       }
     }
   },
@@ -1689,7 +1791,8 @@
       "contracts": "Lease Contracts",
       "storageUnits": "Storage units",
       "sectionFacility": "FACILITY OPERATIONS",
-      "requests": "Request Center"
+      "requests": "Request Center",
+      "dashboard": "Overview"
     },
     "sidebar": {
       "assignedFacility": "Assigned facility",
@@ -2271,6 +2374,206 @@
         "paidDepositText": "Paid by customer",
         "close": "Close"
       }
+    },
+    "dashboard": {
+      "title": "Facility overview",
+      "subtitle": "Current operations at {facility}.",
+      "noFacility": "You have not been assigned a facility yet, so there is no overview to show.",
+      "stats": {
+        "occupancy": "Occupancy rate",
+        "available": "Available units",
+        "inUse": "Reserved / rented units",
+        "maintenance": "Under maintenance"
+      },
+      "occupancyTitle": "Storage unit utilisation",
+      "totalUnits": "{count} units in total",
+      "occupancyNote": "Occupancy = (reserved + rented) / all units; units under maintenance still count toward the total.",
+      "amenities": {
+        "title": "Amenity stock",
+        "empty": "This facility has no active amenities.",
+        "error": "Could not load amenity stock.",
+        "stock": "{available}/{total} left",
+        "inUse": "{count} in use",
+        "noStock": "Service, no stock limit"
+      },
+      "staff": {
+        "title": "Assigned staff",
+        "empty": "No staff are assigned to this facility.",
+        "error": "Could not load the staff list."
+      }
+    }
+  },
+  "customerReservation": {
+    "status": {
+      "pending_payment": "Awaiting deposit",
+      "payment_successful": "Deposit paid",
+      "confirmed": "Confirmed",
+      "overdue": "Check-in overdue",
+      "completed": "Checked in",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
+    "form": {
+      "back": "Back to unit search",
+      "title": "Reserve a storage unit",
+      "missingParams": "The facility or unit type is missing. Pick a unit from the search page.",
+      "offeringUnavailable": "This unit type is no longer offered at the facility. Please choose another.",
+      "unit": {
+        "title": "1. Choose a unit",
+        "empty": "No free units of this type right now.",
+        "location": "Floor {floor} · Zone {zone}"
+      },
+      "schedule": {
+        "title": "2. Check-in and rental period",
+        "checkInDate": "Check-in date",
+        "checkInHint": "Pick a date within the next {days} days.",
+        "startDate": "Rental start date",
+        "startHint": "Not earlier than the check-in date.",
+        "timeSlot": "Check-in time slot",
+        "pickDateFirst": "Pick a check-in date to see the open time slots.",
+        "slotsError": "Could not load time slots. Please try again.",
+        "noSlots": "The facility has no time slots open for this date.",
+        "left": "{count} left",
+        "full": "full",
+        "duration": "Rental period ({unit})",
+        "durationHint": "Minimum {min}."
+      },
+      "amenities": {
+        "title": "3. Add-ons (optional)",
+        "note": "Add-on fees are not charged now; they are billed in the rental contract.",
+        "free": "Free",
+        "left": "{count} left",
+        "quantity": "Quantity of {name}"
+      },
+      "notes": {
+        "title": "Notes",
+        "placeholder": "Anything the facility should know (optional)"
+      },
+      "summary": {
+        "title": "Deposit estimate",
+        "price": "Unit price",
+        "multiplier": "Deposit multiplier",
+        "deposit": "Deposit due now",
+        "holdNote": "The unit and add-ons are held for 15 minutes after booking. If the deposit is not paid in time, the reservation expires.",
+        "submit": "Reserve and pay deposit",
+        "submitting": "Creating reservation…",
+        "cancel": "Cancel"
+      },
+      "errors": {
+        "unit": "Please choose a storage unit.",
+        "checkInDate": "Please choose a check-in date.",
+        "slot": "Please choose a time slot that still has room.",
+        "startDate": "The rental must start on or after the check-in date.",
+        "duration": "The minimum rental period is {min}."
+      }
+    },
+    "payment": {
+      "title": "Pay the deposit",
+      "subtitle": "Reservation {code}",
+      "holdLeft": "Time left to hold your unit",
+      "qrAlt": "QR code for the deposit transfer",
+      "scanHint": "Scan with your banking app to transfer.",
+      "bank": "Bank",
+      "accountNumber": "Account number",
+      "accountName": "Account holder",
+      "amount": "Amount",
+      "content": "Transfer note",
+      "partial": "Received {paid}. Please transfer the remaining {remaining} to finish.",
+      "waiting": "Waiting for the bank to confirm… this page updates by itself once the money arrives.",
+      "payLater": "View my reservation",
+      "retry": "Try again",
+      "loadError": "Could not load the reservation.",
+      "paymentError": "Could not create the payment. Please try again.",
+      "viewReservation": "View reservation",
+      "bookAgain": "Book another unit",
+      "backToList": "Back to my reservations",
+      "paid": {
+        "title": "Deposit received",
+        "body": "Thank you. Reservation {code} is waiting for the facility to confirm."
+      },
+      "expired": {
+        "title": "Reservation expired",
+        "body": "The hold ran out before the full deposit arrived. The unit has been released."
+      },
+      "cancelled": {
+        "title": "Reservation cancelled",
+        "body": "This reservation was cancelled, so it can no longer be paid."
+      }
+    },
+    "list": {
+      "title": "My reservations",
+      "subtitle": "Track the progress of your storage unit reservations.",
+      "bookNew": "Reserve a unit",
+      "filterLabel": "Filter by status",
+      "all": "All",
+      "searchPlaceholder": "Search by reservation code",
+      "search": "Search",
+      "empty": "You have no matching reservations.",
+      "error": "Could not load your reservations. Please try again.",
+      "retry": "Try again",
+      "unit": "Unit {unit} · Floor {floor}",
+      "checkIn": "Check-in {date} · {slot}",
+      "deposit": "Deposit {amount}",
+      "details": "Details",
+      "pay": "Pay deposit",
+      "cancel": "Cancel",
+      "prev": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}"
+    },
+    "detail": {
+      "back": "Back to my reservations",
+      "error": "Could not load the reservation.",
+      "retry": "Try again",
+      "code": "Reservation code",
+      "pay": "Pay deposit",
+      "cancel": "Cancel reservation",
+      "sections": {
+        "facility": "Facility and unit",
+        "schedule": "Check-in schedule",
+        "payment": "Payment",
+        "more": "Other details",
+        "amenities": "Add-ons"
+      },
+      "facility": "Facility",
+      "address": "Address",
+      "phone": "Hotline",
+      "unit": "Storage unit",
+      "unitValue": "{unit} · Floor {floor}",
+      "checkInDate": "Check-in date",
+      "checkInSlot": "Time slot",
+      "startDate": "Rental start date",
+      "duration": "Rental period",
+      "price": "Unit price",
+      "deposit": "Deposit",
+      "paid": "Paid",
+      "paidAt": "Paid at",
+      "refund": "Deposit refund",
+      "refundStatus": {
+        "pending": "Waiting for the facility to refund",
+        "refunded": "Refunded"
+      },
+      "forfeited": "Deposit forfeited",
+      "created": "Created",
+      "confirmedAt": "Confirmed at",
+      "cancelledAt": "Cancelled at",
+      "cancelReason": "Cancellation reason",
+      "notes": "Notes",
+      "amenitiesNote": "Add-on fees are billed in the rental contract, not with the deposit.",
+      "free": "Free"
+    },
+    "cancel": {
+      "title": "Cancel reservation {code}",
+      "outcome": {
+        "free": "No deposit has been paid yet, so it cancels immediately at no cost.",
+        "refund": "You are cancelling early (24 hours or more before check-in), so the {amount} deposit will be refunded by the facility.",
+        "forfeit": "You are cancelling close to check-in or late, so the {amount} deposit is forfeited and not refunded."
+      },
+      "reason": "Reason",
+      "reasonPlaceholder": "At least 3 characters",
+      "keep": "Keep reservation",
+      "confirm": "Confirm cancellation",
+      "cancelling": "Cancelling…"
     }
   }
 }

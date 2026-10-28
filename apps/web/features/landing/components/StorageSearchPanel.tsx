@@ -56,7 +56,7 @@ export function StorageSearchPanel() {
     }
     const query = params.toString();
     // TODO: the /search results page is not implemented yet.
-    router.push(`/${locale}/search${query ? `?${query}` : ""}`);
+    router.push(`/${locale}/customer/search${query ? `?${query}` : ""}`);
   };
 
   const getValueLabel = (field: SearchFieldId) => {

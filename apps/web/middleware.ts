@@ -9,7 +9,13 @@ const intlMiddleware = createMiddleware({
 });
 
 // Routes that require the user to be authenticated
-const protectedPaths = ["/facility-manager", "/facility-staff"];
+const protectedPaths = [
+  "/facility-manager",
+  "/facility-staff",
+  "/business-ops",
+  "/system-admin",
+  "/customer",
+];
 
 // Routes that authenticated users should not see (login, register)
 const guestOnlyPaths = ["/login", "/register"];
@@ -19,7 +25,13 @@ const ROLE_HOME: Record<string, string> = {
   business_ops_manager: "business-ops",
   facility_manager: "facility-manager",
   facility_staff: "facility-staff",
+  customer: "customer",
 };
+
+// Each portal is reachable only by its own role
+const PORTAL_ROLE: Record<string, string> = Object.fromEntries(
+  Object.entries(ROLE_HOME).map(([role, portal]) => [portal, role])
+);
 
 function decodeJwtPayload(tokenString?: string): Record<string, unknown> | null {
   if (!tokenString) return null;
@@ -86,6 +98,19 @@ export function middleware(request: NextRequest) {
       const loginUrl = new URL(`/${currentLocale}/login`, request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  if (isProtected) {
+    const portal = pathname.split("/")[2];
+    const payload = decodeJwtPayload(accessToken) ?? decodeJwtPayload(refreshToken);
+    const role = typeof payload?.role === "string" ? payload.role.toLowerCase() : "";
+    // shortcut: role unreadable from the token => let the API enforce it, tighten once the JWT always carries role
+    if (role && PORTAL_ROLE[portal] && PORTAL_ROLE[portal] !== role) {
+      const home = ROLE_HOME[role];
+      return NextResponse.redirect(
+        new URL(`/${currentLocale}${home ? `/${home}` : ""}`, request.url)
+      );
     }
   }
 
