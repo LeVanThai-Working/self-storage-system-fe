@@ -25,6 +25,9 @@ export interface ReservationResponse {
   facilityId: string;
   facilityUnitTypeOfferingId: string;
   storageUnitId?: string | null;
+  /** `storage_rack` when the customer booked racks inside a WAREHOUSE_RACK unit. */
+  rentalTargetType?: "storage_unit" | "storage_rack" | null;
+  rentedRackIds?: string[];
   startDate: string;
   checkInDate?: string;
   checkInTimeSlot?: string | null;
