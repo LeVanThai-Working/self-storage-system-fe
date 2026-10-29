@@ -1,4 +1,6 @@
 import {
+  ContractStatusEnum,
+  InventoryItemStatusEnum,
   MESSAGE_CODE,
   RackTierStatusEnum,
   type MessageLocale,
@@ -20,7 +22,49 @@ export const INVENTORY_ERROR = {
   TIER_NOT_IN_UNIT: MESSAGE_CODE.MESSAGE_CODE_624,
   TIER_LOCKED: MESSAGE_CODE.MESSAGE_CODE_625,
   SAME_POSITION: MESSAGE_CODE.MESSAGE_CODE_627,
+  CONTRACT_STATUS_BLOCKED: MESSAGE_CODE.MESSAGE_CODE_644,
+  ITEM_STATUS_BLOCKED: MESSAGE_CODE.MESSAGE_CODE_645,
+  RACK_NOT_RENTED: MESSAGE_CODE.MESSAGE_CODE_637,
 } as const;
+
+/** Item status; older rows may lack it, so default to `normal`. */
+export function getItemStatus(item: Pick<TreeTierItem, "status">): InventoryItemStatusEnum {
+  return item.status ?? InventoryItemStatusEnum.NORMAL;
+}
+
+/** Quantity a new outbound request can still take: stock minus what pending requests hold (G11). */
+export function getAvailableQuantity(
+  item: Pick<TreeTierItem, "quantity" | "availableQuantity" | "pendingOutboundQuantity">
+): number {
+  if (typeof item.availableQuantity === "number") return Math.max(0, item.availableQuantity);
+  return Math.max(0, item.quantity - (item.pendingOutboundQuantity ?? 0));
+}
+
+/** Only `normal` items can be requested for pickup (BE rejects others with 645). */
+export function canRequestOutboundItem(item: Pick<TreeTierItem, "status">): boolean {
+  return getItemStatus(item) === InventoryItemStatusEnum.NORMAL;
+}
+
+/** Damaged or disputed items cannot be moved (645). */
+export function canRequestMoveItem(item: Pick<TreeTierItem, "status">): boolean {
+  const status = getItemStatus(item);
+  return status !== InventoryItemStatusEnum.DAMAGED && status !== InventoryItemStatusEnum.DISPUTED;
+}
+
+/**
+ * What the customer may request for a contract (INVENTORY_OPS_BY_CONTRACT_STATUS in BE):
+ * ACTIVE allows everything, OVERDUE only pickup and move, other statuses are read-only.
+ */
+export function getContractRequestRights(status?: ContractStatusEnum | null) {
+  const active = status === ContractStatusEnum.ACTIVE;
+  const overdue = status === ContractStatusEnum.OVERDUE;
+  return {
+    canRequestOutbound: active || overdue,
+    canRequestMove: active || overdue,
+    canNotifyInbound: active,
+    overdue,
+  };
+}
 
 export type TierWeightLevel = "none" | "normal" | "near" | "over";
 
@@ -68,12 +112,12 @@ export function buildLocationLabel({
   return joinLabelParts([facilityCode, unitNumber, rackPart, tierCode]);
 }
 
-/** Floor location label, e.g. "HN01-A101-FLOOR". */
+/** Holding-area location label (items without a tier), e.g. "HN01-A101-HOLDING". */
 export function buildFloorLabel(
   facilityCode: string | null | undefined,
   unitNumber: string | null | undefined
 ): string {
-  return joinLabelParts([facilityCode, unitNumber, "FLOOR"]);
+  return joinLabelParts([facilityCode, unitNumber, "HOLDING"]);
 }
 
 /** Tier location label inside the unit of `tree`. */
@@ -205,4 +249,30 @@ export function resolveInventoryError(
   locale: MessageLocale = "vi"
 ): { message: string; messageCode?: string } {
   return resolveReservationErrorMessage(error, locale, "storage unit");
+}
+
+export interface TreePosition {
+  rack: TreeRack;
+  tier: TreeTier;
+  item: TreeTierItem;
+  /** Stable key of one SKU at one tier. */
+  key: string;
+}
+
+export function positionKey(tierId: string, skuId: string): string {
+  return `${tierId}:${skuId}`;
+}
+
+/** Every SKU-at-tier in the unit, ordered by rack code then tier (top-down). */
+export function listTreePositions(
+  tree: StorageUnitInventoryTreeResponse | undefined
+): TreePosition[] {
+  if (!tree) return [];
+  return [...tree.racks]
+    .sort((a, b) => a.rackCode.localeCompare(b.rackCode))
+    .flatMap((rack) =>
+      sortTiersTopDown(rack.tiers).flatMap((tier) =>
+        tier.items.map((item) => ({ rack, tier, item, key: positionKey(tier.id, item.sku.id) }))
+      )
+    );
 }
