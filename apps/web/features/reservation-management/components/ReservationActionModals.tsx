@@ -840,14 +840,17 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
       return;
     }
 
+    // The backend requires a proof image (receipt / transfer screenshot) for every manual payment.
+    if (!proofImageUrl.trim()) {
+      setSubmitError(t("validationProofRequired"));
+      return;
+    }
+
     const parsed = confirmManualPaymentSchema.safeParse({
       method,
       referenceCode: referenceCode.trim() ? referenceCode.trim() : undefined,
       note: note.trim(),
-      proofImageUrl:
-        method === PaymentMethodEnum.BANK_TRANSFER && proofImageUrl.trim()
-          ? proofImageUrl.trim()
-          : undefined,
+      proofImageUrl: proofImageUrl.trim(),
     });
 
     if (!parsed.success) {
@@ -1028,11 +1031,15 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
                     />
                   </div>
 
-                  {/* Bank Transfer Receipt Upload */}
-                  {method === PaymentMethodEnum.BANK_TRANSFER && (
+                  {/* Proof upload (required by backend for both cash and bank transfer) */}
+                  {
                     <CloudinaryUploader
-                      label="Ủy nhiệm chi / Biên lai chuyển khoản (Tùy chọn)"
-                      description="Tải lên ảnh chụp màn hình chuyển khoản hoặc sao kê ngân hàng"
+                      label={
+                        method === PaymentMethodEnum.BANK_TRANSFER
+                          ? t("proofLabelTransfer")
+                          : t("proofLabelCash")
+                      }
+                      description={t("proofDescription")}
                       folder={CloudinaryFolderEnum.CONTRACTS}
                       value={proofImageUrl ? [proofImageUrl] : []}
                       onChange={(urls) => setProofImageUrl(urls[0] || "")}
@@ -1041,7 +1048,7 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
                       accept="image/*,application/pdf"
                       disabled={isPending}
                     />
-                  )}
+                  }
 
                   {submitError && (
                     <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">

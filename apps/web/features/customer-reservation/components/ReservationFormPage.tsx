@@ -81,6 +81,7 @@ export function ReservationFormPage({
   const [duration, setDuration] = useState("");
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [tried, setTried] = useState(false);
 
@@ -152,6 +153,7 @@ export function ReservationFormPage({
     if (!Number.isInteger(durationNumber) || durationNumber < offering.minRentalDays) {
       return t("errors.duration", { min: offering.minRentalDays });
     }
+    if (!termsAccepted) return t("errors.terms");
     return null;
   })();
   // Validation messages stay live once the user has tried to submit, so they clear as the form is fixed.
@@ -183,6 +185,7 @@ export function ReservationFormPage({
             quantity,
           })),
         notes: notes.trim() || undefined,
+        termsAccepted,
       });
       router.push(`/${locale}/customer/reservations/${reservation.id}/payment`);
     } catch (err) {
@@ -305,7 +308,7 @@ export function ReservationFormPage({
             </div>
 
             <Field
-              label={t("schedule.duration", { unit: tBilling(offering.billingUnit) })}
+              label={t("schedule.duration")}
               hint={t("schedule.durationHint", { min: offering.minRentalDays })}
             >
               <Input
@@ -363,6 +366,16 @@ export function ReservationFormPage({
               onChange={(e) => setNotes(e.target.value)}
             />
           </Section>
+
+          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-neutral-border bg-white p-5 text-sm">
+            <input
+              type="checkbox"
+              className="mt-0.5 size-4 accent-brand"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+            />
+            <span>{t("terms.label")}</span>
+          </label>
         </div>
 
         <aside className="h-fit space-y-4 rounded-2xl border border-neutral-border bg-white p-5 lg:sticky lg:top-28">

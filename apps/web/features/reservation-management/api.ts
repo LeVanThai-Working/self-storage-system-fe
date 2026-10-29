@@ -8,7 +8,10 @@ import {
   type CancelReservationRequest,
   type ConfirmManualPaymentRequest,
   type ConfirmReservationRequest,
+  type ExtendReservationGraceRequest,
   type ManagerReservationFilterParams,
+  type MarkReservationArrivedRequest,
+  type ReassignReservationUnitRequest,
   type PaymentPaginatedResponse,
   type PaymentResponse,
   type RejectReservationRequest,
@@ -232,6 +235,48 @@ export async function confirmManualPayment(
 ): Promise<PaymentResponse> {
   const { data } = await api.post<ApiResponse<PaymentResponse>>(
     `/payments/${paymentId}/confirm-manual`,
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * POST /reservations/{id}/mark-arrived — Đánh dấu khách đã đến cơ sở (CONFIRMED / OVERDUE)
+ */
+export async function markReservationArrived(
+  id: string,
+  payload: MarkReservationArrivedRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/mark-arrived`,
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * POST /reservations/{id}/extend-grace — Gia hạn thời gian chờ check-in (CONFIRMED / OVERDUE, Manager)
+ */
+export async function extendReservationGrace(
+  id: string,
+  payload: ExtendReservationGraceRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/extend-grace`,
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * POST /reservations/{id}/reassign-unit — Đổi ô kho khác (PAYMENT_SUCCESSFUL / CONFIRMED / OVERDUE, Manager)
+ */
+export async function reassignReservationUnit(
+  id: string,
+  payload: ReassignReservationUnitRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/reassign-unit`,
     payload
   );
   return data.data!;

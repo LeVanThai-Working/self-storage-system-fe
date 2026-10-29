@@ -88,6 +88,8 @@ export interface CreateReservationPayload {
   rentalDuration: number;
   amenities: Array<{ facilityAmenityOfferingId: string; quantity: number }>;
   notes?: string;
+  /** Backend rejects the reservation unless this is true. */
+  termsAccepted: boolean;
 }
 
 export interface ReservationListParams {

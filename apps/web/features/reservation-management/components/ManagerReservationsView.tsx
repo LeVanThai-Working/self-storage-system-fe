@@ -54,6 +54,7 @@ import {
   ManualPaymentConfirmModal,
   RejectReservationModal,
 } from "./ReservationActionModals";
+import { ExtendGraceModal, MarkArrivedModal, ReassignUnitModal } from "./FlowActionModals";
 import { ReservationDetailSheet } from "./ReservationDetailSheet";
 import { ReservationStatusBadge } from "./ReservationStatusBadge";
 import { CreateContractFromReservationModal } from "@/features/contract-management/components/CreateContractFromReservationModal";
@@ -180,6 +181,9 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
   const [confirmTarget, setConfirmTarget] = useState<ReservationResponse | null>(null);
   const [cancelTarget, setCancelTarget] = useState<ReservationResponse | null>(null);
   const [manualPaymentTarget, setManualPaymentTarget] = useState<ReservationResponse | null>(null);
+  const [arrivedTarget, setArrivedTarget] = useState<ReservationResponse | null>(null);
+  const [graceTarget, setGraceTarget] = useState<ReservationResponse | null>(null);
+  const [reassignTarget, setReassignTarget] = useState<ReservationResponse | null>(null);
   const [assignStaffTarget, setAssignStaffTarget] = useState<ReservationResponse | null>(null);
   const [createContractTarget, setCreateContractTarget] = useState<ReservationResponse | null>(
     null
@@ -962,6 +966,9 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
         onOpenManualPayment={(r) => setManualPaymentTarget(r)}
         onOpenAssignStaff={(r) => setAssignStaffTarget(r)}
         onOpenCreateContract={(r) => setCreateContractTarget(r)}
+        onOpenMarkArrived={(r) => setArrivedTarget(r)}
+        onOpenExtendGrace={(r) => setGraceTarget(r)}
+        onOpenReassignUnit={(r) => setReassignTarget(r)}
         onComplete={handleQuickComplete}
         isReceiving={receiveMutation.isPending}
         isCompleting={completeMutation.isPending}
@@ -983,6 +990,25 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
         isOpen={Boolean(rejectTarget)}
         onClose={() => setRejectTarget(null)}
         reservation={rejectTarget}
+      />
+
+      <MarkArrivedModal
+        key={arrivedTarget?.id ?? "arrived-modal"}
+        isOpen={Boolean(arrivedTarget)}
+        onClose={() => setArrivedTarget(null)}
+        reservation={arrivedTarget}
+      />
+      <ExtendGraceModal
+        key={graceTarget?.id ?? "grace-modal"}
+        isOpen={Boolean(graceTarget)}
+        onClose={() => setGraceTarget(null)}
+        reservation={graceTarget}
+      />
+      <ReassignUnitModal
+        key={reassignTarget?.id ?? "reassign-modal"}
+        isOpen={Boolean(reassignTarget)}
+        onClose={() => setReassignTarget(null)}
+        reservation={reassignTarget}
       />
 
       {/* Section 5.2: Confirm Modal */}

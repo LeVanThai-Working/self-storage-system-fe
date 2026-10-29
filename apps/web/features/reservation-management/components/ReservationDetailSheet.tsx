@@ -55,6 +55,9 @@ interface ReservationDetailSheetProps {
   onOpenCancel: (reservation: ReservationResponse) => void;
   onOpenManualPayment: (reservation: ReservationResponse) => void;
   onOpenAssignStaff?: (reservation: ReservationResponse) => void;
+  onOpenMarkArrived?: (reservation: ReservationResponse) => void;
+  onOpenExtendGrace?: (reservation: ReservationResponse) => void;
+  onOpenReassignUnit?: (reservation: ReservationResponse) => void;
   onOpenCreateContract: (reservation: ReservationResponse) => void;
   onComplete: (reservation: ReservationResponse) => void;
   isReceiving?: boolean;
@@ -76,12 +79,16 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   onOpenManualPayment,
   onOpenAssignStaff,
   onOpenCreateContract,
+  onOpenMarkArrived,
+  onOpenExtendGrace,
+  onOpenReassignUnit,
   onComplete,
   isReceiving = false,
   isCompleting = false,
 }) => {
   const t = useTranslations("facilityManager.reservations.detailSheet");
   const tActions = useTranslations("facilityManager.reservations.actions");
+  const tFlow = useTranslations("facilityManager.reservations.flowActions.buttons");
   const tBilling = useTranslations("facilityManager.reservations.billingUnit");
   const tStorageUnitStatus = useTranslations("storageUnitStatus");
   const locale = useLocale() === "en" ? "en" : "vi";
@@ -111,6 +118,15 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   const canReject =
     isManager &&
     (status === ReservationStatusEnum.PENDING || status === ReservationStatusEnum.RECEIVED);
+  const isOnSite =
+    status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE;
+  const canMarkArrived = isOnSite && !reservation.arrivedAt && Boolean(onOpenMarkArrived);
+  const canExtendGrace = isManager && isOnSite && Boolean(onOpenExtendGrace);
+  const canReassignUnit =
+    isManager &&
+    (status === ReservationStatusEnum.PAYMENT_SUCCESSFUL || isOnSite) &&
+    !reservation.pendingUnitChange &&
+    Boolean(onOpenReassignUnit);
   const canManualPayment =
     isManager &&
     (status === ReservationStatusEnum.PENDING_PAYMENT ||
@@ -681,6 +697,48 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
               >
                 <Boxes className="w-3.5 h-3.5" />
                 {tActions("assignUnit")}
+              </button>
+            )}
+
+            {canMarkArrived && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenMarkArrived?.(reservation);
+                }}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-sky-600 text-white hover:bg-sky-700 shadow-sm"
+              >
+                <UserCheck className="w-3.5 h-3.5" />
+                {tFlow("markArrived")}
+              </button>
+            )}
+
+            {canExtendGrace && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenExtendGrace?.(reservation);
+                }}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 hover:bg-amber-100"
+              >
+                <Clock className="w-3.5 h-3.5" />
+                {tFlow("extendGrace")}
+              </button>
+            )}
+
+            {canReassignUnit && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenReassignUnit?.(reservation);
+                }}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50"
+              >
+                <Boxes className="w-3.5 h-3.5" />
+                {tFlow("reassignUnit")}
               </button>
             )}
 
