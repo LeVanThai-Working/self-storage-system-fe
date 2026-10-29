@@ -7,18 +7,40 @@ import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 import {
   FacilityAmenityOfferingStatusEnum,
+  FREE_CANCEL_HOURS,
   FacilityUnitTypeOfferingStatusEnum,
+  MESSAGE_CODE,
+  RESERVATION_RACK_SELECTION_SUPPORTED,
+  UnitTypeCategoryEnum,
   formatCurrency,
+  getRackPrice,
+  isInsideForfeitWindow,
   type PublicAmenityOfferingResponse,
+  type StorageRackResponse,
 } from "@self-storage-system-fe/shared";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { AppApiError } from "@/lib/api/axios";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useFacilityPublicDetail } from "@/features/customer-explore/hooks";
 import { useAvailableTimeSlots } from "@/features/facility-time-slot/hooks";
-import { useAvailableUnits, useCreateReservation } from "../hooks";
+import {
+  useBookableRacks,
+  useBookableUnits,
+  useCreateReservation,
+  useOfferingZonePricing,
+} from "../hooks";
+import { RackSeatMapWeb, UnitSeatMapWeb } from "./SeatMaps";
 import { MAX_CHECK_IN_DAYS_AHEAD, depositFor, localDateString, toVietnamIso } from "../utils";
 
 /** Services have no stock, so there is no natural cap; this keeps the stepper sane. */
@@ -71,10 +93,13 @@ export function ReservationFormPage({
   const getErrorMessage = useApiErrorMessage();
 
   const detail = useFacilityPublicDetail(facilityId ?? "");
-  const units = useAvailableUnits(facilityId, unitTypeId);
+  const units = useBookableUnits(facilityId, unitTypeId);
   const create = useCreateReservation();
 
   const [unitId, setUnitId] = useState("");
+  const [rackSelection, setRackSelection] = useState<{ unitId: string; rackIds: string[] } | null>(
+    null
+  );
   const [checkInDate, setCheckInDate] = useState("");
   const [slot, setSlot] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -83,8 +108,30 @@ export function ReservationFormPage({
   const [notes, setNotes] = useState("");
   const [serverError, setServerError] = useState<string | null>(null);
   const [tried, setTried] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [forfeitConfirmOpen, setForfeitConfirmOpen] = useState(false);
 
   const slots = useAvailableTimeSlots(facilityId, checkInDate);
+
+  const activeOffering = detail.data?.unitTypeOfferings.find(
+    (o) => o.unitTypeId === unitTypeId && o.status === FacilityUnitTypeOfferingStatusEnum.ACTIVE
+  );
+  const isRackWarehouse = activeOffering?.unitType.category === UnitTypeCategoryEnum.WAREHOUSE_RACK;
+  const racks = useBookableRacks(unitId || undefined, isRackWarehouse);
+  const zonePricing = useOfferingZonePricing(activeOffering?.id, isRackWarehouse);
+  const selectedRackIds = rackSelection?.unitId === unitId ? rackSelection.rackIds : [];
+  const selectedRacks = (racks.data ?? []).filter((rack) => selectedRackIds.includes(rack.id));
+  const rackMonthlyTotal = selectedRacks.reduce(
+    (sum, rack) => sum + getRackPrice(rack, zonePricing.data, activeOffering?.pricePerUnit),
+    0
+  );
+  const isRackBooking = isRackWarehouse && selectedRacks.length > 0;
+  const toggleRack = (rack: StorageRackResponse) => {
+    const next = selectedRackIds.includes(rack.id)
+      ? selectedRackIds.filter((id) => id !== rack.id)
+      : [...selectedRackIds, rack.id];
+    setRackSelection({ unitId, rackIds: next });
+  };
 
   const searchHref = `/${locale}/customer/search`;
   const back = (
@@ -133,12 +180,14 @@ export function ReservationFormPage({
   }
 
   const facility = detail.data.facility;
-  const availableUnits = units.data ?? [];
+  const mapUnits = units.data ?? [];
   const amenities = detail.data.amenityOfferings.filter(
     (o) => o.status === FacilityAmenityOfferingStatusEnum.ACTIVE && maxQuantity(o) > 0
   );
 
-  const deposit = depositFor(offering.pricePerUnit, offering.depositMultiplier);
+  // BE prices a rack booking as the sum of the picked racks instead of the unit price.
+  const basePrice = isRackBooking ? rackMonthlyTotal : offering.pricePerUnit;
+  const deposit = depositFor(basePrice, offering.depositMultiplier);
   const durationNumber = Number(duration);
   const selectedSlot = slots.data?.find((s) => s.slotName === slot);
   const today = localDateString();
@@ -146,12 +195,14 @@ export function ReservationFormPage({
 
   const problem = (() => {
     if (!unitId) return t("errors.unit");
+    if (isRackWarehouse && selectedRackIds.length === 0) return t("errors.racks");
     if (!checkInDate) return t("errors.checkInDate");
     if (!selectedSlot?.isAvailable) return t("errors.slot");
     if (!startDate || startDate < checkInDate) return t("errors.startDate");
     if (!Number.isInteger(durationNumber) || durationNumber < offering.minRentalDays) {
       return t("errors.duration", { min: offering.minRentalDays });
     }
+    if (!termsAccepted) return t("errors.terms");
     return null;
   })();
   // Validation messages stay live once the user has tried to submit, so they clear as the form is fixed.
@@ -166,6 +217,16 @@ export function ReservationFormPage({
     e.preventDefault();
     setTried(true);
     if (problem) return;
+    // Booking inside the no-refund window: the customer confirms before the unit is held.
+    if (isInsideForfeitWindow(checkInDate, slot)) {
+      setForfeitConfirmOpen(true);
+      return;
+    }
+    await submit();
+  };
+
+  const submit = async () => {
+    setForfeitConfirmOpen(false);
     setServerError(null);
     try {
       const reservation = await create.mutateAsync({
@@ -182,10 +243,35 @@ export function ReservationFormPage({
             facilityAmenityOfferingId,
             quantity,
           })),
-        notes: notes.trim() || undefined,
+        notes: notes.trim().slice(0, 1000) || undefined,
+        rentedRackIds:
+          RESERVATION_RACK_SELECTION_SUPPORTED && isRackWarehouse ? selectedRackIds : undefined,
+        termsAccepted: true,
       });
       router.push(`/${locale}/customer/reservations/${reservation.id}/payment`);
     } catch (err) {
+      const code = err instanceof AppApiError ? err.messageCode : undefined;
+      if (code === MESSAGE_CODE.MESSAGE_CODE_637) {
+        // A picked rack was reserved by someone else meanwhile.
+        setRackSelection(null);
+        void racks.refetch();
+        setServerError(t("errors.rackTaken"));
+        return;
+      }
+      if (code === MESSAGE_CODE.MESSAGE_CODE_309) {
+        setUnitId("");
+        void units.refetch();
+      }
+      // Slot full, closed, already started or too close to prepare: pick another one.
+      if (
+        code === MESSAGE_CODE.MESSAGE_CODE_310 ||
+        code === MESSAGE_CODE.MESSAGE_CODE_311 ||
+        code === MESSAGE_CODE.MESSAGE_CODE_315 ||
+        code === MESSAGE_CODE.MESSAGE_CODE_328
+      ) {
+        setSlot("");
+        void slots.refetch();
+      }
       setServerError(getErrorMessage(err));
     }
   };
@@ -201,37 +287,43 @@ export function ReservationFormPage({
       <form onSubmit={onSubmit} className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
         <div className="space-y-6">
           <Section title={t("unit.title")}>
-            {availableUnits.length === 0 ? (
+            {mapUnits.length === 0 ? (
               <p className="text-sm text-neutral-muted">{t("unit.empty")}</p>
             ) : (
-              <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                {availableUnits.map((u) => (
-                  <li key={u.id}>
-                    <label
-                      className={cn(
-                        "flex cursor-pointer flex-col rounded-xl border p-3 text-sm transition-colors",
-                        unitId === u.id
-                          ? "border-brand bg-brand-bg"
-                          : "border-neutral-border hover:border-brand/50"
-                      )}
-                    >
-                      <input
-                        type="radio"
-                        name="unit"
-                        value={u.id}
-                        checked={unitId === u.id}
-                        onChange={() => setUnitId(u.id)}
-                        className="sr-only"
-                      />
-                      <span className="font-semibold">{u.unitNumber}</span>
-                      <span className="text-neutral-muted">
-                        {t("unit.location", { floor: u.floor, zone: u.zone ?? "—" })}
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
+              <UnitSeatMapWeb
+                units={mapUnits}
+                selectedUnitId={unitId}
+                onSelect={(unit) => setUnitId(unit.id)}
+              />
             )}
+            {isRackWarehouse && unitId ? (
+              <div className="space-y-3 border-t border-neutral-border pt-4">
+                <h3 className="text-sm font-semibold">{t("seatMap.racksTitle")}</h3>
+                {racks.isLoading ? (
+                  <Skeleton className="h-40 rounded-xl" />
+                ) : (racks.data ?? []).length === 0 ? (
+                  <p className="text-sm text-neutral-muted">{t("seatMap.noRacks")}</p>
+                ) : (
+                  <RackSeatMapWeb
+                    racks={racks.data ?? []}
+                    pricing={zonePricing.data}
+                    fallbackPrice={offering.pricePerUnit}
+                    selectedRackIds={selectedRackIds}
+                    onToggle={toggleRack}
+                  />
+                )}
+                {selectedRacks.length > 0 ? (
+                  <p className="rounded-xl bg-brand-bg px-3 py-2 text-sm font-semibold">
+                    {t("seatMap.selection", {
+                      count: selectedRacks.length,
+                      codes: selectedRacks.map((rack) => rack.rackCode).join(", "),
+                      total: formatCurrency(rackMonthlyTotal),
+                    })}
+                  </p>
+                ) : null}
+                <p className="text-xs text-neutral-muted">{t("seatMap.estimateNote")}</p>
+              </div>
+            ) : null}
           </Section>
 
           <Section title={t("schedule.title")}>
@@ -369,9 +461,13 @@ export function ReservationFormPage({
           <h2 className="text-lg font-semibold">{t("summary.title")}</h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between gap-3">
-              <dt className="text-neutral-muted">{t("summary.price")}</dt>
+              <dt className="text-neutral-muted">
+                {isRackBooking
+                  ? t("summary.rackEstimate", { count: selectedRacks.length })
+                  : t("summary.price")}
+              </dt>
               <dd className="font-medium">
-                {formatCurrency(offering.pricePerUnit)} / {tBilling(offering.billingUnit)}
+                {formatCurrency(basePrice)} / {tBilling(offering.billingUnit)}
               </dd>
             </div>
             <div className="flex justify-between gap-3">
@@ -384,6 +480,21 @@ export function ReservationFormPage({
             </div>
           </dl>
           <p className="text-xs text-neutral-muted">{t("summary.holdNote")}</p>
+          <div className="space-y-2 rounded-xl border border-neutral-border bg-neutral-50 p-3">
+            <ul className="list-disc space-y-1 pl-4 text-xs text-neutral-muted">
+              <li>{t("terms.freeCancel", { hours: FREE_CANCEL_HOURS })}</li>
+              <li>{t("terms.forfeit")}</li>
+            </ul>
+            <label className="flex cursor-pointer items-start gap-2 text-sm font-medium">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(event) => setTermsAccepted(event.target.checked)}
+                className="mt-0.5 size-4 accent-[var(--color-brand,#0b927e)]"
+              />
+              {t("terms.accept")}
+            </label>
+          </div>
 
           {error && (
             <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
@@ -399,6 +510,23 @@ export function ReservationFormPage({
           </Link>
         </aside>
       </form>
+
+      <Dialog open={forfeitConfirmOpen} onOpenChange={setForfeitConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("forfeitWarning.title")}</DialogTitle>
+            <DialogDescription>{t("forfeitWarning.body")}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setForfeitConfirmOpen(false)}>
+              {t("forfeitWarning.back")}
+            </Button>
+            <Button onClick={() => void submit()} disabled={create.isPending}>
+              {t("forfeitWarning.continue")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
