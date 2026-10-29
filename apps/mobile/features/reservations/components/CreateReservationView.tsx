@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { View, ScrollView, Pressable, TextInput, ActivityIndicator } from "react-native";
+import { View, ScrollView, Pressable, TextInput, ActivityIndicator, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
@@ -17,9 +17,19 @@ import {
 } from "@/features/storage-explore/utils/storageFormat";
 import {
   AmenityTypeEnum,
+  FREE_CANCEL_HOURS,
+  HOLD_MINUTES,
+  MAX_ADVANCE_DAYS,
+  MESSAGE_CODE,
+  RESERVATION_RACK_SELECTION_SUPPORTED,
+  UnitTypeCategoryEnum,
+  getRackPrice,
+  isInsideForfeitWindow,
   type MessageLocale,
   type PublicAmenityOfferingResponse,
   type PublicUnitTypeOfferingResponse,
+  type StorageRackResponse,
+  type StorageUnitResponse,
 } from "@self-storage-system-fe/shared";
 import {
   Building2,
@@ -36,8 +46,17 @@ import {
   ShieldCheck,
   ArrowRight,
   RefreshCw,
+  LayoutGrid,
 } from "lucide-react-native";
 import { useCreateReservation } from "../hooks/useReservations";
+import {
+  useBookableRacks,
+  useBookableUnits,
+  useCheckInSlots,
+  useOfferingZonePricing,
+} from "../hooks/useSeatMap";
+import { UnitSeatMap } from "./UnitSeatMap";
+import { RackSeatMap } from "./RackSeatMap";
 import {
   formatRentalDurationDays,
   formatVnd,
@@ -162,6 +181,66 @@ export function CreateReservationView({
 
   const rentalDuration = customRentalDuration === null ? minRentalDays : customRentalDuration;
 
+  // Seat map: unit (and racks for WAREHOUSE_RACK) picked on the 2D map, plus the check-in slot.
+  // Selections are keyed by what they depend on, so changing the package or unit resets them.
+  const [unitSelection, setUnitSelection] = useState<{ offeringId: string; unitId: string } | null>(
+    null
+  );
+  const [rackSelection, setRackSelection] = useState<{ unitId: string; rackIds: string[] } | null>(
+    null
+  );
+  const [slotSelection, setSlotSelection] = useState<{ date: string; slotName: string } | null>(
+    null
+  );
+  const [seatError, setSeatError] = useState<string | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsError, setTermsError] = useState<string | null>(null);
+
+  const isRackWarehouse = selectedCategory === UnitTypeCategoryEnum.WAREHOUSE_RACK;
+  const unitsQuery = useBookableUnits(activeFacilityId, selectedOffering?.unitTypeId);
+  const selectedUnitId =
+    unitSelection && unitSelection.offeringId === selectedOffering?.id
+      ? unitSelection.unitId
+      : null;
+  const selectedUnit = unitsQuery.data?.find((unit) => unit.id === selectedUnitId) ?? null;
+  const racksQuery = useBookableRacks(selectedUnitId ?? undefined, isRackWarehouse);
+  const zonePricingQuery = useOfferingZonePricing(selectedOffering?.id, isRackWarehouse);
+  const selectedRackIds =
+    rackSelection && rackSelection.unitId === selectedUnitId ? rackSelection.rackIds : [];
+  const selectedRacks = (racksQuery.data ?? []).filter((rack) => selectedRackIds.includes(rack.id));
+  const rackMonthlyTotal = selectedRacks.reduce(
+    (sum, rack) => sum + getRackPrice(rack, zonePricingQuery.data, selectedOffering?.pricePerUnit),
+    0
+  );
+  const isRackBooking = isRackWarehouse && selectedRacks.length > 0;
+
+  const parsedStartForSlots = parseAndValidateStartDate(startDateInput, selectedCategory);
+  const checkInDateKey = parsedStartForSlots.isValidFormat
+    ? (() => {
+        const date = new Date(parsedStartForSlots.isoString);
+        const pad = (value: number) => String(value).padStart(2, "0");
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+      })()
+    : undefined;
+  const slotsQuery = useCheckInSlots(activeFacilityId, checkInDateKey);
+  const selectedSlotName =
+    slotSelection && slotSelection.date === checkInDateKey ? slotSelection.slotName : null;
+
+  const selectUnit = (unit: StorageUnitResponse) => {
+    if (!selectedOffering) return;
+    setUnitSelection({ offeringId: selectedOffering.id, unitId: unit.id });
+    setSeatError(null);
+  };
+
+  const toggleRack = (rack: StorageRackResponse) => {
+    if (!selectedUnitId) return;
+    const next = selectedRackIds.includes(rack.id)
+      ? selectedRackIds.filter((id) => id !== rack.id)
+      : [...selectedRackIds, rack.id];
+    setRackSelection({ unitId: selectedUnitId, rackIds: next });
+    setSeatError(null);
+  };
+
   const toggleAmenity = (offeringId: string, maxQty: number) => {
     setAmenityQuantities((prev) => {
       const next = { ...prev };
@@ -188,8 +267,8 @@ export function CreateReservationView({
     });
   };
 
-  // Section 1.5: Exact Pricing Formulas matching Backend calculation
-  const basePrice = selectedOffering?.pricePerUnit ?? 0;
+  // Section 1.5: Exact Pricing Formulas matching Backend calculation (rack bookings sum the racks)
+  const basePrice = isRackBooking ? rackMonthlyTotal : (selectedOffering?.pricePerUnit ?? 0);
   const depositMultiplier = selectedOffering?.depositMultiplier || 1;
   const depositAmount = basePrice * depositMultiplier;
 
@@ -242,6 +321,14 @@ export function CreateReservationView({
       );
       return;
     }
+    if (checkInDateKey && checkInDateKey > getTodayDateInput(MAX_ADVANCE_DAYS)) {
+      setDateError(
+        isEn
+          ? `Check-in can be booked at most ${MAX_ADVANCE_DAYS} days ahead.`
+          : `Chỉ được đặt trước tối đa ${MAX_ADVANCE_DAYS} ngày.`
+      );
+      return;
+    }
 
     if (!Number.isInteger(rentalDuration) || rentalDuration < minRentalDays) {
       setDurationError(
@@ -252,6 +339,33 @@ export function CreateReservationView({
       return;
     }
 
+    if (!selectedUnitId) {
+      setSeatError(
+        isEn ? "Please pick a storage unit on the map." : "Vui lòng chọn một phòng kho trên sơ đồ."
+      );
+      return;
+    }
+    if (isRackWarehouse && selectedRackIds.length === 0) {
+      setSeatError(isEn ? "Please pick at least one rack." : "Vui lòng chọn ít nhất một kệ.");
+      return;
+    }
+    if (!selectedSlotName) {
+      setDateError(
+        isEn ? "Please choose a check-in time slot." : "Vui lòng chọn khung giờ nhận phòng."
+      );
+      return;
+    }
+    if (!termsAccepted) {
+      setTermsError(
+        isEn
+          ? "Please accept the booking terms & policy."
+          : "Vui lòng đồng ý Điều khoản & Chính sách đặt chỗ."
+      );
+      return;
+    }
+
+    const notesPayload = notes.trim().slice(0, 1000);
+
     const validAmenityIds = new Set(availableAmenities.map((item) => item.id));
     const amenitiesPayload = Object.entries(amenityQuantities)
       .filter(([id, qty]) => validAmenityIds.has(id) && qty >= 1)
@@ -260,36 +374,92 @@ export function CreateReservationView({
         quantity,
       }));
 
-    try {
-      const res = await createMutation.mutateAsync({
-        facilityId: activeFacilityId,
-        facilityUnitTypeOfferingId: selectedOffering.id,
-        startDate: parsedDate.isoString,
-        rentalDuration,
-        amenities: amenitiesPayload,
-        notes: notes.trim() ? notes.trim() : undefined,
-      });
-
-      toast.success(
-        isEn
-          ? `Reservation #${res.data.reservationCode} submitted!`
-          : `Gửi yêu cầu đặt chỗ #${res.data.reservationCode} thành công!`
-      );
-
-      if (onSuccessNavigate) {
-        onSuccessNavigate(res.data.id);
-      } else {
-        router.push({
-          pathname: "/reservations/[id]" as any,
-          params: { id: res.data.id },
+    const submit = async () => {
+      try {
+        const res = await createMutation.mutateAsync({
+          facilityId: activeFacilityId,
+          storageUnitId: selectedUnitId,
+          checkInDate: parsedDate.isoString,
+          checkInTimeSlot: selectedSlotName,
+          facilityUnitTypeOfferingId: selectedOffering.id,
+          startDate: parsedDate.isoString,
+          rentalDuration,
+          amenities: amenitiesPayload,
+          notes: notesPayload || undefined,
+          rentedRackIds:
+            RESERVATION_RACK_SELECTION_SUPPORTED && isRackWarehouse ? selectedRackIds : undefined,
+          termsAccepted: true,
         });
-      }
 
-      clearHandoffPayload();
-    } catch (error) {
-      const resolved = resolveReservationErrorMessage(error, currentLocale, "reservation");
-      toast.error(resolved.message);
+        toast.success(
+          isEn
+            ? `Reservation #${res.data.reservationCode} submitted!`
+            : `Gửi yêu cầu đặt chỗ #${res.data.reservationCode} thành công!`
+        );
+
+        if (onSuccessNavigate) {
+          onSuccessNavigate(res.data.id);
+        } else {
+          router.push({
+            pathname: "/reservations/[id]" as any,
+            params: { id: res.data.id },
+          });
+        }
+
+        clearHandoffPayload();
+      } catch (error) {
+        const resolved = resolveReservationErrorMessage(error, currentLocale, "reservation");
+        toast.error(
+          resolved.messageCode === MESSAGE_CODE.MESSAGE_CODE_637
+            ? isEn
+              ? "One of the racks you picked was just taken. Please pick again."
+              : "Một kệ bạn chọn vừa có người giữ. Vui lòng chọn lại."
+            : resolved.message
+        );
+        // The unit was taken meanwhile: drop the pick and reload the map.
+        if (
+          resolved.messageCode === MESSAGE_CODE.MESSAGE_CODE_309 ||
+          resolved.messageCode === MESSAGE_CODE.MESSAGE_CODE_305
+        ) {
+          setUnitSelection(null);
+          void unitsQuery.refetch();
+        }
+        // A picked rack was reserved by someone else meanwhile (BE answers 637 for racks).
+        if (resolved.messageCode === MESSAGE_CODE.MESSAGE_CODE_637) {
+          setRackSelection(null);
+          void racksQuery.refetch();
+        }
+        // Full, inactive, already started or too close to prepare: pick another slot.
+        if (
+          resolved.messageCode === MESSAGE_CODE.MESSAGE_CODE_310 ||
+          resolved.messageCode === MESSAGE_CODE.MESSAGE_CODE_311 ||
+          resolved.messageCode === MESSAGE_CODE.MESSAGE_CODE_315 ||
+          resolved.messageCode === MESSAGE_CODE.MESSAGE_CODE_328
+        ) {
+          setSlotSelection(null);
+          void slotsQuery.refetch();
+        }
+        if (resolved.messageCode === MESSAGE_CODE.MESSAGE_CODE_322) {
+          setTermsAccepted(false);
+        }
+      }
+    };
+
+    // Booking inside the no-refund window: the customer must confirm before the unit is held.
+    if (checkInDateKey && isInsideForfeitWindow(checkInDateKey, selectedSlotName)) {
+      Alert.alert(
+        isEn ? "Deposit will not be refunded" : "Cọc sẽ không được hoàn",
+        isEn
+          ? `Your check-in is less than ${FREE_CANCEL_HOURS} hours away. If you cancel after paying, the deposit will not be refunded. Do you want to continue?`
+          : "Đơn đặt sát giờ hẹn, nếu hủy đơn sau khi thanh toán bạn sẽ không được hoàn lại tiền cọc. Bạn có chắc chắn muốn tiếp tục?",
+        [
+          { text: isEn ? "Go back" : "Quay lại", style: "cancel" },
+          { text: isEn ? "Continue" : "Tiếp tục", onPress: () => void submit() },
+        ]
+      );
+      return;
     }
+    await submit();
   };
 
   const quickDateOptions = requiresAdvanceDay
@@ -563,12 +733,99 @@ export function CreateReservationView({
         ) : null}
       </View>
 
+      {/* ── Section 2: Pick a unit (and racks) on the cinema-style map ── */}
+      {selectedOffering ? (
+        <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3">
+          <View className="flex-row items-center gap-2">
+            <LayoutGrid size={18} color="#0B927E" />
+            <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
+              {isRackWarehouse
+                ? isEn
+                  ? "2. Pick your room and racks"
+                  : "2. Chọn phòng và kệ"
+                : isEn
+                  ? "2. Pick your storage unit"
+                  : "2. Chọn phòng kho"}
+            </Text>
+          </View>
+
+          {unitsQuery.isLoading ? (
+            <Skeleton className="h-40 w-full rounded-2xl" />
+          ) : unitsQuery.isError ? (
+            <Pressable onPress={() => void unitsQuery.refetch()} className="items-center py-4">
+              <Text className="text-xs font-bold text-brand">
+                {isEn
+                  ? "Could not load the map. Tap to retry."
+                  : "Không tải được sơ đồ. Chạm để thử lại."}
+              </Text>
+            </Pressable>
+          ) : (
+            <UnitSeatMap
+              units={unitsQuery.data ?? []}
+              selectedUnitId={selectedUnitId}
+              onSelect={selectUnit}
+              isEn={isEn}
+            />
+          )}
+
+          {isRackWarehouse && selectedUnit ? (
+            <View className="gap-2 border-t border-neutral-border pt-3 dark:border-neutral-800">
+              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                {isEn
+                  ? `Racks in unit ${selectedUnit.unitNumber}`
+                  : `Kệ trong phòng ${selectedUnit.unitNumber}`}
+              </Text>
+              {racksQuery.isLoading ? (
+                <Skeleton className="h-32 w-full rounded-2xl" />
+              ) : (racksQuery.data ?? []).length === 0 ? (
+                <Text variant="muted" className="text-xs">
+                  {isEn ? "This unit has no racks yet." : "Phòng này chưa có kệ."}
+                </Text>
+              ) : (
+                <RackSeatMap
+                  racks={racksQuery.data ?? []}
+                  pricing={zonePricingQuery.data}
+                  fallbackPrice={selectedOffering?.pricePerUnit}
+                  selectedRackIds={selectedRackIds}
+                  onToggle={toggleRack}
+                  isEn={isEn}
+                />
+              )}
+              {selectedRacks.length > 0 ? (
+                <View className="flex-row items-center justify-between rounded-2xl bg-brand-bg px-3 py-2.5 dark:bg-brand/10">
+                  <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                    {isEn
+                      ? `${selectedRacks.length} racks · ${selectedRacks.map((rack) => rack.rackCode).join(", ")}`
+                      : `${selectedRacks.length} kệ · ${selectedRacks.map((rack) => rack.rackCode).join(", ")}`}
+                  </Text>
+                  <Text className="text-xs font-extrabold text-brand">
+                    {formatVnd(rackMonthlyTotal)}
+                    {isEn ? "/month" : "/tháng"}
+                  </Text>
+                </View>
+              ) : null}
+              <Text variant="muted" className="text-[10px] leading-4">
+                {isEn
+                  ? "Rack prices are estimates. The facility confirms your racks and the final price."
+                  : "Giá kệ là tạm tính. Cơ sở sẽ xác nhận kệ và giá chính thức."}
+              </Text>
+            </View>
+          ) : null}
+
+          {seatError ? (
+            <Text className="text-xs font-semibold text-red-600 dark:text-red-400">
+              {seatError}
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
+
       {/* ── Section 1.2: Rental Schedule (startDate & rentalDuration in DAYS) ── */}
       <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-4">
         <View className="flex-row items-center gap-2">
           <Calendar size={18} color="#0B927E" />
           <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
-            {isEn ? "2. Rental Schedule" : "2. Lịch trình thuê kho"}
+            {isEn ? "3. Rental Schedule" : "3. Lịch trình thuê kho"}
           </Text>
         </View>
 
@@ -630,6 +887,62 @@ export function CreateReservationView({
               {dateError}
             </Text>
           ) : null}
+        </View>
+
+        {/* Check-in time slot for the move-in day */}
+        <View>
+          <Text className="text-xs font-bold text-neutral-600 dark:text-neutral-300 mb-1.5">
+            {isEn ? "Check-in time slot" : "Khung giờ nhận phòng"}
+          </Text>
+          {!checkInDateKey ? (
+            <Text variant="muted" className="text-[11px]">
+              {isEn ? "Enter a valid date first." : "Nhập ngày hợp lệ để xem khung giờ."}
+            </Text>
+          ) : slotsQuery.isLoading ? (
+            <ActivityIndicator size="small" color="#0B927E" />
+          ) : (slotsQuery.data ?? []).length === 0 ? (
+            <Text variant="muted" className="text-[11px]">
+              {isEn
+                ? "No check-in slots on this day."
+                : "Ngày này cơ sở không có khung giờ nhận phòng."}
+            </Text>
+          ) : (
+            <View className="flex-row flex-wrap gap-2">
+              {(slotsQuery.data ?? []).map((slot) => {
+                const active = slot.slotName === selectedSlotName;
+                return (
+                  <Pressable
+                    key={slot.id}
+                    disabled={!slot.isAvailable}
+                    onPress={() => {
+                      if (!checkInDateKey) return;
+                      setSlotSelection({ date: checkInDateKey, slotName: slot.slotName });
+                      setDateError(null);
+                    }}
+                    className={`rounded-xl border px-3 py-1.5 ${
+                      active
+                        ? "border-brand bg-brand-light/40 dark:bg-brand/20"
+                        : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800"
+                    } ${slot.isAvailable ? "" : "opacity-40"}`}
+                  >
+                    <Text
+                      className={`text-xs font-semibold ${
+                        active ? "text-brand" : "text-neutral-600 dark:text-neutral-300"
+                      }`}
+                    >
+                      {slot.slotName}
+                    </Text>
+                    <Text variant="muted" className="text-[10px]">
+                      {slot.startTime}–{slot.endTime} ·{" "}
+                      {isEn
+                        ? `${slot.availableCapacity} left`
+                        : `còn ${slot.availableCapacity} chỗ`}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
         </View>
 
         {/* Rental Duration (in days, with month conversion) */}
@@ -735,7 +1048,7 @@ export function CreateReservationView({
             <View className="flex-row items-center gap-2">
               <Sparkles size={18} color="#0B927E" />
               <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
-                {isEn ? "3. Add-on Amenities (Optional)" : "3. Tiện ích đi kèm (Tùy chọn)"}
+                {isEn ? "4. Add-on Amenities (Optional)" : "4. Tiện ích đi kèm (Tùy chọn)"}
               </Text>
             </View>
             {selectedAmenityCount > 0 ? (
@@ -853,7 +1166,7 @@ export function CreateReservationView({
           <View className="flex-row items-center gap-2">
             <FileText size={18} color="#0B927E" />
             <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
-              {isEn ? "4. Notes for Facility Staff" : "4. Ghi chú cho cơ sở kho"}
+              {isEn ? "5. Notes for Facility Staff" : "5. Ghi chú cho cơ sở kho"}
             </Text>
           </View>
           <Text variant="muted" className="text-[11px]">
@@ -889,7 +1202,13 @@ export function CreateReservationView({
         <View className="gap-2 mb-4">
           <View className="flex-row justify-between">
             <Text variant="muted" className="text-xs">
-              {isEn ? "Base Storage Price:" : "Giá thuê kho cơ bản (basePrice):"}
+              {isRackBooking
+                ? isEn
+                  ? `Rack rent (${selectedRacks.length} racks):`
+                  : `Giá thuê kệ (${selectedRacks.length} kệ):`
+                : isEn
+                  ? "Base Storage Price:"
+                  : "Giá thuê kho cơ bản (basePrice):"}
             </Text>
             <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
               {formatVnd(basePrice)}{" "}
@@ -923,6 +1242,39 @@ export function CreateReservationView({
             </Text>
             <Text className="text-base font-extrabold text-brand">{formatVnd(totalAmount)}</Text>
           </View>
+        </View>
+
+        <View className="mb-3 gap-2 rounded-2xl border border-neutral-border bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-950">
+          <Text className="text-[11px] leading-4 text-neutral-600 dark:text-neutral-300">
+            {isEn
+              ? `• The unit is held for ${HOLD_MINUTES} minutes; unpaid bookings expire automatically.
+• Cancel at least ${FREE_CANCEL_HOURS} hours before check-in: 100% deposit refund.
+• Cancel later, or not showing up after the grace period: the deposit is forfeited.`
+              : `• Phòng được giữ ${HOLD_MINUTES} phút, chưa đóng cọc thì đơn tự hết hạn.
+• Huỷ trước giờ nhận kho từ ${FREE_CANCEL_HOURS} giờ trở lên: hoàn 100% cọc.
+• Huỷ sát giờ hoặc không đến sau thời gian ân hạn: mất 100% cọc.`}
+          </Text>
+          <Pressable
+            onPress={() => {
+              setTermsAccepted((value) => !value);
+              setTermsError(null);
+            }}
+            className="flex-row items-center gap-2.5 active:opacity-70"
+          >
+            <View
+              className={`h-5 w-5 items-center justify-center rounded-md border ${
+                termsAccepted ? "border-brand bg-brand" : "border-neutral-300 bg-white"
+              }`}
+            >
+              {termsAccepted ? <Check size={13} color="#FFFFFF" /> : null}
+            </View>
+            <Text className="flex-1 text-xs font-semibold text-neutral-dark dark:text-neutral-100">
+              {isEn
+                ? "I agree to the Booking Terms & Cancellation Policy"
+                : "Tôi đồng ý Điều khoản & Chính sách đặt chỗ, huỷ cọc"}
+            </Text>
+          </Pressable>
+          {termsError ? <Text className="text-[11px] text-red-600">{termsError}</Text> : null}
         </View>
 
         <Pressable
