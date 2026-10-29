@@ -154,6 +154,11 @@ export function RackStructureView({
         </div>
         {racksQuery.isLoading ? (
           <Skeleton className="h-64 w-full" />
+        ) : racksQuery.isError ? (
+          // A failed load (e.g. 403 for another facility) must not read as "no racks yet".
+          <p className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-6 text-center text-sm text-rose-700">
+            {getErrorMessage(racksQuery.error)}
+          </p>
         ) : racks.length === 0 ? (
           <p className="py-10 text-center text-sm text-slate-500">
             {canManage ? t("emptyManager") : t("empty")}

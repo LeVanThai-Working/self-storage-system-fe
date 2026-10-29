@@ -228,6 +228,10 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
           </div>
           {racksQuery.isLoading ? (
             <Skeleton className="h-64 w-full" />
+          ) : racksQuery.isError ? (
+            <p className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-6 text-center text-sm text-rose-700">
+              {getErrorMessage(racksQuery.error)}
+            </p>
           ) : racks.length === 0 ? (
             <p className="py-10 text-center text-sm text-slate-500">{t("noRacks")}</p>
           ) : (
