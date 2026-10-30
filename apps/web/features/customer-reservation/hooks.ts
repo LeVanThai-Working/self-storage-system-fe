@@ -5,9 +5,12 @@ import {
   createOrGetDepositPayment,
   createReservation,
   fetchAvailableUnits,
+  fetchBookableUnits,
   fetchMyReservations,
+  fetchOffering,
   fetchPayment,
   fetchReservation,
+  fetchUnitRacks,
 } from "./api";
 import type { ReservationListParams } from "./types";
 
@@ -20,6 +23,11 @@ export const customerReservationKeys = {
     [...customerReservationKeys.all, "units", facilityId, unitTypeId ?? "all"] as const,
   payment: (reservationId: string) =>
     [...customerReservationKeys.all, "payment", reservationId] as const,
+  bookableUnits: (facilityId: string, unitTypeId?: string) =>
+    [...customerReservationKeys.all, "bookable-units", facilityId, unitTypeId ?? "all"] as const,
+  racks: (unitId: string) => [...customerReservationKeys.all, "racks", unitId] as const,
+  offering: (offeringId: string) =>
+    [...customerReservationKeys.all, "offering", offeringId] as const,
 };
 
 /** How often the payment screen asks the BE whether the transfer arrived. */
@@ -103,3 +111,26 @@ export const useDepositPayment = (reservationId: string, enabled: boolean) => {
     refetch: open.refetch,
   };
 };
+
+export const useBookableUnits = (facilityId: string | undefined, unitTypeId?: string) =>
+  useQuery({
+    queryKey: customerReservationKeys.bookableUnits(facilityId ?? "", unitTypeId),
+    queryFn: () => fetchBookableUnits(facilityId!, unitTypeId),
+    enabled: Boolean(facilityId),
+  });
+
+export const useBookableRacks = (unitId: string | undefined, enabled: boolean) =>
+  useQuery({
+    queryKey: customerReservationKeys.racks(unitId ?? ""),
+    queryFn: () => fetchUnitRacks(unitId!),
+    enabled: Boolean(unitId) && enabled,
+  });
+
+/** Zone prices of a rack-warehouse offering. */
+export const useOfferingZonePricing = (offeringId: string | undefined, enabled: boolean) =>
+  useQuery({
+    queryKey: customerReservationKeys.offering(offeringId ?? ""),
+    queryFn: () => fetchOffering(offeringId!),
+    enabled: Boolean(offeringId) && enabled,
+    select: (offering) => offering.rackZonePricing ?? null,
+  });

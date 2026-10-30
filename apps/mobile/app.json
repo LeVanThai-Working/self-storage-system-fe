@@ -33,6 +33,13 @@
         }
       ],
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "Cho phép StorageHub truy cập thư viện ảnh để đính kèm ảnh hàng hóa và sự cố.",
+          "cameraPermission": "Cho phép StorageHub dùng camera để chụp ảnh hàng hóa và sự cố."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",

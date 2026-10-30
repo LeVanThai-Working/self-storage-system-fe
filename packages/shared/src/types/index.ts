@@ -12,3 +12,8 @@ export * from "./payment.types";
 export * from "./contract.types";
 export * from "./upload.types";
 export * from "./customerInventory.types";
+export * from "./storageRack.types";
+export * from "./customerSku.types";
+export * from "./inventoryRequest.types";
+export * from "./incident.types";
+export * from "./supportTicket.types";

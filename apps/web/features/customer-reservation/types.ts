@@ -88,6 +88,10 @@ export interface CreateReservationPayload {
   rentalDuration: number;
   amenities: Array<{ facilityAmenityOfferingId: string; quantity: number }>;
   notes?: string;
+  /** Racks picked on the seat map (WAREHOUSE_RACK units only). */
+  rentedRackIds?: string[];
+  /** BE rejects a reservation without accepted terms (322). */
+  termsAccepted: boolean;
 }
 
 export interface ReservationListParams {
