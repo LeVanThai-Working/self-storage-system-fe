@@ -4,7 +4,7 @@ import { type FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowLeft } from "lucide-react";
+import { AlertTriangle, ArrowLeft, MapPin } from "lucide-react";
 import {
   FacilityAmenityOfferingStatusEnum,
   FREE_CANCEL_HOURS,
@@ -13,6 +13,7 @@ import {
   RESERVATION_RACK_SELECTION_SUPPORTED,
   UnitTypeCategoryEnum,
   formatCurrency,
+  DEFAULT_RACK_ZONE_PRICING,
   getRackPrice,
   isInsideForfeitWindow,
   type PublicAmenityOfferingResponse,
@@ -49,10 +50,21 @@ const MAX_SERVICE_QUANTITY = 99;
 const fieldClass =
   "w-full rounded-xl border border-slate-200/80 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-700 outline-none transition-all focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20";
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  headerExtra,
+  children,
+}: {
+  title: string;
+  headerExtra?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <section className="space-y-4 rounded-2xl border border-neutral-border bg-white p-5">
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        {headerExtra}
+      </div>
       {children}
     </section>
   );
@@ -133,13 +145,14 @@ export function ReservationFormPage({
     setRackSelection({ unitId, rackIds: next });
   };
 
-  const searchHref = `/${locale}/customer/search`;
+  const searchHref = `/${locale}/customer/explore/${facilityId ?? ""}`;
   const back = (
     <Link
       href={searchHref}
-      className="mb-6 inline-flex items-center gap-2 text-sm text-neutral-muted hover:text-neutral-main"
+      className="inline-flex items-center gap-2 text-sm text-neutral-muted hover:text-neutral-main"
     >
-      <ArrowLeft className="size-4" /> {t("back")}
+      <ArrowLeft className="size-4" />
+      {t("back")}
     </Link>
   );
 
@@ -250,27 +263,17 @@ export function ReservationFormPage({
       });
       router.push(`/${locale}/customer/reservations/${reservation.id}/payment`);
     } catch (err) {
-      const code = err instanceof AppApiError ? err.messageCode : undefined;
-      if (code === MESSAGE_CODE.MESSAGE_CODE_637) {
-        // A picked rack was reserved by someone else meanwhile.
-        setRackSelection(null);
-        void racks.refetch();
-        setServerError(t("errors.rackTaken"));
-        return;
-      }
-      if (code === MESSAGE_CODE.MESSAGE_CODE_309) {
-        setUnitId("");
-        void units.refetch();
-      }
-      // Slot full, closed, already started or too close to prepare: pick another one.
-      if (
-        code === MESSAGE_CODE.MESSAGE_CODE_310 ||
-        code === MESSAGE_CODE.MESSAGE_CODE_311 ||
-        code === MESSAGE_CODE.MESSAGE_CODE_315 ||
-        code === MESSAGE_CODE.MESSAGE_CODE_328
-      ) {
-        setSlot("");
-        void slots.refetch();
+      if (err instanceof AppApiError) {
+        if (err.messageCode === MESSAGE_CODE.MESSAGE_CODE_309) {
+          units.refetch();
+          setServerError(t("serverErrors.unitTaken"));
+          return;
+        }
+        if (err.messageCode === MESSAGE_CODE.MESSAGE_CODE_310) {
+          slots.refetch();
+          setServerError(t("serverErrors.slotFull"));
+          return;
+        }
       }
       setServerError(getErrorMessage(err));
     }
@@ -279,35 +282,47 @@ export function ReservationFormPage({
   return (
     <>
       {back}
-      <h1 className="text-3xl font-bold">{t("title")}</h1>
-      <p className="mt-1 text-neutral-muted">
-        {offering.unitType.name} · {facility.name}
-      </p>
 
-      <form onSubmit={onSubmit} className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
-        <div className="space-y-6">
-          <Section title={t("unit.title")}>
-            {mapUnits.length === 0 ? (
-              <p className="text-sm text-neutral-muted">{t("unit.empty")}</p>
-            ) : (
-              <UnitSeatMapWeb
-                units={mapUnits}
-                selectedUnitId={unitId}
-                onSelect={(unit) => setUnitId(unit.id)}
-              />
-            )}
+      <header className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight text-neutral-main">{t("title")}</h1>
+        <p className="text-sm text-neutral-muted">
+          {facility.name} · {offering.unitType.name}
+        </p>
+      </header>
+
+      <form onSubmit={onSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <Section
+            title={t("unit.title")}
+            headerExtra={
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-700">
+                <MapPin className="size-3" />
+                {t("unit.mapNotice")}
+              </span>
+            }
+          >
+            <p className="text-xs text-neutral-muted">{t("seatMap.unitHint")}</p>
+            <UnitSeatMapWeb
+              units={mapUnits}
+              selectedUnitId={unitId}
+              onSelect={(unit) => {
+                setUnitId(unit.id);
+                setRackSelection(null);
+              }}
+            />
             {isRackWarehouse && unitId ? (
-              <div className="space-y-3 border-t border-neutral-border pt-4">
-                <h3 className="text-sm font-semibold">{t("seatMap.racksTitle")}</h3>
+              <div className="space-y-3 rounded-2xl border border-neutral-border bg-neutral-50/60 p-4">
+                <div>
+                  <h3 className="font-semibold text-neutral-main">{t("seatMap.rackTitle")}</h3>
+                  <p className="text-xs text-neutral-muted">{t("seatMap.rackHint")}</p>
+                </div>
                 {racks.isLoading ? (
                   <Skeleton className="h-40 rounded-xl" />
-                ) : (racks.data ?? []).length === 0 ? (
-                  <p className="text-sm text-neutral-muted">{t("seatMap.noRacks")}</p>
                 ) : (
                   <RackSeatMapWeb
                     racks={racks.data ?? []}
-                    pricing={zonePricing.data}
-                    fallbackPrice={offering.pricePerUnit}
+                    pricing={zonePricing.data ?? DEFAULT_RACK_ZONE_PRICING}
+                    fallbackPrice={offering?.pricePerUnit ?? null}
                     selectedRackIds={selectedRackIds}
                     onToggle={toggleRack}
                   />
@@ -327,28 +342,24 @@ export function ReservationFormPage({
           </Section>
 
           <Section title={t("schedule.title")}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field
-                label={t("schedule.checkInDate")}
-                hint={t("schedule.checkInHint", { days: MAX_CHECK_IN_DAYS_AHEAD })}
-              >
-                <input
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label={t("schedule.checkInDate")} hint={t("schedule.checkInHint")}>
+                <Input
                   type="date"
-                  className={fieldClass}
                   min={today}
                   max={lastCheckIn}
                   value={checkInDate}
                   onChange={(e) => {
                     setCheckInDate(e.target.value);
                     setSlot("");
-                    if (startDate && startDate < e.target.value) setStartDate("");
+                    if (!startDate || startDate < e.target.value) setStartDate(e.target.value);
                   }}
                 />
               </Field>
+
               <Field label={t("schedule.startDate")} hint={t("schedule.startHint")}>
-                <input
+                <Input
                   type="date"
-                  className={fieldClass}
                   min={checkInDate || today}
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
@@ -356,35 +367,47 @@ export function ReservationFormPage({
               </Field>
             </div>
 
-            <div className="space-y-1.5">
-              <span className="text-sm font-medium">{t("schedule.timeSlot")}</span>
+            <Field label={t("schedule.duration")} hint={t("schedule.durationHint")}>
+              <div className="relative">
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  min={offering.minRentalDays}
+                  placeholder={String(offering.minRentalDays)}
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                />
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-neutral-muted">
+                  {t("schedule.durationUnit", { unit: tBilling(offering.billingUnit) })}
+                </span>
+              </div>
+            </Field>
+
+            <div className="space-y-2">
+              <span className="text-sm font-medium text-neutral-main">{t("schedule.slot")}</span>
               {!checkInDate ? (
-                <p className="text-sm text-neutral-muted">{t("schedule.pickDateFirst")}</p>
+                <p className="text-xs text-neutral-muted">{t("schedule.pickDateFirst")}</p>
               ) : slots.isLoading ? (
-                <Skeleton className="h-12 rounded-xl" />
-              ) : slots.isError ? (
-                <p className="text-sm text-red-600">{t("schedule.slotsError")}</p>
+                <Skeleton className="h-20 rounded-xl" />
               ) : (slots.data ?? []).length === 0 ? (
-                <p className="text-sm text-neutral-muted">{t("schedule.noSlots")}</p>
+                <p className="text-xs text-neutral-muted">{t("schedule.noSlots")}</p>
               ) : (
-                <div className="flex flex-wrap gap-2">
-                  {slots.data!.map((s) => (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  {(slots.data ?? []).map((s) => (
                     <button
-                      key={s.id}
                       type="button"
+                      key={s.id}
                       disabled={!s.isAvailable}
                       onClick={() => setSlot(s.slotName)}
-                      aria-pressed={slot === s.slotName}
                       className={cn(
                         "rounded-xl border px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50",
                         slot === s.slotName
-                          ? "border-brand bg-brand-bg"
+                          ? "border-brand bg-brand-bg font-semibold"
                           : "border-neutral-border hover:border-brand/50"
                       )}
                     >
-                      <span className="block font-semibold">{s.slotName}</span>
+                      <span className="block">{s.slotName}</span>
                       <span className="block text-xs text-neutral-muted">
-                        {/* Slot names are often just the hours, so only repeat them when they add info */}
                         {s.slotName.includes(s.startTime) ? "" : `${s.startTime} – ${s.endTime} · `}
                         {s.isAvailable
                           ? t("schedule.left", { count: s.availableCapacity })
@@ -395,26 +418,11 @@ export function ReservationFormPage({
                 </div>
               )}
             </div>
-
-            <Field
-              label={t("schedule.duration", { unit: tBilling(offering.billingUnit) })}
-              hint={t("schedule.durationHint", { min: offering.minRentalDays })}
-            >
-              <Input
-                type="number"
-                inputMode="numeric"
-                min={offering.minRentalDays}
-                step={1}
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-              />
-            </Field>
           </Section>
 
           {amenities.length > 0 && (
             <Section title={t("amenities.title")}>
-              <p className="text-sm text-neutral-muted">{t("amenities.note")}</p>
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {amenities.map((o) => (
                   <li
                     key={o.id}
@@ -494,6 +502,12 @@ export function ReservationFormPage({
               />
               {t("terms.accept")}
             </label>
+            {isInsideForfeitWindow(checkInDate, slot) && (
+              <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">
+                <AlertTriangle className="size-4 shrink-0 text-amber-600 mt-0.5" />
+                <span>{t("forfeitWarning.body")}</span>
+              </div>
+            )}
           </div>
 
           {error && (
@@ -512,17 +526,32 @@ export function ReservationFormPage({
       </form>
 
       <Dialog open={forfeitConfirmOpen} onOpenChange={setForfeitConfirmOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t("forfeitWarning.title")}</DialogTitle>
-            <DialogDescription>{t("forfeitWarning.body")}</DialogDescription>
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-amber-100 text-amber-600 mb-2">
+              <AlertTriangle className="size-6" />
+            </div>
+            <DialogTitle className="text-center">{t("forfeitWarning.title")}</DialogTitle>
+            <DialogDescription className="text-center text-slate-600 text-sm">
+              {t("forfeitWarning.body")}
+            </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setForfeitConfirmOpen(false)}>
+          <DialogFooter className="mt-4 flex-col sm:flex-row gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setForfeitConfirmOpen(false)}
+              disabled={create.isPending}
+            >
               {t("forfeitWarning.back")}
             </Button>
-            <Button onClick={() => void submit()} disabled={create.isPending}>
-              {t("forfeitWarning.continue")}
+            <Button
+              type="button"
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+              onClick={() => void submit()}
+              disabled={create.isPending}
+            >
+              {create.isPending ? t("summary.submitting") : t("forfeitWarning.continue")}
             </Button>
           </DialogFooter>
         </DialogContent>

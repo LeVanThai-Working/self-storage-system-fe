@@ -70,6 +70,7 @@ interface CreateReservationViewProps {
   initialFacilityId?: string;
   initialOfferingId?: string;
   initialUnitTypeId?: string;
+  initialUnitId?: string;
   onSuccessNavigate?: (reservationId: string) => void;
 }
 
@@ -77,6 +78,7 @@ export function CreateReservationView({
   initialFacilityId,
   initialOfferingId,
   initialUnitTypeId,
+  initialUnitId,
   onSuccessNavigate,
 }: CreateReservationViewProps) {
   const router = useRouter();
@@ -183,8 +185,12 @@ export function CreateReservationView({
 
   // Seat map: unit (and racks for WAREHOUSE_RACK) picked on the 2D map, plus the check-in slot.
   // Selections are keyed by what they depend on, so changing the package or unit resets them.
+  const targetInitialUnitId = initialUnitId || handoffPayload?.storageUnitId;
   const [unitSelection, setUnitSelection] = useState<{ offeringId: string; unitId: string } | null>(
-    null
+    () =>
+      targetInitialUnitId && selectedOffering?.id
+        ? { offeringId: selectedOffering.id, unitId: targetInitialUnitId }
+        : null
   );
   const [rackSelection, setRackSelection] = useState<{ unitId: string; rackIds: string[] } | null>(
     null

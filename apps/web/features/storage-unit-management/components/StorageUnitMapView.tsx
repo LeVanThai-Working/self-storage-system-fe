@@ -6,7 +6,7 @@ import { AlertCircle, Boxes, Layers, RotateCw, Wrench } from "lucide-react";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { StorageUnitStatusEnum, type StorageUnitResponse } from "../types";
 
-/** Tile colors follow UnitStatusBadge: green / amber / red / orange / grey. */
+/** Tile colors follow UnitStatusBadge: green / amber / red / orange / dark red / grey. */
 const TILE_STYLES: Record<StorageUnitStatusEnum, { tile: string; dot: string }> = {
   [StorageUnitStatusEnum.AVAILABLE]: {
     tile: "bg-emerald-50 border-emerald-300 text-emerald-900 hover:bg-emerald-100",
@@ -24,6 +24,10 @@ const TILE_STYLES: Record<StorageUnitStatusEnum, { tile: string; dot: string }> 
     tile: "bg-orange-100 border-orange-300 text-orange-900 hover:bg-orange-200/70",
     dot: "bg-orange-500",
   },
+  [StorageUnitStatusEnum.PENDING_CLEARANCE]: {
+    tile: "bg-red-950/10 border-red-800 border-dashed text-red-950 hover:bg-red-950/20",
+    dot: "bg-red-800",
+  },
   [StorageUnitStatusEnum.INACTIVE]: {
     tile: "bg-slate-100 border-slate-300 text-slate-500 hover:bg-slate-200/70",
     dot: "bg-slate-400",
@@ -33,81 +37,67 @@ const TILE_STYLES: Record<StorageUnitStatusEnum, { tile: string; dot: string }> 
 const NO_ZONE = "__no_zone__";
 
 const byUnitNumber = (a: StorageUnitResponse, b: StorageUnitResponse) =>
-  a.unitNumber.localeCompare(b.unitNumber, undefined, { numeric: true, sensitivity: "base" });
-
-interface FloorGroup {
-  floor: number;
-  total: number;
-  zones: Array<{ zone: string; units: StorageUnitResponse[] }>;
-}
-
-/** floor (asc) -> zone (A-Z, unzoned last) -> units by unit number. */
-const groupByFloorAndZone = (units: StorageUnitResponse[]): FloorGroup[] => {
-  const floors = new Map<number, Map<string, StorageUnitResponse[]>>();
-  for (const unit of units) {
-    const zones = floors.get(unit.floor) ?? new Map<string, StorageUnitResponse[]>();
-    const zoneKey = unit.zone?.trim() || NO_ZONE;
-    zones.set(zoneKey, [...(zones.get(zoneKey) ?? []), unit]);
-    floors.set(unit.floor, zones);
-  }
-
-  return [...floors.entries()]
-    .sort(([a], [b]) => a - b)
-    .map(([floor, zones]) => ({
-      floor,
-      total: [...zones.values()].reduce((sum, list) => sum + list.length, 0),
-      zones: [...zones.entries()]
-        .sort(([a], [b]) => {
-          if (a === NO_ZONE) return 1;
-          if (b === NO_ZONE) return -1;
-          return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
-        })
-        .map(([zone, list]) => ({ zone, units: [...list].sort(byUnitNumber) })),
-    }));
-};
+  a.unitNumber.localeCompare(b.unitNumber, undefined, { numeric: true });
 
 interface StorageUnitMapViewProps {
   units: StorageUnitResponse[];
-  isLoading: boolean;
-  isError: boolean;
-  error: unknown;
-  hasActiveFilters: boolean;
-  onRetry: () => void;
   onSelectUnit: (unit: StorageUnitResponse) => void;
+  selectedUnitId?: string;
+  isLoading?: boolean;
+  isError?: boolean;
+  error?: unknown;
+  hasActiveFilters?: boolean;
+  onRetry?: () => void;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
-export const StorageUnitMapView = ({
+export const StorageUnitMapView: React.FC<StorageUnitMapViewProps> = ({
   units,
+  onSelectUnit,
+  selectedUnitId,
   isLoading,
   isError,
   error,
   hasActiveFilters,
   onRetry,
-  onSelectUnit,
-}: StorageUnitMapViewProps) => {
-  const t = useTranslations("facilityManager.storageUnits");
-  const tStatus = useTranslations("storageUnitStatus");
+  onRefresh,
+  isRefreshing,
+}) => {
+  const t = useTranslations("storageUnitStatus");
   const getErrorMessage = useApiErrorMessage();
 
-  const floors = useMemo(() => groupByFloorAndZone(units), [units]);
-
-  const statusCounts = useMemo(() => {
-    const counts = Object.fromEntries(
-      Object.values(StorageUnitStatusEnum).map((status) => [status, 0])
-    ) as Record<StorageUnitStatusEnum, number>;
-    for (const unit of units) counts[unit.status] = (counts[unit.status] ?? 0) + 1;
-    return counts;
+  // Group by floor -> zone
+  const floorMap = useMemo(() => {
+    const map = new Map<number, Map<string, StorageUnitResponse[]>>();
+    for (const unit of units) {
+      if (!map.has(unit.floor)) {
+        map.set(unit.floor, new Map());
+      }
+      const zoneMap = map.get(unit.floor)!;
+      const zoneKey = unit.zone?.trim() || NO_ZONE;
+      if (!zoneMap.has(zoneKey)) {
+        zoneMap.set(zoneKey, []);
+      }
+      zoneMap.get(zoneKey)!.push(unit);
+    }
+    return map;
   }, [units]);
+
+  const sortedFloors = useMemo(() => Array.from(floorMap.keys()).sort((a, b) => a - b), [floorMap]);
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-6 animate-pulse">
-        {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="space-y-3">
-            <div className="h-5 bg-slate-100 rounded-md w-32" />
-            <div className="flex flex-wrap gap-3">
-              {Array.from({ length: 8 }).map((__, j) => (
-                <div key={j} className="w-28 h-20 bg-slate-100 rounded-2xl" />
+      <div className="space-y-4">
+        {Array.from({ length: 2 }).map((_, f) => (
+          <div
+            key={f}
+            className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm space-y-4 animate-pulse"
+          >
+            <div className="h-6 w-32 bg-slate-100 rounded-lg" />
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-20 bg-slate-50 rounded-2xl border border-slate-100" />
               ))}
             </div>
           </div>
@@ -118,115 +108,154 @@ export const StorageUnitMapView = ({
 
   if (isError) {
     return (
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm py-16 px-6 text-center">
-        <div className="w-16 h-16 rounded-3xl bg-rose-50 flex items-center justify-center mx-auto mb-4 text-rose-400">
-          <AlertCircle className="w-8 h-8" />
+      <div className="rounded-3xl border border-slate-100 bg-white p-12 text-center shadow-sm">
+        <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center mx-auto mb-3 text-rose-500">
+          <AlertCircle className="w-6 h-6" />
         </div>
-        <h3 className="text-base font-bold text-slate-800">{t("map.loadError")}</h3>
-        <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">{getErrorMessage(error)}</p>
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
-        >
-          <RotateCw className="w-3.5 h-3.5" />
-          {t("retry")}
-        </button>
+        <p className="text-sm font-bold text-slate-800">Không thể tải sơ đồ mặt bằng</p>
+        <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">{getErrorMessage(error)}</p>
+        {onRetry && (
+          <button
+            type="button"
+            onClick={onRetry}
+            className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition cursor-pointer"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+            Thử lại
+          </button>
+        )}
       </div>
     );
   }
 
+  if (units.length === 0) {
+    return (
+      <div className="rounded-3xl border border-slate-100 bg-white p-12 text-center shadow-sm">
+        <Boxes className="mx-auto w-12 h-12 text-slate-300 mb-3" />
+        <p className="text-sm font-semibold text-slate-600">
+          {hasActiveFilters
+            ? "Không tìm thấy phòng kho nào phù hợp với bộ lọc."
+            : "Chưa có phòng kho nào trong sơ đồ mặt bằng."}
+        </p>
+      </div>
+    );
+  }
+
+  const handleRefresh = onRefresh || onRetry;
+
   return (
-    <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-      {/* Legend */}
-      <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/60 flex flex-wrap items-center gap-x-5 gap-y-2">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-          {t("map.legend")}
-        </span>
-        {Object.values(StorageUnitStatusEnum).map((status) => (
-          <span key={status} className="inline-flex items-center gap-1.5 text-xs text-slate-600">
-            <span className={`w-2.5 h-2.5 rounded-full ${TILE_STYLES[status].dot}`} />
-            {tStatus(status)}
-            <span className="font-bold text-slate-800">{statusCounts[status]}</span>
+    <div className="space-y-6">
+      {/* Legend & Refresh */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-xs">
+        <div className="flex flex-wrap items-center gap-4">
+          <span className="font-bold text-slate-500 uppercase tracking-wider text-[11px]">
+            Chú thích:
           </span>
-        ))}
+          {Object.entries(TILE_STYLES).map(([stKey, style]) => (
+            <div key={stKey} className="flex items-center gap-1.5">
+              <span className={`w-2.5 h-2.5 rounded-full ${style.dot}`} />
+              <span className="text-slate-600 font-medium">{t.has(stKey) ? t(stKey) : stKey}</span>
+            </div>
+          ))}
+        </div>
+
+        {handleRefresh && (
+          <button
+            type="button"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50 cursor-pointer"
+          >
+            <RotateCw
+              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-emerald-600" : ""}`}
+            />
+            Làm mới
+          </button>
+        )}
       </div>
 
-      {units.length === 0 ? (
-        <div className="py-16 px-6 text-center">
-          <div className="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center mx-auto mb-4 text-slate-300">
-            <Boxes className="w-8 h-8" />
-          </div>
-          <h3 className="text-base font-bold text-slate-800">
-            {hasActiveFilters ? t("empty.filteredTitle") : t("empty.title")}
-          </h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
-            {hasActiveFilters ? t("empty.filteredDescription") : t("map.emptyDescription")}
-          </p>
-        </div>
-      ) : (
-        <div className="p-6 space-y-8">
-          {floors.map((floor) => (
-            <section key={floor.floor} className="space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center">
-                  <Layers className="w-4 h-4" />
-                </div>
-                <h3 className="text-sm font-extrabold text-slate-900">
-                  {t("location.floor", { floor: floor.floor })}
-                </h3>
-                <span className="text-xs text-slate-400">
-                  {t("map.unitCount", { count: floor.total })}
-                </span>
-              </div>
+      {/* Grid by Floor */}
+      {sortedFloors.map((floor) => {
+        const zoneMap = floorMap.get(floor)!;
+        const sortedZones = Array.from(zoneMap.keys()).sort((a, b) => {
+          if (a === NO_ZONE) return 1;
+          if (b === NO_ZONE) return -1;
+          return a.localeCompare(b);
+        });
 
-              <div className="space-y-3 pl-1 sm:pl-10">
-                {floor.zones.map(({ zone, units: zoneUnits }) => (
-                  <div
-                    key={zone}
-                    className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4"
-                  >
-                    <div className="sm:w-24 flex-shrink-0 sm:pt-3 text-xs font-bold text-slate-500">
-                      {zone === NO_ZONE ? t("map.noZone") : t("location.zone", { zone })}
-                    </div>
-                    <div className="flex flex-wrap gap-3">
+        const floorTotal = Array.from(zoneMap.values()).reduce((acc, cur) => acc + cur.length, 0);
+
+        return (
+          <div
+            key={floor}
+            className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm space-y-5"
+          >
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <Layers className="w-5 h-5 text-emerald-600" />
+                <h3 className="text-base font-extrabold text-slate-900">Tầng {floor}</h3>
+              </div>
+              <span className="text-xs font-semibold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200/60">
+                {floorTotal} phòng kho
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {sortedZones.map((zoneKey) => {
+                const zoneUnits = (zoneMap.get(zoneKey) || []).slice().sort(byUnitNumber);
+                const displayZoneTitle = zoneKey === NO_ZONE ? "Khu vực chung" : `Khu ${zoneKey}`;
+
+                return (
+                  <div key={zoneKey} className="space-y-2">
+                    <p className="text-xs font-bold text-slate-500 tracking-wide uppercase">
+                      {displayZoneTitle}
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2.5">
                       {zoneUnits.map((unit) => {
+                        const isSelected = unit.id === selectedUnitId;
                         const style =
                           TILE_STYLES[unit.status] ?? TILE_STYLES[StorageUnitStatusEnum.INACTIVE];
+
                         return (
                           <button
                             key={unit.id}
                             type="button"
                             onClick={() => onSelectUnit(unit)}
-                            title={`${unit.unitNumber} · ${tStatus(unit.status)}${
-                              unit.unitType ? ` · ${unit.unitType.name}` : ""
+                            className={`p-3 rounded-2xl border text-left transition-all relative flex flex-col justify-between min-h-[82px] cursor-pointer ${
+                              style.tile
+                            } ${
+                              isSelected ? "ring-2 ring-emerald-600 ring-offset-2 shadow-md" : ""
                             }`}
-                            className={`relative w-28 h-20 rounded-2xl border-2 px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500/40 cursor-pointer ${style.tile}`}
                           >
-                            <span className="block font-mono font-black text-sm truncate">
-                              {unit.unitNumber}
-                            </span>
-                            <span className="block text-[11px] opacity-75 truncate mt-0.5">
-                              {unit.unitType ? `${unit.unitType.area} m²` : "—"}
-                            </span>
-                            <span className="absolute bottom-2 left-3 inline-flex items-center gap-1 text-[10px] font-semibold">
-                              <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
-                              {tStatus(unit.status)}
-                            </span>
-                            {unit.status === StorageUnitStatusEnum.UNDER_MAINTENANCE && (
-                              <Wrench className="absolute top-2 right-2 w-3.5 h-3.5 text-orange-600" />
-                            )}
+                            <div className="flex items-start justify-between gap-1 w-full">
+                              <span className="font-extrabold text-sm truncate">
+                                {unit.unitNumber}
+                              </span>
+                              <span className={`w-2 h-2 rounded-full shrink-0 mt-1 ${style.dot}`} />
+                            </div>
+
+                            <div className="mt-2 text-[11px] leading-tight space-y-0.5">
+                              <p className="font-medium truncate opacity-80">
+                                {unit.unitType?.name ?? "—"}
+                              </p>
+                              <div className="flex items-center justify-between text-[10px] opacity-70">
+                                <span>{t.has(unit.status) ? t(unit.status) : unit.status}</span>
+                                {unit.status === StorageUnitStatusEnum.UNDER_MAINTENANCE && (
+                                  <Wrench className="w-3 h-3 text-orange-600" />
+                                )}
+                              </div>
+                            </div>
                           </button>
                         );
                       })}
                     </div>
                   </div>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

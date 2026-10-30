@@ -7,6 +7,7 @@ import {
   AlertCircle,
   AlertTriangle,
   ArrowLeft,
+  ArrowRightLeft,
   Boxes,
   Calendar,
   Check,
@@ -14,9 +15,12 @@ import {
   ClipboardCheck,
   Clock,
   CreditCard,
+  ExternalLink,
+  FileCheck,
   FileSignature,
   FileText,
   History,
+  ImageIcon,
   LogOut,
   MinusCircle,
   Plus,
@@ -31,6 +35,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/features/auth/store";
+import { getDraftContractPdfContent, getDraftContractPdfUrl } from "../api";
+import { buildProfessionalContractHtml } from "../utils/printContract";
 import {
   useContractDetail,
   useFacilityStaffs,
@@ -55,6 +61,7 @@ import {
   formatDateTime,
   formatVnd,
   getBillingUnitLabel,
+  getViolationCategoryLabel,
   getContractDurationDays,
   getCurrentUserId,
   isContractAssignedToStaff,
@@ -78,8 +85,10 @@ import {
   ContractAddendumStatusBadge,
   ContractAddendumTypeBadge,
   ContractDepositBadge,
+  ContractDepositStatusBadge,
   ContractSourceBadge,
   ContractStatusBadge,
+  ContractTerminationBadge,
 } from "./ContractStatusBadge";
 
 interface ContractDetailViewProps {
@@ -132,6 +141,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
   const [isCheckOutOpen, setIsCheckOutOpen] = useState(false);
   const [isTerminateOpen, setIsTerminateOpen] = useState(false);
   const [unitReopened, setUnitReopened] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   if (contractQuery.isLoading || (isStaff && isAuthLoading && !currentUserId)) {
     return (
@@ -206,11 +216,17 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
 
   const isFromReservation = contract.source === ContractSourceEnum.RESERVATION;
   const isDepositSatisfied = isContractDepositSatisfied(contract);
+  const isFirstPeriodPaid = Boolean(contract.firstPeriodPaidAt || contract.firstCyclePaidAt);
 
   const canCollectWalkInDeposit =
     contract.status === ContractStatusEnum.DRAFT &&
     contract.source === ContractSourceEnum.WALK_IN &&
     !contract.depositPaidAt;
+
+  const canCollectFirstPeriodRent =
+    isDepositSatisfied &&
+    !isFirstPeriodPaid &&
+    (contract.status === ContractStatusEnum.DRAFT || contract.status === ContractStatusEnum.ACTIVE);
 
   const canCheckIn = canCheckInContract(contract, userRole);
 
@@ -247,6 +263,39 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
     }
   };
 
+  const handleExportDraftPdf = async () => {
+    setIsExportingPdf(true);
+    try {
+      // Build clean, professional ISO A4 print-ready contract HTML
+      const htmlContent = buildProfessionalContractHtml(contract);
+      const printWindow = window.open("", "_blank");
+      if (printWindow) {
+        printWindow.document.open();
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        setTimeout(() => {
+          printWindow.focus();
+        }, 300);
+      } else {
+        const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = `Hop-dong-${contract.contractCode || contract.id}.html`;
+        link.click();
+        URL.revokeObjectURL(blobUrl);
+        toast.success(
+          isEn
+            ? "Draft contract HTML downloaded. Open and press Ctrl+P to print."
+            : "Đã tải bản in hợp đồng. Vui lòng mở file và bấm Ctrl+P để in."
+        );
+      }
+    } catch (err: unknown) {
+      toast.error(resolveContractErrorMessage(err, locale));
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
   const isUnitUnderMaintenance =
     !unitReopened &&
     (!storageUnit?.status ||
@@ -272,6 +321,15 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
             <ContractStatusBadge status={contract.status} />
             <ContractSourceBadge source={contract.source} />
             <ContractDepositBadge source={contract.source} depositPaidAt={contract.depositPaidAt} />
+            {contract.depositStatus && (
+              <ContractDepositStatusBadge status={contract.depositStatus} />
+            )}
+            {contract.status === ContractStatusEnum.TERMINATED && contract.terminationType && (
+              <ContractTerminationBadge
+                terminationType={contract.terminationType}
+                violationCategory={contract.violationCategory}
+              />
+            )}
           </div>
 
           <p className="text-xs text-slate-500">
@@ -279,20 +337,34 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            contractQuery.refetch();
-            unitDetailQuery.refetch();
-          }}
-          disabled={contractQuery.isFetching}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 self-start sm:self-center"
-        >
-          <RefreshCw
-            className={`w-4 h-4 text-emerald-600 ${contractQuery.isFetching ? "animate-spin" : ""}`}
-          />
-          {isEn ? "Refresh" : "Làm mới"}
-        </button>
+        <div className="flex items-center gap-2 flex-wrap self-start sm:self-center">
+          <button
+            type="button"
+            onClick={handleExportDraftPdf}
+            disabled={isExportingPdf}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-sm transition-colors"
+          >
+            <FileText
+              className={`w-4 h-4 text-emerald-600 ${isExportingPdf ? "animate-spin" : ""}`}
+            />
+            {isEn ? "Draft Contract PDF" : "Bản in Hợp đồng (PDF)"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              contractQuery.refetch();
+              unitDetailQuery.refetch();
+            }}
+            disabled={contractQuery.isFetching}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-sm transition-colors"
+          >
+            <RefreshCw
+              className={`w-4 h-4 text-emerald-600 ${contractQuery.isFetching ? "animate-spin" : ""}`}
+            />
+            {isEn ? "Refresh" : "Làm mới"}
+          </button>
+        </div>
       </div>
 
       {/* A. Contract Lifecycle Stepper */}
@@ -404,6 +476,18 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 </button>
               )}
 
+              {/* Show Collect 1st Period Rent at Counter if deposit is satisfied and rent is not paid */}
+              {canCollectFirstPeriodRent && (
+                <button
+                  type="button"
+                  onClick={() => setCollectPaymentPurpose(PaymentPurposeEnum.RENT_FIRST_PERIOD)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm transition-colors"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  {isEn ? "Collect 1st Period Rent at Counter" : "Thu tiền thuê kỳ đầu tại quầy"}
+                </button>
+              )}
+
               {/* Staff Sign & Handover button when deposit is satisfied and !staffSigned */}
               {isStaff ? (
                 <span className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
@@ -450,8 +534,8 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
             </div>
           </div>
 
-          {/* Deposit Condition & Dual-Signature Status Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          {/* Deposit Condition, 1st Period Rent & Dual-Signature Status Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
             {/* 1. Deposit Status */}
             <div
               className={`rounded-2xl border p-3.5 space-y-1 ${
@@ -482,7 +566,51 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               </p>
             </div>
 
-            {/* 2. Customer Signature Status */}
+            {/* 2. First Period Rent Status */}
+            <div
+              className={`rounded-2xl border p-3.5 space-y-1 ${
+                isFirstPeriodPaid
+                  ? "bg-emerald-50/70 border-emerald-200 text-emerald-900"
+                  : "bg-amber-50/70 border-amber-200 text-amber-900"
+              }`}
+            >
+              <div className="flex items-center justify-between font-extrabold">
+                <span>{isEn ? "2. First Period Rent" : "2. Tiền thuê kỳ đầu"}</span>
+                {isFirstPeriodPaid ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                ) : (
+                  <Clock className="w-4 h-4 text-amber-600" />
+                )}
+              </div>
+              <p className="font-bold">{formatVnd(contract.totalPeriodicPrice)}</p>
+              <div className="flex items-center justify-between gap-1 pt-0.5">
+                <p className="text-[11px] opacity-85">
+                  {isFirstPeriodPaid
+                    ? `${isEn ? "Paid:" : "Đã thu:"} ${formatDateTime(
+                        contract.firstPeriodPaidAt || contract.firstCyclePaidAt || "",
+                        locale
+                      )}`
+                    : !isDepositSatisfied
+                      ? isEn
+                        ? "Deposit required first"
+                        : "Cần thu cọc trước"
+                      : isEn
+                        ? "Unpaid"
+                        : "Chưa thu phí"}
+                </p>
+                {!isFirstPeriodPaid && isDepositSatisfied && (
+                  <button
+                    type="button"
+                    onClick={() => setCollectPaymentPurpose(PaymentPurposeEnum.RENT_FIRST_PERIOD)}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold"
+                  >
+                    {isEn ? "Collect" : "Thu ngay"}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* 3. Customer Signature Status */}
             <div
               className={`rounded-2xl border p-3.5 space-y-1 ${
                 contract.customerSigned
@@ -491,7 +619,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               }`}
             >
               <div className="flex items-center justify-between font-extrabold">
-                <span>{isEn ? "2. Customer Signature" : "2. Chữ ký Khách hàng"}</span>
+                <span>{isEn ? "3. Customer Signature" : "3. Chữ ký Khách hàng"}</span>
                 {contract.customerSigned ? (
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 ) : (
@@ -516,7 +644,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               </p>
             </div>
 
-            {/* 3. Staff Signature Status */}
+            {/* 4. Staff Signature Status */}
             <div
               className={`rounded-2xl border p-3.5 space-y-1 ${
                 contract.staffSigned
@@ -525,7 +653,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               }`}
             >
               <div className="flex items-center justify-between font-extrabold">
-                <span>{isEn ? "3. Staff Handover Signature" : "3. Chữ ký Nhân viên"}</span>
+                <span>{isEn ? "4. Staff Handover Signature" : "4. Chữ ký phía cơ sở"}</span>
                 {contract.staffSigned ? (
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 ) : (
@@ -535,11 +663,11 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               <p className="font-bold">
                 {contract.staffSigned
                   ? isEn
-                    ? "Staff Signed Handover"
-                    : "NV đã ký bàn giao"
+                    ? "Facility Signed Handover"
+                    : "Cơ sở đã ký bàn giao"
                   : isEn
-                    ? "Pending staff handover sign"
-                    : "Chờ NV ký bàn giao kho"}
+                    ? "Pending facility handover sign"
+                    : "Chờ cơ sở ký bàn giao kho"}
               </p>
               <p className="text-[11px] opacity-80">
                 {contract.staffSignedAt
@@ -564,6 +692,22 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   {isEn
                     ? "Click 'Collect Deposit at Counter' above to generate VietQR or confirm cash payment before signing handover."
                     : "Vui lòng nhấn nút 'Thu tiền cọc tại quầy' phía trên để tạo mã VietQR hoặc xác nhận thu tiền mặt trước khi ký bàn giao kho."}
+                </p>
+              </div>
+            </div>
+          ) : !contract.customerSigned ? (
+            <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4 flex items-start gap-3 text-xs text-amber-900">
+              <Clock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-extrabold">
+                  {isEn
+                    ? "Awaiting Customer Signature on Mobile App (Code 414)"
+                    : "Đang chờ Khách hàng ký điều khoản trên ứng dụng Mobile (Mã 414)"}
+                </p>
+                <p className="text-amber-800">
+                  {isEn
+                    ? "Customer must review and sign terms first on mobile app. Handover cannot proceed before customer signature."
+                    : "Theo quy trình kiểm soát (Mã 414), khách hàng bắt buộc phải ký trước trên điện thoại. Quản lý cơ sở chỉ có thể ký bàn giao sau khi khách đã ký."}
                 </p>
               </div>
             </div>
@@ -644,6 +788,150 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
         </div>
       )}
 
+      {/* Terminated Contract Dossier & Safe Termination Evidence */}
+      {isTerminated && (
+        <div className="bg-white rounded-3xl border border-rose-100 p-6 shadow-sm space-y-5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+              <ShieldAlert className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-slate-900">
+                {isEn
+                  ? "Safe Early Termination Dossier & Incident Evidence"
+                  : "Hồ sơ Chấm dứt Hợp đồng Trước hạn & Bằng chứng Hiện trường"}
+              </h3>
+              <p className="text-xs text-slate-500">
+                {isEn
+                  ? "Formal report documents and site inspection photos filed by Facility Manager."
+                  : "Biên bản kiểm tra và ảnh hiện trường vi phạm được Quản lý cơ sở lưu vết theo quy trình Safe Termination."}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="rounded-2xl bg-rose-50/50 border border-rose-200/80 p-4 space-y-2">
+              <div className="flex justify-between items-center py-1 border-b border-rose-200/60">
+                <span className="text-rose-900 font-medium">
+                  {isEn ? "Termination Type:" : "Phương thức chấm dứt:"}
+                </span>
+                <ContractTerminationBadge
+                  terminationType={contract.terminationType}
+                  violationCategory={contract.violationCategory}
+                />
+              </div>
+              {contract.violationCategory && (
+                <div className="flex justify-between items-center py-1 border-b border-rose-200/60">
+                  <span className="text-rose-900 font-medium">
+                    {isEn ? "Violation Category:" : "Phân loại vi phạm:"}
+                  </span>
+                  <strong className="text-rose-800">
+                    {getViolationCategoryLabel(contract.violationCategory, locale)}
+                  </strong>
+                </div>
+              )}
+              <div className="flex justify-between items-center py-1 border-b border-rose-200/60">
+                <span className="text-rose-900 font-medium">
+                  {isEn ? "Deposit Handling:" : "Xử lý tiền cọc:"}
+                </span>
+                <strong className="text-rose-700">
+                  {isEn ? "100% Forfeited" : "Tịch thu 100% cọc"} (
+                  {formatVnd(contract.forfeitedAmount ?? contract.depositAmount)})
+                </strong>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-rose-200/60">
+                <span className="text-rose-900 font-medium">
+                  {isEn ? "Storage Unit Status:" : "Trạng thái kho vật lý:"}
+                </span>
+                <span className="font-extrabold text-amber-800">
+                  {isEn
+                    ? "PENDING CLEARANCE (Staff clearing inventory)"
+                    : "CHỜ THANH LÝ (PENDING CLEARANCE)"}
+                </span>
+              </div>
+              <div className="py-1">
+                <span className="text-rose-900 font-medium block mb-1">
+                  {isEn ? "Termination Reason:" : "Lý do chi tiết:"}
+                </span>
+                <p className="text-slate-800 bg-white/80 p-2.5 rounded-xl border border-rose-200/60 font-semibold">
+                  {contract.terminationReason || "—"}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {/* Report Documents */}
+              <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-2">
+                <p className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <FileText className="w-4 h-4 text-emerald-600" />
+                  {isEn
+                    ? "Inspection Reports & Legal Documents"
+                    : "Biên bản kiểm tra & Hồ sơ đính kèm"}{" "}
+                  ({contract.reportFiles?.length ?? 0})
+                </p>
+                {!contract.reportFiles || contract.reportFiles.length === 0 ? (
+                  <p className="text-[11px] text-slate-500 italic">
+                    {isEn ? "No report files attached." : "Không có biên bản đính kèm."}
+                  </p>
+                ) : (
+                  <div className="space-y-1.5">
+                    {contract.reportFiles.map((f, i) => (
+                      <a
+                        key={`${f.url}-${i}`}
+                        href={f.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-300 text-xs text-slate-700 hover:text-emerald-700 transition-colors"
+                      >
+                        <span className="truncate max-w-[200px] font-mono text-[11px]">
+                          {isEn ? `Report File #${i + 1}` : `Biên bản vi phạm #${i + 1}`}
+                        </span>
+                        <ExternalLink className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Evidence Photos */}
+              <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-2">
+                <p className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <ImageIcon className="w-4 h-4 text-rose-600" />
+                  {isEn ? "Scene Evidence Photos" : "Ảnh hiện trường vi phạm"} (
+                  {contract.evidenceFiles?.length ?? 0})
+                </p>
+                {!contract.evidenceFiles || contract.evidenceFiles.length === 0 ? (
+                  <p className="text-[11px] text-slate-500 italic">
+                    {isEn ? "No evidence photos attached." : "Không có ảnh hiện trường đính kèm."}
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-3 gap-2">
+                    {contract.evidenceFiles.map((f, i) => (
+                      <a
+                        key={`${f.url}-${i}`}
+                        href={f.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group relative rounded-xl overflow-hidden border border-slate-200 aspect-square bg-slate-100 block"
+                      >
+                        <img
+                          src={f.url}
+                          alt={`Evidence ${i + 1}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <ExternalLink className="w-4 h-4 text-white" />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Status 3: COMPLETED (Post Check-out Settlement & Unit Maintenance Reopen) */}
       {isCompleted && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -701,6 +989,73 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 </strong>
               </div>
             </div>
+
+            {contract.settlementConfirmedAt && (
+              <div className="rounded-2xl bg-emerald-50 border border-emerald-200 p-3 flex items-center gap-2.5 text-xs text-emerald-900">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <div>
+                  <p className="font-extrabold">
+                    {isEn
+                      ? "Settlement Confirmed by Customer"
+                      : "Khách hàng đã xác nhận thanh lý cọc"}
+                  </p>
+                  <p className="text-[11px] text-emerald-700">
+                    {formatDateTime(contract.settlementConfirmedAt, locale)}{" "}
+                    {isEn ? "via Mobile App" : "qua ứng dụng Mobile"}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {contract.disputedAt && (
+              <div className="rounded-2xl bg-purple-50 border border-purple-200 p-3 flex items-start gap-2.5 text-xs text-purple-900">
+                <AlertTriangle className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-extrabold">
+                    {isEn
+                      ? "Settlement Disputed by Customer"
+                      : "Khách hàng khiếu nại quyết toán cọc"}
+                  </p>
+                  <p className="text-[11px] text-purple-700">
+                    {formatDateTime(contract.disputedAt, locale)}
+                  </p>
+                  {contract.disputeReason && (
+                    <p className="mt-1 font-semibold text-purple-800 bg-white/70 p-2 rounded-lg border border-purple-200">
+                      {contract.disputeReason}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {contract.inspectionPhotos && contract.inspectionPhotos.length > 0 && (
+              <div className="rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs space-y-2">
+                <span className="font-bold text-slate-700 block">
+                  {isEn ? "Check-out Inspection Photos:" : "Hình ảnh kiểm tra khi trả kho:"} (
+                  {contract.inspectionPhotos.length})
+                </span>
+                <div className="grid grid-cols-3 gap-2">
+                  {contract.inspectionPhotos.map((photoUrl, i) => (
+                    <a
+                      key={`${photoUrl}-${i}`}
+                      href={photoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group relative rounded-xl overflow-hidden border border-slate-200 aspect-square bg-slate-100 block"
+                    >
+                      <img
+                        src={photoUrl}
+                        alt={`Checkout inspection ${i + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                        <ExternalLink className="w-4 h-4 text-white" />
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {contract.inspectionNotes && (
               <div className="rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs">
@@ -791,6 +1146,62 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 </span>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Signature Reset & Date Adjustment History */}
+      {contract.signatureHistory && contract.signatureHistory.length > 0 && (
+        <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-4">
+          <div className="flex items-center gap-2">
+            <History className="w-4 h-4 text-amber-600" />
+            <div>
+              <h3 className="text-sm font-extrabold text-slate-900">
+                {isEn
+                  ? "Signature & Date Shift History"
+                  : "Lịch sử Chữ ký & Điều chỉnh Ngày Hợp đồng"}
+              </h3>
+              <p className="text-[11px] text-slate-500">
+                {isEn
+                  ? "Signatures reset automatically when check-in date shifts >30 mins (Code 425)."
+                  : "Chữ ký tự động hủy và lưu vết khi ngày check-in thực tế trễ hơn ngày dự kiến >30 phút (Mã 425)."}
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2.5">
+            {contract.signatureHistory.map((item, idx) => (
+              <div
+                key={`${item.signedAt}-${idx}`}
+                className="rounded-2xl bg-amber-50/50 border border-amber-200/70 p-4 space-y-1.5 text-xs text-amber-950"
+              >
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="font-extrabold px-2.5 py-0.5 rounded-lg bg-amber-100 border border-amber-300 text-amber-900">
+                    {item.party === "customer"
+                      ? isEn
+                        ? "Customer Signature"
+                        : "Chữ ký Khách hàng"
+                      : isEn
+                        ? "Staff Signature"
+                        : "Chữ ký Nhân viên"}
+                  </span>
+                  <span className="text-[11px] text-amber-800">
+                    {isEn ? "Reset at:" : "Hủy lúc:"} {formatDateTime(item.resetAt, locale)}
+                  </span>
+                </div>
+                <p className="text-slate-700">
+                  <span className="font-semibold text-slate-600">
+                    {isEn ? "Previous period:" : "Thời hạn cũ:"}
+                  </span>{" "}
+                  {formatDateOnly(item.previousStartDate, locale)} →{" "}
+                  {formatDateOnly(item.previousEndDate, locale)}
+                </p>
+                <p className="text-amber-800">
+                  <span className="font-semibold">{isEn ? "Reason:" : "Lý do hủy/dời ngày:"}</span>{" "}
+                  {item.resetReason}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -971,12 +1382,14 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               <div className="flex items-center gap-2">
                 <FileSignature className="w-4 h-4 text-teal-600" />
                 <div>
-                  <h3 className="text-sm font-extrabold text-slate-900">
-                    {isEn
-                      ? "Contract Addendums (Add / Remove Amenities)"
-                      : "Danh sách Phụ lục Hợp đồng (Thuê thêm / Tháo dỡ Tiện ích)"}{" "}
-                    ({contract.addendums?.length ?? 0})
-                  </h3>
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-extrabold text-slate-900">
+                      {isEn
+                        ? "Contract Addendums (Renew, Transfer & Amenities)"
+                        : "Phụ lục Hợp đồng (Gia hạn, Đổi kho & Tiện ích)"}{" "}
+                      ({contract.addendums?.length ?? 0})
+                    </h3>
+                  </div>
                   <p className="text-[11px] text-slate-500">
                     {isEn
                       ? "All amenity additions and removals are processed via dual-signed Contract Addendums."
@@ -984,6 +1397,28 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   </p>
                 </div>
               </div>
+
+              {isActive && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => setCreateAddendumType(ContractAddendumTypeEnum.RENEW)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition-colors"
+                  >
+                    <Calendar className="w-3.5 h-3.5" />
+                    {isEn ? "+ Renew Lease" : "+ Phụ lục Gia hạn"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setCreateAddendumType(ContractAddendumTypeEnum.UNIT_CHANGE)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-colors"
+                  >
+                    <ArrowRightLeft className="w-3.5 h-3.5" />
+                    {isEn ? "+ Unit Transfer" : "+ Đổi kho sự cố"}
+                  </button>
+                </div>
+              )}
             </div>
 
             {!contract.addendums || contract.addendums.length === 0 ? (
@@ -1037,26 +1472,72 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                         </div>
                       </div>
 
-                      {/* Addendum Amenities List */}
-                      <div className="rounded-xl bg-white border border-slate-200/70 p-3 space-y-1.5">
-                        {addendum.amenities.map((am) => (
-                          <div
-                            key={am.facilityAmenityOfferingId}
-                            className="flex items-center justify-between gap-2 text-xs"
-                          >
-                            <span className="font-bold text-slate-800">
-                              {am.name || am.facilityAmenityOfferingId}{" "}
-                              <span className="text-slate-500 font-semibold">× {am.quantity}</span>
-                            </span>
-                            <span className="font-semibold text-slate-700">
-                              {isRemove ? "-" : "+"}
-                              {formatVnd(
-                                am.totalPrice ?? (am.pricePerUnit ?? 0) * am.quantity
-                              )} / {getBillingUnitLabel(am.billingUnit, locale)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                      {/* Addendum Specific Content based on Type */}
+                      {addendum.type === ContractAddendumTypeEnum.RENEW ? (
+                        <div className="rounded-xl bg-teal-50/70 border border-teal-200/70 p-3 space-y-1 text-xs">
+                          <p className="font-extrabold text-teal-900">
+                            {isEn
+                              ? "Contract Extension (RENEW)"
+                              : "Gia hạn thời hạn hợp đồng (RENEW)"}
+                          </p>
+                          <p className="text-teal-800">
+                            <span className="font-semibold">
+                              {isEn ? "New End Date:" : "Thời hạn mới:"}
+                            </span>{" "}
+                            {formatDateOnly(addendum.previousEndDate || contract.endDate, locale)} →{" "}
+                            <strong className="text-teal-950 font-bold">
+                              {formatDateOnly(addendum.newEndDate, locale)}
+                            </strong>
+                          </p>
+                        </div>
+                      ) : addendum.type === ContractAddendumTypeEnum.UNIT_CHANGE ? (
+                        <div className="rounded-xl bg-indigo-50/70 border border-indigo-200/70 p-3 space-y-1 text-xs">
+                          <p className="font-extrabold text-indigo-900">
+                            {isEn
+                              ? "Emergency Storage Unit Transfer (UNIT_CHANGE)"
+                              : "Điều chuyển kho sự cố kỹ thuật (UNIT_CHANGE)"}
+                          </p>
+                          <p className="text-indigo-800">
+                            <span className="font-semibold">
+                              {isEn ? "Unit Transfer:" : "Chuyển từ:"}
+                            </span>{" "}
+                            <strong className="text-rose-700">
+                              #{addendum.previousStorageUnit?.unitNumber || contract.storageUnitId}
+                            </strong>
+                            {" → "}
+                            <strong className="text-emerald-700">
+                              #{addendum.newStorageUnit?.unitNumber || addendum.newStorageUnitId}
+                            </strong>
+                          </p>
+                          <p className="text-[11px] text-indigo-600">
+                            {isEn
+                              ? "Note: Previous unit will enter PENDING_CLEARANCE for inventory transfer."
+                              : "Lưu ý: Ô kho cũ sẽ chuyển sang CHỜ THANH LÝ (PENDING_CLEARANCE) để dọn đồ sang kho mới."}
+                          </p>
+                        </div>
+                      ) : addendum.amenities && addendum.amenities.length > 0 ? (
+                        <div className="rounded-xl bg-white border border-slate-200/70 p-3 space-y-1.5">
+                          {addendum.amenities.map((am) => (
+                            <div
+                              key={am.facilityAmenityOfferingId}
+                              className="flex items-center justify-between gap-2 text-xs"
+                            >
+                              <span className="font-bold text-slate-800">
+                                {am.name || am.facilityAmenityOfferingId}{" "}
+                                <span className="text-slate-500 font-semibold">
+                                  × {am.quantity}
+                                </span>
+                              </span>
+                              <span className="font-semibold text-slate-700">
+                                {isRemove ? "-" : "+"}
+                                {formatVnd(
+                                  am.totalPrice ?? (am.pricePerUnit ?? 0) * am.quantity
+                                )} / {getBillingUnitLabel(am.billingUnit, locale)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
 
                       {/* Dual-Party Signature Progress (shown for DRAFT and ACTIVE addendums) */}
                       {(isAddendumDraft ||
@@ -1174,21 +1655,33 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                           {isAddendumDraft && !addendum.staffSigned && (
                             <button
                               type="button"
+                              disabled={!addendum.customerSigned}
                               onClick={() => setStaffSignAddendumTarget(addendum)}
-                              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-white font-bold text-xs shadow-sm ${
+                              title={
+                                !addendum.customerSigned
+                                  ? isEn
+                                    ? "Customer must sign on Mobile App first (Code 415)"
+                                    : "Khách hàng phải ký trên Mobile App trước (Mã 415)"
+                                  : undefined
+                              }
+                              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-white font-bold text-xs shadow-sm disabled:opacity-40 transition-all ${
                                 isRemove
                                   ? "bg-orange-600 hover:bg-orange-700"
                                   : "bg-emerald-600 hover:bg-emerald-700"
                               }`}
                             >
                               <ClipboardCheck className="w-3.5 h-3.5" />
-                              {isRemove
+                              {!addendum.customerSigned
                                 ? isEn
-                                  ? "Confirm Removal & Sign"
-                                  : "Xác nhận tháo dỡ thu hồi & Ký nghiệm thu"
-                                : isEn
-                                  ? "Confirm Installation & Sign"
-                                  : "Xác nhận bàn giao lắp đặt & Ký phụ lục"}
+                                  ? "Sign (Waiting for Customer)"
+                                  : "Ký phụ lục (Chờ khách ký trên app)"
+                                : isRemove
+                                  ? isEn
+                                    ? "Confirm Removal & Sign"
+                                    : "Xác nhận tháo dỡ thu hồi & Ký nghiệm thu"
+                                  : isEn
+                                    ? "Confirm & Sign Addendum"
+                                    : "Xác nhận & Ký phụ lục"}
                             </button>
                           )}
 
@@ -1246,6 +1739,60 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                       +{formatVnd(rn.additionalAmount)}
                     </div>
                   </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Digitized Paper Contract Scans */}
+          {contract.signedContractFileUrls && contract.signedContractFileUrls.length > 0 && (
+            <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileCheck className="w-4 h-4 text-emerald-600" />
+                  <h3 className="text-sm font-extrabold text-slate-900">
+                    {isEn ? "Digitized Signed Contract Scans" : "Hồ sơ Hợp đồng Ký sống (Bản scan)"}
+                  </h3>
+                </div>
+                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                  {contract.signedContractFileUrls.length} {isEn ? "files" : "trang scan"}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">
+                {isEn
+                  ? "Scanned pages of the paper contract with live signatures, hashed with SHA-256 for legal integrity."
+                  : "Các trang hợp đồng giấy A4 có chữ ký sống của 2 bên đã được số hóa và băm SHA-256 lưu vết toàn vẹn."}
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {contract.signedContractFileUrls.map((url, idx) => (
+                  <a
+                    key={`${url}-${idx}`}
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group relative rounded-2xl overflow-hidden border border-slate-200 aspect-[3/4] bg-slate-50 flex flex-col items-center justify-center p-2 text-center hover:border-emerald-500 hover:shadow-md transition-all block"
+                  >
+                    {url.toLowerCase().endsWith(".pdf") ? (
+                      <div className="flex flex-col items-center justify-center h-full">
+                        <FileText className="w-10 h-10 text-emerald-600 mb-2" />
+                        <span className="text-[11px] font-bold text-slate-700 truncate max-w-[100px]">
+                          PDF Document
+                        </span>
+                      </div>
+                    ) : (
+                      <img
+                        src={url}
+                        alt={`Signed contract scan page ${idx + 1}`}
+                        className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-2xl">
+                      <ExternalLink className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="absolute bottom-2 inset-x-2 bg-black/70 text-[10px] font-bold text-white py-0.5 rounded-lg truncate px-1.5 text-center">
+                      {isEn ? `Page ${idx + 1}` : `Trang ${idx + 1}`}
+                    </span>
+                  </a>
                 ))}
               </div>
             </div>
@@ -1323,6 +1870,66 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 )}
               </div>
             </div>
+
+            {/* First Period Rent Box */}
+            <div
+              className={`rounded-2xl border p-4 space-y-1.5 ${
+                isFirstPeriodPaid
+                  ? "bg-emerald-50/70 border-emerald-200"
+                  : "bg-amber-50/70 border-amber-200"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span
+                  className={`font-extrabold ${
+                    isFirstPeriodPaid ? "text-emerald-900" : "text-amber-900"
+                  }`}
+                >
+                  {isEn ? "First Period Rent:" : "Tiền thuê kỳ đầu:"}
+                </span>
+                <span
+                  className={`text-base font-extrabold ${
+                    isFirstPeriodPaid ? "text-emerald-700" : "text-amber-700"
+                  }`}
+                >
+                  {formatVnd(contract.totalPeriodicPrice)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between pt-1 gap-2 flex-wrap">
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                    isFirstPeriodPaid
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "bg-amber-100 text-amber-800"
+                  }`}
+                >
+                  {isFirstPeriodPaid
+                    ? isEn
+                      ? "Paid"
+                      : "Đã thanh toán"
+                    : isEn
+                      ? "Pending Payment"
+                      : "Chưa thanh toán"}
+                </span>
+                {isFirstPeriodPaid ? (
+                  <span className="text-[11px] text-emerald-700 font-medium">
+                    {formatDateTime(
+                      contract.firstPeriodPaidAt || contract.firstCyclePaidAt || "",
+                      locale
+                    )}
+                  </span>
+                ) : canCollectFirstPeriodRent ? (
+                  <button
+                    type="button"
+                    onClick={() => setCollectPaymentPurpose(PaymentPurposeEnum.RENT_FIRST_PERIOD)}
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-colors"
+                  >
+                    <CreditCard className="w-3.5 h-3.5" />
+                    {isEn ? "Collect at Counter" : "Thu tại quầy"}
+                  </button>
+                ) : null}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1332,6 +1939,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
         isOpen={Boolean(collectPaymentPurpose)}
         onClose={() => setCollectPaymentPurpose(null)}
         contract={contract}
+        purpose={collectPaymentPurpose ?? PaymentPurposeEnum.CONTRACT_DEPOSIT}
       />
 
       <CheckInContractModal
@@ -1364,7 +1972,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
         onClose={() => setApproveAddendumTarget(null)}
         contract={contract}
         addendum={approveAddendumTarget}
-        staffs={staffsQuery.data?.items ?? []}
+        staffList={staffsQuery.data?.items ?? []}
       />
 
       <RejectContractAddendumModal

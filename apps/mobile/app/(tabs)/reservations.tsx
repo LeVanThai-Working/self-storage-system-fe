@@ -56,6 +56,7 @@ export default function ReservationsTabScreen() {
     facilityId?: string;
     facilityUnitTypeOfferingId?: string;
     unitTypeId?: string;
+    storageUnitId?: string;
     mode?: string;
   }>();
 
@@ -245,6 +246,7 @@ export default function ReservationsTabScreen() {
           initialFacilityId={params.facilityId}
           initialOfferingId={params.facilityUnitTypeOfferingId}
           initialUnitTypeId={params.unitTypeId}
+          initialUnitId={params.storageUnitId || handoffPayload?.storageUnitId}
           onSuccessNavigate={(newReservationId) => {
             setMode("list");
             router.push({

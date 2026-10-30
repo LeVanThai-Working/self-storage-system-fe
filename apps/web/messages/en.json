@@ -133,7 +133,8 @@
     "MESSAGE_CODE_504": "Payment session cannot be cancelled in its current status",
     "MESSAGE_CODE_505": "Order is not awaiting payment or has already been settled",
     "MESSAGE_CODE_506": "Payment transaction verification failed",
-    "MESSAGE_CODE_507": "Payment has already been settled"
+    "MESSAGE_CODE_507": "Payment has already been settled",
+    "MESSAGE_CODE_629": "Cannot change maintenance status or clear unit while customer inventory items remain"
   },
   "systemAdmin": {
     "nav": {
@@ -141,6 +142,8 @@
       "userManagement": "User Management",
       "auditLogs": "Audit Logs",
       "trash": "Trash & Restore",
+      "payments": "Payments",
+      "reconciliation": "Bank Reconciliation",
       "facilityManagement": "Facility Management",
       "settings": "System Settings"
     },
@@ -787,6 +790,8 @@
       "offerings": "Facility Pricing",
       "facilityAmenities": "Facility Amenities",
       "approvals": "Approval Center",
+      "payments": "Payments",
+      "reconciliation": "Bank Reconciliation",
       "analytics": "Analytics & Reports",
       "sectionOperations": "BRANCH OPERATIONS"
     },
@@ -1782,6 +1787,7 @@
     "reserved": "Reserved",
     "occupied": "Occupied",
     "under_maintenance": "Under maintenance",
+    "pending_clearance": "Pending clearance",
     "inactive": "Inactive"
   },
   "facilityManager": {
@@ -1795,7 +1801,9 @@
       "dashboard": "Overview",
       "inventoryRequests": "Warehouse requests",
       "incidents": "Incidents",
-      "supportTickets": "Customer support"
+      "supportTickets": "Customer support",
+      "payments": "Payments",
+      "reconciliation": "Bank Reconciliation"
     },
     "sidebar": {
       "assignedFacility": "Assigned facility",
@@ -1824,6 +1832,7 @@
         "reserved": "Reserved",
         "occupied": "Occupied",
         "under_maintenance": "Under maintenance",
+        "pending_clearance": "Pending clearance",
         "inactive": "Inactive"
       },
       "sortBy": {
@@ -1942,6 +1951,7 @@
       },
       "maintenanceModal": {
         "startHint": "The unit will switch to Under maintenance and stop accepting reservations until it is reopened.",
+        "startFromClearanceHint": "The unit is awaiting cleanup or asset clearance. Switch to Under Maintenance once all customer inventory has been removed.",
         "reopenHint": "Confirm the unit has been cleaned / fixed. It will return to Available and accept reservations again.",
         "notesLabel": "Unit notes",
         "startPlaceholder": "E.g. Ceiling leak, waiting for repair...",
@@ -1954,12 +1964,15 @@
         },
         "close": "Close",
         "confirmStart": "Start maintenance",
+        "confirmStartFromClearance": "Move to Maintenance",
         "confirmReopen": "Finish & Reopen",
         "saving": "Updating...",
         "successStart": "Unit {unitNumber} is now under maintenance",
+        "successStartFromClearance": "Unit {unitNumber} moved to maintenance",
         "successReopen": "Unit {unitNumber} has been reopened",
         "errors": {
-          "invalidStatus": "The unit status has changed, so maintenance cannot be toggled. Please refresh and try again."
+          "invalidStatus": "The unit status has changed, so maintenance cannot be toggled. Please refresh and try again.",
+          "inventoryRemaining": "Cannot change maintenance status: customer items remain in this unit."
         }
       }
     },
@@ -2085,7 +2098,12 @@
         "awaitingDeposit": "Awaiting deposit",
         "paymentSuccessful": "Deposit paid",
         "confirmed": "Confirmed",
-        "closed": "Completed"
+        "closed": "Completed",
+        "pendingPayment": "Awaiting deposit (15m)",
+        "overdue": "Overdue (Grace period)",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "expired": "Expired"
       },
       "statuses": {
         "pending": "Pending receipt",
@@ -2425,7 +2443,8 @@
       "unit": {
         "title": "1. Choose a unit",
         "empty": "No free units of this type right now.",
-        "location": "Floor {floor} · Zone {zone}"
+        "location": "Floor {floor} · Zone {zone}",
+        "mapNotice": "2D Map connecting"
       },
       "schedule": {
         "title": "2. Check-in and rental period",
@@ -2502,6 +2521,12 @@
         "body": "Your check-in is less than 24 hours away. If you cancel after paying, the deposit will not be refunded. Do you want to continue?",
         "back": "Go back",
         "continue": "Continue booking"
+      },
+      "immediateWarning": {
+        "title": "Immediate Check-in Warning (< 24 hours)",
+        "description": "Your booking check-in time is within 24 hours. Under our policy, cancelling after paying the deposit will forfeit 100% of the deposit. Are you sure you want to proceed?",
+        "confirm": "I understand & Continue",
+        "cancel": "Review booking"
       }
     },
     "payment": {
@@ -2597,7 +2622,22 @@
       "cancelReason": "Cancellation reason",
       "notes": "Notes",
       "amenitiesNote": "Add-on fees are billed in the rental contract, not with the deposit.",
-      "free": "Free"
+      "free": "Free",
+      "arrivedBanner": "Customer arrived at facility at {time} (Arrival recorded, protected from no-show cancellation)",
+      "pendingUnitChange": {
+        "title": "Storage Unit Reassignment Proposed",
+        "body": "The facility proposed switching to unit: {unit}. Reason: {reason}",
+        "accept": "Accept unit change",
+        "reject": "Decline (Cancel & 100% refund)",
+        "rejectTitle": "Confirm Declining Unit Change",
+        "rejectDesc": "If you decline the unit reassignment due to facility issues, your reservation will be cancelled and 100% of your deposit will be refunded.",
+        "rejectReason": "Rejection reason (optional)",
+        "rejectPlaceholder": "Enter reason if any...",
+        "confirmReject": "Confirm Decline",
+        "cancel": "Back",
+        "acceptSuccess": "Unit change accepted successfully!",
+        "rejectSuccess": "Unit change declined. Deposit refund will be initiated."
+      }
     },
     "cancel": {
       "title": "Cancel reservation {code}",
@@ -2610,8 +2650,36 @@
       "reasonPlaceholder": "At least 3 characters",
       "keep": "Keep reservation",
       "confirm": "Confirm cancellation",
-      "cancelling": "Cancelling…"
+      "cancelling": "Cancelling…",
+      "bankSection": "Deposit refund account details (optional)",
+      "bankName": "Bank name",
+      "bankNamePlaceholder": "e.g. Vietcombank, Techcombank...",
+      "accountNumber": "Account number",
+      "accountNumberPlaceholder": "e.g. 190368...",
+      "accountHolder": "Account holder name",
+      "accountHolderPlaceholder": "e.g. JOHN DOE"
     }
+  },
+  "refundRequest": {
+    "title": "Refund Requests",
+    "subtitle": "Centralized refund management with Maker-Checker controls",
+    "status": {
+      "pendingApproval": "Pending Approval",
+      "approved": "Approved (Awaiting Payout)",
+      "paid": "Paid (Completed)",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    },
+    "reason": {
+      "customerCancel": "Customer Cancelled",
+      "facilityCancel": "Facility Cancelled",
+      "systemCancel": "System Cancelled",
+      "latePayment": "Late Payment",
+      "amountMismatch": "Amount Mismatch",
+      "depositSettlement": "Deposit Settlement",
+      "facilityFault": "Facility Fault"
+    },
+    "slaNotice": "Estimated refund processing time is within 3 business days from approval."
   },
   "inventoryOps": {
     "requestStatus": {
@@ -2959,7 +3027,13 @@
       "water_leak": "Water leak",
       "security": "Security",
       "cleanliness": "Cleanliness",
-      "other": "Other"
+      "other": "Other",
+      "facility_damage": "Facility damage",
+      "equipment_failure": "Equipment failure",
+      "fire_water": "Fire / Water",
+      "security_breach": "Security breach",
+      "natural_disaster": "Natural disaster",
+      "power_outage": "Power outage"
     },
     "form": {
       "title": "Report incident",

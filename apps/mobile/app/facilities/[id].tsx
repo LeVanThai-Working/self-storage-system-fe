@@ -21,7 +21,10 @@ import {
   Sparkles,
   AlertCircle,
 } from "lucide-react-native";
-import type { PublicUnitTypeOfferingResponse } from "@self-storage-system-fe/shared";
+import type {
+  PublicUnitTypeOfferingResponse,
+  StorageUnitResponse,
+} from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,12 +37,14 @@ import { useReservationHandoffStore } from "@/features/storage-explore/stores/re
 import { UnitTypeOfferingCard } from "@/features/storage-explore/components/UnitTypeOfferingCard";
 import { AmenityOfferingCard } from "@/features/storage-explore/components/AmenityOfferingCard";
 import { DetailImageCarousel } from "@/features/storage-explore/components/DetailImageCarousel";
+import { FacilityMapPreviewSection } from "@/features/storage-explore/components/FacilityMapPreviewSection";
+import { MobileMapLayoutModal } from "@/features/reservations/components/MobileMapLayoutModal";
 
 const MAX_PREVIEW_OFFERINGS = 5;
 const CARD_GAP = 8;
 
 export default function FacilityPublicDetailScreen() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const router = useRouter();
   const toast = useToast();
   const params = useLocalSearchParams<{ id?: string; facilityId?: string }>();
@@ -47,6 +52,7 @@ export default function FacilityPublicDetailScreen() {
 
   const { isAuthenticated } = useAuthStore();
   const setHandoffPayload = useReservationHandoffStore((s) => s.setHandoffPayload);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const [sectionWidth, setSectionWidth] = useState<number>(
     Math.max(Dimensions.get("window").width - 32, 280)
@@ -143,6 +149,62 @@ export default function FacilityPublicDetailScreen() {
       });
     },
     [facility, amenityOfferings, isAuthenticated, setHandoffPayload, toast, t, router]
+  );
+
+  const handleSelectUnitFromMap = useCallback(
+    (unit: StorageUnitResponse) => {
+      if (!facility) return;
+
+      const matchingOffering =
+        rawUnitOfferings.find((o) => o.unitTypeId === unit.unitTypeId) ||
+        rawUnitOfferings.find((o) => o.availableUnitsCount > 0) ||
+        rawUnitOfferings[0];
+
+      if (!matchingOffering) {
+        toast.error(t("facilityDetail.noOfferingsMatch"));
+        return;
+      }
+
+      const payload = {
+        facilityId: facility.id,
+        facilityName: facility.name,
+        unitTypeId: unit.unitTypeId,
+        offering: matchingOffering,
+        availableAmenities: amenityOfferings,
+        storageUnitId: unit.id,
+        selectedUnit: unit,
+      };
+
+      if (!isAuthenticated) {
+        setHandoffPayload(payload, { pendingRedirectAfterLogin: true });
+        toast.info(t("facilityDetail.loginRequiredForBooking"));
+        router.push("/(auth)/login" as any);
+        return;
+      }
+
+      setHandoffPayload(payload, { pendingRedirectAfterLogin: false });
+      router.push({
+        pathname: "/(tabs)/reservations" as any,
+        params: {
+          facilityId: payload.facilityId,
+          facilityName: payload.facilityName,
+          unitTypeId: payload.unitTypeId,
+          facilityUnitTypeOfferingId: matchingOffering.id,
+          storageUnitId: unit.id,
+          mode: "create",
+        },
+      });
+    },
+    [
+      facility,
+      rawUnitOfferings,
+      amenityOfferings,
+      isAuthenticated,
+      setHandoffPayload,
+      toast,
+      t,
+      router,
+    ]
   );
 
   const handleBack = () => {
@@ -316,6 +378,14 @@ export default function FacilityPublicDetailScreen() {
             ) : null}
           </View>
 
+          {/* ── Section: 2D Floor Plan & Direct Unit Selection ── */}
+          <FacilityMapPreviewSection
+            facilityId={facility.id}
+            facilityName={facility.name}
+            onSelectUnit={handleSelectUnitFromMap}
+            onOpenFullMap={() => setIsMapModalOpen(true)}
+          />
+
           {/* ── Section 2.2: Storage Packages (Max 5, Horizontal Scroll, 3 per screen) ── */}
           <View className="gap-3">
             {/* Section Title + Borderless/Background-less "See more ->" Button */}
@@ -405,6 +475,19 @@ export default function FacilityPublicDetailScreen() {
             )}
           </View>
         </ScrollView>
+      )}
+      {facility && (
+        <MobileMapLayoutModal
+          visible={isMapModalOpen}
+          onClose={() => setIsMapModalOpen(false)}
+          facilityId={facility.id}
+          selectedUnitId={null}
+          onSelectUnit={(unit) => {
+            setIsMapModalOpen(false);
+            handleSelectUnitFromMap(unit);
+          }}
+          isEn={locale === "en"}
+        />
       )}
     </SafeAreaView>
   );

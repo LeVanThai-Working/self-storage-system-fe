@@ -52,7 +52,9 @@ export function RackDetailSheet({
     rack.customPrice || rack.customPrice === 0 ? String(rack.customPrice) : ""
   );
   const [status, setStatus] = useState<RackStatusEnum>(
-    rack.status === RackStatusEnum.ACTIVE ? RackStatusEnum.AVAILABLE : rack.status
+    rack.status === RackStatusEnum.ACTIVE
+      ? RackStatusEnum.AVAILABLE
+      : (rack.status as RackStatusEnum)
   );
   const [notes, setNotes] = useState(rack.notes ?? "");
   const [error, setError] = useState<string | null>(null);
@@ -260,7 +262,7 @@ function TierRow({ tier, readOnly }: { tier: RackTierResponse; readOnly: boolean
     width: String(tier.dimensions?.width ?? ""),
     height: String(tier.dimensions?.height ?? ""),
   });
-  const [status, setStatus] = useState<RackTierStatusEnum>(tier.status);
+  const [status, setStatus] = useState<RackTierStatusEnum>(tier.status as RackTierStatusEnum);
 
   const save = async () => {
     const values = [dims.length, dims.width, dims.height].map(Number);

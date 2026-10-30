@@ -133,6 +133,8 @@ function RootLayoutNav() {
         <Stack.Screen name="skus/scan" options={{ headerShown: false }} />
         <Stack.Screen name="skus/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="skus/[id]/edit" options={{ headerShown: false }} />
+        <Stack.Screen name="refunds/index" options={{ headerShown: false }} />
+        <Stack.Screen name="refunds/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack>
       {/* Global floating toast notification overlay */}

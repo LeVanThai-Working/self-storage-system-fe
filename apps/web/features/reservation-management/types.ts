@@ -1,37 +1,57 @@
 import {
   BillingUnitEnum,
+  IncidentCategoryEnum,
   MESSAGE_CODE,
   PaymentMethodEnum,
   PaymentPurposeEnum,
   PaymentStatusEnum,
   RefundStatusEnum,
+  ReservationCancelSourceEnum,
   ReservationStatusEnum,
   StorageUnitStatusEnum,
   assignReservationStaffSchema,
-  assignStorageUnitSchema,
   cancelReservationSchema,
   confirmManualPaymentSchema,
+  confirmRefundSchema,
   confirmReservationSchema,
-  rejectReservationSchema,
+  createReservationSchema,
+  extendGracePeriodSchema,
+  forceCancelReservationSchema,
+  markCustomerArrivedSchema,
+  reassignStorageUnitSchema,
+  respondUnitReassignSchema,
   type AssignReservationStaffRequest,
-  type AssignStorageUnitRequest,
   type AvailableStorageUnitQuery,
   type BankInfoResponse,
   type CancelReservationRequest,
   type ConfirmManualPaymentRequest,
+  type ConfirmRefundRequest,
   type ConfirmReservationRequest,
   type CreatePaymentRequest,
+  type CreateReservationRequest,
+  type ExtendGracePeriodRequest,
   type FacilityUnitTypeOfferingResponse,
+  type ForceCancelReservationRequest,
+  type MarkCustomerArrivedRequest,
   type PaginatedData,
   type PaymentListResponse,
   type PaymentResponse,
-  type RejectReservationRequest,
+  type ReassignStorageUnitRequest,
   type ReservationAmenityResponse,
   type ReservationListResponse,
+  type ReservationPendingUnitChangeResponse,
+  type ReservationPolicySnapshotResponse,
   type ReservationResponse,
   type ReservationStorageUnitSnapshot,
+  type ReservationUnitChangeResponse,
+  type RespondUnitReassignRequest,
   type StorageUnitListResponse,
   type StorageUnitResponse,
+  // Legacy
+  assignStorageUnitSchema,
+  rejectReservationSchema,
+  type AssignStorageUnitRequest,
+  type RejectReservationRequest,
 } from "@self-storage-system-fe/shared";
 
 export type ReservationPaginatedResponse = PaginatedData<ReservationResponse>;
@@ -39,54 +59,80 @@ export type PaymentPaginatedResponse = PaginatedData<PaymentResponse>;
 
 export {
   BillingUnitEnum,
+  IncidentCategoryEnum,
   MESSAGE_CODE,
   PaymentMethodEnum,
   PaymentPurposeEnum,
   PaymentStatusEnum,
   RefundStatusEnum,
+  ReservationCancelSourceEnum,
   ReservationStatusEnum,
   StorageUnitStatusEnum,
   assignReservationStaffSchema,
-  assignStorageUnitSchema,
   cancelReservationSchema,
   confirmManualPaymentSchema,
+  confirmRefundSchema,
   confirmReservationSchema,
-  rejectReservationSchema,
+  createReservationSchema,
+  extendGracePeriodSchema,
+  forceCancelReservationSchema,
+  markCustomerArrivedSchema,
+  reassignStorageUnitSchema,
+  respondUnitReassignSchema,
   type AssignReservationStaffRequest,
-  type AssignStorageUnitRequest,
   type AvailableStorageUnitQuery,
   type BankInfoResponse,
   type CancelReservationRequest,
   type ConfirmManualPaymentRequest,
+  type ConfirmRefundRequest,
   type ConfirmReservationRequest,
   type CreatePaymentRequest,
+  type CreateReservationRequest,
+  type ExtendGracePeriodRequest,
   type FacilityUnitTypeOfferingResponse,
+  type ForceCancelReservationRequest,
+  type MarkCustomerArrivedRequest,
   type PaginatedData,
   type PaymentListResponse,
   type PaymentResponse,
-  type RejectReservationRequest,
+  type ReassignStorageUnitRequest,
   type ReservationAmenityResponse,
   type ReservationListResponse,
+  type ReservationPendingUnitChangeResponse,
+  type ReservationPolicySnapshotResponse,
   type ReservationResponse,
   type ReservationStorageUnitSnapshot,
+  type ReservationUnitChangeResponse,
+  type RespondUnitReassignRequest,
   type StorageUnitListResponse,
   type StorageUnitResponse,
+  // Legacy
+  assignStorageUnitSchema,
+  rejectReservationSchema,
+  type AssignStorageUnitRequest,
+  type RejectReservationRequest,
 };
 
 export type ManagerReservationQuickTab =
   | "ALL"
+  | "PENDING_PAYMENT"
+  | "PAYMENT_SUCCESSFUL"
+  | "CONFIRMED"
+  | "OVERDUE"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "EXPIRED"
+  // Legacy support
   | "PENDING"
   | "RECEIVED"
   | "AWAITING_DEPOSIT"
-  | "PAYMENT_SUCCESSFUL"
-  | "CONFIRMED"
   | "CLOSED";
 
 export type ReservationSortBy =
   "createdAt" | "startDate" | "checkInDate" | "totalAmount" | "updatedAt";
 
 export interface ManagerReservationFilterParams {
-  facilityId: string;
+  facilityId?: string;
   page?: number;
   limit?: number;
   status?: ReservationStatusEnum;

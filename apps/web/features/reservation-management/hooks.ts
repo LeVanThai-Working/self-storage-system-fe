@@ -5,15 +5,23 @@ import {
   cancelReservation,
   completeReservation,
   confirmManualPayment,
+  confirmRefund,
   confirmReservation,
   createOrGetReservationDepositPayment,
+  extendGracePeriod,
   fetchAvailableStorageUnitsForFacility,
   fetchManagerReservations,
   fetchManagerReservationStatusCount,
   fetchPaymentsByReservation,
   fetchReservationById,
+  forceCancelReservation,
+  markCustomerArrived,
+  processExpiredReservations,
+  processOverdueReservations,
+  reassignStorageUnit,
   receiveReservation,
   rejectReservation,
+  respondUnitReassign,
 } from "./api";
 import {
   ReservationStatusEnum,
@@ -22,9 +30,15 @@ import {
   type AvailableStorageUnitQuery,
   type CancelReservationRequest,
   type ConfirmManualPaymentRequest,
+  type ConfirmRefundRequest,
   type ConfirmReservationRequest,
+  type ExtendGracePeriodRequest,
+  type ForceCancelReservationRequest,
   type ManagerReservationFilterParams,
+  type MarkCustomerArrivedRequest,
+  type ReassignStorageUnitRequest,
   type RejectReservationRequest,
+  type RespondUnitReassignRequest,
 } from "./types";
 
 const LIST_KEY = "manager-reservations";
@@ -37,77 +51,62 @@ export const useManagerReservations = (params: ManagerReservationFilterParams | 
   useQuery({
     queryKey: [LIST_KEY, params],
     queryFn: () => fetchManagerReservations(params!),
-    enabled: Boolean(params?.facilityId),
+    enabled: Boolean(params),
     placeholderData: (prev) => prev,
   });
 
-export const useManagerReservationStats = (facilityId: string | undefined) => {
-  const enabled = Boolean(facilityId);
+export const useManagerReservationStats = (
+  facilityId: string | undefined,
+  enabled: boolean = Boolean(facilityId)
+) => {
+  const statsScopeKey = facilityId ?? "staff-me";
   const results = useQueries({
     queries: [
       {
-        queryKey: [STATS_KEY, facilityId, "ALL"],
-        queryFn: () => fetchManagerReservationStatusCount(facilityId!),
+        queryKey: [STATS_KEY, statsScopeKey, "ALL"],
+        queryFn: () => fetchManagerReservationStatusCount(facilityId),
         enabled,
       },
       {
-        queryKey: [STATS_KEY, facilityId, ReservationStatusEnum.PENDING],
+        queryKey: [STATS_KEY, statsScopeKey, ReservationStatusEnum.PENDING_PAYMENT],
         queryFn: () =>
-          fetchManagerReservationStatusCount(facilityId!, ReservationStatusEnum.PENDING),
+          fetchManagerReservationStatusCount(facilityId, ReservationStatusEnum.PENDING_PAYMENT),
         enabled,
       },
       {
-        queryKey: [STATS_KEY, facilityId, ReservationStatusEnum.RECEIVED],
+        queryKey: [STATS_KEY, statsScopeKey, ReservationStatusEnum.PAYMENT_SUCCESSFUL],
         queryFn: () =>
-          fetchManagerReservationStatusCount(facilityId!, ReservationStatusEnum.RECEIVED),
+          fetchManagerReservationStatusCount(facilityId, ReservationStatusEnum.PAYMENT_SUCCESSFUL),
         enabled,
       },
       {
-        queryKey: [STATS_KEY, facilityId, ReservationStatusEnum.PENDING_PAYMENT],
+        queryKey: [STATS_KEY, statsScopeKey, ReservationStatusEnum.CONFIRMED],
         queryFn: () =>
-          fetchManagerReservationStatusCount(facilityId!, ReservationStatusEnum.PENDING_PAYMENT),
+          fetchManagerReservationStatusCount(facilityId, ReservationStatusEnum.CONFIRMED),
         enabled,
       },
       {
-        queryKey: [STATS_KEY, facilityId, ReservationStatusEnum.PAYMENT_FAILED],
+        queryKey: [STATS_KEY, statsScopeKey, ReservationStatusEnum.OVERDUE],
         queryFn: () =>
-          fetchManagerReservationStatusCount(facilityId!, ReservationStatusEnum.PAYMENT_FAILED),
+          fetchManagerReservationStatusCount(facilityId, ReservationStatusEnum.OVERDUE),
         enabled,
       },
       {
-        queryKey: [STATS_KEY, facilityId, ReservationStatusEnum.PAYMENT_SUCCESSFUL],
+        queryKey: [STATS_KEY, statsScopeKey, ReservationStatusEnum.COMPLETED],
         queryFn: () =>
-          fetchManagerReservationStatusCount(facilityId!, ReservationStatusEnum.PAYMENT_SUCCESSFUL),
+          fetchManagerReservationStatusCount(facilityId, ReservationStatusEnum.COMPLETED),
         enabled,
       },
       {
-        queryKey: [STATS_KEY, facilityId, ReservationStatusEnum.CONFIRMED],
+        queryKey: [STATS_KEY, statsScopeKey, ReservationStatusEnum.CANCELLED],
         queryFn: () =>
-          fetchManagerReservationStatusCount(facilityId!, ReservationStatusEnum.CONFIRMED),
+          fetchManagerReservationStatusCount(facilityId, ReservationStatusEnum.CANCELLED),
         enabled,
       },
       {
-        queryKey: [STATS_KEY, facilityId, ReservationStatusEnum.COMPLETED],
+        queryKey: [STATS_KEY, statsScopeKey, ReservationStatusEnum.EXPIRED],
         queryFn: () =>
-          fetchManagerReservationStatusCount(facilityId!, ReservationStatusEnum.COMPLETED),
-        enabled,
-      },
-      {
-        queryKey: [STATS_KEY, facilityId, ReservationStatusEnum.CANCELLED],
-        queryFn: () =>
-          fetchManagerReservationStatusCount(facilityId!, ReservationStatusEnum.CANCELLED),
-        enabled,
-      },
-      {
-        queryKey: [STATS_KEY, facilityId, ReservationStatusEnum.REJECTED],
-        queryFn: () =>
-          fetchManagerReservationStatusCount(facilityId!, ReservationStatusEnum.REJECTED),
-        enabled,
-      },
-      {
-        queryKey: [STATS_KEY, facilityId, ReservationStatusEnum.EXPIRED],
-        queryFn: () =>
-          fetchManagerReservationStatusCount(facilityId!, ReservationStatusEnum.EXPIRED),
+          fetchManagerReservationStatusCount(facilityId, ReservationStatusEnum.EXPIRED),
         enabled,
       },
     ],
@@ -115,32 +114,29 @@ export const useManagerReservationStats = (facilityId: string | undefined) => {
 
   const [
     total,
-    pending,
-    received,
     pendingPayment,
-    paymentFailed,
     paymentSuccessful,
     confirmed,
+    overdue,
     completed,
     cancelled,
-    rejected,
     expired,
   ] = results.map((r) => r.data ?? 0);
 
   return {
     total,
-    pending,
-    received,
-    awaitingDeposit: pendingPayment + paymentFailed,
     pendingPayment,
-    paymentFailed,
     paymentSuccessful,
     confirmed,
-    closed: completed + cancelled + rejected + expired,
+    overdue,
     completed,
     cancelled,
-    rejected,
     expired,
+    // Aliases for legacy quick tabs if referenced
+    pending: 0,
+    received: 0,
+    awaitingDeposit: pendingPayment,
+    closed: completed + cancelled + expired,
     isLoading: results.some((r) => r.isLoading),
   };
 };
@@ -170,7 +166,7 @@ export const useReservationPayments = (reservationId: string | null) =>
     enabled: Boolean(reservationId),
   });
 
-function useInvalidateReservationQueries() {
+export function useInvalidateReservationQueries() {
   const queryClient = useQueryClient();
   return () => {
     queryClient.invalidateQueries({ queryKey: [LIST_KEY] });
@@ -183,9 +179,131 @@ function useInvalidateReservationQueries() {
     queryClient.invalidateQueries({ queryKey: ["facility-contracts"] });
     queryClient.invalidateQueries({ queryKey: ["facility-contract-stats"] });
     queryClient.invalidateQueries({ queryKey: ["facility-contract-detail"] });
+    queryClient.invalidateQueries({ queryKey: ["myReservations"] });
+    queryClient.invalidateQueries({ queryKey: ["customerReservation"] });
   };
 }
 
+export const useConfirmReservation = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: ConfirmReservationRequest }) =>
+      confirmReservation(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useAssignReservationStaff = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: AssignReservationStaffRequest }) =>
+      assignReservationStaff(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useMarkCustomerArrived = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload?: MarkCustomerArrivedRequest }) =>
+      markCustomerArrived(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useExtendGracePeriod = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: ExtendGracePeriodRequest }) =>
+      extendGracePeriod(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useReassignStorageUnit = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: ReassignStorageUnitRequest }) =>
+      reassignStorageUnit(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useRespondUnitReassign = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: RespondUnitReassignRequest }) =>
+      respondUnitReassign(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useCancelReservation = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: CancelReservationRequest }) =>
+      cancelReservation(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useForceCancelReservation = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: ForceCancelReservationRequest }) =>
+      forceCancelReservation(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useConfirmRefund = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: ConfirmRefundRequest }) =>
+      confirmRefund(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useProcessExpiredReservations = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: () => processExpiredReservations(),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useProcessOverdueReservations = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: () => processOverdueReservations(),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useCreateOrGetReservationDepositPayment = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: (reservationId: string) => createOrGetReservationDepositPayment(reservationId),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useConfirmManualPayment = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({
+      paymentId,
+      payload,
+    }: {
+      paymentId: string;
+      payload: ConfirmManualPaymentRequest;
+    }) => confirmManualPayment(paymentId, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+// Legacy stubs
 export const useReceiveReservation = () => {
   const invalidateAll = useInvalidateReservationQueries();
   return useMutation({
@@ -212,59 +330,10 @@ export const useRejectReservation = () => {
   });
 };
 
-export const useConfirmReservation = () => {
-  const invalidateAll = useInvalidateReservationQueries();
-  return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: ConfirmReservationRequest }) =>
-      confirmReservation(id, payload),
-    onSuccess: invalidateAll,
-  });
-};
-
-export const useAssignReservationStaff = () => {
-  const invalidateAll = useInvalidateReservationQueries();
-  return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: AssignReservationStaffRequest }) =>
-      assignReservationStaff(id, payload),
-    onSuccess: invalidateAll,
-  });
-};
-
-export const useCancelReservation = () => {
-  const invalidateAll = useInvalidateReservationQueries();
-  return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: CancelReservationRequest }) =>
-      cancelReservation(id, payload),
-    onSuccess: invalidateAll,
-  });
-};
-
 export const useCompleteReservation = () => {
   const invalidateAll = useInvalidateReservationQueries();
   return useMutation({
     mutationFn: (id: string) => completeReservation(id),
-    onSuccess: invalidateAll,
-  });
-};
-
-export const useCreateOrGetReservationDepositPayment = () => {
-  const invalidateAll = useInvalidateReservationQueries();
-  return useMutation({
-    mutationFn: (reservationId: string) => createOrGetReservationDepositPayment(reservationId),
-    onSuccess: invalidateAll,
-  });
-};
-
-export const useConfirmManualPayment = () => {
-  const invalidateAll = useInvalidateReservationQueries();
-  return useMutation({
-    mutationFn: ({
-      paymentId,
-      payload,
-    }: {
-      paymentId: string;
-      payload: ConfirmManualPaymentRequest;
-    }) => confirmManualPayment(paymentId, payload),
     onSuccess: invalidateAll,
   });
 };

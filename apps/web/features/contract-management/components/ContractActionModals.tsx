@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   ClipboardCheck,
   CreditCard,
+  FileText,
   LogOut,
   MinusCircle,
   PlusCircle,
@@ -241,198 +242,203 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
           </div>
         </DialogHeader>
 
-        <form onSubmit={handleConfirmManual} className="flex-1 overflow-y-auto p-6 space-y-4">
-          <div className="rounded-2xl bg-emerald-50/70 border border-emerald-200 p-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-emerald-900">
-                {isEn ? "Deposit Amount Required" : "Số tiền đặt cọc cần thu"}
-              </p>
-              <p className="text-[11px] text-emerald-700 mt-0.5">#{contract.contractCode}</p>
-            </div>
-            <span className="text-xl font-extrabold text-emerald-700">
-              {formatVnd(requiredAmount)}
-            </span>
-          </div>
-
-          {/* VietQR SePay Section */}
-          <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 space-y-3">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <QrCode className="w-4 h-4 text-teal-600" />
-                <span className="text-xs font-bold text-slate-800">
-                  {isEn ? "Option 1: VietQR SePay Scan" : "Cách 1: Quét mã VietQR SePay"}
-                </span>
+        <form
+          onSubmit={handleConfirmManual}
+          className="flex flex-col flex-1 min-h-0 overflow-hidden"
+        >
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className="rounded-2xl bg-emerald-50/70 border border-emerald-200 p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold text-emerald-900">
+                  {isEn ? "Deposit Amount Required" : "Số tiền đặt cọc cần thu"}
+                </p>
+                <p className="text-[11px] text-emerald-700 mt-0.5">#{contract.contractCode}</p>
               </div>
-              <button
-                type="button"
-                onClick={() => handleGenerateQrOrPayment(PaymentMethodEnum.BANK_TRANSFER)}
-                disabled={createDepositMutation.isPending}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-50"
-              >
-                <QrCode className="w-3.5 h-3.5" />
-                {existingPendingPayment?.qrUrl
-                  ? isEn
-                    ? "Refresh QR"
-                    : "Tải lại mã QR"
-                  : isEn
-                    ? "Create VietQR"
-                    : "Tạo mã VietQR"}
-              </button>
-            </div>
-
-            {existingPendingPayment?.qrUrl && (
-              <div className="flex flex-col sm:flex-row items-center gap-4 pt-2 border-t border-slate-200/70">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={existingPendingPayment.qrUrl}
-                  alt="VietQR Deposit"
-                  className="w-36 h-36 rounded-xl border border-slate-200 bg-white p-1.5 object-contain shrink-0"
-                />
-                <div className="text-xs text-slate-600 space-y-1 flex-1">
-                  <p>
-                    <span className="font-bold text-slate-800">
-                      {isEn ? "Payment Code:" : "Nội dung CK:"}
-                    </span>{" "}
-                    <span className="font-mono font-bold text-teal-700">
-                      {existingPendingPayment.paymentCode}
-                    </span>
-                  </p>
-                  <p>
-                    <span className="font-bold text-slate-800">
-                      {isEn ? "Bank:" : "Ngân hàng:"}
-                    </span>{" "}
-                    {bankName}
-                  </p>
-                  <p>
-                    <span className="font-bold text-slate-800">
-                      {isEn ? "Account No:" : "Số tài khoản:"}
-                    </span>{" "}
-                    <span className="font-mono">{accountNumber}</span>
-                  </p>
-                  <p>
-                    <span className="font-bold text-slate-800">
-                      {isEn ? "Account Holder:" : "Chủ TK:"}
-                    </span>{" "}
-                    {accountHolder}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Manual Confirmation at Counter */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <Banknote className="w-4 h-4 text-emerald-600" />
-              <span className="text-xs font-bold text-slate-800">
-                {isEn
-                  ? "Option 2: Confirm Cash / Bank Transfer at Counter"
-                  : "Cách 2: Xác nhận đã thu Tiền mặt / Chuyển khoản tại quầy"}
+              <span className="text-xl font-extrabold text-emerald-700">
+                {formatVnd(requiredAmount)}
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
-                onClick={() => setMethod(PaymentMethodEnum.CASH)}
-                className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
-                  method === PaymentMethodEnum.CASH
-                    ? "bg-emerald-50 border-emerald-500 text-emerald-700"
-                    : "bg-slate-50 border-slate-200 text-slate-600"
-                }`}
-              >
-                <Banknote className="w-4 h-4" />
-                {isEn ? "Cash at Counter" : "Tiền mặt tại quầy"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setMethod(PaymentMethodEnum.BANK_TRANSFER)}
-                className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
-                  method === PaymentMethodEnum.BANK_TRANSFER
-                    ? "bg-emerald-50 border-emerald-500 text-emerald-700"
-                    : "bg-slate-50 border-slate-200 text-slate-600"
-                }`}
-              >
-                <CreditCard className="w-4 h-4" />
-                {isEn ? "Bank Transfer" : "Chuyển khoản"}
-              </button>
+            {/* VietQR SePay Section */}
+            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <QrCode className="w-4 h-4 text-teal-600" />
+                  <span className="text-xs font-bold text-slate-800">
+                    {isEn ? "Option 1: VietQR SePay Scan" : "Cách 1: Quét mã VietQR SePay"}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleGenerateQrOrPayment(PaymentMethodEnum.BANK_TRANSFER)}
+                  disabled={createDepositMutation.isPending}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-50"
+                >
+                  <QrCode className="w-3.5 h-3.5" />
+                  {existingPendingPayment?.qrUrl
+                    ? isEn
+                      ? "Refresh QR"
+                      : "Tải lại mã QR"
+                    : isEn
+                      ? "Create VietQR"
+                      : "Tạo mã VietQR"}
+                </button>
+              </div>
+
+              {existingPendingPayment?.qrUrl && (
+                <div className="flex flex-col sm:flex-row items-center gap-4 pt-2 border-t border-slate-200/70">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={existingPendingPayment.qrUrl}
+                    alt="VietQR Deposit"
+                    className="w-36 h-36 rounded-xl border border-slate-200 bg-white p-1.5 object-contain shrink-0"
+                  />
+                  <div className="text-xs text-slate-600 space-y-1 flex-1">
+                    <p>
+                      <span className="font-bold text-slate-800">
+                        {isEn ? "Payment Code:" : "Nội dung CK:"}
+                      </span>{" "}
+                      <span className="font-mono font-bold text-teal-700">
+                        {existingPendingPayment.paymentCode}
+                      </span>
+                    </p>
+                    <p>
+                      <span className="font-bold text-slate-800">
+                        {isEn ? "Bank:" : "Ngân hàng:"}
+                      </span>{" "}
+                      {bankName}
+                    </p>
+                    <p>
+                      <span className="font-bold text-slate-800">
+                        {isEn ? "Account No:" : "Số tài khoản:"}
+                      </span>{" "}
+                      <span className="font-mono">{accountNumber}</span>
+                    </p>
+                    <p>
+                      <span className="font-bold text-slate-800">
+                        {isEn ? "Account Holder:" : "Chủ TK:"}
+                      </span>{" "}
+                      {accountHolder}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                {isEn
-                  ? "Reference Code / Receipt No. (Optional)"
-                  : "Mã giao dịch / Số phiếu thu (Tùy chọn)"}
-              </label>
-              <input
-                type="text"
-                value={referenceCode}
-                onChange={(e) => setReferenceCode(e.target.value)}
-                placeholder={
-                  isEn ? "e.g., CASH-20261012 or FT..." : "VD: PT-00128 hoặc mã FT ngân hàng..."
-                }
-                className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none"
-              />
+            {/* Manual Confirmation at Counter */}
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Banknote className="w-4 h-4 text-emerald-600" />
+                <span className="text-xs font-bold text-slate-800">
+                  {isEn
+                    ? "Option 2: Confirm Cash / Bank Transfer at Counter"
+                    : "Cách 2: Xác nhận đã thu Tiền mặt / Chuyển khoản tại quầy"}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setMethod(PaymentMethodEnum.CASH)}
+                  className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
+                    method === PaymentMethodEnum.CASH
+                      ? "bg-emerald-50 border-emerald-500 text-emerald-700"
+                      : "bg-slate-50 border-slate-200 text-slate-600"
+                  }`}
+                >
+                  <Banknote className="w-4 h-4" />
+                  {isEn ? "Cash at Counter" : "Tiền mặt tại quầy"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMethod(PaymentMethodEnum.BANK_TRANSFER)}
+                  className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
+                    method === PaymentMethodEnum.BANK_TRANSFER
+                      ? "bg-emerald-50 border-emerald-500 text-emerald-700"
+                      : "bg-slate-50 border-slate-200 text-slate-600"
+                  }`}
+                >
+                  <CreditCard className="w-4 h-4" />
+                  {isEn ? "Bank Transfer" : "Chuyển khoản"}
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {isEn
+                    ? "Reference Code / Receipt No. (Optional)"
+                    : "Mã giao dịch / Số phiếu thu (Tùy chọn)"}
+                </label>
+                <input
+                  type="text"
+                  value={referenceCode}
+                  onChange={(e) => setReferenceCode(e.target.value)}
+                  placeholder={
+                    isEn ? "e.g., CASH-20261012 or FT..." : "VD: PT-00128 hoặc mã FT ngân hàng..."
+                  }
+                  className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  {isEn ? "Reconciliation Note *" : "Ghi chú xác nhận thu cọc *"}
+                </label>
+                <textarea
+                  rows={2}
+                  value={note}
+                  onChange={(e) => {
+                    setNote(e.target.value);
+                    setErrorMsg(null);
+                  }}
+                  placeholder={
+                    isEn
+                      ? "e.g., Received full deposit in cash at counter..."
+                      : "VD: Đã thu đủ tiền cọc tại quầy lễ tân..."
+                  }
+                  className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none resize-none"
+                />
+              </div>
+
+              {method === PaymentMethodEnum.BANK_TRANSFER && (
+                <CloudinaryUploader
+                  label={
+                    isEn
+                      ? "Bank Transfer Receipt / Slip (Optional)"
+                      : "Ảnh ủy nhiệm chi / Biên lai chuyển khoản (Tùy chọn)"
+                  }
+                  description={
+                    isEn
+                      ? "Upload transfer confirmation screenshot or bank slip"
+                      : "Tải lên ảnh chụp màn hình chuyển khoản hoặc sao kê ngân hàng"
+                  }
+                  folder={CloudinaryFolderEnum.CONTRACTS}
+                  value={proofImageUrl ? [proofImageUrl] : []}
+                  onChange={(urls) => setProofImageUrl(urls[0] || "")}
+                  multiple={false}
+                  maxFiles={1}
+                  accept="image/*,application/pdf"
+                  disabled={confirmManualMutation.isPending || createDepositMutation.isPending}
+                />
+              )}
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                {isEn ? "Reconciliation Note *" : "Ghi chú xác nhận thu cọc *"}
-              </label>
-              <textarea
-                rows={2}
-                value={note}
-                onChange={(e) => {
-                  setNote(e.target.value);
-                  setErrorMsg(null);
-                }}
-                placeholder={
-                  isEn
-                    ? "e.g., Received full deposit in cash at counter..."
-                    : "VD: Đã thu đủ tiền cọc tại quầy lễ tân..."
-                }
-                className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none resize-none"
-              />
-            </div>
+            {errorMsg && (
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
 
-            {method === PaymentMethodEnum.BANK_TRANSFER && (
-              <CloudinaryUploader
-                label={
-                  isEn
-                    ? "Bank Transfer Receipt / Slip (Optional)"
-                    : "Ảnh ủy nhiệm chi / Biên lai chuyển khoản (Tùy chọn)"
-                }
-                description={
-                  isEn
-                    ? "Upload transfer confirmation screenshot or bank slip"
-                    : "Tải lên ảnh chụp màn hình chuyển khoản hoặc sao kê ngân hàng"
-                }
-                folder={CloudinaryFolderEnum.CONTRACTS}
-                value={proofImageUrl ? [proofImageUrl] : []}
-                onChange={(urls) => setProofImageUrl(urls[0] || "")}
-                multiple={false}
-                maxFiles={1}
-                accept="image/*,application/pdf"
-                disabled={confirmManualMutation.isPending || createDepositMutation.isPending}
-              />
+            {successMsg && (
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>{successMsg}</span>
+              </div>
             )}
           </div>
 
-          {errorMsg && (
-            <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>{errorMsg}</span>
-            </div>
-          )}
-
-          {successMsg && (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
-              <span>{successMsg}</span>
-            </div>
-          )}
-
-          <DialogFooter className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+          <DialogFooter className="p-4 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0 bg-white">
             <button
               type="button"
               onClick={onClose}
@@ -482,20 +488,59 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
 
   const [verifiedIdentity, setVerifiedIdentity] = useState(true);
   const [verifiedUnitAndPin, setVerifiedUnitAndPin] = useState(true);
+  const [verifiedContractPaperSigned, setVerifiedContractPaperSigned] = useState(true);
+  const [signedContractFileUrls, setSignedContractFileUrls] = useState<string[]>(
+    contract?.signedContractFileUrls ?? []
+  );
+  const [prevContractId, setPrevContractId] = useState(contract?.id);
+  if (contract?.id !== prevContractId) {
+    setPrevContractId(contract?.id);
+    setSignedContractFileUrls(contract?.signedContractFileUrls ?? []);
+  }
+
   const [termsAccepted, setTermsAccepted] = useState(true);
-  const [notes, setNotes] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!contract) return null;
+
+  const isCustomerSigned = contract.customerSigned === true;
+  const isDateShifted = new Date().getTime() > new Date(contract.startDate).getTime();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
 
+    if (!isCustomerSigned) {
+      setErrorMsg(
+        isEn
+          ? "Customer must sign the draft lease agreement on Mobile App before check-in can be confirmed (MESSAGE_CODE_414)."
+          : "Khách hàng phải hoàn tất ký hợp đồng trên Mobile App trước khi Quản lý hoàn tất nhận kho (mã 414)."
+      );
+      return;
+    }
+
+    if (!verifiedContractPaperSigned) {
+      setErrorMsg(
+        isEn
+          ? "Please verify that both customer and manager have signed the printed paper contract."
+          : "Vui lòng xác nhận Khách hàng và Quản lý đã ký sống trên bản in hợp đồng giấy A4."
+      );
+      return;
+    }
+
+    if (signedContractFileUrls.length === 0) {
+      setErrorMsg(
+        isEn
+          ? "At least 1 photo or scan of the signed paper contract is required."
+          : "Bắt buộc phải tải lên tối thiểu 1 ảnh chụp hoặc bản scan hợp đồng đã ký sống 2 bên."
+      );
+      return;
+    }
+
     if (!termsAccepted) {
       setErrorMsg(
         isEn
-          ? "Terms must be accepted (termsAccepted: true) to sign and confirm handover."
+          ? "Terms must be accepted to sign and confirm handover."
           : "Bắt buộc phải đồng ý điều khoản bàn giao kho để thực hiện ký xác nhận."
       );
       return;
@@ -503,7 +548,7 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
 
     const parsed = checkInContractSchema.safeParse({
       termsAccepted,
-      notes: notes.trim() ? notes.trim() : undefined,
+      signedContractFileUrls,
     });
 
     if (!parsed.success) {
@@ -525,8 +570,8 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && !checkInMutation.isPending && onClose()}>
-      <DialogContent className="sm:max-w-lg p-0 rounded-3xl border-slate-100 shadow-2xl overflow-hidden">
-        <DialogHeader className="p-6 pb-4 border-b border-slate-100 bg-emerald-50/60">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 rounded-3xl border-slate-100 shadow-2xl overflow-hidden">
+        <DialogHeader className="p-6 pb-4 border-b border-slate-100 bg-emerald-50/60 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
               <ClipboardCheck className="w-5 h-5" />
@@ -534,161 +579,233 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
             <div>
               <DialogTitle className="text-lg font-extrabold text-slate-900">
                 {isEn
-                  ? `Confirm Handover & Sign (Staff) • ${contract.contractCode}`
-                  : `Xác nhận bàn giao kho & Ký (Staff) • ${contract.contractCode}`}
+                  ? `Confirm Handover & Sign (Manager) • ${contract.contractCode}`
+                  : `Xác nhận bàn giao kho & Ký Check-in • ${contract.contractCode}`}
               </DialogTitle>
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
-                  ? "When both Customer and Staff have signed, the contract becomes ACTIVE and unit becomes OCCUPIED."
-                  : "Khi cả Khách hàng và Nhân viên đã ký, hợp đồng sẽ kích hoạt sang ACTIVE và kho chuyển sang OCCUPIED."}
+                  ? "When both Customer (Mobile) and Manager (Web) have signed, contract becomes ACTIVE and unit becomes OCCUPIED."
+                  : "Sau khi Khách hàng (Mobile) và Quản lý (Web) đều đã ký, hợp đồng kích hoạt sang ACTIVE và kho sang OCCUPIED."}
               </p>
             </div>
           </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Dual-party Signature Progress */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div
-              className={`rounded-2xl border p-3 ${
-                contract.customerSigned
-                  ? "bg-emerald-50/70 border-emerald-200 text-emerald-900"
-                  : "bg-amber-50/70 border-amber-200 text-amber-900"
-              }`}
-            >
-              <p className="font-extrabold flex items-center gap-1.5">
-                <CheckCircle2
-                  className={`w-3.5 h-3.5 ${
-                    contract.customerSigned ? "text-emerald-600" : "text-amber-600"
-                  }`}
-                />
-                {isEn ? "Customer Signature:" : "Chữ ký Khách hàng:"}
-              </p>
-              <p className="mt-1 text-[11px] font-semibold">
-                {contract.customerSigned
-                  ? `${isEn ? "Signed" : "Đã ký"} (${formatDateTime(
-                      contract.customerSignedAt,
-                      locale
-                    )})`
-                  : isEn
-                    ? "Pending customer signature on Mobile App"
-                    : "Chờ khách ký trên ứng dụng Mobile"}
-              </p>
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            {/* Dual-party Signature Progress */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div
+                className={`rounded-2xl border p-3 ${
+                  isCustomerSigned
+                    ? "bg-emerald-50/70 border-emerald-200 text-emerald-900"
+                    : "bg-amber-50/70 border-amber-200 text-amber-900"
+                }`}
+              >
+                <p className="font-extrabold flex items-center gap-1.5">
+                  <CheckCircle2
+                    className={`w-3.5 h-3.5 ${isCustomerSigned ? "text-emerald-600" : "text-amber-600"}`}
+                  />
+                  {isEn ? "Customer Signature (Mobile):" : "Chữ ký Khách hàng:"}
+                </p>
+                <p className="mt-1 text-[11px] font-semibold">
+                  {isCustomerSigned
+                    ? `${isEn ? "Signed" : "Đã ký"} (${formatDateTime(
+                        contract.customerSignedAt,
+                        locale
+                      )})`
+                    : isEn
+                      ? "Pending customer signature on Mobile App"
+                      : "Chờ khách ký trên ứng dụng Mobile"}
+                </p>
+              </div>
+
+              <div
+                className={`rounded-2xl border p-3 ${
+                  contract.staffSigned
+                    ? "bg-emerald-50/70 border-emerald-200 text-emerald-900"
+                    : "bg-teal-50/70 border-teal-200 text-teal-900"
+                }`}
+              >
+                <p className="font-extrabold flex items-center gap-1.5">
+                  <UserCheck className="w-3.5 h-3.5 text-teal-600" />
+                  {isEn ? "Manager Signature (Web):" : "Chữ ký Quản lý:"}
+                </p>
+                <p className="mt-1 text-[11px] font-semibold">
+                  {contract.staffSigned
+                    ? `${isEn ? "Signed" : "Đã ký"} (${formatDateTime(
+                        contract.staffSignedAt,
+                        locale
+                      )})`
+                    : isEn
+                      ? "Signing now upon handover"
+                      : "Sẽ ký xác nhận ở bước này"}
+                </p>
+              </div>
             </div>
 
-            <div
-              className={`rounded-2xl border p-3 ${
-                contract.staffSigned
-                  ? "bg-emerald-50/70 border-emerald-200 text-emerald-900"
-                  : "bg-teal-50/70 border-teal-200 text-teal-900"
-              }`}
-            >
-              <p className="font-extrabold flex items-center gap-1.5">
-                <UserCheck className="w-3.5 h-3.5 text-teal-600" />
-                {isEn ? "Staff Signature:" : "Chữ ký Nhân viên:"}
-              </p>
-              <p className="mt-1 text-[11px] font-semibold">
-                {contract.staffSigned
-                  ? `${isEn ? "Signed" : "Đã ký"} (${formatDateTime(
-                      contract.staffSignedAt,
-                      locale
-                    )})`
-                  : isEn
-                    ? "Signing now upon unit handover"
-                    : "Sẽ ký xác nhận ở bước này"}
-              </p>
-            </div>
-          </div>
+            {!isCustomerSigned && (
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
+                <p className="font-bold flex items-center gap-1.5 text-amber-950">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                  {isEn
+                    ? "Customer Must Sign First on Mobile App"
+                    : "Yêu cầu Khách hàng ký trước trên Mobile App"}
+                </p>
+                <p className="text-[11px] text-amber-800">
+                  {isEn
+                    ? "According to regulations, the customer must sign the lease agreement on the Customer Mobile App before you can confirm check-in."
+                    : "Theo quy định 2 bước, Khách hàng phải mở ứng dụng di động để ký xác nhận hợp đồng trước khi Quản lý hoàn tất bàn giao kho (mã 414)."}
+                </p>
+              </div>
+            )}
 
-          {/* Handover Checklist */}
-          <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-3 text-xs">
-            <p className="font-extrabold uppercase tracking-wider text-slate-500 text-[11px]">
-              {isEn ? "Handover Verification Checklist" : "Checklist kiểm tra bàn giao kho"}
-            </p>
+            {isDateShifted && (
+              <div className="p-3 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900 text-xs space-y-1">
+                <p className="font-bold flex items-center gap-1.5 text-blue-950">
+                  <AlertTriangle className="w-4 h-4 text-blue-600 shrink-0" />
+                  {isEn ? "Rental Dates Adjustment Notice" : "Lưu ý ngày nhận kho bị trượt"}
+                </p>
+                <p className="text-[11px] text-blue-800">
+                  {isEn
+                    ? "Actual check-in is later than scheduled start date. Backend will shift contract cycle and customer will need to re-sign the updated draft (code 425)."
+                    : "Thời điểm nhận kho trễ hơn ngày bắt đầu dự kiến. Hệ thống sẽ điều chỉnh ngày chu kỳ thuê và lưu lịch sử chữ ký; khách sẽ cần ký lại bản nháp đã điều chỉnh (mã 425)."}
+                </p>
+              </div>
+            )}
 
-            <label className="flex items-start gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={verifiedIdentity}
-                onChange={(e) => setVerifiedIdentity(e.target.checked)}
-                className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-              />
-              <span className="text-slate-700 font-medium">
+            {/* Scanned/Photographed Physical Contract Upload */}
+            <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                  <FileText className="w-4 h-4 text-emerald-600" />
+                  {isEn
+                    ? "Signed Contract Photos / Scans (Required) *"
+                    : "Ảnh chụp / Bản scan hợp đồng đã ký sống (Bắt buộc) *"}
+                </label>
+                {signedContractFileUrls.length > 0 && (
+                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                    {signedContractFileUrls.length} {isEn ? "uploaded" : "file đã chọn"}
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500">
                 {isEn
-                  ? "Verified customer ID card / citizen identification."
-                  : "Đã đối chiếu CCCD/định danh của khách hàng."}
-              </span>
-            </label>
-
-            <label className="flex items-start gap-2.5 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={verifiedUnitAndPin}
-                onChange={(e) => setVerifiedUnitAndPin(e.target.checked)}
-                className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-              />
-              <span className="text-slate-700 font-medium">
-                {isEn
-                  ? "Guided customer to inspect physical storage unit & handed over lock/PIN."
-                  : "Đã dẫn khách kiểm tra kho thực tế & bàn giao khoá/mã PIN."}
-              </span>
-            </label>
-
-            <label className="flex items-start gap-2.5 cursor-pointer pt-2 border-t border-slate-200">
-              <input
-                type="checkbox"
-                checked={termsAccepted}
-                onChange={(e) => {
-                  setTermsAccepted(e.target.checked);
-                  setErrorMsg(null);
+                  ? "Upload clear photos or scans of all pages with signatures from both customer and manager (minimum 1 file, PDF/Image)."
+                  : "Chụp ảnh hoặc scan các trang hợp đồng giấy A4 có đầy đủ chữ ký 2 bên để hệ thống băm SHA-256 lưu vết tính toàn vẹn (tối thiểu 1 file)."}
+              </p>
+              <CloudinaryUploader
+                folder={CloudinaryFolderEnum.CONTRACTS}
+                value={signedContractFileUrls}
+                onChange={(urls) => {
+                  setSignedContractFileUrls(urls);
+                  if (urls.length > 0) setErrorMsg(null);
                 }}
-                className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                multiple={true}
+                maxFiles={10}
+                accept="image/*,application/pdf"
+                label={isEn ? "Upload Contract Photos / Scans" : "Tải lên ảnh/scan hợp đồng"}
+                description={
+                  isEn
+                    ? "Attach clear photos or PDF scans of the physical signed agreement."
+                    : "Đính kèm ảnh chụp rõ nét hoặc file PDF scan của hợp đồng giấy đã ký."
+                }
+                disabled={checkInMutation.isPending}
               />
-              <span className="text-emerald-900 font-bold">
-                {isEn
-                  ? "I confirm physical storage unit handover and accept the lease agreement terms (Required) *"
-                  : "Tôi xác nhận đã bàn giao kho thực tế và đồng ý ký xác nhận hợp đồng (Bắt buộc) *"}
-              </span>
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              {isEn ? "Handover & Unit Condition Notes" : "Ghi chú tình trạng kho lúc bàn giao"}
-            </label>
-            <textarea
-              rows={3}
-              maxLength={1000}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={
-                isEn
-                  ? "Record unit cleanliness, lock code handed over, etc..."
-                  : "Ghi chú tình trạng kho lúc nhận, mã khoá bàn giao..."
-              }
-              className="w-full bg-slate-50 focus:bg-white text-sm text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none resize-none"
-            />
-          </div>
-
-          {errorMsg && (
-            <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>{errorMsg}</span>
             </div>
-          )}
 
-          <DialogFooter className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+            {/* Handover Checklist */}
+            <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-3 text-xs">
+              <p className="font-extrabold uppercase tracking-wider text-slate-500 text-[11px]">
+                {isEn ? "Handover Verification Checklist" : "Checklist kiểm tra bàn giao kho"}
+              </p>
+
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={verifiedIdentity}
+                  onChange={(e) => setVerifiedIdentity(e.target.checked)}
+                  className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                />
+                <span className="text-slate-700 font-medium">
+                  {isEn
+                    ? "Verified customer ID card / citizen identification."
+                    : "Đã đối chiếu CCCD/định danh của khách hàng."}
+                </span>
+              </label>
+
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={verifiedUnitAndPin}
+                  onChange={(e) => setVerifiedUnitAndPin(e.target.checked)}
+                  className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                />
+                <span className="text-slate-700 font-medium">
+                  {isEn
+                    ? "Guided customer to inspect physical storage unit & handed over lock/PIN."
+                    : "Đã dẫn khách kiểm tra kho thực tế & bàn giao khoá/mã PIN."}
+                </span>
+              </label>
+
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={verifiedContractPaperSigned}
+                  onChange={(e) => setVerifiedContractPaperSigned(e.target.checked)}
+                  className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                />
+                <span className="text-slate-700 font-medium">
+                  {isEn
+                    ? "Both customer and manager have signed the printed paper contract."
+                    : "Khách hàng và Quản lý đã ký sống trên bản in hợp đồng giấy A4."}
+                </span>
+              </label>
+
+              <label className="flex items-start gap-2.5 cursor-pointer pt-2 border-t border-slate-200">
+                <input
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={(e) => {
+                    setTermsAccepted(e.target.checked);
+                    setErrorMsg(null);
+                  }}
+                  className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                />
+                <span className="text-emerald-900 font-bold">
+                  {isEn
+                    ? "I confirm physical storage unit handover and accept lease terms (Required) *"
+                    : "Tôi xác nhận đã bàn giao kho thực tế và đồng ý ký xác nhận hợp đồng (Bắt buộc) *"}
+                </span>
+              </label>
+            </div>
+
+            {errorMsg && (
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="p-4 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0 bg-white">
             <button
               type="button"
               onClick={onClose}
               disabled={checkInMutation.isPending}
               className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
-              {isEn ? "Cancel" : "Đóng"}
+              {isEn ? "Cancel" : "Hủy"}
             </button>
             <button
               type="submit"
-              disabled={checkInMutation.isPending || !termsAccepted}
+              disabled={
+                checkInMutation.isPending ||
+                !termsAccepted ||
+                !isCustomerSigned ||
+                !verifiedContractPaperSigned ||
+                signedContractFileUrls.length === 0
+              }
               className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
             >
               {checkInMutation.isPending
@@ -696,8 +813,8 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
                   ? "Signing & Checking in..."
                   : "Đang ký & xử lý..."
                 : isEn
-                  ? "Confirm Handover & Sign (Staff)"
-                  : "Xác nhận bàn giao kho & Ký (Staff)"}
+                  ? "Confirm Handover & Sign (Manager)"
+                  : "Xác nhận bàn giao kho & Ký Check-in"}
             </button>
           </DialogFooter>
         </form>
@@ -1189,13 +1306,13 @@ export const CreateContractAddendumModal: React.FC<CreateContractAddendumModalPr
       open={isOpen}
       onOpenChange={(open) => !open && !createAddendumMutation.isPending && onClose()}
     >
-      <DialogContent className="sm:max-w-lg p-0 rounded-3xl border-slate-100 shadow-2xl overflow-hidden">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col p-0 rounded-3xl border-slate-100 shadow-2xl overflow-hidden">
         <DialogHeader
           className={`p-6 pb-4 border-b border-slate-100 ${
             isAdd ? "bg-emerald-50/60" : "bg-orange-50/60"
           }`}
         >
-          <div className="flex items-center gap-3">
+          <div className="shrink-0 flex items-center gap-3">
             <div
               className={`w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-md ${
                 isAdd
@@ -1220,195 +1337,199 @@ export const CreateContractAddendumModal: React.FC<CreateContractAddendumModalPr
           </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Addendum Type Toggle */}
-          <div className="grid grid-cols-2 gap-2.5">
-            <button
-              type="button"
-              onClick={() => {
-                setType(ContractAddendumTypeEnum.ADD);
-                setSelectedOfferingId("");
-                setQuantity(1);
-                setErrorMsg(null);
-              }}
-              className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
-                isAdd
-                  ? "bg-emerald-50 border-emerald-500 text-emerald-700"
-                  : "bg-slate-50 border-slate-200 text-slate-600"
-              }`}
-            >
-              <PlusCircle className="w-4 h-4" />
-              {isEn ? "Add / Install (ADD)" : "Thuê thêm / Lắp đặt"}
-            </button>
-            <button
-              type="button"
-              disabled={(contract.amenities?.length ?? 0) === 0}
-              onClick={() => {
-                setType(ContractAddendumTypeEnum.REMOVE);
-                setSelectedOfferingId("");
-                setQuantity(1);
-                setErrorMsg(null);
-              }}
-              className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 disabled:opacity-40 ${
-                !isAdd
-                  ? "bg-orange-50 border-orange-500 text-orange-700"
-                  : "bg-slate-50 border-slate-200 text-slate-600"
-              }`}
-            >
-              <MinusCircle className="w-4 h-4" />
-              {isEn ? "Remove / Return (REMOVE)" : "Tháo dỡ / Trả bớt"}
-            </button>
-          </div>
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            {/* Addendum Type Toggle */}
+            <div className="grid grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setType(ContractAddendumTypeEnum.ADD);
+                  setSelectedOfferingId("");
+                  setQuantity(1);
+                  setErrorMsg(null);
+                }}
+                className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
+                  isAdd
+                    ? "bg-emerald-50 border-emerald-500 text-emerald-700"
+                    : "bg-slate-50 border-slate-200 text-slate-600"
+                }`}
+              >
+                <PlusCircle className="w-4 h-4" />
+                {isEn ? "Add / Install (ADD)" : "Thuê thêm / Lắp đặt"}
+              </button>
+              <button
+                type="button"
+                disabled={(contract.amenities?.length ?? 0) === 0}
+                onClick={() => {
+                  setType(ContractAddendumTypeEnum.REMOVE);
+                  setSelectedOfferingId("");
+                  setQuantity(1);
+                  setErrorMsg(null);
+                }}
+                className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 disabled:opacity-40 ${
+                  !isAdd
+                    ? "bg-orange-50 border-orange-500 text-orange-700"
+                    : "bg-slate-50 border-slate-200 text-slate-600"
+                }`}
+              >
+                <MinusCircle className="w-4 h-4" />
+                {isEn ? "Remove / Return (REMOVE)" : "Tháo dỡ / Trả bớt"}
+              </button>
+            </div>
 
-          {isAdd ? (
+            {isAdd ? (
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  {isEn ? "Select Facility Amenity *" : "Chọn tiện ích tại cơ sở *"}
+                </label>
+                <select
+                  value={activeAddOffering?.id ?? ""}
+                  onChange={(e) => {
+                    setSelectedOfferingId(e.target.value);
+                    setQuantity(1);
+                    setErrorMsg(null);
+                  }}
+                  className="w-full bg-slate-50 focus:bg-white text-xs font-semibold text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none"
+                >
+                  {availableOfferings.length === 0 ? (
+                    <option value="">
+                      {isEn ? "No amenities in stock" : "Không có tiện ích còn tồn kho"}
+                    </option>
+                  ) : (
+                    availableOfferings.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.amenity.name} — {formatVnd(item.pricePerUnit)} (
+                        {isEn
+                          ? `Stock: ${item.availableQuantity}`
+                          : `Còn: ${item.availableQuantity}`}
+                        )
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  {isEn
+                    ? "Select Currently Rented Amenity to Remove *"
+                    : "Chọn tiện ích đang thuê cần tháo dỡ / trả bớt *"}
+                </label>
+                <select
+                  value={activeRemoveItem?.facilityAmenityOfferingId ?? ""}
+                  onChange={(e) => {
+                    setSelectedOfferingId(e.target.value);
+                    setQuantity(1);
+                    setErrorMsg(null);
+                  }}
+                  className="w-full bg-slate-50 focus:bg-white text-xs font-semibold text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 outline-none"
+                >
+                  {eligibleRemovableItems.length === 0 ? (
+                    <option value="">
+                      {isEn
+                        ? "All rented amenities already have pending removal requests"
+                        : "Tất cả tiện ích đang thuê đều đã có yêu cầu tháo dỡ chờ xử lý"}
+                    </option>
+                  ) : (
+                    eligibleRemovableItems.map((item) => (
+                      <option
+                        key={item.facilityAmenityOfferingId}
+                        value={item.facilityAmenityOfferingId}
+                      >
+                        {item.name || item.facilityAmenityOfferingId} —{" "}
+                        {formatVnd(item.pricePerUnit)} (
+                        {isEn
+                          ? `Rented: ${item.quantity}, Max removable: ${item.maxRemovableQty}`
+                          : `Đang thuê: ${item.quantity}, Tối đa trả bớt: ${item.maxRemovableQty}`}
+                        )
+                      </option>
+                    ))
+                  )}
+                </select>
+                {activeRemoveItem && activeRemoveItem.pendingRemoveQty > 0 && (
+                  <p className="text-[11px] text-amber-700 font-semibold">
+                    {isEn
+                      ? `Note: ${activeRemoveItem.pendingRemoveQty} unit(s) already in pending removal addendums.`
+                      : `Lưu ý: Đang có ${activeRemoveItem.pendingRemoveQty} thiết bị nằm trong phụ lục tháo dỡ chờ duyệt/ký.`}
+                  </p>
+                )}
+              </div>
+            )}
+
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                {isEn ? "Select Facility Amenity *" : "Chọn tiện ích tại cơ sở *"}
-              </label>
-              <select
-                value={activeAddOffering?.id ?? ""}
-                onChange={(e) => {
-                  setSelectedOfferingId(e.target.value);
-                  setQuantity(1);
-                  setErrorMsg(null);
-                }}
-                className="w-full bg-slate-50 focus:bg-white text-xs font-semibold text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none"
-              >
-                {availableOfferings.length === 0 ? (
-                  <option value="">
-                    {isEn ? "No amenities in stock" : "Không có tiện ích còn tồn kho"}
-                  </option>
-                ) : (
-                  availableOfferings.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.amenity.name} — {formatVnd(item.pricePerUnit)} (
-                      {isEn ? `Stock: ${item.availableQuantity}` : `Còn: ${item.availableQuantity}`}
-                      )
-                    </option>
-                  ))
-                )}
-              </select>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
                 {isEn
-                  ? "Select Currently Rented Amenity to Remove *"
-                  : "Chọn tiện ích đang thuê cần tháo dỡ / trả bớt *"}
+                  ? `Quantity (Max: ${maxAllowedQty}) *`
+                  : `Số lượng (Tối đa: ${maxAllowedQty}) *`}
               </label>
-              <select
-                value={activeRemoveItem?.facilityAmenityOfferingId ?? ""}
-                onChange={(e) => {
-                  setSelectedOfferingId(e.target.value);
-                  setQuantity(1);
-                  setErrorMsg(null);
-                }}
-                className="w-full bg-slate-50 focus:bg-white text-xs font-semibold text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 outline-none"
-              >
-                {eligibleRemovableItems.length === 0 ? (
-                  <option value="">
-                    {isEn
-                      ? "All rented amenities already have pending removal requests"
-                      : "Tất cả tiện ích đang thuê đều đã có yêu cầu tháo dỡ chờ xử lý"}
-                  </option>
-                ) : (
-                  eligibleRemovableItems.map((item) => (
-                    <option
-                      key={item.facilityAmenityOfferingId}
-                      value={item.facilityAmenityOfferingId}
-                    >
-                      {item.name || item.facilityAmenityOfferingId} — {formatVnd(item.pricePerUnit)}{" "}
-                      (
-                      {isEn
-                        ? `Rented: ${item.quantity}, Max removable: ${item.maxRemovableQty}`
-                        : `Đang thuê: ${item.quantity}, Tối đa trả bớt: ${item.maxRemovableQty}`}
-                      )
-                    </option>
-                  ))
-                )}
-              </select>
-              {activeRemoveItem && activeRemoveItem.pendingRemoveQty > 0 && (
-                <p className="text-[11px] text-amber-700 font-semibold">
-                  {isEn
-                    ? `Note: ${activeRemoveItem.pendingRemoveQty} unit(s) already in pending removal addendums.`
-                    : `Lưu ý: Đang có ${activeRemoveItem.pendingRemoveQty} thiết bị nằm trong phụ lục tháo dỡ chờ duyệt/ký.`}
-                </p>
-              )}
+              <input
+                type="number"
+                min={1}
+                max={Math.max(1, maxAllowedQty)}
+                value={safeQty}
+                onChange={(e) =>
+                  setQuantity(
+                    Math.min(Math.max(1, Number(e.target.value) || 1), Math.max(1, maxAllowedQty))
+                  )
+                }
+                className="w-full bg-slate-50 focus:bg-white text-sm font-bold text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none"
+              />
             </div>
-          )}
 
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              {isEn
-                ? `Quantity (Max: ${maxAllowedQty}) *`
-                : `Số lượng (Tối đa: ${maxAllowedQty}) *`}
-            </label>
-            <input
-              type="number"
-              min={1}
-              max={Math.max(1, maxAllowedQty)}
-              value={safeQty}
-              onChange={(e) =>
-                setQuantity(
-                  Math.min(Math.max(1, Number(e.target.value) || 1), Math.max(1, maxAllowedQty))
-                )
-              }
-              className="w-full bg-slate-50 focus:bg-white text-sm font-bold text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none"
-            />
-          </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                {isEn ? "Addendum Notes (Optional)" : "Ghi chú yêu cầu phụ lục (Tùy chọn)"}
+              </label>
+              <textarea
+                rows={2}
+                maxLength={1000}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder={
+                  isAdd
+                    ? isEn
+                      ? "e.g., Requesting additional shelving rack installation..."
+                      : "VD: Yêu cầu lắp thêm kệ sắt lưu trữ..."
+                    : isEn
+                      ? "e.g., Returning dehumidifier unit no longer needed..."
+                      : "VD: Yêu cầu tháo dỡ trả bớt thiết bị không còn nhu cầu sử dụng..."
+                }
+                className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none resize-none"
+              />
+            </div>
 
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              {isEn ? "Addendum Notes (Optional)" : "Ghi chú yêu cầu phụ lục (Tùy chọn)"}
-            </label>
-            <textarea
-              rows={2}
-              maxLength={1000}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={
-                isAdd
-                  ? isEn
-                    ? "e.g., Requesting additional shelving rack installation..."
-                    : "VD: Yêu cầu lắp thêm kệ sắt lưu trữ..."
-                  : isEn
-                    ? "e.g., Returning dehumidifier unit no longer needed..."
-                    : "VD: Yêu cầu tháo dỡ trả bớt thiết bị không còn nhu cầu sử dụng..."
-              }
-              className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none resize-none"
-            />
-          </div>
-
-          <div
-            className={`rounded-xl border p-3 flex items-center justify-between text-xs ${
-              isAdd ? "bg-emerald-50/70 border-emerald-200" : "bg-orange-50/70 border-orange-200"
-            }`}
-          >
-            <span className="font-semibold text-slate-700">
-              {isAdd
-                ? isEn
-                  ? "Periodic Fee Increase (upon activation):"
-                  : "Tăng phí thuê định kỳ (khi phụ lục ACTIVE):"
-                : isEn
-                  ? "Periodic Fee Reduction (from next cycle):"
-                  : "Giảm phí thuê định kỳ (áp dụng từ kỳ tiếp theo):"}
-            </span>
-            <strong
-              className={`text-sm font-extrabold ${isAdd ? "text-emerald-700" : "text-orange-700"}`}
+            <div
+              className={`rounded-xl border p-3 flex items-center justify-between text-xs ${
+                isAdd ? "bg-emerald-50/70 border-emerald-200" : "bg-orange-50/70 border-orange-200"
+              }`}
             >
-              {isAdd ? "+" : "-"} {formatVnd(estimatedPeriodicDelta)} /{" "}
-              {getBillingUnitLabel(contract.billingUnit, locale)}
-            </strong>
+              <span className="font-semibold text-slate-700">
+                {isAdd
+                  ? isEn
+                    ? "Periodic Fee Increase (upon activation):"
+                    : "Tăng phí thuê định kỳ (khi phụ lục ACTIVE):"
+                  : isEn
+                    ? "Periodic Fee Reduction (from next cycle):"
+                    : "Giảm phí thuê định kỳ (áp dụng từ kỳ tiếp theo):"}
+              </span>
+              <strong
+                className={`text-sm font-extrabold ${isAdd ? "text-emerald-700" : "text-orange-700"}`}
+              >
+                {isAdd ? "+" : "-"} {formatVnd(estimatedPeriodicDelta)} /{" "}
+                {getBillingUnitLabel(contract.billingUnit, locale)}
+              </strong>
+            </div>
+
+            {errorMsg && (
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
           </div>
 
-          {errorMsg && (
-            <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>{errorMsg}</span>
-            </div>
-          )}
-
-          <DialogFooter className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+          <DialogFooter className="p-4 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0 bg-white">
             <button
               type="button"
               onClick={onClose}
@@ -1453,7 +1574,8 @@ interface ApproveContractAddendumModalProps {
   onClose: () => void;
   contract: ContractResponse | null;
   addendum: ContractAddendumResponse | null;
-  staffs: FacilityStaffItem[];
+  staffs?: FacilityStaffItem[];
+  staffList?: FacilityStaffItem[];
   onSuccess?: () => void;
 }
 
@@ -1463,8 +1585,10 @@ export const ApproveContractAddendumModal: React.FC<ApproveContractAddendumModal
   contract,
   addendum,
   staffs,
+  staffList,
   onSuccess,
 }) => {
+  const staffItems = staffs ?? staffList ?? [];
   const locale = useLocale() === "en" ? "en" : "vi";
   const isEn = locale === "en";
   const approveMutation = useApproveContractAddendum();
@@ -1552,7 +1676,7 @@ export const ApproveContractAddendumModal: React.FC<ApproveContractAddendumModal
               <option value="">
                 {isEn ? "— Unassigned / Any Staff —" : "— Chưa chỉ định đích danh —"}
               </option>
-              {staffs.map((s) => (
+              {staffItems.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name} ({s.email})
                 </option>
@@ -2209,127 +2333,129 @@ export const CheckOutContractModal: React.FC<CheckOutContractModalProps> = ({
           </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  {isEn ? "Damage Compensation Fee (VND)" : "Phí đền bù hư hại tài sản/kho (VND)"}
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  value={damageFeeInput}
+                  onChange={(e) => {
+                    setDamageFeeInput(e.target.value);
+                    setErrorMsg(null);
+                  }}
+                  className="w-full bg-slate-50 focus:bg-white text-sm font-extrabold text-slate-900 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-sky-500 outline-none"
+                />
+              </div>
+
+              <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-3 text-xs flex flex-col justify-center">
+                <span className="text-slate-500 font-semibold">
+                  {isEn ? "Contract End Date:" : "Hạn kết thúc hợp đồng:"}
+                </span>
+                <span className="font-bold text-slate-800 mt-0.5">
+                  {formatDateTime(contract.endDate, locale)}
+                </span>
+                {preview.overdueDays > 0 && (
+                  <span className="text-orange-600 font-extrabold mt-0.5">
+                    {isEn
+                      ? `Overdue: ${preview.overdueDays} day(s)`
+                      : `Trả trễ: ${preview.overdueDays} ngày`}
+                  </span>
+                )}
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                {isEn ? "Damage Compensation Fee (VND)" : "Phí đền bù hư hại tài sản/kho (VND)"}
+                {isEn ? "Inspection Notes" : "Biên bản kiểm tra kho khi trả (inspectionNotes)"}
               </label>
-              <input
-                type="number"
-                min={0}
-                value={damageFeeInput}
-                onChange={(e) => {
-                  setDamageFeeInput(e.target.value);
-                  setErrorMsg(null);
-                }}
-                className="w-full bg-slate-50 focus:bg-white text-sm font-extrabold text-slate-900 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-sky-500 outline-none"
+              <textarea
+                rows={3}
+                maxLength={1000}
+                value={inspectionNotes}
+                onChange={(e) => setInspectionNotes(e.target.value)}
+                placeholder={
+                  isEn
+                    ? "Describe unit condition upon return, lock status, any damages..."
+                    : "Ghi chú tình trạng kho khi nhận lại từ khách (sàn, vách, khoá cửa, vệ sinh...)..."
+                }
+                className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-sky-500 outline-none resize-none"
               />
             </div>
 
-            <div className="rounded-xl bg-slate-50 border border-slate-200/80 p-3 text-xs flex flex-col justify-center">
-              <span className="text-slate-500 font-semibold">
-                {isEn ? "Contract End Date:" : "Hạn kết thúc hợp đồng:"}
-              </span>
-              <span className="font-bold text-slate-800 mt-0.5">
-                {formatDateTime(contract.endDate, locale)}
-              </span>
-              {preview.overdueDays > 0 && (
-                <span className="text-orange-600 font-extrabold mt-0.5">
-                  {isEn
-                    ? `Overdue: ${preview.overdueDays} day(s)`
-                    : `Trả trễ: ${preview.overdueDays} ngày`}
-                </span>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              {isEn ? "Inspection Notes" : "Biên bản kiểm tra kho khi trả (inspectionNotes)"}
-            </label>
-            <textarea
-              rows={3}
-              maxLength={1000}
-              value={inspectionNotes}
-              onChange={(e) => setInspectionNotes(e.target.value)}
-              placeholder={
-                isEn
-                  ? "Describe unit condition upon return, lock status, any damages..."
-                  : "Ghi chú tình trạng kho khi nhận lại từ khách (sàn, vách, khoá cửa, vệ sinh...)..."
-              }
-              className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-sky-500 outline-none resize-none"
-            />
-          </div>
-
-          {/* Real-time Settlement Preview Table */}
-          <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 space-y-2.5 text-xs">
-            <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-              {isEn
-                ? "Automatic Settlement Preview (Real-time)"
-                : "Bảng Tóm tắt Quyết toán Tự động (Real-time Preview)"}
-            </p>
-
-            <div className="flex items-center justify-between py-1 border-b border-slate-200/70">
-              <span className="text-slate-600 font-medium">
-                {isEn ? "Held Deposit (depositAmount):" : "Tiền cọc đã giữ (depositAmount):"}
-              </span>
-              <span className="font-bold text-emerald-700">
-                + {formatVnd(preview.depositAmount)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between py-1 border-b border-slate-200/70">
-              <span className="text-slate-600 font-medium">
+            {/* Real-time Settlement Preview Table */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 space-y-2.5 text-xs">
+              <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 {isEn
-                  ? `Estimated Overdue Fee (${preview.overdueDays} days × 1.5 × daily rate):`
-                  : `Phí quá hạn dự kiến (${preview.overdueDays} ngày trễ × 1.5 × đơn giá ngày):`}
-              </span>
-              <span className="font-bold text-orange-600">
-                - {formatVnd(preview.estimatedOverdueFee)}
-              </span>
-            </div>
+                  ? "Automatic Settlement Preview (Real-time)"
+                  : "Bảng Tóm tắt Quyết toán Tự động (Real-time Preview)"}
+              </p>
 
-            <div className="flex items-center justify-between py-1 border-b border-slate-200/70">
-              <span className="text-slate-600 font-medium">
-                {isEn ? "Damage Fee (damageFee):" : "Phí hư hại nhập vào (damageFee):"}
-              </span>
-              <span className="font-bold text-rose-600">- {formatVnd(preview.damageFee)}</span>
-            </div>
-
-            <div className="pt-2 space-y-2">
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-200">
-                <span className="font-bold text-emerald-900">
-                  {isEn
-                    ? "Refund to Customer (refundAmount):"
-                    : "Số tiền hoàn trả khách (refundAmount):"}
+              <div className="flex items-center justify-between py-1 border-b border-slate-200/70">
+                <span className="text-slate-600 font-medium">
+                  {isEn ? "Held Deposit (depositAmount):" : "Tiền cọc đã giữ (depositAmount):"}
                 </span>
-                <span className="text-sm font-extrabold text-emerald-700">
-                  {formatVnd(preview.refundAmount)}
+                <span className="font-bold text-emerald-700">
+                  + {formatVnd(preview.depositAmount)}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 border border-amber-200">
-                <span className="font-bold text-amber-900">
+              <div className="flex items-center justify-between py-1 border-b border-slate-200/70">
+                <span className="text-slate-600 font-medium">
                   {isEn
-                    ? "Additional Payment Required:"
-                    : "Số tiền khách cần đóng thêm (additionalPaymentRequired):"}
+                    ? `Estimated Overdue Fee (${preview.overdueDays} days × 1.5 × daily rate):`
+                    : `Phí quá hạn dự kiến (${preview.overdueDays} ngày trễ × 1.5 × đơn giá ngày):`}
                 </span>
-                <span className="text-sm font-extrabold text-amber-800">
-                  {formatVnd(preview.additionalPaymentRequired)}
+                <span className="font-bold text-orange-600">
+                  - {formatVnd(preview.estimatedOverdueFee)}
                 </span>
               </div>
+
+              <div className="flex items-center justify-between py-1 border-b border-slate-200/70">
+                <span className="text-slate-600 font-medium">
+                  {isEn ? "Damage Fee (damageFee):" : "Phí hư hại nhập vào (damageFee):"}
+                </span>
+                <span className="font-bold text-rose-600">- {formatVnd(preview.damageFee)}</span>
+              </div>
+
+              <div className="pt-2 space-y-2">
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-200">
+                  <span className="font-bold text-emerald-900">
+                    {isEn
+                      ? "Refund to Customer (refundAmount):"
+                      : "Số tiền hoàn trả khách (refundAmount):"}
+                  </span>
+                  <span className="text-sm font-extrabold text-emerald-700">
+                    {formatVnd(preview.refundAmount)}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 border border-amber-200">
+                  <span className="font-bold text-amber-900">
+                    {isEn
+                      ? "Additional Payment Required:"
+                      : "Số tiền khách cần đóng thêm (additionalPaymentRequired):"}
+                  </span>
+                  <span className="text-sm font-extrabold text-amber-800">
+                    {formatVnd(preview.additionalPaymentRequired)}
+                  </span>
+                </div>
+              </div>
             </div>
+
+            {errorMsg && (
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
           </div>
 
-          {errorMsg && (
-            <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>{errorMsg}</span>
-            </div>
-          )}
-
-          <DialogFooter className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+          <DialogFooter className="p-4 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0 bg-white">
             <button
               type="button"
               onClick={onClose}

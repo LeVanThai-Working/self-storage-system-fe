@@ -1,5 +1,9 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { PaymentStatusEnum } from "@self-storage-system-fe/shared";
+import {
+  PaymentStatusEnum,
+  type CancelReservationRequest,
+  type RespondUnitReassignRequest,
+} from "@self-storage-system-fe/shared";
 import {
   cancelReservation,
   createOrGetDepositPayment,
@@ -11,6 +15,7 @@ import {
   fetchPayment,
   fetchReservation,
   fetchUnitRacks,
+  respondUnitReassign,
 } from "./api";
 import type { ReservationListParams } from "./types";
 
@@ -64,7 +69,22 @@ export const useCreateReservation = () => {
 export const useCancelReservation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason: string }) => cancelReservation(id, reason),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: CancelReservationRequest | { cancellationReason: string };
+    }) => cancelReservation(id, payload),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: customerReservationKeys.all }),
+  });
+};
+
+export const useRespondUnitReassign = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: RespondUnitReassignRequest }) =>
+      respondUnitReassign(id, payload),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: customerReservationKeys.all }),
   });
 };
@@ -89,7 +109,6 @@ export const useDepositPayment = (reservationId: string, enabled: boolean) => {
     queryFn: async () => {
       const latest = await fetchPayment(paymentId!);
       if (latest.status === PaymentStatusEnum.PAID) {
-        // The reservation flips to "payment_successful" on the BE once the transfer is matched.
         queryClient.invalidateQueries({ queryKey: customerReservationKeys.detail(reservationId) });
       }
       return latest;
@@ -98,9 +117,7 @@ export const useDepositPayment = (reservationId: string, enabled: boolean) => {
     initialData: open.data,
     refetchInterval: (query) => {
       const status = query.state.data?.status;
-      return status === PaymentStatusEnum.PENDING || status === PaymentStatusEnum.PARTIALLY_PAID
-        ? PAYMENT_POLL_MS
-        : false;
+      return status === PaymentStatusEnum.PENDING ? PAYMENT_POLL_MS : false;
     },
   });
 

@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { PaymentMethodEnum, PaymentPurposeEnum, PaymentStatusEnum } from "../../enums/payment.enum";
+import {
+  PaymentMethodEnum,
+  PaymentPurposeEnum,
+  PaymentStatusEnum,
+  PaymentTransactionResultEnum,
+} from "../../enums/payment.enum";
 import { paginationQuerySchema } from "../common/pagination.schema";
 
 export const paymentIdParamSchema = z.object({
@@ -23,14 +28,17 @@ export const createPaymentSchema = z
       if (data.purpose === PaymentPurposeEnum.RESERVATION_DEPOSIT) {
         return !!data.reservationId;
       }
-      if (data.purpose === PaymentPurposeEnum.CONTRACT_DEPOSIT) {
+      if (
+        data.purpose === PaymentPurposeEnum.CONTRACT_DEPOSIT ||
+        data.purpose === PaymentPurposeEnum.RENT_FIRST_PERIOD
+      ) {
         return !!data.contractId;
       }
       return false;
     },
     {
       message:
-        "Must provide reservationId for RESERVATION_DEPOSIT, or contractId for CONTRACT_DEPOSIT",
+        "Must provide reservationId for RESERVATION_DEPOSIT, or contractId for CONTRACT_DEPOSIT or RENT_FIRST_PERIOD",
     }
   );
 
@@ -39,8 +47,8 @@ export const confirmManualPaymentSchema = z.object({
     .enum([PaymentMethodEnum.CASH, PaymentMethodEnum.BANK_TRANSFER])
     .default(PaymentMethodEnum.CASH),
   referenceCode: z.string().max(100).optional(),
+  proofImageUrl: z.string().url("Proof image URL is required for manual payment verification"),
   note: z.string().min(2, "Note is required for manual payment verification").max(1000),
-  proofImageUrl: z.string().url("Invalid image URL format").optional(),
 });
 
 export const cancelPaymentSchema = z.object({
@@ -51,6 +59,8 @@ export const cancelPaymentSchema = z.object({
 });
 
 export const paymentQuerySchema = paginationQuerySchema.extend({
+  sortBy: z.string().trim().optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
   customerId: z
     .string()
     .regex(/^[0-9a-fA-F]{24}$/)
@@ -109,3 +119,24 @@ export type ConfirmManualPaymentRequest = z.infer<typeof confirmManualPaymentSch
 export type CancelPaymentRequest = z.infer<typeof cancelPaymentSchema>;
 export type PaymentQuery = z.infer<typeof paymentQuerySchema>;
 export type PaymentIdParam = z.infer<typeof paymentIdParamSchema>;
+
+export const paymentTransactionIdParamSchema = z.object({
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid transaction ID format"),
+});
+
+export const assignUnmatchedTransactionSchema = z.object({
+  paymentCode: z.string().min(3).max(50).trim(),
+});
+
+export const unmatchedTransactionQuerySchema = paginationQuerySchema.extend({
+  sortBy: z.string().trim().optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
+  result: z.nativeEnum(PaymentTransactionResultEnum).optional(),
+  gateway: z.string().optional(),
+  accountNumber: z.string().optional(),
+  code: z.string().optional(),
+});
+
+export type PaymentTransactionIdParam = z.infer<typeof paymentTransactionIdParamSchema>;
+export type AssignUnmatchedTransactionRequest = z.infer<typeof assignUnmatchedTransactionSchema>;
+export type UnmatchedTransactionQuery = z.infer<typeof unmatchedTransactionQuerySchema>;

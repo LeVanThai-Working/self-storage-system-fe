@@ -1,4 +1,5 @@
 import type { AuthProviderEnum, RoleEnum, USER_ROLE, UserStatusEnum } from "../enums/user.enum";
+import type { FacilitySnapshot } from "./facility.types";
 import type {
   LoginRequest,
   RegisterRequest,
@@ -25,6 +26,9 @@ export interface AuthUserResponse {
   phoneNumber?: string;
   avatarUrl?: string;
   role: RoleEnum | USER_ROLE;
+  facilityId?: string | null;
+  assignedFacilityId?: string | null;
+  facility?: FacilitySnapshot | null;
   authProvider?: AuthProviderEnum | "local" | "google";
   status?: UserStatusEnum | "inactive" | "active" | "banned" | "deleted";
   createdAt: string | Date;

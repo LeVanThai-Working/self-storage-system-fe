@@ -26,10 +26,16 @@ interface TierSelectProps {
   disabled?: boolean;
 }
 
-const unusableRack = (status: RackStatusEnum) =>
-  status === RackStatusEnum.MAINTENANCE || status === RackStatusEnum.INACTIVE;
-const unusableTier = (status: RackTierStatusEnum) =>
-  status === RackTierStatusEnum.MAINTENANCE || status === RackTierStatusEnum.INACTIVE;
+const unusableRack = (status: RackStatusEnum | string) =>
+  status === RackStatusEnum.MAINTENANCE ||
+  status === RackStatusEnum.INACTIVE ||
+  status === "maintenance" ||
+  status === "inactive";
+const unusableTier = (status: RackTierStatusEnum | string) =>
+  status === RackTierStatusEnum.MAINTENANCE ||
+  status === RackTierStatusEnum.INACTIVE ||
+  status === "maintenance" ||
+  status === "inactive";
 
 /** Single select listing every usable "rack · tier" of a unit (maintenance / inactive hidden). */
 export function TierSelect({

@@ -1,14 +1,22 @@
 import api from "@/lib/api/axios";
 import type { ApiResponse as Envelope } from "@self-storage-system-fe/shared";
 import type {
+  AvailableStorageUnitQuery,
+  CreateStorageRackRequest,
   CreateStorageUnitRequest,
   FacilityResponse,
   FacilityUnitTypeOfferingResponse,
   PaginatedData,
+  RackTierResponse,
+  ReconcileStorageUnitsResponse,
+  StorageRackQuery,
+  StorageRackResponse,
   StorageUnitFilters,
   StorageUnitQuery,
   StorageUnitResponse,
   ToggleMaintenanceRequest,
+  UpdateRackTierRequest,
+  UpdateStorageRackRequest,
   UpdateStorageUnitRequest,
 } from "./types";
 
@@ -46,6 +54,15 @@ export const fetchStorageUnits = async (
   const { data } = await api.get<Envelope<PaginatedData<StorageUnitResponse>>>("/storage-units", {
     params,
   });
+  return data.data;
+};
+
+/**
+ * Chi tiết phòng kho theo ID.
+ * Endpoint: GET /storage-units/:id
+ */
+export const fetchStorageUnitById = async (id: string): Promise<StorageUnitResponse> => {
+  const { data } = await api.get<Envelope<StorageUnitResponse>>(`/storage-units/${id}`);
   return data.data;
 };
 
@@ -119,7 +136,22 @@ export const fetchFacilityMapLayout = async (
 };
 
 /**
- * Bật/Tắt bảo trì (AVAILABLE <-> UNDER_MAINTENANCE).
+ * Lấy danh sách kho trống đang mở bán.
+ * Endpoint: GET /storage-units/facility/:facilityId/available
+ */
+export const fetchAvailableStorageUnits = async (
+  facilityId: string,
+  query?: AvailableStorageUnitQuery
+): Promise<StorageUnitResponse[]> => {
+  const { data } = await api.get<Envelope<StorageUnitResponse[]>>(
+    `/storage-units/facility/${facilityId}/available`,
+    { params: query }
+  );
+  return data.data ?? [];
+};
+
+/**
+ * Bật/Tắt bảo trì (AVAILABLE <-> UNDER_MAINTENANCE / PENDING_CLEARANCE -> UNDER_MAINTENANCE).
  * Endpoint: PATCH /storage-units/:id/maintenance
  */
 export const toggleStorageUnitMaintenance = async (
@@ -130,5 +162,98 @@ export const toggleStorageUnitMaintenance = async (
     `/storage-units/${id}/maintenance`,
     payload
   );
+  return data.data;
+};
+
+/**
+ * Đối soát & giải phóng các kho RESERVED mồ côi (Ops / Admin).
+ * Endpoint: POST /storage-units/reconcile
+ */
+export const reconcileStorageUnits = async (): Promise<ReconcileStorageUnitsResponse> => {
+  const { data } = await api.post<Envelope<ReconcileStorageUnitsResponse>>(
+    "/storage-units/reconcile"
+  );
+  return data.data;
+};
+
+/* =====================================================================
+ * STORAGE RACKS & TIERS APIS
+ * ===================================================================== */
+
+/**
+ * Danh sách kệ kho có phân trang & lọc.
+ * Endpoint: GET /storage-racks
+ */
+export const fetchStorageRacks = async (
+  query?: StorageRackQuery
+): Promise<PaginatedData<StorageRackResponse>> => {
+  const { data } = await api.get<Envelope<PaginatedData<StorageRackResponse>>>("/storage-racks", {
+    params: query,
+  });
+  return data.data;
+};
+
+/**
+ * Lấy tất cả kệ & tầng kệ của 1 phòng kho (dùng cho Booking và Quản lý Kệ).
+ * Endpoint: GET /storage-racks/unit/:unitId
+ */
+export const fetchUnitStorageRacks = async (unitId: string): Promise<StorageRackResponse[]> => {
+  const { data } = await api.get<Envelope<StorageRackResponse[]>>(`/storage-racks/unit/${unitId}`);
+  return data.data ?? [];
+};
+
+/**
+ * Chi tiết kệ kho (kèm tiers).
+ * Endpoint: GET /storage-racks/:id
+ */
+export const fetchStorageRackById = async (id: string): Promise<StorageRackResponse> => {
+  const { data } = await api.get<Envelope<StorageRackResponse>>(`/storage-racks/${id}`);
+  return data.data;
+};
+
+/**
+ * Tạo mới kệ kho kèm số tầng tự động.
+ * Endpoint: POST /storage-racks
+ */
+export const createStorageRack = async (
+  payload: CreateStorageRackRequest
+): Promise<StorageRackResponse> => {
+  const { data } = await api.post<Envelope<StorageRackResponse>>("/storage-racks", payload);
+  return data.data;
+};
+
+/**
+ * Cập nhật thông tin kệ (dãy aisle, vị trí bay, zone, đơn giá, trạng thái).
+ * Endpoint: PATCH /storage-racks/:id
+ */
+export const updateStorageRack = async (
+  id: string,
+  payload: UpdateStorageRackRequest
+): Promise<StorageRackResponse> => {
+  const { data } = await api.patch<Envelope<StorageRackResponse>>(`/storage-racks/${id}`, payload);
+  return data.data;
+};
+
+/**
+ * Cập nhật thông số tầng kệ (tải trọng tối đa, kích thước, trạng thái).
+ * Endpoint: PATCH /storage-racks/tiers/:tierId
+ */
+export const updateRackTier = async (
+  tierId: string,
+  payload: UpdateRackTierRequest
+): Promise<RackTierResponse> => {
+  const { data } = await api.patch<Envelope<RackTierResponse>>(
+    `/storage-racks/tiers/${tierId}`,
+    payload
+  );
+  return data.data;
+};
+
+/**
+ * Xóa kệ kho.
+ * Endpoint: DELETE /storage-racks/:id
+ */
+export const deleteStorageRack = async (id: string): Promise<null> => {
+  const { data } = await api.delete<Envelope<null>>(`/storage-racks/${id}`);
   return data.data;
 };

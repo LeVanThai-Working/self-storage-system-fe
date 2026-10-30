@@ -1,0 +1,11 @@
+export const HOLD_MINUTES = 15;
+export const FREE_CANCEL_HOURS = 24;
+export const OVERDUE_GRACE_HOURS = 24;
+export const SAME_DAY_LEAD_MINUTES = 120;
+export const MAX_START_DATE_OFFSET_DAYS = 3;
+export const MAX_ADVANCE_DAYS = 30;
+export const MAX_PENDING_PER_CUSTOMER = 3;
+export const MAX_ACTIVE_PER_CUSTOMER = 5;
+export const DEFAULT_POLICY_VERSION = "2026-10-v1";
+export const DEFAULT_OPS_APPROVAL_THRESHOLD = 10000000;
+export const CHECKIN_SIGNING_BUFFER_MINUTES = 30;

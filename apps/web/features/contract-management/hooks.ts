@@ -1,20 +1,26 @@
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { RoleEnum } from "@self-storage-system-fe/shared";
+import { useAuthStore } from "@/features/auth/store";
 import {
   approveContractAddendum,
   cancelContract,
   cancelContractAddendum,
   checkInContract,
   checkOutContract,
+  confirmContractSettlement,
   confirmManualContractPayment,
   createContract,
   createContractAddendum,
   createContractDepositPayment,
+  disputeContractSettlement,
   fetchContractById,
   fetchContractCount,
   fetchContracts,
   fetchFacilityStaffs,
   fetchPaymentsByContract,
   fetchStorageUnitById,
+  getDraftContractPdfUrl,
+  processOverdueContracts,
   rejectContractAddendum,
   renewContract,
   staffSignContractAddendum,
@@ -33,6 +39,7 @@ import {
   type ContractFilterParams,
   type CreateContractAddendumRequest,
   type CreateContractRequest,
+  type DisputeSettlementRequest,
   type FacilityStaffQuery,
   type PaymentMethodEnum,
   type RejectContractAddendumRequest,
@@ -129,13 +136,17 @@ export const useContractDetail = (id: string | null | undefined) =>
     enabled: Boolean(id),
   });
 
-export const useFacilityStaffs = (query?: FacilityStaffQuery, enabled = true) =>
-  useQuery({
+export const useFacilityStaffs = (query?: FacilityStaffQuery, enabled = true) => {
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const isFacilityManager = currentUser?.role === RoleEnum.FACILITY_MANAGER;
+
+  return useQuery({
     queryKey: [FACILITY_STAFFS_KEY, query],
     queryFn: () => fetchFacilityStaffs(query),
-    enabled,
+    enabled: enabled && isFacilityManager && Boolean(currentUser),
     staleTime: 60_000,
   });
+};
 
 export const useContractPayments = (contractId: string | null | undefined) =>
   useQuery({
@@ -335,6 +346,31 @@ export const useToggleStorageUnitMaintenance = () => {
       storageUnitId: string;
       payload: ToggleMaintenanceRequest;
     }) => toggleStorageUnitMaintenance(storageUnitId, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useProcessOverdueContracts = () => {
+  const invalidateAll = useInvalidateContractQueries();
+  return useMutation({
+    mutationFn: () => processOverdueContracts(),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useConfirmContractSettlement = () => {
+  const invalidateAll = useInvalidateContractQueries();
+  return useMutation({
+    mutationFn: (id: string) => confirmContractSettlement(id),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useDisputeContractSettlement = () => {
+  const invalidateAll = useInvalidateContractQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: DisputeSettlementRequest }) =>
+      disputeContractSettlement(id, payload),
     onSuccess: invalidateAll,
   });
 };

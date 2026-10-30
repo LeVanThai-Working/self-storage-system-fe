@@ -374,11 +374,20 @@
     "freeAmenity": "Miễn phí",
     "availableAmenityQty": "Khả dụng: %{count} suất/thiết bị",
     "noAmenities": "Cơ sở hiện chưa có danh mục tiện ích đi kèm.",
-    "loginRequiredForBooking": "Vui lòng đăng nhập để tiếp tục đặt chỗ gói kho đã chọn."
+    "loginRequiredForBooking": "Vui lòng đăng nhập để tiếp tục đặt chỗ gói kho đã chọn.",
+    "mapSectionTitle": "Sơ đồ mặt bằng & Vị trí ô kho",
+    "mapSectionBadge": "Bản đồ 2D tương tác",
+    "mapSectionSubtitle": "Xem sơ đồ các tầng và chọn ô kho trực quan",
+    "mapOpenFullBtn": "Mở toàn màn hình sơ đồ 2D (Tất cả các tầng)",
+    "mapSelectUnitPrompt": "Chạm vào ô màu xanh để chọn kho và tiếp tục đặt chỗ",
+    "mapNoUnitsAvailable": "Hiện chưa có ô kho nào được cấu hình trên sơ đồ cơ sở này.",
+    "floorLabel": "Tầng %{floor}",
+    "zoneLabel": "Khu %{zone}",
+    "unitsCount": "%{count} phòng"
   },
   "reservationHandoff": {
     "selectedPackageBanner": "Gói kho đã chọn từ Tra cứu Kho",
-    "clearSelection": "Đổi gói khác",
+    "clearSelection": "Thay đổi",
     "facilityLabel": "Cơ sở:",
     "unitTypeLabel": "Loại kho:",
     "dimensionsLabel": "Kích thước:",
@@ -900,7 +909,13 @@
       "water_leak": "Thấm dột",
       "security": "An ninh",
       "cleanliness": "Vệ sinh",
-      "other": "Khác"
+      "other": "Khác",
+      "facility_damage": "Hư hại cơ sở vật chất",
+      "equipment_failure": "Hỏng hóc thiết bị",
+      "fire_water": "Cháy nổ / Ngập lụt",
+      "security_breach": "Vi phạm an ninh",
+      "natural_disaster": "Thiên tai / Bão lũ",
+      "power_outage": "Sự cố mất điện"
     },
     "liable": {
       "customer": "Khách hàng",
@@ -965,5 +980,15 @@
       "cancelUnavailable": "Không thể huỷ khi sự cố đang được xử lý",
       "cancelReason": "Lý do huỷ: %{reason}"
     }
+  },
+  "refunds": {
+    "title": "Yêu cầu hoàn tiền",
+    "subtitle": "Lịch sử và tiến trình hoàn tiền của bạn",
+    "viewDetails": "Xem chi tiết",
+    "totalRefunded": "Tổng tiền đã hoàn cho bạn",
+    "slaNotice": "Thời gian hoàn tiền dự kiến trong vòng 3 ngày làm việc kể từ khi yêu cầu được phê duyệt.",
+    "cancelRequest": "Hủy yêu cầu hoàn tiền",
+    "cancelSuccess": "Hủy yêu cầu hoàn tiền thành công",
+    "noRefunds": "Chưa có yêu cầu hoàn tiền nào"
   }
 }

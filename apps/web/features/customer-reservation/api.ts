@@ -3,27 +3,30 @@ import {
   PaymentPurposeEnum,
   cleanQueryParams,
   type ApiResponse,
+  type CancelReservationRequest,
   type PaginatedData,
   type FacilityUnitTypeOfferingResponse,
   type PaymentResponse,
+  type ReservationResponse,
+  type RespondUnitReassignRequest,
   type StorageRackResponse,
   type StorageUnitResponse,
 } from "@self-storage-system-fe/shared";
-import type { CreateReservationPayload, CustomerReservation, ReservationListParams } from "./types";
+import type { CreateReservationPayload, ReservationListParams } from "./types";
 
 /** POST /reservations — locks the chosen unit and amenities for 15 minutes. */
 export async function createReservation(
   payload: CreateReservationPayload
-): Promise<CustomerReservation> {
-  const { data } = await api.post<ApiResponse<CustomerReservation>>("/reservations", payload);
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>("/reservations", payload);
   return data.data;
 }
 
 /** GET /reservations — the BE scopes this to the signed-in customer. */
 export async function fetchMyReservations(
   params: ReservationListParams
-): Promise<PaginatedData<CustomerReservation>> {
-  const { data } = await api.get<ApiResponse<PaginatedData<CustomerReservation>>>("/reservations", {
+): Promise<PaginatedData<ReservationResponse>> {
+  const { data } = await api.get<ApiResponse<PaginatedData<ReservationResponse>>>("/reservations", {
     params: cleanQueryParams({
       page: params.page ?? 1,
       limit: params.limit ?? 10,
@@ -37,19 +40,32 @@ export async function fetchMyReservations(
 }
 
 /** GET /reservations/:id */
-export async function fetchReservation(id: string): Promise<CustomerReservation> {
-  const { data } = await api.get<ApiResponse<CustomerReservation>>(`/reservations/${id}`);
+export async function fetchReservation(id: string): Promise<ReservationResponse> {
+  const { data } = await api.get<ApiResponse<ReservationResponse>>(`/reservations/${id}`);
   return data.data;
 }
 
 /** POST /reservations/:id/cancel */
 export async function cancelReservation(
   id: string,
-  cancellationReason: string
-): Promise<CustomerReservation> {
-  const { data } = await api.post<ApiResponse<CustomerReservation>>(`/reservations/${id}/cancel`, {
-    cancellationReason: cancellationReason.trim(),
-  });
+  payload: CancelReservationRequest | { cancellationReason: string }
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/cancel`,
+    payload
+  );
+  return data.data;
+}
+
+/** POST /reservations/:id/respond-reassign — Khách phản hồi chấp thuận / từ chối đổi kho */
+export async function respondUnitReassign(
+  id: string,
+  payload: RespondUnitReassignRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/respond-reassign`,
+    payload
+  );
   return data.data;
 }
 

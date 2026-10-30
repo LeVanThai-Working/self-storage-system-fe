@@ -19,9 +19,15 @@ import {
   UserPlus,
   X,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useAuthStore } from "@/features/auth/store";
 import { useMyFacility, useStorageUnits } from "@/features/storage-unit-management/hooks";
-import { useContractStats, useContracts, useFacilityStaffs } from "../hooks";
+import {
+  useContractStats,
+  useContracts,
+  useFacilityStaffs,
+  useProcessOverdueContracts,
+} from "../hooks";
 import {
   ContractSourceEnum,
   ContractStatusEnum,
@@ -42,12 +48,15 @@ import {
   getContractDurationDays,
   getCurrentUserId,
   isContractAssignedToStaff,
+  resolveContractErrorMessage,
 } from "../utils";
 import { CheckInContractModal, CollectWalkInDepositModal } from "./ContractActionModals";
 import {
   ContractDepositBadge,
+  ContractDepositStatusBadge,
   ContractSourceBadge,
   ContractStatusBadge,
+  ContractTerminationBadge,
 } from "./ContractStatusBadge";
 import { CreateWalkInContractModal } from "./CreateWalkInContractModal";
 
@@ -82,6 +91,26 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
   const [statusFilter, setStatusFilter] = useState<ContractStatusEnum | "">("");
   const [sourceFilter, setSourceFilter] = useState<ContractSourceEnum | "">("");
   const [storageUnitFilter, setStorageUnitFilter] = useState<string>("");
+  const [startDateFrom, setStartDateFrom] = useState("");
+  const [startDateTo, setStartDateTo] = useState("");
+  const [endDateFrom, setEndDateFrom] = useState("");
+  const [endDateTo, setEndDateTo] = useState("");
+
+  const processOverdueMutation = useProcessOverdueContracts();
+  const handleProcessOverdue = async () => {
+    try {
+      const res = await processOverdueMutation.mutateAsync();
+      toast.success(
+        res?.message ||
+          (isEn
+            ? `Overdue scan completed. Processed ${res?.processedCount ?? 0} contracts.`
+            : `Đã quét và cập nhật ${res?.processedCount ?? 0} hợp đồng quá hạn.`)
+      );
+      contractsQuery.refetch();
+    } catch (err: unknown) {
+      toast.error(resolveContractErrorMessage(err, locale));
+    }
+  };
   const [codeInput, setCodeInput] = useState("");
   const [sortBy, setSortBy] = useState<ContractSortBy>("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -107,6 +136,10 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
       source: sourceFilter || undefined,
       storageUnitId: storageUnitFilter || undefined,
       contractCode: codeInput.trim() || undefined,
+      startDateFrom: startDateFrom || undefined,
+      startDateTo: startDateTo || undefined,
+      endDateFrom: endDateFrom || undefined,
+      endDateTo: endDateTo || undefined,
       sortBy,
       sortOrder,
     }),
@@ -118,6 +151,10 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
       sourceFilter,
       storageUnitFilter,
       codeInput,
+      startDateFrom,
+      startDateTo,
+      endDateFrom,
+      endDateTo,
       sortBy,
       sortOrder,
     ]
@@ -187,6 +224,10 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
     setSourceFilter("");
     setStorageUnitFilter("");
     setCodeInput("");
+    setStartDateFrom("");
+    setStartDateTo("");
+    setEndDateFrom("");
+    setEndDateTo("");
     setSortBy("createdAt");
     setSortOrder("desc");
     setPage(1);
@@ -230,6 +271,20 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             />
             {isEn ? "Refresh" : "Làm mới"}
           </button>
+
+          {isManager && (
+            <button
+              type="button"
+              onClick={handleProcessOverdue}
+              disabled={processOverdueMutation.isPending}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-orange-200 bg-orange-50 hover:bg-orange-100 text-xs font-bold text-orange-800 shadow-sm transition-colors"
+            >
+              <Clock
+                className={`w-4 h-4 text-orange-600 ${processOverdueMutation.isPending ? "animate-spin" : ""}`}
+              />
+              {isEn ? "Scan Overdue" : "Quét hợp đồng quá hạn"}
+            </button>
+          )}
 
           <button
             type="button"
@@ -454,15 +509,79 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             <ArrowUpDown className="w-3.5 h-3.5 text-emerald-600" />
             {sortOrder === "desc" ? (isEn ? "Desc" : "Giảm dần") : isEn ? "Asc" : "Tăng dần"}
           </button>
+        </div>
 
-          {(statusFilter || sourceFilter || storageUnitFilter || codeInput) && (
+        {/* Date Range Sub-row */}
+        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 text-xs text-slate-600">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-semibold text-slate-500">
+              {isEn ? "Start Date:" : "Ngày bắt đầu:"}
+            </span>
+            <input
+              type="date"
+              value={startDateFrom}
+              onChange={(e) => {
+                setStartDateFrom(e.target.value);
+                setPage(1);
+              }}
+              title={isEn ? "Start date from" : "Từ ngày"}
+              className={FILTER_CONTROL}
+            />
+            <span className="text-slate-400">→</span>
+            <input
+              type="date"
+              value={startDateTo}
+              onChange={(e) => {
+                setStartDateTo(e.target.value);
+                setPage(1);
+              }}
+              title={isEn ? "Start date to" : "Đến ngày"}
+              className={FILTER_CONTROL}
+            />
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-semibold text-slate-500">
+              {isEn ? "End Date:" : "Ngày kết thúc:"}
+            </span>
+            <input
+              type="date"
+              value={endDateFrom}
+              onChange={(e) => {
+                setEndDateFrom(e.target.value);
+                setPage(1);
+              }}
+              title={isEn ? "End date from" : "Từ ngày"}
+              className={FILTER_CONTROL}
+            />
+            <span className="text-slate-400">→</span>
+            <input
+              type="date"
+              value={endDateTo}
+              onChange={(e) => {
+                setEndDateTo(e.target.value);
+                setPage(1);
+              }}
+              title={isEn ? "End date to" : "Đến ngày"}
+              className={FILTER_CONTROL}
+            />
+          </div>
+
+          {(statusFilter ||
+            sourceFilter ||
+            storageUnitFilter ||
+            codeInput ||
+            startDateFrom ||
+            startDateTo ||
+            endDateFrom ||
+            endDateTo) && (
             <button
               type="button"
               onClick={handleResetFilters}
-              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors ml-auto"
             >
               <X className="w-3.5 h-3.5" />
-              {isEn ? "Clear" : "Xóa lọc"}
+              {isEn ? "Clear All Filters" : "Xóa tất cả bộ lọc"}
             </button>
           )}
         </div>
@@ -627,6 +746,9 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                             source={contract.source}
                             depositPaidAt={contract.depositPaidAt}
                           />
+                          {contract.depositStatus && (
+                            <ContractDepositStatusBadge status={contract.depositStatus} />
+                          )}
                         </div>
                       </td>
 
@@ -639,8 +761,17 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                       </td>
 
                       {/* 8. Status */}
-                      <td className="py-3.5 px-4">
+                      <td className="py-3.5 px-4 space-y-1">
                         <ContractStatusBadge status={contract.status} />
+                        {contract.status === ContractStatusEnum.TERMINATED &&
+                          contract.terminationType && (
+                            <div className="pt-0.5">
+                              <ContractTerminationBadge
+                                terminationType={contract.terminationType}
+                                violationCategory={contract.violationCategory}
+                              />
+                            </div>
+                          )}
                       </td>
 
                       {/* 9. Quick Actions */}

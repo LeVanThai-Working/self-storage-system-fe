@@ -4,19 +4,21 @@ import React from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   AlertTriangle,
+  Banknote,
   Boxes,
   Calendar,
   Check,
   Clock,
   CreditCard,
   FileCheck2,
-  Inbox,
+  Flame,
   Layers,
   Mail,
   MapPin,
   Package,
   Phone,
   RefreshCw,
+  ShieldAlert,
   ShieldCheck,
   User,
   UserCheck,
@@ -48,15 +50,22 @@ interface ReservationDetailSheetProps {
   offerings: FacilityUnitTypeOfferingResponse[];
   nowMs: number;
   portalBase?: "facility-manager" | "facility-staff";
-  onReceive: (reservation: ReservationResponse) => void;
-  onOpenAssignUnit: (reservation: ReservationResponse) => void;
-  onOpenReject: (reservation: ReservationResponse) => void;
-  onOpenConfirm: (reservation: ReservationResponse) => void;
-  onOpenCancel: (reservation: ReservationResponse) => void;
-  onOpenManualPayment: (reservation: ReservationResponse) => void;
+  onOpenConfirm?: (reservation: ReservationResponse) => void;
+  onOpenMarkArrived?: (reservation: ReservationResponse) => void;
+  onOpenExtendGrace?: (reservation: ReservationResponse) => void;
+  onOpenReassignUnit?: (reservation: ReservationResponse) => void;
+  onOpenForceCancel?: (reservation: ReservationResponse) => void;
+  onOpenConfirmRefund?: (reservation: ReservationResponse) => void;
+  onOpenCancel?: (reservation: ReservationResponse) => void;
+  onOpenManualPayment?: (reservation: ReservationResponse) => void;
   onOpenAssignStaff?: (reservation: ReservationResponse) => void;
-  onOpenCreateContract: (reservation: ReservationResponse) => void;
-  onComplete: (reservation: ReservationResponse) => void;
+  onOpenCreateContract?: (reservation: ReservationResponse) => void;
+  isCreatingContract?: boolean;
+  // Legacy
+  onReceive?: (reservation: ReservationResponse) => void;
+  onOpenAssignUnit?: (reservation: ReservationResponse) => void;
+  onOpenReject?: (reservation: ReservationResponse) => void;
+  onComplete?: (reservation: ReservationResponse) => void;
   isReceiving?: boolean;
   isCompleting?: boolean;
 }
@@ -68,22 +77,21 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   offerings,
   nowMs,
   portalBase = "facility-manager",
-  onReceive,
-  onOpenAssignUnit,
-  onOpenReject,
+  isCreatingContract = false,
   onOpenConfirm,
+  onOpenMarkArrived,
+  onOpenExtendGrace,
+  onOpenReassignUnit,
+  onOpenForceCancel,
+  onOpenConfirmRefund,
   onOpenCancel,
   onOpenManualPayment,
   onOpenAssignStaff,
   onOpenCreateContract,
-  onComplete,
-  isReceiving = false,
-  isCompleting = false,
 }) => {
   const t = useTranslations("facilityManager.reservations.detailSheet");
   const tActions = useTranslations("facilityManager.reservations.actions");
   const tBilling = useTranslations("facilityManager.reservations.billingUnit");
-  const tStorageUnitStatus = useTranslations("storageUnitStatus");
   const locale = useLocale() === "en" ? "en" : "vi";
 
   const currentUser = useAuthStore((s) => s.currentUser);
@@ -95,44 +103,43 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
 
   if (!reservation) return null;
 
-  const offering = offerings.find(
-    (o) =>
-      o.id === reservation.facilityUnitTypeOfferingId ||
-      (reservation.offering?.unitTypeId && o.unitType.id === reservation.offering.unitTypeId)
-  );
-
   const timelineSteps = buildReservationTimelineSteps(reservation, locale);
   const status = reservation.status;
 
-  const canReceive = isManager && status === ReservationStatusEnum.PENDING;
-  const canAssignUnit =
-    isManager &&
-    (status === ReservationStatusEnum.PENDING || status === ReservationStatusEnum.RECEIVED);
-  const canReject =
-    isManager &&
-    (status === ReservationStatusEnum.PENDING || status === ReservationStatusEnum.RECEIVED);
-  const canManualPayment =
-    isManager &&
-    (status === ReservationStatusEnum.PENDING_PAYMENT ||
-      status === ReservationStatusEnum.PAYMENT_FAILED);
+  const canManualPayment = status === ReservationStatusEnum.PENDING_PAYMENT;
   const canConfirm = status === ReservationStatusEnum.PAYMENT_SUCCESSFUL;
+  const canMarkArrived =
+    (status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE) &&
+    !reservation.arrivedAt;
   const canCreateContract =
     (status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE) &&
     Boolean(reservation.storageUnitId);
   const canAssignStaff =
-    isManager && status === ReservationStatusEnum.CONFIRMED && Boolean(onOpenAssignStaff);
-  const canComplete = isManager && status === ReservationStatusEnum.CONFIRMED;
-  const canCancel =
     isManager &&
-    (status === ReservationStatusEnum.PENDING ||
-      status === ReservationStatusEnum.RECEIVED ||
-      status === ReservationStatusEnum.PENDING_PAYMENT ||
-      status === ReservationStatusEnum.PAYMENT_FAILED ||
-      status === ReservationStatusEnum.PAYMENT_SUCCESSFUL ||
+    (status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE) &&
+    Boolean(onOpenAssignStaff);
+  const canReassign =
+    isManager &&
+    (status === ReservationStatusEnum.PAYMENT_SUCCESSFUL ||
       status === ReservationStatusEnum.CONFIRMED ||
       status === ReservationStatusEnum.OVERDUE);
+  const canExtendGrace =
+    isManager &&
+    (status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE);
+  const canForceCancel =
+    isManager &&
+    (status === ReservationStatusEnum.PAYMENT_SUCCESSFUL ||
+      status === ReservationStatusEnum.CONFIRMED ||
+      status === ReservationStatusEnum.OVERDUE);
+  const canConfirmRefund =
+    isManager &&
+    (status === ReservationStatusEnum.CANCELLED || status === ReservationStatusEnum.EXPIRED) &&
+    reservation.refundStatus === "pending";
+  const canCancel =
+    status === ReservationStatusEnum.PENDING_PAYMENT ||
+    (status === ReservationStatusEnum.PAYMENT_SUCCESSFUL && isManager);
 
-  // Calculate base storage subtotal
+  // Subtotal
   const durationMultiplier =
     reservation.billingUnit === BillingUnitEnum.MONTH
       ? Math.max(1, reservation.rentalDuration / 30)
@@ -141,211 +148,128 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
         : 1;
   const baseStorageTotal = Math.round(reservation.basePrice * durationMultiplier);
 
-  const getLocalizedUnitStatus = (unitStatus?: string | null) => {
-    if (!unitStatus) return "—";
-    const normalized = unitStatus.toLowerCase();
-    if (
-      normalized === "available" ||
-      normalized === "reserved" ||
-      normalized === "occupied" ||
-      normalized === "under_maintenance" ||
-      normalized === "inactive"
-    ) {
-      return tStorageUnitStatus(normalized);
-    }
-    return unitStatus;
-  };
-
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
         side="right"
-        className="!w-full sm:!max-w-2xl lg:!max-w-4xl xl:!max-w-[900px] data-[side=right]:!w-full data-[side=right]:sm:!max-w-2xl data-[side=right]:lg:!max-w-4xl data-[side=right]:xl:!max-w-[900px] p-0 flex flex-col bg-white border-l border-slate-100 shadow-2xl"
+        className="w-full data-[side=right]:w-full data-[side=right]:sm:w-[620px] data-[side=right]:sm:max-w-[640px] data-[side=right]:md:w-[680px] data-[side=right]:md:max-w-[700px] p-0 border-l border-slate-200 bg-white flex flex-col h-full shadow-2xl"
       >
         {/* Header */}
-        <SheetHeader className="px-6 sm:px-8 py-5 border-b border-slate-100 bg-slate-50/70 shrink-0">
-          <div className="flex items-start justify-between gap-4 pr-8">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <span className="font-mono text-sm font-extrabold px-3 py-1 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-                  {reservation.reservationCode}
+        <SheetHeader className="p-6 border-b border-slate-100 bg-slate-50/60 flex flex-row items-center justify-between space-y-0">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-base font-extrabold text-slate-900">
+                {reservation.reservationCode}
+              </span>
+              <ReservationStatusBadge
+                status={reservation.status}
+                expiresAt={reservation.expiresAt}
+                nowMs={nowMs}
+              />
+              {reservation.arrivedAt && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800">
+                  <UserCheck className="w-3 h-3" /> Đã có mặt
                 </span>
-                <ReservationStatusBadge
-                  status={reservation.status}
-                  expiresAt={reservation.expiresAt}
-                  nowMs={nowMs}
-                  showCountdown
-                />
-                <button
-                  type="button"
-                  onClick={() => detailQuery.refetch()}
-                  disabled={detailQuery.isFetching}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-slate-100 transition-colors"
-                  title={t("refresh")}
-                >
-                  <RefreshCw
-                    className={`w-4 h-4 ${detailQuery.isFetching ? "animate-spin" : ""}`}
-                  />
-                </button>
-              </div>
-              <SheetTitle className="text-xl font-extrabold text-slate-900 mt-2">
-                {t("title")}
-              </SheetTitle>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {t("createdAt")}: {formatDateTime(reservation.createdAt, locale)}
-              </p>
+              )}
             </div>
+            <p className="text-xs text-slate-400 mt-1">
+              {t("createdAt")}: {formatDateTime(reservation.createdAt, locale)}
+            </p>
           </div>
+
+          <button
+            type="button"
+            onClick={() => void detailQuery.refetch()}
+            disabled={detailQuery.isFetching}
+            className="p-2 rounded-xl border border-slate-200 hover:bg-white text-slate-600 transition-colors disabled:opacity-40"
+            title={t("refresh")}
+          >
+            <RefreshCw
+              className={`w-4 h-4 ${detailQuery.isFetching ? "animate-spin text-teal-600" : ""}`}
+            />
+          </button>
         </SheetHeader>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto px-6 sm:px-8 py-6 space-y-6">
-          {/* Terminal Alert Banner (Rejected / Cancelled / Expired) */}
-          {status === ReservationStatusEnum.REJECTED && (
-            <div className="rounded-2xl bg-rose-50 border border-rose-200 p-4 space-y-1.5 text-xs text-rose-800">
-              <div className="flex items-center gap-2 font-extrabold text-sm text-rose-900">
-                <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                {t("terminal.rejectedTitle")}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Pending Unit Change Proposal Alert */}
+          {reservation.pendingUnitChange && (
+            <div className="rounded-2xl border border-amber-300 bg-amber-50/80 p-4 space-y-2">
+              <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                Đang có đề xuất đổi phòng kho 2 bước chờ khách phản hồi
               </div>
-              {reservation.rejectionReason && (
-                <p className="break-words">
-                  <span className="font-bold">{t("terminal.reason")}:</span>{" "}
-                  {reservation.rejectionReason}
-                </p>
-              )}
-              <p className="text-rose-600/90">{formatDateTime(reservation.updatedAt, locale)}</p>
-            </div>
-          )}
-
-          {status === ReservationStatusEnum.CANCELLED && (
-            <div className="rounded-2xl bg-rose-50 border border-rose-200 p-4 space-y-1.5 text-xs text-rose-800">
-              <div className="flex items-center gap-2 font-extrabold text-sm text-rose-900">
-                <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
-                {t("terminal.cancelledTitle")}
-              </div>
-              {reservation.cancellationReason && (
-                <p className="break-words">
-                  <span className="font-bold">{t("terminal.reason")}:</span>{" "}
-                  {reservation.cancellationReason}
-                </p>
-              )}
-              <p className="text-rose-600/90">
-                {reservation.cancelledBy?.name ? `${reservation.cancelledBy.name} • ` : ""}
-                {formatDateTime(reservation.cancelledAt, locale)}
+              <p className="text-xs text-amber-800">
+                Kho đề xuất mới: #
+                {reservation.pendingUnitChange.newStorageUnit?.unitNumber ??
+                  reservation.pendingUnitChange.newStorageUnitId}{" "}
+                • Lý do: {reservation.pendingUnitChange.reason}
               </p>
-              {reservation.refundAmount > 0 && (
-                <p className="font-bold text-emerald-700 pt-1">
-                  {t("terminal.refundAmount")}: {formatVnd(reservation.refundAmount)}
-                </p>
-              )}
             </div>
           )}
 
-          {status === ReservationStatusEnum.EXPIRED && (
-            <div className="rounded-2xl bg-slate-100 border border-slate-200 p-4 space-y-1 text-xs text-slate-700">
-              <div className="flex items-center gap-2 font-extrabold text-sm text-slate-900">
-                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                {t("terminal.expiredTitle")}
-              </div>
+          {/* Grace Period Extension Note */}
+          {reservation.graceExtendedAt && (
+            <div className="rounded-2xl border border-indigo-200 bg-indigo-50/70 p-3.5 text-xs text-indigo-900 space-y-1">
+              <p className="font-bold flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-indigo-600" />
+                Đã gia hạn ân hạn nhận kho:
+              </p>
               <p>
-                {t("terminal.expiredAt")}: {formatDateTime(reservation.expiresAt, locale)}
+                Lý do: {reservation.graceExtensionReason || "Được quản lý gia hạn"} • Hạn mới:{" "}
+                {formatDateTime(reservation.graceExpiresAt, locale)}
               </p>
             </div>
           )}
 
-          {status === ReservationStatusEnum.OVERDUE && (
-            <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4 space-y-1 text-xs text-amber-900">
-              <div className="flex items-center gap-2 font-extrabold text-sm text-amber-950">
-                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                {t("overdueWarning")}
-              </div>
-              <p className="text-amber-800">
-                {locale === "en"
-                  ? "The customer has passed the scheduled check-in window. Staff can still initialize contract draft or manager can process cancellation."
-                  : "Khách hàng đã quá khung giờ hẹn nhận phòng. Nhân sự vẫn có thể khởi tạo hợp đồng thuê hoặc Quản lý thực hiện hủy đơn."}
-              </p>
-            </div>
-          )}
-
-          {/* 6-Step Progress Timeline Stepper */}
-          <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-5 space-y-4">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-emerald-600" />
-              {t("timelineTitle")}
-            </h3>
-
-            <div className="space-y-3.5">
-              {timelineSteps.map((step, idx) => {
-                const isLast = idx === timelineSteps.length - 1;
+          {/* Timeline */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Tiến trình đơn đặt chỗ (5 giai đoạn)
+            </h4>
+            <div className="space-y-2.5">
+              {timelineSteps.map((step) => {
                 const isCompleted = step.state === "completed";
                 const isCurrent = step.state === "current";
-                const isError = step.state === "error";
-
-                const stepBadgeClass = isCompleted
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                  : isError
-                    ? "bg-rose-50 text-rose-700 border-rose-200"
-                    : isCurrent
-                      ? "bg-teal-50 text-teal-700 border-teal-200"
-                      : "bg-slate-100 text-slate-500 border-slate-200";
-
                 return (
-                  <div key={step.key} className="flex items-start gap-3.5 relative">
-                    {!isLast && (
-                      <div
-                        className={`w-0.5 absolute left-3.5 top-7 bottom-[-14px] ${
-                          isCompleted ? "bg-emerald-500" : "bg-slate-200"
-                        }`}
-                      />
-                    )}
+                  <div
+                    key={step.key}
+                    className={`flex items-start gap-3 p-3 rounded-2xl border transition-all ${
+                      isCurrent
+                        ? "bg-teal-50/40 border-teal-200"
+                        : isCompleted
+                          ? "bg-slate-50/50 border-slate-100"
+                          : "bg-white border-dashed border-slate-200 opacity-60"
+                    }`}
+                  >
                     <div
-                      className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold shrink-0 z-10 ${
+                      className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold ${
                         isCompleted
-                          ? "bg-emerald-600 text-white shadow-sm shadow-emerald-500/20"
-                          : isError
-                            ? "bg-rose-600 text-white"
-                            : isCurrent
-                              ? "bg-teal-50 text-teal-700 border-2 border-teal-500"
-                              : "bg-white text-slate-400 border border-slate-200"
+                          ? "bg-emerald-600 text-white"
+                          : isCurrent
+                            ? "bg-teal-600 text-white animate-pulse"
+                            : "bg-slate-200 text-slate-500"
                       }`}
                     >
                       {isCompleted ? <Check className="w-3.5 h-3.5" /> : step.stepNumber}
                     </div>
-
-                    <div className="flex-1 min-w-0 pb-1">
-                      <div className="flex items-center justify-between gap-3 flex-wrap">
-                        <div className="flex items-center gap-2 flex-wrap min-w-0">
-                          <p
-                            className={`text-xs sm:text-sm font-bold ${
-                              isCompleted || isCurrent || isError
-                                ? "text-slate-900"
-                                : "text-slate-400"
-                            }`}
-                          >
-                            {t(`steps.${step.key}`)}
-                          </p>
-                          <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${stepBadgeClass}`}
-                          >
-                            {t(`stepStates.${step.state}`)}
-                          </span>
-                        </div>
-                        {step.timestamp && (
-                          <span className="text-xs font-medium text-slate-500 shrink-0">
-                            {formatDateTime(step.timestamp, locale)}
-                          </span>
-                        )}
-                      </div>
-
-                      {(step.actorName || step.metaText) && (
-                        <div className="flex items-center gap-2 flex-wrap mt-1 text-xs text-slate-500">
-                          {step.actorName && <span>{step.actorName}</span>}
-                          {step.metaText && (
-                            <span className="font-semibold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/70">
-                              {step.metaText}
-                            </span>
-                          )}
-                        </div>
+                    <div className="flex-1 text-xs">
+                      <p className="font-bold text-slate-800">
+                        {step.key === "pending_payment"
+                          ? "1. Đặt giữ chỗ 15 phút & Khóa kho"
+                          : step.key === "payment_successful"
+                            ? "2. Thanh toán tiền cọc thành công"
+                            : step.key === "confirmed"
+                              ? "3. Xác nhận đơn & Phân công đón tiếp"
+                              : step.key === "arrived"
+                                ? "4. Khách có mặt tại cơ sở"
+                                : "5. Ký hợp đồng check-in & Bàn giao kho"}
+                      </p>
+                      {step.timestamp && (
+                        <p className="text-[11px] text-slate-400 mt-0.5">
+                          {formatDateTime(step.timestamp, locale)}{" "}
+                          {step.actorName ? `• ${step.actorName}` : ""}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -354,432 +278,238 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             </div>
           </div>
 
-          {/* Customer Contact Info */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 space-y-3.5">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <User className="w-4 h-4 text-emerald-600" />
-              {t("customerTitle")}
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                <p className="text-slate-400 font-semibold">{t("customerName")}</p>
-                <p className="font-bold text-slate-900 mt-1 text-sm break-words">
-                  {reservation.customer?.name ?? "—"}
-                </p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                <p className="text-slate-400 font-semibold flex items-center gap-1">
-                  <Phone className="w-3.5 h-3.5" /> {t("customerPhone")}
-                </p>
-                <p className="font-bold text-slate-900 mt-1 text-sm break-words">
-                  {reservation.customer?.phoneNumber || "—"}
-                </p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                <p className="text-slate-400 font-semibold flex items-center gap-1">
-                  <Mail className="w-3.5 h-3.5" /> {t("customerEmail")}
-                </p>
-                <p className="font-bold text-slate-900 mt-1 text-sm break-all">
-                  {reservation.customer?.email || "—"}
-                </p>
-              </div>
+          {/* Customer & Staff info */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-2 text-xs">
+              <p className="font-bold text-slate-900 flex items-center gap-1.5">
+                <User className="w-4 h-4 text-slate-500" />
+                Khách hàng
+              </p>
+              <p className="font-semibold text-slate-800">{reservation.customer?.name ?? "—"}</p>
+              <p className="text-slate-500">{reservation.customer?.phoneNumber || "Chưa có SĐT"}</p>
+              <p className="text-slate-500">{reservation.customer?.email || "—"}</p>
             </div>
 
-            {reservation.notes && (
-              <div className="p-3.5 rounded-xl bg-amber-50/60 border border-amber-200/70 text-xs">
-                <p className="font-bold text-amber-900">{t("notesLabel")}:</p>
-                <p className="text-amber-800 mt-1 break-words leading-relaxed">
-                  {reservation.notes}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Assigned Receiving Staff Card */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 space-y-3.5">
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+            <div className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-2 text-xs">
+              <p className="font-bold text-slate-900 flex items-center gap-1.5">
                 <UserCheck className="w-4 h-4 text-teal-600" />
-                {t("assignedStaffTitle")}
-              </h3>
-              {canAssignStaff && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    onClose();
-                    onOpenAssignStaff?.(reservation);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 hover:bg-teal-100 transition-colors"
-                >
-                  <UserCheck className="w-3.5 h-3.5" />
-                  {t("reassignStaffBtn")}
-                </button>
-              )}
-            </div>
-
-            {reservation.assignedStaff || reservation.assignedStaffId ? (
-              <div className="space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                  <div className="p-3.5 rounded-xl bg-teal-50/50 border border-teal-100">
-                    <p className="text-slate-400 font-semibold">{t("assignedStaffName")}</p>
-                    <p className="font-bold text-slate-900 mt-1 text-sm break-words">
-                      {reservation.assignedStaff?.name || reservation.assignedStaffId}
-                    </p>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-teal-50/50 border border-teal-100">
-                    <p className="text-slate-400 font-semibold flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5" /> {t("assignedStaffPhone")}
-                    </p>
-                    <p className="font-bold text-slate-900 mt-1 text-sm break-words">
-                      {reservation.assignedStaff?.phoneNumber || "—"}
-                    </p>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-teal-50/50 border border-teal-100">
-                    <p className="text-slate-400 font-semibold flex items-center gap-1">
-                      <Mail className="w-3.5 h-3.5" /> {t("assignedStaffEmail")}
-                    </p>
-                    <p className="font-bold text-slate-900 mt-1 text-sm break-all">
-                      {reservation.assignedStaff?.email || "—"}
-                    </p>
-                  </div>
-                </div>
-                {reservation.assignedStaffAt && (
-                  <p className="text-[11px] text-slate-500">
-                    {t("assignedStaffAt")}: {formatDateTime(reservation.assignedStaffAt, locale)}
+                Nhân viên phụ trách
+              </p>
+              {reservation.assignedStaff ? (
+                <>
+                  <p className="font-semibold text-slate-800">{reservation.assignedStaff.name}</p>
+                  <p className="text-slate-500">
+                    {reservation.assignedStaff.phoneNumber || "Chưa có SĐT"}
                   </p>
-                )}
-              </div>
-            ) : (
-              <div className="p-4 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-xs text-slate-500 text-center">
-                {t("unassignedStaffText")}
-              </div>
-            )}
-          </div>
-
-          {/* Assigned Storage Unit & Rental Schedule */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 space-y-3">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                <Boxes className="w-4 h-4 text-emerald-600" />
-                {t("assignedUnitTitle")}
-              </h3>
-
-              {reservation.storageUnit ? (
-                <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/80 space-y-2.5">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <span className="font-mono text-base font-extrabold text-emerald-900">
-                      {reservation.storageUnit.unitNumber}
-                    </span>
-                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white">
-                      {getLocalizedUnitStatus(reservation.storageUnit.status)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 flex-wrap text-xs text-emerald-800 font-semibold">
-                    <span className="inline-flex items-center gap-1">
-                      <Layers className="w-3.5 h-3.5" />
-                      {t("floorLabel", { floor: reservation.storageUnit.floor })}
-                    </span>
-                    {reservation.storageUnit.zone && (
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5" />
-                        {t("zoneLabel", { zone: reservation.storageUnit.zone })}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                  <p className="text-slate-500">{reservation.assignedStaff.email}</p>
+                </>
               ) : (
-                <div className="p-4 rounded-xl bg-slate-50 border border-dashed border-slate-200 text-xs text-slate-500 text-center">
-                  {t("unassignedUnitText")}
-                </div>
+                <p className="text-slate-400 italic">Chưa phân công nhân viên</p>
               )}
-            </div>
-
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 space-y-3 text-xs">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-emerald-600" />
-                {t("scheduleTitle")}
-              </h3>
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-slate-500 shrink-0">{t("unitTypeLabel")}</span>
-                  <span className="font-bold text-slate-900 text-right">
-                    {offering?.unitType.name ?? t("standardOffering")}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-slate-500 shrink-0">{t("startDateLabel")}</span>
-                  <span className="font-bold text-slate-900 text-right">
-                    {formatDateOnly(reservation.startDate, locale)}
-                  </span>
-                </div>
-                {reservation.checkInDate && (
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-slate-500 shrink-0">{t("checkInDateLabel")}</span>
-                    <span className="font-bold text-teal-800 text-right">
-                      {formatDateOnly(reservation.checkInDate, locale)}
-                      {reservation.checkInTimeSlot ? ` (${reservation.checkInTimeSlot})` : ""}
-                    </span>
-                  </div>
-                )}
-                {reservation.graceExpiresAt && (
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-slate-500 shrink-0">{t("graceExpiresAtLabel")}</span>
-                    <span className="font-bold text-amber-700 text-right">
-                      {formatDateTime(reservation.graceExpiresAt, locale)}
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-slate-500 shrink-0">{t("durationLabel")}</span>
-                  <span className="font-bold text-slate-900 text-right">
-                    {formatRentalScheduleLabel(
-                      reservation.rentalDuration,
-                      reservation.billingUnit,
-                      locale
-                    )}
-                  </span>
-                </div>
-                {reservation.expiresAt && (
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-slate-500 shrink-0">{t("holdExpiresAtLabel")}</span>
-                    <span className="font-bold text-amber-700 text-right">
-                      {formatDateTime(reservation.expiresAt, locale)}
-                    </span>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
 
-          {/* Amenities & Financial Breakdown */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 space-y-4">
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-              <Package className="w-4 h-4 text-emerald-600" />
-              {t("financialTitle")}
-            </h3>
-
-            <div className="space-y-3 text-xs">
-              {/* Storage Package Row */}
-              <div className="flex items-center justify-between gap-4 py-2.5 border-b border-slate-100">
-                <div className="min-w-0">
-                  <p className="font-bold text-slate-900 text-sm">
-                    {offering?.unitType.name ?? t("storageRentalRow")}
-                  </p>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {formatVnd(reservation.basePrice)} /{" "}
-                    {tBilling(reservation.billingUnit as "day" | "month" | "one_time")} •{" "}
-                    {formatRentalScheduleLabel(
-                      reservation.rentalDuration,
-                      reservation.billingUnit,
-                      locale
-                    )}
-                  </p>
-                </div>
-                <span className="font-bold text-slate-900 text-sm shrink-0">
-                  {formatVnd(baseStorageTotal)}
+          {/* Storage Unit & Schedule */}
+          <div className="p-4 rounded-2xl border border-slate-200 space-y-3 text-xs">
+            <h4 className="font-bold text-slate-900 flex items-center gap-2">
+              <Boxes className="w-4 h-4 text-teal-600" />
+              Phòng kho & Lịch hẹn check-in
+            </h4>
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              <div>
+                <span className="text-slate-400 block text-[11px]">Phòng kho vật lý</span>
+                <span className="font-bold text-slate-800 text-sm">
+                  {reservation.storageUnit
+                    ? `#${reservation.storageUnit.unitNumber}`
+                    : "Chưa chọn kho"}
+                </span>
+                {reservation.storageUnit && (
+                  <span className="text-slate-500 block text-[11px]">
+                    Tầng {reservation.storageUnit.floor}{" "}
+                    {reservation.storageUnit.zone ? `• Khu ${reservation.storageUnit.zone}` : ""}
+                  </span>
+                )}
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[11px]">Ca hẹn Check-in</span>
+                <span className="font-bold text-slate-800 text-sm">
+                  {reservation.checkInTimeSlot || "—"}
+                </span>
+                <span className="text-slate-500 block text-[11px]">
+                  Ngày: {formatDateOnly(reservation.checkInDate, locale)}
                 </span>
               </div>
+            </div>
 
-              {/* Amenities Rows */}
-              {reservation.amenities?.length > 0 && (
-                <div className="space-y-2.5 py-1.5 border-b border-slate-100">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                    {t("amenitiesHeader")} ({reservation.amenities.length})
-                  </p>
-                  {reservation.amenities.map((am) => {
-                    const amMult =
-                      am.billingUnit === BillingUnitEnum.MONTH ||
-                      (am.billingUnit as string) === "month"
-                        ? Math.max(1, reservation.rentalDuration / 30)
-                        : am.billingUnit === BillingUnitEnum.DAY ||
-                            (am.billingUnit as string) === "day"
-                          ? reservation.rentalDuration
-                          : 1;
-                    const lineTotal = Math.round(am.pricePerUnit * am.quantity * amMult);
-                    return (
-                      <div key={am.amenityId} className="flex items-center justify-between gap-4">
-                        <div className="min-w-0">
-                          <span className="font-semibold text-slate-800">{am.name}</span>{" "}
-                          <span className="text-slate-500">
-                            × {am.quantity} ({formatVnd(am.pricePerUnit)}/
-                            {tBilling(am.billingUnit as "day" | "month" | "one_time")})
-                          </span>
-                        </div>
-                        <span className="font-bold text-slate-800 shrink-0">
-                          {formatVnd(lineTotal)}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Totals */}
-              <div className="pt-2 space-y-2.5">
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="font-bold text-slate-600">{t("totalAmountLabel")}</span>
-                  <span className="font-extrabold text-slate-900">
-                    {formatVnd(reservation.totalAmount)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-emerald-50/70 border border-emerald-200/80">
-                  <div className="min-w-0">
-                    <p className="font-extrabold text-emerald-900 text-sm">
-                      {t("depositRequiredLabel")}
-                    </p>
-                    {(reservation.paidAmount ?? 0) > 0 && (
-                      <p className="text-xs text-emerald-700 font-semibold mt-0.5">
-                        {t("paidDepositText")}: {formatVnd(reservation.paidAmount)}
-                        {reservation.paidAt
-                          ? ` (${formatDateTime(reservation.paidAt, locale)})`
-                          : ""}
-                      </p>
-                    )}
-                  </div>
-                  <span className="text-lg font-extrabold text-emerald-700 shrink-0">
-                    {formatVnd(reservation.depositAmount)}
-                  </span>
-                </div>
+            <div className="border-t border-slate-100 pt-3 grid grid-cols-2 gap-3">
+              <div>
+                <span className="text-slate-400 block text-[11px]">Ngày bắt đầu tính tiền</span>
+                <span className="font-semibold text-slate-800">
+                  {formatDateOnly(reservation.startDate, locale)}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[11px]">Thời hạn thuê</span>
+                <span className="font-semibold text-slate-800">
+                  {formatRentalScheduleLabel(
+                    reservation.rentalDuration,
+                    reservation.billingUnit,
+                    locale
+                  )}
+                </span>
               </div>
             </div>
+          </div>
+
+          {/* Financials & Deposit */}
+          <div className="p-4 rounded-2xl border border-slate-200 space-y-2 text-xs">
+            <h4 className="font-bold text-slate-900 flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-emerald-600" />
+              Chi tiết tài chính & Tiền cọc
+            </h4>
+            <div className="flex justify-between py-1 border-b border-slate-100">
+              <span className="text-slate-500">Đơn giá thuê kho:</span>
+              <span className="font-semibold text-slate-800">
+                {formatVnd(reservation.basePrice)} / {reservation.billingUnit}
+              </span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-slate-100">
+              <span className="text-slate-500">Tiền cọc giữ chỗ (100%):</span>
+              <span className="font-bold text-emerald-700">
+                {formatVnd(reservation.depositAmount)}
+              </span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-slate-100">
+              <span className="text-slate-500">Tổng giá trị đơn:</span>
+              <span className="font-extrabold text-slate-900">
+                {formatVnd(reservation.totalAmount)}
+              </span>
+            </div>
+            {reservation.refundAmount > 0 && (
+              <div className="flex justify-between py-1 border-b border-slate-100 text-emerald-700 font-bold">
+                <span>Số tiền hoàn trả:</span>
+                <span>{formatVnd(reservation.refundAmount)}</span>
+              </div>
+            )}
+            {reservation.forfeitedAmount > 0 && (
+              <div className="flex justify-between py-1 text-rose-600 font-bold">
+                <span>Số tiền cọc bị tịch thu (No-show / Hủy sát giờ):</span>
+                <span>{formatVnd(reservation.forfeitedAmount)}</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Contextual Footer Actions */}
-        <div className="px-6 sm:px-8 py-4 border-t border-slate-100 bg-slate-50/80 flex items-center justify-between gap-3 flex-wrap shrink-0">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200/70 transition-colors"
-          >
-            {t("close")}
-          </button>
+        {/* Footer Actions */}
+        <div className="p-4 border-t border-slate-100 bg-slate-50/60 flex items-center justify-end gap-2 flex-wrap shrink-0">
+          {canManualPayment && onOpenManualPayment && (
+            <button
+              type="button"
+              onClick={() => onOpenManualPayment(reservation)}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-sm"
+            >
+              Thu cọc tại quầy
+            </button>
+          )}
 
-          <div className="flex items-center gap-2 flex-wrap">
-            {canReceive && (
-              <button
-                type="button"
-                onClick={() => onReceive(reservation)}
-                disabled={isReceiving}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-sky-600 text-white hover:bg-sky-700 shadow-sm disabled:opacity-50"
-              >
-                <Inbox className="w-3.5 h-3.5" />
-                {tActions("receive")}
-              </button>
-            )}
+          {canConfirm && onOpenConfirm && (
+            <button
+              type="button"
+              onClick={() => onOpenConfirm(reservation)}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+            >
+              Xác nhận đơn
+            </button>
+          )}
 
-            {canAssignUnit && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenAssignUnit(reservation);
-                }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
-              >
-                <Boxes className="w-3.5 h-3.5" />
-                {tActions("assignUnit")}
-              </button>
-            )}
+          {canMarkArrived && onOpenMarkArrived && (
+            <button
+              type="button"
+              onClick={() => onOpenMarkArrived(reservation)}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm flex items-center gap-1.5"
+            >
+              <UserCheck className="w-3.5 h-3.5" />
+              Khách đã đến
+            </button>
+          )}
 
-            {canManualPayment && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenManualPayment(reservation);
-                }}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-teal-600 text-white hover:bg-teal-700 shadow-sm"
-              >
-                <CreditCard className="w-3.5 h-3.5" />
-                {tActions("verifyPayment")}
-              </button>
-            )}
-
-            {canConfirm && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenConfirm(reservation);
-                }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                {tActions("confirmOrder")}
-              </button>
-            )}
-
-            {canCreateContract && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenCreateContract(reservation);
-                }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
-              >
+          {canCreateContract && onOpenCreateContract && (
+            <button
+              type="button"
+              onClick={() => onOpenCreateContract(reservation)}
+              disabled={isCreatingContract}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 shadow-sm flex items-center gap-1.5"
+            >
+              {isCreatingContract ? (
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+              ) : (
                 <FileCheck2 className="w-3.5 h-3.5" />
-                {tActions("createContract")}
-              </button>
-            )}
+              )}
+              {isCreatingContract ? "Đang tạo hợp đồng..." : "Lập hợp đồng nháp"}
+            </button>
+          )}
 
-            {canAssignStaff && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenAssignStaff?.(reservation);
-                }}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 hover:bg-teal-100 shadow-sm"
-              >
-                <UserCheck className="w-3.5 h-3.5" />
-                {t("reassignStaffBtn")}
-              </button>
-            )}
+          {canAssignStaff && onOpenAssignStaff && (
+            <button
+              type="button"
+              onClick={() => onOpenAssignStaff(reservation)}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50"
+            >
+              Đổi NV tiếp đón
+            </button>
+          )}
 
-            {canComplete && !canCreateContract && (
-              <button
-                type="button"
-                onClick={() => onComplete(reservation)}
-                disabled={isCompleting}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm disabled:opacity-50"
-              >
-                <FileCheck2 className="w-3.5 h-3.5" />
-                {tActions("completeHandover")}
-              </button>
-            )}
+          {canReassign && onOpenReassignUnit && (
+            <button
+              type="button"
+              onClick={() => onOpenReassignUnit(reservation)}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 hover:bg-sky-100"
+            >
+              Đổi kho sự cố
+            </button>
+          )}
 
-            {canReject && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenReject(reservation);
-                }}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100"
-              >
-                <XCircle className="w-3.5 h-3.5" />
-                {tActions("reject")}
-              </button>
-            )}
+          {canExtendGrace && onOpenExtendGrace && (
+            <button
+              type="button"
+              onClick={() => onOpenExtendGrace(reservation)}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 hover:bg-amber-100"
+            >
+              Gia hạn ân hạn
+            </button>
+          )}
 
-            {canCancel && !canReject && (
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenCancel(reservation);
-                }}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100"
-              >
-                <XCircle className="w-3.5 h-3.5" />
-                {tActions("cancel")}
-              </button>
-            )}
-          </div>
+          {canForceCancel && onOpenForceCancel && (
+            <button
+              type="button"
+              onClick={() => onOpenForceCancel(reservation)}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 flex items-center gap-1"
+            >
+              <Flame className="w-3 h-3" />
+              Hủy khẩn cấp
+            </button>
+          )}
+
+          {canConfirmRefund && onOpenConfirmRefund && (
+            <button
+              type="button"
+              onClick={() => onOpenConfirmRefund(reservation)}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm flex items-center gap-1.5"
+            >
+              <Banknote className="w-3.5 h-3.5" />
+              Xác nhận hoàn cọc
+            </button>
+          )}
+
+          {canCancel && onOpenCancel && (
+            <button
+              type="button"
+              onClick={() => onOpenCancel(reservation)}
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-rose-600"
+            >
+              Hủy đơn
+            </button>
+          )}
         </div>
       </SheetContent>
     </Sheet>

@@ -7,11 +7,11 @@ export interface RackTierResponse {
   storageUnitId: string;
   storageRackId: string;
   tierNumber: number;
-  tierCode: string;
+  tierCode: string; // e.g. "RK-01-T1"
   maxWeightKg?: number | null;
   dimensions?: InventoryDimensions | null;
   volume?: number | null;
-  status: RackTierStatusEnum;
+  status: RackTierStatusEnum | "available" | "occupied" | "maintenance" | "inactive";
   notes?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -37,18 +37,19 @@ export interface StorageRackResponse {
   id: string;
   facilityId: string;
   storageUnitId: string;
-  rackCode: string;
-  aisle?: string | null;
-  bay?: number | null;
+  rackCode: string; // e.g. "RK-01"
+  aisle?: string | null; // e.g. "A"
+  bay?: number | null; // e.g. 1
   zone?: RackZoneEnum | null;
-  customPrice?: number | null;
+  customPrice?: number | null; // Đơn giá thuê riêng theo tháng nếu có
   currentContractId?: string | null;
   /** Hidden (null) for customers; they get `isMine` instead. */
   currentCustomerId?: string | null;
   isMine?: boolean | null;
   name?: string | null;
   tierCount: number;
-  status: RackStatusEnum;
+  status:
+    RackStatusEnum | "available" | "reserved" | "rented" | "active" | "maintenance" | "inactive";
   notes?: string | null;
   tiers?: RackTierResponse[] | null;
   facility?: StorageRackFacilityRef | null;
@@ -56,3 +57,5 @@ export interface StorageRackResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+export type StorageRackListResponse = StorageRackResponse[];

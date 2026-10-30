@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { View, ScrollView, Pressable, RefreshControl, ActivityIndicator } from "react-native";
+import {
+  View,
+  ScrollView,
+  Pressable,
+  RefreshControl,
+  ActivityIndicator,
+  Modal,
+  TextInput,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
@@ -39,6 +47,7 @@ import { getContractStatusMeta } from "@/features/contracts/utils/contractFormat
 import {
   useReservationDetail,
   useRetryReservationPayment,
+  useRespondUnitReassign,
 } from "@/features/reservations/hooks/useReservations";
 import { ReservationTimelineStepper } from "@/features/reservations/components/ReservationTimelineStepper";
 import { EditReservationModal } from "@/features/reservations/components/EditReservationModal";
@@ -83,6 +92,35 @@ export default function ReservationDetailScreen() {
     : null;
 
   const retryPaymentMutation = useRetryReservationPayment(reservationId ?? "");
+  const respondReassignMutation = useRespondUnitReassign(reservationId ?? "");
+
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+
+  const handleRespondUnitChange = async (action: "accept" | "reject") => {
+    try {
+      await respondReassignMutation.mutateAsync({
+        action,
+        rejectReason: action === "reject" ? rejectReason.trim() || undefined : undefined,
+      });
+      setShowRejectModal(false);
+      setRejectReason("");
+      toast.success(
+        action === "accept"
+          ? isEn
+            ? "Storage unit reassignment accepted!"
+            : "Đã chấp thuận đổi phòng kho thành công!"
+          : isEn
+            ? "Unit reassignment rejected. Deposit refund initiated."
+            : "Đã từ chối đổi kho. Hệ thống sẽ hoàn cọc."
+      );
+      void refetch();
+    } catch (err) {
+      toast.error(
+        isEn ? "Failed to respond. Please try again." : "Không thể xử lý. Vui lòng thử lại."
+      );
+    }
+  };
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
@@ -303,6 +341,63 @@ export default function ReservationDetailScreen() {
           />
         }
       >
+        {/* ── Arrived at Facility Banner ── */}
+        {reservation.arrivedAt ? (
+          <View className="rounded-3xl border border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 p-4 flex-row items-center gap-3 shadow-sm">
+            <CheckCircle2 size={22} color="#059669" />
+            <View className="flex-1">
+              <Text className="text-xs font-extrabold text-emerald-800 dark:text-emerald-300">
+                {isEn ? "Customer Arrived at Facility" : "Khách hàng đã có mặt tại cơ sở"}
+              </Text>
+              <Text className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-0.5 leading-4">
+                {isEn
+                  ? `Recorded at ${formatDateTime(reservation.arrivedAt)}. Reservation is permanently protected from no-show cancellation.`
+                  : `Ghi nhận lúc ${formatDateTime(reservation.arrivedAt)}. Đơn được bảo lưu an toàn, không bị hủy do vắng mặt.`}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
+        {/* ── Pending Unit Change Proposal Card ── */}
+        {reservation.pendingUnitChange ? (
+          <View className="rounded-3xl border-2 border-amber-300 bg-amber-50 dark:bg-amber-950/40 p-4 shadow-sm gap-3">
+            <View className="flex-row items-start gap-2.5">
+              <AlertCircle size={20} color="#D97706" />
+              <View className="flex-1">
+                <Text className="text-xs font-extrabold text-amber-900 dark:text-amber-200">
+                  {isEn ? "Storage Unit Reassignment Proposed" : "Đề xuất đổi phòng kho từ cơ sở"}
+                </Text>
+                <Text className="text-xs text-amber-800 dark:text-amber-300 mt-1 leading-4">
+                  {isEn
+                    ? `The facility proposed switching to unit #${reservation.pendingUnitChange.newStorageUnit?.unitNumber ?? reservation.pendingUnitChange.newStorageUnitId}. Reason: ${reservation.pendingUnitChange.reason}`
+                    : `Cơ sở đề xuất đổi sang phòng #${reservation.pendingUnitChange.newStorageUnit?.unitNumber ?? reservation.pendingUnitChange.newStorageUnitId}. Lý do: ${reservation.pendingUnitChange.reason}`}
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row items-center gap-2 pt-2 border-t border-amber-200 dark:border-amber-900">
+              <Pressable
+                onPress={() => handleRespondUnitChange("accept")}
+                disabled={respondReassignMutation.isPending}
+                className="flex-1 rounded-xl bg-emerald-600 py-2.5 items-center active:opacity-80"
+              >
+                <Text className="text-xs font-bold text-white">
+                  {isEn ? "Accept Change" : "Chấp thuận đổi phòng"}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => setShowRejectModal(true)}
+                disabled={respondReassignMutation.isPending}
+                className="flex-1 rounded-xl border border-amber-400 bg-white dark:bg-neutral-900 py-2.5 items-center active:opacity-80"
+              >
+                <Text className="text-xs font-bold text-amber-900 dark:text-amber-300">
+                  {isEn ? "Decline (Refund 100%)" : "Từ chối (Hoàn 100% cọc)"}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : null}
+
         {/* ── Section 3.1: 6-Step Reservation Progress Timeline Stepper ── */}
         <ReservationTimelineStepper
           reservation={reservation}
@@ -750,6 +845,52 @@ export default function ReservationDetailScreen() {
         locale={currentLocale}
         onUpdated={() => refetch()}
       />
+
+      {/* Reject Unit Reassignment Modal */}
+      <Modal
+        visible={showRejectModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowRejectModal(false)}
+      >
+        <View className="flex-1 bg-black/50 items-center justify-center p-5">
+          <View className="w-full max-w-sm rounded-3xl bg-white dark:bg-neutral-900 p-5 shadow-2xl gap-3">
+            <Text className="text-base font-extrabold text-neutral-dark dark:text-neutral-100">
+              {isEn ? "Decline Unit Change" : "Xác nhận từ chối đổi phòng"}
+            </Text>
+            <Text className="text-xs text-neutral-600 dark:text-neutral-300 leading-4">
+              {isEn
+                ? "Declining the unit change due to facility issues will cancel your reservation and initiate a 100% deposit refund."
+                : "Nếu bạn từ chối đổi kho do sự cố cơ sở, đơn đặt chỗ sẽ được hủy và hệ thống tự động hoàn 100% tiền cọc cho bạn."}
+            </Text>
+            <TextInput
+              value={rejectReason}
+              onChangeText={setRejectReason}
+              placeholder={isEn ? "Reason (optional)..." : "Lý do từ chối (tuỳ chọn)..."}
+              placeholderTextColor="#94A3B8"
+              className="rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 p-3 text-xs text-neutral-dark dark:text-neutral-100"
+            />
+            <View className="flex-row items-center gap-2 mt-2">
+              <Pressable
+                onPress={() => setShowRejectModal(false)}
+                className="flex-1 rounded-2xl border border-neutral-300 dark:border-neutral-700 py-2.5 items-center"
+              >
+                <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-300">
+                  {isEn ? "Back" : "Quay lại"}
+                </Text>
+              </Pressable>
+              <Pressable
+                onPress={() => handleRespondUnitChange("reject")}
+                className="flex-1 rounded-2xl bg-red-600 py-2.5 items-center"
+              >
+                <Text className="text-xs font-bold text-white">
+                  {isEn ? "Confirm Decline" : "Xác nhận từ chối"}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <CancelReservationModal
         visible={cancelModalVisible}

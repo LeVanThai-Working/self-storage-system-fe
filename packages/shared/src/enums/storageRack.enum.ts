@@ -8,7 +8,7 @@ export enum RackStatusEnum {
   AVAILABLE = "available",
   RESERVED = "reserved",
   RENTED = "rented",
-  ACTIVE = "active", // Maintained for backward compatibility
+  ACTIVE = "active", // Maintained for backward compatibility / Tương thích ngược
   MAINTENANCE = "maintenance",
   INACTIVE = "inactive",
 }

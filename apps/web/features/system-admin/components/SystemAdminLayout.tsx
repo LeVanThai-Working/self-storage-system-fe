@@ -2,7 +2,18 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Bell, Search, Users, Settings, LayoutDashboard, ScrollText, Trash2 } from "lucide-react";
+import {
+  Bell,
+  Search,
+  Users,
+  Settings,
+  LayoutDashboard,
+  ScrollText,
+  Trash2,
+  RotateCcw,
+  Receipt,
+  ArrowLeftRight,
+} from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -53,6 +64,24 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
       exact: false,
       label: t("nav.trash"),
       icon: Trash2,
+    },
+    {
+      href: `/${locale}/system-admin/payments`,
+      exact: false,
+      label: locale === "en" ? "Payments" : "Thanh toán",
+      icon: Receipt,
+    },
+    {
+      href: `/${locale}/system-admin/reconciliation`,
+      exact: false,
+      label: locale === "en" ? "Reconciliation" : "Đối soát ngân hàng",
+      icon: ArrowLeftRight,
+    },
+    {
+      href: `/${locale}/system-admin/refunds`,
+      exact: false,
+      label: locale === "en" ? "Refund Management" : "Quản trị hoàn tiền",
+      icon: RotateCcw,
     },
     {
       href: `/${locale}/system-admin/settings`,

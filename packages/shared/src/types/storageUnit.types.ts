@@ -21,6 +21,15 @@ export interface StorageUnitResponse {
 
 export type StorageUnitListResponse = StorageUnitResponse[];
 
+export interface ReconcileStorageUnitsResponse {
+  reconciledCount: number;
+  details: Array<{
+    unitId: string;
+    unitNumber: string;
+    facilityId: string;
+  }>;
+}
+
 export interface CreateStorageUnitRequest {
   facilityId: string;
   unitTypeId: string;

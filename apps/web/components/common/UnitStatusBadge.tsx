@@ -20,6 +20,10 @@ const STATUS_STYLES: Record<StorageUnitStatusEnum, { badge: string; dot: string 
     badge: "bg-orange-50 text-orange-700 border-orange-200/80",
     dot: "bg-orange-500",
   },
+  [StorageUnitStatusEnum.PENDING_CLEARANCE]: {
+    badge: "bg-red-950/10 text-red-900 border-red-800/40 border-dashed",
+    dot: "bg-red-800",
+  },
   [StorageUnitStatusEnum.INACTIVE]: {
     badge: "bg-slate-100 text-slate-600 border-slate-200",
     dot: "bg-slate-400",
@@ -30,7 +34,7 @@ interface UnitStatusBadgeProps {
   status: StorageUnitStatusEnum;
 }
 
-/** Available (xanh), Reserved (vàng), Occupied (đỏ), Under Maintenance (cam), Inactive (xám). */
+/** Available (xanh), Reserved (vàng), Occupied (đỏ), Under Maintenance (cam), Pending Clearance (tím), Inactive (xám). */
 export const UnitStatusBadge = ({ status }: UnitStatusBadgeProps) => {
   const t = useTranslations("storageUnitStatus");
   const style = STATUS_STYLES[status] ?? STATUS_STYLES[StorageUnitStatusEnum.INACTIVE];

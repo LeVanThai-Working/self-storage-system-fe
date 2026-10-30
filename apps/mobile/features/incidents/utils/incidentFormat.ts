@@ -20,6 +20,12 @@ export const INCIDENT_CATEGORY_ICON: Record<IncidentCategoryEnum, LucideIcon> = 
   [IncidentCategoryEnum.WATER_LEAK]: Droplets,
   [IncidentCategoryEnum.SECURITY]: ShieldAlert,
   [IncidentCategoryEnum.CLEANLINESS]: Sparkles,
+  [IncidentCategoryEnum.FACILITY_DAMAGE]: Building2,
+  [IncidentCategoryEnum.EQUIPMENT_FAILURE]: Zap,
+  [IncidentCategoryEnum.FIRE_WATER]: Droplets,
+  [IncidentCategoryEnum.SECURITY_BREACH]: ShieldAlert,
+  [IncidentCategoryEnum.NATURAL_DISASTER]: Droplets,
+  [IncidentCategoryEnum.POWER_OUTAGE]: Zap,
   [IncidentCategoryEnum.OTHER]: CircleHelp,
 };
 

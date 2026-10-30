@@ -2,12 +2,19 @@ import type { BillingUnitEnum } from "../enums/billing.enum";
 import type {
   ContractAddendumStatusEnum,
   ContractAddendumTypeEnum,
+  ContractCancellationTypeEnum,
+  ContractDepositStatusEnum,
   ContractSourceEnum,
   ContractStatusEnum,
+  ContractTerminationTypeEnum,
   RentalUnitEnum,
+  ViolationCategoryEnum,
 } from "../enums/contract.enum";
 import type { RoleEnum, UserStatusEnum } from "../enums/user.enum";
+import type { StorageUnitStatusEnum } from "../enums/storageUnit.enum";
+import type { RentalTargetTypeEnum } from "../enums/rental.enum";
 import type { OfferingSnapshot, StorageUnitSnapshot, UserSnapshot } from "./common.types";
+import type { StorageRackResponse } from "./storageRack.types";
 import type { FacilitySnapshot } from "./facility.types";
 
 export interface FacilityStaffItem {
@@ -46,7 +53,7 @@ export interface ContractAmenityItemResponse {
   name: string;
   quantity: number;
   pricePerUnit: number;
-  billingUnit: BillingUnitEnum;
+  billingUnit: BillingUnitEnum | "day" | "month";
   totalPrice: number;
   addedAt: string;
 }
@@ -67,10 +74,44 @@ export interface ContractRenewalItemResponse {
 
 export type ContractRenewalResponse = ContractRenewalItemResponse;
 
+export interface ContractSignatureHistoryResponse {
+  party: "customer" | "staff";
+  signedAt: string;
+  previousStartDate: string;
+  previousEndDate: string;
+  resetAt: string;
+  resetReason: string;
+}
+
+export interface ContractTerminationFileResponse {
+  url: string;
+  fileHash?: string | null;
+  uploadedAt: string;
+}
+
+export interface ContractTerminationHistoryResponse {
+  terminationType: ContractTerminationTypeEnum;
+  violationCategory?: ViolationCategoryEnum | null;
+  reason: string;
+  reportFiles: ContractTerminationFileResponse[];
+  evidenceFiles: ContractTerminationFileResponse[];
+  terminatedBy?: UserSnapshot | null;
+  terminatedAt: string;
+  storageUnitStatus: StorageUnitStatusEnum | string;
+  depositStatus: ContractDepositStatusEnum | string;
+  forfeitedAmount: number;
+}
+
 export interface ContractAddendumResponse {
   id: string;
   addendumCode: string;
   type: ContractAddendumTypeEnum;
+  previousEndDate?: string | null;
+  newEndDate?: string | null;
+  previousStorageUnitId?: string | null;
+  previousStorageUnit?: StorageUnitSnapshot | null;
+  newStorageUnitId?: string | null;
+  newStorageUnit?: StorageUnitSnapshot | null;
   amenities: ContractAmenityItemResponse[];
   totalPeriodicPrice: number;
   damageFee: number;
@@ -109,9 +150,12 @@ export interface ContractResponse {
   offering?: OfferingSnapshot | null;
   storageUnitId: string;
   storageUnit?: StorageUnitSnapshot | null;
+  rentalTargetType?: RentalTargetTypeEnum | "storage_unit" | "storage_rack" | null;
+  rentedRackIds?: string[] | null;
+  rentedRacks?: StorageRackResponse[] | null;
   assignedStaffId?: string | null;
   assignedStaff?: UserSnapshot | null;
-  billingUnit: BillingUnitEnum;
+  billingUnit: BillingUnitEnum | "day" | "month";
   startDate: string;
   endDate: string;
   actualCheckInDate?: string | null;
@@ -124,6 +168,8 @@ export interface ContractResponse {
   depositAmount: number;
   depositPaidAt?: string | null;
   depositPaymentId?: string | null;
+  firstPeriodPaidAt?: string | null;
+  firstPeriodPaymentId?: string | null;
   firstCyclePaidAt?: string | null;
   firstCyclePaymentId?: string | null;
   nextBillingDate?: string | null;
@@ -135,23 +181,40 @@ export interface ContractResponse {
   staffSigned: boolean;
   staffSignedAt?: string | null;
   signedAt?: string | null;
+  signedContractFileUrls?: string[];
+  signatureHistory?: ContractSignatureHistoryResponse[];
+  earlyCheckIn?: boolean | null;
+  outOfSlot?: boolean | null;
   renewals: ContractRenewalItemResponse[];
   renewalCount?: number;
   inspectedBy?: UserSnapshot | null;
   damageFee: number;
   overdueFee: number;
   refundAmount: number;
+  forfeitedAmount?: number;
   additionalPaymentRequired: number;
   inspectionNotes?: string | null;
+  inspectionPhotos?: string[];
+  depositStatus?: ContractDepositStatusEnum | null;
+  settlementConfirmedAt?: string | null;
+  disputedAt?: string | null;
+  disputeReason?: string | null;
+  cancellationType?: ContractCancellationTypeEnum | null;
   cancellationReason?: string | null;
   cancelledBy?: UserSnapshot | null;
   cancelledAt?: string | null;
+  terminationType?: ContractTerminationTypeEnum | null;
+  violationCategory?: ViolationCategoryEnum | null;
   terminationReason?: string | null;
   terminatedBy?: UserSnapshot | null;
   terminatedAt?: string | null;
+  reportFiles?: ContractTerminationFileResponse[];
+  evidenceFiles?: ContractTerminationFileResponse[];
+  terminationHistory?: ContractTerminationHistoryResponse[];
   notes?: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export type ContractListResponse = ContractResponse[];
+export type { DisputeSettlementRequest } from "../schemas/request/contract.request.schema";

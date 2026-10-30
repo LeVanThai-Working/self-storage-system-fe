@@ -38,7 +38,7 @@ export function getContractStatusMeta(
         label: isEn ? "Pending Check-in" : "Chờ Check-in",
         description: isEn
           ? "Review and sign your lease contract. Once both you and facility staff have signed, your storage unit becomes active."
-          : "Kiểm tra thông tin và ký xác nhận hợp đồng. Khi cả Khách hàng và Nhân viên cơ sở đã ký, hợp đồng sẽ tự động kích hoạt.",
+          : "Kiểm tra thông tin và ký xác nhận hợp đồng. Khi cả Khách hàng và phía cơ sở đã ký, hợp đồng sẽ tự động kích hoạt.",
         badgeBgClass: "bg-amber-50 dark:bg-amber-950/40",
         badgeBorderClass: "border-amber-300 dark:border-amber-800",
         badgeTextClass: "text-amber-700 dark:text-amber-300",

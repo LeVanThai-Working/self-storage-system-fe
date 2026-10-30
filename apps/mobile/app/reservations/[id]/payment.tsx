@@ -415,7 +415,7 @@ export default function ReservationPaymentScreen() {
                 : `Số tiền hệ thống đã nhận: ${formatVnd(payment.paidAmount)}`}
             </Text>
 
-            {payment.overpaidAmount > 0 ? (
+            {(payment.overpaidAmount ?? 0) > 0 ? (
               <View className="mt-2 w-full rounded-2xl border border-amber-300 bg-amber-50 dark:bg-amber-950/40 p-3">
                 <Text className="text-xs font-bold text-amber-800 dark:text-amber-300 text-center">
                   {isEn
@@ -456,8 +456,8 @@ export default function ReservationPaymentScreen() {
         ) : null}
 
         {/* ── Status Banner: EXPIRED or CANCELLED ── */}
-        {payment.status === PaymentStatusEnum.EXPIRED ||
-        payment.status === PaymentStatusEnum.CANCELLED ? (
+        {(payment.status as any) === PaymentStatusEnum.EXPIRED ||
+        (payment.status as any) === PaymentStatusEnum.CANCELLED ? (
           <View className="rounded-3xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-5 items-center gap-2">
             <XCircle size={40} color="#EF4444" />
             <Text className="text-sm font-extrabold text-red-700 dark:text-red-300 text-center">
@@ -539,16 +539,6 @@ export default function ReservationPaymentScreen() {
                   {isEn ? "Valid until:" : "Hạn thanh toán:"} {formatDateTime(payment.expiresAt)}
                 </Text>
               ) : null}
-            </View>
-
-            {/* Real-time Polling Status Indicator */}
-            <View className="mt-3 w-full flex-row items-center justify-center gap-2 rounded-xl bg-brand-light/30 dark:bg-brand/15 py-2 px-3">
-              <ActivityIndicator size="small" color="#0B927E" />
-              <Text className="text-[11px] font-semibold text-brand">
-                {isEn
-                  ? "Auto-checking payment status every 4 seconds..."
-                  : "Hệ thống đang tự động kiểm tra giao dịch mỗi 4 giây..."}
-              </Text>
             </View>
           </View>
         ) : null}
@@ -705,25 +695,8 @@ export default function ReservationPaymentScreen() {
               </Text>
             </View>
 
-            {/* Manual Check Button & Cancel Session Button */}
+            {/* Cancel Session Button */}
             <View className="gap-2.5 pt-1">
-              <Pressable
-                onPress={handleManualCheck}
-                disabled={pollingQuery.isFetching}
-                className="flex-row items-center justify-center gap-2 rounded-2xl bg-cta py-3.5 shadow-sm active:opacity-90"
-              >
-                {pollingQuery.isFetching ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
-                ) : (
-                  <RefreshCw size={17} color="#FFFFFF" />
-                )}
-                <Text className="text-sm font-bold text-white">
-                  {isEn
-                    ? "I Have Transferred / Check Transaction"
-                    : "Tôi đã chuyển khoản / Kiểm tra giao dịch"}
-                </Text>
-              </Pressable>
-
               <Pressable
                 onPress={() => {
                   setCancelReason(

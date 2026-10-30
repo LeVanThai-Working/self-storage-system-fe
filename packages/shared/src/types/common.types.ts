@@ -51,6 +51,7 @@ export interface PaginationQuery {
 export interface UserSnapshot {
   id: string;
   name: string;
+  fullName?: string;
   email: string;
   phoneNumber?: string | null;
   role?: string | null;

@@ -70,7 +70,7 @@ export function formatHoldCountdown(
   const diffMs = targetMs - nowMs;
   if (diffMs <= 0) {
     return {
-      text: locale === "en" ? "Hold expired" : "Đã quá hạn giữ chỗ",
+      text: locale === "en" ? "Hold expired" : "Đã quá hạn giữ chỗ (15p)",
       isExpired: true,
       isUrgent: true,
     };
@@ -81,7 +81,7 @@ export function formatHoldCountdown(
   const minutes = totalMinutes % 60;
   const seconds = Math.floor((diffMs % 60000) / 1000);
 
-  const isUrgent = hours < 2;
+  const isUrgent = hours < 1 && minutes < 5;
   const text =
     hours > 0
       ? locale === "en"
@@ -126,33 +126,12 @@ export interface StatusBadgeTone {
 
 export function getReservationStatusTone(status: ReservationStatusEnum | string): StatusBadgeTone {
   switch (status) {
-    case ReservationStatusEnum.PENDING:
-      return {
-        bg: "bg-amber-50",
-        text: "text-amber-700",
-        dot: "bg-amber-500",
-        border: "border-amber-200/80",
-      };
-    case ReservationStatusEnum.RECEIVED:
-      return {
-        bg: "bg-sky-50",
-        text: "text-sky-700",
-        dot: "bg-sky-500",
-        border: "border-sky-200/80",
-      };
     case ReservationStatusEnum.PENDING_PAYMENT:
       return {
         bg: "bg-orange-50",
         text: "text-orange-700",
         dot: "bg-orange-500",
         border: "border-orange-200/80",
-      };
-    case ReservationStatusEnum.PAYMENT_FAILED:
-      return {
-        bg: "bg-rose-50",
-        text: "text-rose-700",
-        dot: "bg-rose-500",
-        border: "border-rose-200/80",
       };
     case ReservationStatusEnum.PAYMENT_SUCCESSFUL:
       return {
@@ -182,8 +161,8 @@ export function getReservationStatusTone(status: ReservationStatusEnum | string)
         dot: "bg-indigo-500",
         border: "border-indigo-200/80",
       };
-    case ReservationStatusEnum.REJECTED:
     case ReservationStatusEnum.CANCELLED:
+    case ReservationStatusEnum.REJECTED:
       return {
         bg: "bg-rose-50/80",
         text: "text-rose-700",
@@ -191,12 +170,20 @@ export function getReservationStatusTone(status: ReservationStatusEnum | string)
         border: "border-rose-200/70",
       };
     case ReservationStatusEnum.EXPIRED:
-    default:
       return {
         bg: "bg-slate-100",
         text: "text-slate-600",
         dot: "bg-slate-400",
         border: "border-slate-200",
+      };
+    case ReservationStatusEnum.PENDING:
+    case ReservationStatusEnum.RECEIVED:
+    default:
+      return {
+        bg: "bg-slate-50",
+        text: "text-slate-700",
+        dot: "bg-slate-500",
+        border: "border-slate-200/80",
       };
   }
 }
@@ -210,9 +197,7 @@ export interface TimelineStepItem {
   metaText?: string | null;
 }
 
-const ORDERED_HAPPY_STATUSES: ReservationStatusEnum[] = [
-  ReservationStatusEnum.PENDING,
-  ReservationStatusEnum.RECEIVED,
+const PRIMARY_FLOW_STATUSES: ReservationStatusEnum[] = [
   ReservationStatusEnum.PENDING_PAYMENT,
   ReservationStatusEnum.PAYMENT_SUCCESSFUL,
   ReservationStatusEnum.CONFIRMED,
@@ -225,39 +210,11 @@ export function buildReservationTimelineSteps(
 ): TimelineStepItem[] {
   const status = reservation.status;
   const isTerminalNegative =
-    status === ReservationStatusEnum.REJECTED ||
     status === ReservationStatusEnum.CANCELLED ||
-    status === ReservationStatusEnum.EXPIRED;
+    status === ReservationStatusEnum.EXPIRED ||
+    status === ReservationStatusEnum.REJECTED;
 
-  const normalizedCurrentStatus =
-    status === ReservationStatusEnum.PAYMENT_FAILED
-      ? ReservationStatusEnum.PENDING_PAYMENT
-      : status;
-
-  const currentIdx = ORDERED_HAPPY_STATUSES.indexOf(
-    normalizedCurrentStatus as ReservationStatusEnum
-  );
-
-  const hasReached = (stepIdx: number, timestamp?: string | null): boolean => {
-    if (timestamp) return true;
-    if (!isTerminalNegative && currentIdx >= stepIdx) return true;
-    return false;
-  };
-
-  const resolveState = (
-    stepIdx: number,
-    timestamp?: string | null
-  ): "completed" | "current" | "upcoming" | "error" => {
-    if (!isTerminalNegative) {
-      if (stepIdx < currentIdx) return "completed";
-      if (stepIdx === currentIdx) {
-        return status === ReservationStatusEnum.PAYMENT_FAILED ? "error" : "current";
-      }
-      if (stepIdx === 5 && status === ReservationStatusEnum.COMPLETED) return "completed";
-      return "upcoming";
-    }
-    return hasReached(stepIdx, timestamp) ? "completed" : "upcoming";
-  };
+  const currentIdx = PRIMARY_FLOW_STATUSES.indexOf(status as ReservationStatusEnum);
 
   const unitLabel = reservation.storageUnit?.unitNumber
     ? locale === "en"
@@ -266,52 +223,106 @@ export function buildReservationTimelineSteps(
     : null;
 
   const paidLabel =
-    reservation.paidAmount && reservation.paidAmount > 0
-      ? `${formatVnd(reservation.paidAmount)}`
-      : null;
+    reservation.depositAmount > 0 ? `${formatVnd(reservation.depositAmount)}` : null;
+
+  const hasArrived = Boolean(reservation.arrivedAt);
+
+  // Step 1: Hold & Pending Payment
+  const step1State =
+    status === ReservationStatusEnum.PENDING_PAYMENT
+      ? "current"
+      : reservation.createdAt
+        ? "completed"
+        : "upcoming";
+
+  // Step 2: Payment
+  let step2State: "completed" | "current" | "upcoming" | "error" = "upcoming";
+  if (
+    reservation.paidAt ||
+    status === ReservationStatusEnum.PAYMENT_SUCCESSFUL ||
+    status === ReservationStatusEnum.CONFIRMED ||
+    status === ReservationStatusEnum.OVERDUE ||
+    status === ReservationStatusEnum.COMPLETED ||
+    hasArrived
+  ) {
+    step2State = "completed";
+  } else if (status === ReservationStatusEnum.PENDING_PAYMENT) {
+    step2State = "upcoming";
+  }
+
+  // Step 3: Confirmed & Staff Assigned
+  let step3State: "completed" | "current" | "upcoming" | "error" = "upcoming";
+  if (
+    reservation.confirmedAt ||
+    status === ReservationStatusEnum.CONFIRMED ||
+    status === ReservationStatusEnum.OVERDUE ||
+    status === ReservationStatusEnum.COMPLETED ||
+    hasArrived
+  ) {
+    step3State = "completed";
+  } else if (status === ReservationStatusEnum.PAYMENT_SUCCESSFUL) {
+    step3State = "current";
+  }
+
+  // Step 4: Arrived
+  let step4State: "completed" | "current" | "upcoming" | "error" = "upcoming";
+  if (hasArrived) {
+    step4State = "completed";
+  } else if (
+    status === ReservationStatusEnum.CONFIRMED ||
+    status === ReservationStatusEnum.OVERDUE
+  ) {
+    step4State = "current";
+  } else if (status === ReservationStatusEnum.COMPLETED) {
+    step4State = "completed";
+  }
+
+  // Step 5: Completed
+  let step5State: "completed" | "current" | "upcoming" | "error" = "upcoming";
+  if (status === ReservationStatusEnum.COMPLETED) {
+    step5State = "completed";
+  } else if (
+    hasArrived &&
+    (status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE)
+  ) {
+    step5State = "current";
+  }
 
   return [
     {
-      key: "pending",
+      key: "pending_payment",
       stepNumber: 1,
-      state: resolveState(0, reservation.createdAt),
+      state: isTerminalNegative && !reservation.paidAt ? "completed" : step1State,
       timestamp: reservation.createdAt,
       actorName: reservation.customer?.name ?? null,
-    },
-    {
-      key: "received",
-      stepNumber: 2,
-      state: resolveState(1, reservation.receivedAt ?? reservation.assignedAt),
-      timestamp: reservation.receivedAt ?? reservation.assignedAt,
-      actorName: reservation.receivedBy?.name ?? reservation.assignedBy?.name ?? null,
-    },
-    {
-      key: status === ReservationStatusEnum.PAYMENT_FAILED ? "payment_failed" : "pending_payment",
-      stepNumber: 3,
-      state: resolveState(2, reservation.assignedAt),
-      timestamp: reservation.assignedAt,
-      actorName: reservation.assignedBy?.name ?? null,
       metaText: unitLabel,
     },
     {
       key: "payment_successful",
-      stepNumber: 4,
-      state: resolveState(3, reservation.paidAt),
+      stepNumber: 2,
+      state: step2State,
       timestamp: reservation.paidAt,
       actorName: reservation.customer?.name ?? null,
       metaText: paidLabel,
     },
     {
       key: "confirmed",
-      stepNumber: 5,
-      state: resolveState(4, reservation.confirmedAt),
+      stepNumber: 3,
+      state: step3State,
       timestamp: reservation.confirmedAt,
-      actorName: reservation.confirmedBy?.name ?? null,
+      actorName: reservation.assignedStaff?.name ?? reservation.confirmedBy?.name ?? null,
+    },
+    {
+      key: "arrived",
+      stepNumber: 4,
+      state: step4State,
+      timestamp: reservation.arrivedAt,
+      actorName: reservation.arrivedBy?.name ?? null,
     },
     {
       key: "completed",
-      stepNumber: 6,
-      state: status === ReservationStatusEnum.COMPLETED ? "completed" : "upcoming",
+      stepNumber: 5,
+      state: step5State,
       timestamp: status === ReservationStatusEnum.COMPLETED ? reservation.updatedAt : null,
       actorName: null,
     },

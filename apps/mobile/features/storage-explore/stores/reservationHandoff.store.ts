@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type {
   PublicUnitTypeOfferingResponse,
   PublicAmenityOfferingResponse,
+  StorageUnitResponse,
 } from "@self-storage-system-fe/shared";
 
 export interface ReservationHandoffPayload {
@@ -10,6 +11,8 @@ export interface ReservationHandoffPayload {
   unitTypeId: string;
   offering: PublicUnitTypeOfferingResponse;
   availableAmenities: PublicAmenityOfferingResponse[];
+  storageUnitId?: string;
+  selectedUnit?: StorageUnitResponse;
 }
 
 interface ReservationHandoffState {
