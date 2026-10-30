@@ -118,6 +118,21 @@ function RootLayoutNav() {
         <Stack.Screen name="reservations/[id]/payment" options={{ headerShown: false }} />
         <Stack.Screen name="contracts/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="contracts/[id]/rack-map" options={{ headerShown: false }} />
+        <Stack.Screen name="contracts/[id]/outbound/new" options={{ headerShown: false }} />
+        <Stack.Screen name="contracts/[id]/inbound/new" options={{ headerShown: false }} />
+        <Stack.Screen name="contracts/[id]/move-request" options={{ headerShown: false }} />
+        <Stack.Screen name="contracts/[id]/requests" options={{ headerShown: false }} />
+        <Stack.Screen name="contracts/[id]/attention" options={{ headerShown: false }} />
+        <Stack.Screen name="inventory-requests/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="support-tickets/new" options={{ headerShown: false }} />
+        <Stack.Screen name="incidents/new" options={{ headerShown: false }} />
+        <Stack.Screen name="incidents/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="support-tickets/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="skus/index" options={{ headerShown: false }} />
+        <Stack.Screen name="skus/new" options={{ headerShown: false }} />
+        <Stack.Screen name="skus/scan" options={{ headerShown: false }} />
+        <Stack.Screen name="skus/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="skus/[id]/edit" options={{ headerShown: false }} />
         <Stack.Screen name="refunds/index" options={{ headerShown: false }} />
         <Stack.Screen name="refunds/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />

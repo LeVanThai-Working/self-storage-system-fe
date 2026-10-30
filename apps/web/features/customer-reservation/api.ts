@@ -5,9 +5,11 @@ import {
   type ApiResponse,
   type CancelReservationRequest,
   type PaginatedData,
+  type FacilityUnitTypeOfferingResponse,
   type PaymentResponse,
   type ReservationResponse,
   type RespondUnitReassignRequest,
+  type StorageRackResponse,
   type StorageUnitResponse,
 } from "@self-storage-system-fe/shared";
 import type { CreateReservationPayload, ReservationListParams } from "./types";
@@ -91,5 +93,39 @@ export async function createOrGetDepositPayment(reservationId: string): Promise<
 /** GET /payments/:id — polled while the customer is transferring the deposit. */
 export async function fetchPayment(id: string): Promise<PaymentResponse> {
   const { data } = await api.get<ApiResponse<PaymentResponse>>(`/payments/${id}`);
+  return data.data;
+}
+
+/**
+ * Units of one type for the booking seat map: every status from map-layout (taken ones are shown
+ * greyed out), or only the free ones if map-layout is not reachable.
+ */
+export async function fetchBookableUnits(
+  facilityId: string,
+  unitTypeId?: string
+): Promise<StorageUnitResponse[]> {
+  try {
+    const { data } = await api.get<ApiResponse<StorageUnitResponse[]>>(
+      `/storage-units/facility/${facilityId}/map-layout`
+    );
+    return data.data.filter((unit) => !unitTypeId || unit.unitTypeId === unitTypeId);
+  } catch {
+    return fetchAvailableUnits(facilityId, unitTypeId);
+  }
+}
+
+/** GET /storage-racks/unit/:unitId — racks inside a shared rack warehouse unit. */
+export async function fetchUnitRacks(unitId: string): Promise<StorageRackResponse[]> {
+  const { data } = await api.get<ApiResponse<StorageRackResponse[]>>(
+    `/storage-racks/unit/${unitId}`
+  );
+  return data.data;
+}
+
+/** GET /facility-unit-type-offerings/:id — carries `rackZonePricing` for rack warehouses. */
+export async function fetchOffering(id: string): Promise<FacilityUnitTypeOfferingResponse> {
+  const { data } = await api.get<ApiResponse<FacilityUnitTypeOfferingResponse>>(
+    `/facility-unit-type-offerings/${id}`
+  );
   return data.data;
 }

@@ -9,8 +9,7 @@ import {
   Move,
   Package,
   PackageOpen,
-  PackagePlus,
-  SquarePen,
+  TriangleAlert,
   Weight,
 } from "lucide-react-native";
 import type {
@@ -19,10 +18,12 @@ import type {
 } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
-import type { StockActionType } from "../types/rackMap.types";
+import type { RequestActionType } from "../types/rackMap.types";
 import {
   buildFloorLabel,
   buildTreeTierLabel,
+  canRequestMoveItem,
+  canRequestOutboundItem,
   findTierInTree,
   formatWeightKg,
   getPositionItems,
@@ -31,14 +32,24 @@ import {
   isTierLocked,
   sumItemsQuantity,
 } from "../utils/rackMapFormat";
-import { BottomSheet } from "./BottomSheet";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { SkuThumb } from "./SkuThumb";
 import { TierStatusBadge } from "./TierStatusBadge";
+import { ItemStatusBadge } from "./ItemStatusBadge";
 
-const ITEM_ACTIONS: { type: StockActionType; labelKey: string; Icon: typeof Move }[] = [
-  { type: "out", labelKey: "rackMap.action.stockOut", Icon: ArrowUpFromLine },
-  { type: "move", labelKey: "rackMap.action.move", Icon: Move },
-  { type: "adjust", labelKey: "rackMap.action.adjust", Icon: SquarePen },
+const REQUEST_ACTIONS: {
+  type: RequestActionType;
+  labelKey: string;
+  Icon: typeof Move;
+  allowed: (item: TreeTierItem) => boolean;
+}[] = [
+  {
+    type: "outbound",
+    labelKey: "rackMap.action.requestOutbound",
+    Icon: ArrowUpFromLine,
+    allowed: canRequestOutboundItem,
+  },
+  { type: "move", labelKey: "rackMap.action.requestMove", Icon: Move, allowed: canRequestMoveItem },
 ];
 
 interface TierDetailModalProps {
@@ -47,8 +58,11 @@ interface TierDetailModalProps {
   tree: StorageUnitInventoryTreeResponse;
   /** Tier being viewed, or `null` for floor (unracked) items. */
   tierId: string | null;
-  readOnly: boolean;
-  onAction: (type: StockActionType, item?: TreeTierItem) => void;
+  /** Contract-level rights (ACTIVE: all, OVERDUE: outbound + move, otherwise none). */
+  rights: { canRequestOutbound: boolean; canRequestMove: boolean };
+  onRequest: (type: RequestActionType, item?: TreeTierItem) => void;
+  /** Opens the incident form prefilled with this rack / tier. */
+  onReportIncident?: () => void;
   onShowHistory?: () => void;
 }
 
@@ -57,8 +71,9 @@ export function TierDetailModal({
   onClose,
   tree,
   tierId,
-  readOnly,
-  onAction,
+  rights,
+  onRequest,
+  onReportIncident,
   onShowHistory,
 }: TierDetailModalProps) {
   const { t } = useTranslation();
@@ -71,7 +86,10 @@ export function TierDetailModal({
   const items = getPositionItems(tree, tierId);
   const status = tier ? getTierDisplayStatus(tier.status, tier.items.length) : null;
   const locked = tier ? isTierLocked(tier.status) : false;
+  const readOnly = !rights.canRequestOutbound && !rights.canRequestMove;
   const canAct = !readOnly && !locked;
+  const isRightGranted = (type: RequestActionType) =>
+    type === "outbound" ? rights.canRequestOutbound : rights.canRequestMove;
   const weight = tier ? getTierWeight(tier) : null;
   const weightPercent = weight && weight.ratio !== null ? Math.round(weight.ratio * 100) : 0;
 
@@ -190,6 +208,7 @@ export function TierDetailModal({
                     <Text numberOfLines={1} variant="muted" className="text-xs">
                       {item.sku.name}
                     </Text>
+                    <ItemStatusBadge status={item.status} />
                     <Text className="mt-0.5 text-xs text-neutral-600 dark:text-neutral-300">
                       <Text className="text-sm font-extrabold text-neutral-dark dark:text-neutral-100">
                         {`x ${item.quantity}`}
@@ -214,18 +233,24 @@ export function TierDetailModal({
 
                 {menuOpen ? (
                   <View className="flex-row gap-2">
-                    {ITEM_ACTIONS.map((action) => (
-                      <Pressable
-                        key={action.type}
-                        onPress={() => onAction(action.type, item)}
-                        className="flex-1 flex-row items-center justify-center gap-1 rounded-xl bg-brand-bg py-2 active:opacity-80 dark:bg-brand/10"
-                      >
-                        <action.Icon size={13} color="#0B927E" />
-                        <Text className="text-[11px] font-bold text-brand">
-                          {t(action.labelKey)}
-                        </Text>
-                      </Pressable>
-                    ))}
+                    {REQUEST_ACTIONS.map((action) => {
+                      const enabled = isRightGranted(action.type) && action.allowed(item);
+                      return (
+                        <Pressable
+                          key={action.type}
+                          disabled={!enabled}
+                          onPress={() => onRequest(action.type, item)}
+                          className={`flex-1 flex-row items-center justify-center gap-1 rounded-xl bg-brand-bg py-2 active:opacity-80 dark:bg-brand/10 ${
+                            enabled ? "" : "opacity-40"
+                          }`}
+                        >
+                          <action.Icon size={13} color="#0B927E" />
+                          <Text className="text-[11px] font-bold text-brand">
+                            {t(action.labelKey)}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
                   </View>
                 ) : null}
               </View>
@@ -234,35 +259,49 @@ export function TierDetailModal({
         )}
       </View>
 
-      {canAct ? (
+      {canAct && !isFloor ? (
         <View className="flex-row gap-2.5">
-          {ITEM_ACTIONS.map((action) => (
-            <Pressable
-              key={action.type}
-              disabled={items.length === 0}
-              onPress={() => onAction(action.type)}
-              className={`flex-1 items-center gap-1.5 rounded-2xl border border-neutral-border bg-white py-3.5 active:opacity-80 dark:border-neutral-800 dark:bg-neutral-900 ${
-                items.length === 0 ? "opacity-40" : ""
-              }`}
-            >
-              <action.Icon size={20} color="#0B927E" />
-              <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-200">
-                {t(action.labelKey)}
-              </Text>
-            </Pressable>
-          ))}
+          {REQUEST_ACTIONS.map((action) => {
+            const enabled =
+              isRightGranted(action.type) && items.some((item) => action.allowed(item));
+            return (
+              <Pressable
+                key={action.type}
+                disabled={!enabled}
+                onPress={() => onRequest(action.type)}
+                className={`flex-1 items-center gap-1.5 rounded-2xl border border-neutral-border bg-white py-3.5 active:opacity-80 dark:border-neutral-800 dark:bg-neutral-900 ${
+                  enabled ? "" : "opacity-40"
+                }`}
+              >
+                <action.Icon size={20} color="#0B927E" />
+                <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-200">
+                  {t(action.labelKey)}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       ) : null}
 
-      {canAct ? (
-        <Pressable
-          onPress={() => onAction("in")}
-          className="h-12 flex-row items-center justify-center gap-2 rounded-xl bg-cta shadow-sm active:opacity-90"
-        >
-          <PackagePlus size={18} color="#FFFFFF" />
-          <Text className="text-sm font-bold text-white">
-            {isFloor ? t("rackMap.unracked.stockIn") : t("rackMap.action.stockIn")}
+      {isFloor && items.length > 0 ? (
+        <View className="flex-row items-start gap-2 rounded-2xl border border-cta/30 bg-cta-light/60 p-3 dark:bg-cta/10">
+          <Info size={14} color="#D34D0F" />
+          <Text className="flex-1 text-[11px] leading-4 text-cta-dark">
+            {t("rackMap.unracked.holdingHint")}
           </Text>
+        </View>
+      ) : null}
+
+      {onReportIncident && !isFloor ? (
+        <Pressable
+          onPress={onReportIncident}
+          className="h-12 flex-row items-center gap-2 rounded-xl border border-cta/30 bg-cta-light/40 px-3.5 active:opacity-80"
+        >
+          <TriangleAlert size={16} color="#D34D0F" />
+          <Text className="flex-1 text-sm font-semibold text-cta-dark">
+            {t("rackMap.action.reportIncident")}
+          </Text>
+          <ChevronRight size={16} color="#D34D0F" />
         </Pressable>
       ) : null}
 

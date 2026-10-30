@@ -56,6 +56,8 @@ export async function createReservationApi(
     rentalDuration: Number(payload.rentalDuration),
     amenities: payload.amenities ?? [],
     notes: payload.notes?.trim() ? payload.notes.trim() : undefined,
+    rentedRackIds: payload.rentedRackIds?.length ? payload.rentedRackIds : undefined,
+    // BE rejects a reservation without accepted terms (322).
     termsAccepted: payload.termsAccepted ?? true,
   };
 

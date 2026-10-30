@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { paginationQuerySchema } from "../common/pagination.schema";
-import { RackStatusEnum, RackTierStatusEnum, RackZoneEnum } from "../../enums/storageRack.enum";
+import { RackStatusEnum, RackTierStatusEnum, RackZoneEnum } from "../../enums";
 
 const dimensionsSchema = z.object({
   length: z.number().positive("Length must be greater than 0"),
@@ -13,7 +13,7 @@ export const createStorageRackSchema = z.object({
   rackCode: z
     .string()
     .min(1, "Rack code is required")
-    .max(20, "Rack code cannot exceed 20 characters")
+    .max(50, "Rack code cannot exceed 50 characters")
     .trim(),
   aisle: z.string().trim().toUpperCase().optional(),
   bay: z.number().int().min(1).optional(),
@@ -49,15 +49,15 @@ export const updateRackTierSchema = z.object({
 });
 
 export const storageRackIdParamSchema = z.object({
-  id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid rack ID format"),
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid storage rack ID format"),
 });
 
 export const rackTierIdParamSchema = z.object({
-  id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid rack tier ID format"),
+  tierId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid rack tier ID format"),
 });
 
 export const storageUnitIdParamSchema = z.object({
-  unitId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid storage unit ID format"),
+  storageUnitId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid storage unit ID format"),
 });
 
 export const storageRackQuerySchema = paginationQuerySchema.extend({
@@ -84,5 +84,4 @@ export type UpdateStorageRackRequest = z.infer<typeof updateStorageRackSchema>;
 export type UpdateRackTierRequest = z.infer<typeof updateRackTierSchema>;
 export type StorageRackIdParam = z.infer<typeof storageRackIdParamSchema>;
 export type RackTierIdParam = z.infer<typeof rackTierIdParamSchema>;
-export type StorageUnitIdParam = z.infer<typeof storageUnitIdParamSchema>;
 export type StorageRackQuery = z.infer<typeof storageRackQuerySchema>;

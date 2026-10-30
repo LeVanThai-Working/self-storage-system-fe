@@ -1,15 +1,23 @@
 "use client";
 
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { AlertTriangle, ArrowLeft, MapPin } from "lucide-react";
 import {
   FacilityAmenityOfferingStatusEnum,
+  FREE_CANCEL_HOURS,
   FacilityUnitTypeOfferingStatusEnum,
+  MESSAGE_CODE,
+  RESERVATION_RACK_SELECTION_SUPPORTED,
+  UnitTypeCategoryEnum,
   formatCurrency,
+  DEFAULT_RACK_ZONE_PRICING,
+  getRackPrice,
+  isInsideForfeitWindow,
   type PublicAmenityOfferingResponse,
+  type StorageRackResponse,
 } from "@self-storage-system-fe/shared";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -23,10 +31,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { AppApiError } from "@/lib/api/axios";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useFacilityPublicDetail } from "@/features/customer-explore/hooks";
 import { useAvailableTimeSlots } from "@/features/facility-time-slot/hooks";
-import { useAvailableUnits, useCreateReservation } from "../hooks";
+import {
+  useBookableRacks,
+  useBookableUnits,
+  useCreateReservation,
+  useOfferingZonePricing,
+} from "../hooks";
+import { RackSeatMapWeb, UnitSeatMapWeb } from "./SeatMaps";
 import { MAX_CHECK_IN_DAYS_AHEAD, depositFor, localDateString, toVietnamIso } from "../utils";
 
 /** Services have no stock, so there is no natural cap; this keeps the stepper sane. */
@@ -90,110 +105,56 @@ export function ReservationFormPage({
   const getErrorMessage = useApiErrorMessage();
 
   const detail = useFacilityPublicDetail(facilityId ?? "");
-  const units = useAvailableUnits(facilityId, unitTypeId);
+  const units = useBookableUnits(facilityId, unitTypeId);
   const create = useCreateReservation();
 
   const [unitId, setUnitId] = useState("");
+  const [rackSelection, setRackSelection] = useState<{ unitId: string; rackIds: string[] } | null>(
+    null
+  );
   const [checkInDate, setCheckInDate] = useState("");
   const [slot, setSlot] = useState("");
   const [startDate, setStartDate] = useState("");
   const [duration, setDuration] = useState("");
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState("");
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [showImmediateWarning, setShowImmediateWarning] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [tried, setTried] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [forfeitConfirmOpen, setForfeitConfirmOpen] = useState(false);
 
   const slots = useAvailableTimeSlots(facilityId, checkInDate);
 
-  const searchHref = `/${locale}/customer/search`;
+  const activeOffering = detail.data?.unitTypeOfferings.find(
+    (o) => o.unitTypeId === unitTypeId && o.status === FacilityUnitTypeOfferingStatusEnum.ACTIVE
+  );
+  const isRackWarehouse = activeOffering?.unitType.category === UnitTypeCategoryEnum.WAREHOUSE_RACK;
+  const racks = useBookableRacks(unitId || undefined, isRackWarehouse);
+  const zonePricing = useOfferingZonePricing(activeOffering?.id, isRackWarehouse);
+  const selectedRackIds = rackSelection?.unitId === unitId ? rackSelection.rackIds : [];
+  const selectedRacks = (racks.data ?? []).filter((rack) => selectedRackIds.includes(rack.id));
+  const rackMonthlyTotal = selectedRacks.reduce(
+    (sum, rack) => sum + getRackPrice(rack, zonePricing.data, activeOffering?.pricePerUnit),
+    0
+  );
+  const isRackBooking = isRackWarehouse && selectedRacks.length > 0;
+  const toggleRack = (rack: StorageRackResponse) => {
+    const next = selectedRackIds.includes(rack.id)
+      ? selectedRackIds.filter((id) => id !== rack.id)
+      : [...selectedRackIds, rack.id];
+    setRackSelection({ unitId, rackIds: next });
+  };
+
+  const searchHref = `/${locale}/customer/explore/${facilityId ?? ""}`;
   const back = (
     <Link
       href={searchHref}
-      className="mb-6 inline-flex items-center gap-2 text-sm text-neutral-muted hover:text-neutral-main"
+      className="inline-flex items-center gap-2 text-sm text-neutral-muted hover:text-neutral-main"
     >
-      <ArrowLeft className="size-4" /> {t("back")}
+      <ArrowLeft className="size-4" />
+      {t("back")}
     </Link>
   );
-
-  const offering = detail.data?.unitTypeOfferings.find(
-    (o) => o.unitTypeId === unitTypeId && o.status === FacilityUnitTypeOfferingStatusEnum.ACTIVE
-  );
-
-  const facility = detail.data?.facility;
-  const availableUnits = units.data ?? [];
-  const amenities = (detail.data?.amenityOfferings ?? []).filter(
-    (o) => o.status === FacilityAmenityOfferingStatusEnum.ACTIVE && maxQuantity(o) > 0
-  );
-
-  const deposit = offering ? depositFor(offering.pricePerUnit, offering.depositMultiplier) : 0;
-  const durationNumber = Number(duration);
-  const selectedSlot = slots.data?.find((s) => s.slotName === slot);
-  const today = localDateString();
-  const lastCheckIn = localDateString(MAX_CHECK_IN_DAYS_AHEAD);
-
-  /** Check if check-in is within 24h of now -> BE immediateForfeitWarning invariant */
-  const isImmediateForfeit = Boolean(checkInDate && checkInDate <= today);
-
-  const problem = (() => {
-    if (!unitId) return t("errors.unit");
-    if (!checkInDate) return t("errors.checkInDate");
-    if (!selectedSlot?.isAvailable) return t("errors.slot");
-    if (!startDate || startDate < checkInDate) return t("errors.startDate");
-    if (!Number.isInteger(durationNumber) || !offering || durationNumber < offering.minRentalDays) {
-      return t("errors.duration", { min: offering?.minRentalDays ?? 1 });
-    }
-    if (!termsAccepted) return t("errors.terms");
-    return null;
-  })();
-
-  // Validation messages stay live once the user has tried to submit, so they clear as the form is fixed.
-  const error = (tried ? problem : null) ?? serverError;
-
-  const setQuantity = (o: PublicAmenityOfferingResponse, raw: string) => {
-    const next = Math.min(Math.max(Math.floor(Number(raw)) || 0, 0), maxQuantity(o));
-    setQuantities((q) => ({ ...q, [o.id]: next }));
-  };
-
-  const doCreateReservation = async () => {
-    if (!offering || !facilityId) return;
-    setShowImmediateWarning(false);
-    setServerError(null);
-    try {
-      const reservation = await create.mutateAsync({
-        facilityId,
-        storageUnitId: unitId,
-        facilityUnitTypeOfferingId: offering.id,
-        checkInDate: toVietnamIso(checkInDate),
-        checkInTimeSlot: slot,
-        startDate: toVietnamIso(startDate),
-        rentalDuration: durationNumber,
-        amenities: Object.entries(quantities)
-          .filter(([, quantity]) => quantity > 0)
-          .map(([facilityAmenityOfferingId, quantity]) => ({
-            facilityAmenityOfferingId,
-            quantity,
-          })),
-        notes: notes.trim() || undefined,
-        termsAccepted: true,
-      });
-      router.push(`/${locale}/customer/reservations/${reservation.id}/payment`);
-    } catch (err) {
-      setServerError(getErrorMessage(err));
-    }
-  };
-
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setTried(true);
-    if (problem) return;
-    if (isImmediateForfeit) {
-      setShowImmediateWarning(true);
-      return;
-    }
-    await doCreateReservation();
-  };
 
   if (!facilityId || !unitTypeId) {
     return (
@@ -216,7 +177,11 @@ export function ReservationFormPage({
     );
   }
 
-  if (detail.isError || !detail.data || !offering || !facility) {
+  const offering = detail.data?.unitTypeOfferings.find(
+    (o) => o.unitTypeId === unitTypeId && o.status === FacilityUnitTypeOfferingStatusEnum.ACTIVE
+  );
+
+  if (detail.isError || !detail.data || !offering) {
     return (
       <>
         {back}
@@ -227,16 +192,106 @@ export function ReservationFormPage({
     );
   }
 
+  const facility = detail.data.facility;
+  const mapUnits = units.data ?? [];
+  const amenities = detail.data.amenityOfferings.filter(
+    (o) => o.status === FacilityAmenityOfferingStatusEnum.ACTIVE && maxQuantity(o) > 0
+  );
+
+  // BE prices a rack booking as the sum of the picked racks instead of the unit price.
+  const basePrice = isRackBooking ? rackMonthlyTotal : offering.pricePerUnit;
+  const deposit = depositFor(basePrice, offering.depositMultiplier);
+  const durationNumber = Number(duration);
+  const selectedSlot = slots.data?.find((s) => s.slotName === slot);
+  const today = localDateString();
+  const lastCheckIn = localDateString(MAX_CHECK_IN_DAYS_AHEAD);
+
+  const problem = (() => {
+    if (!unitId) return t("errors.unit");
+    if (isRackWarehouse && selectedRackIds.length === 0) return t("errors.racks");
+    if (!checkInDate) return t("errors.checkInDate");
+    if (!selectedSlot?.isAvailable) return t("errors.slot");
+    if (!startDate || startDate < checkInDate) return t("errors.startDate");
+    if (!Number.isInteger(durationNumber) || durationNumber < offering.minRentalDays) {
+      return t("errors.duration", { min: offering.minRentalDays });
+    }
+    if (!termsAccepted) return t("errors.terms");
+    return null;
+  })();
+  // Validation messages stay live once the user has tried to submit, so they clear as the form is fixed.
+  const error = (tried ? problem : null) ?? serverError;
+
+  const setQuantity = (o: PublicAmenityOfferingResponse, raw: string) => {
+    const next = Math.min(Math.max(Math.floor(Number(raw)) || 0, 0), maxQuantity(o));
+    setQuantities((q) => ({ ...q, [o.id]: next }));
+  };
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setTried(true);
+    if (problem) return;
+    // Booking inside the no-refund window: the customer confirms before the unit is held.
+    if (isInsideForfeitWindow(checkInDate, slot)) {
+      setForfeitConfirmOpen(true);
+      return;
+    }
+    await submit();
+  };
+
+  const submit = async () => {
+    setForfeitConfirmOpen(false);
+    setServerError(null);
+    try {
+      const reservation = await create.mutateAsync({
+        facilityId,
+        storageUnitId: unitId,
+        facilityUnitTypeOfferingId: offering.id,
+        checkInDate: toVietnamIso(checkInDate),
+        checkInTimeSlot: slot,
+        startDate: toVietnamIso(startDate),
+        rentalDuration: durationNumber,
+        amenities: Object.entries(quantities)
+          .filter(([, quantity]) => quantity > 0)
+          .map(([facilityAmenityOfferingId, quantity]) => ({
+            facilityAmenityOfferingId,
+            quantity,
+          })),
+        notes: notes.trim().slice(0, 1000) || undefined,
+        rentedRackIds:
+          RESERVATION_RACK_SELECTION_SUPPORTED && isRackWarehouse ? selectedRackIds : undefined,
+        termsAccepted: true,
+      });
+      router.push(`/${locale}/customer/reservations/${reservation.id}/payment`);
+    } catch (err) {
+      if (err instanceof AppApiError) {
+        if (err.messageCode === MESSAGE_CODE.MESSAGE_CODE_309) {
+          units.refetch();
+          setServerError(t("serverErrors.unitTaken"));
+          return;
+        }
+        if (err.messageCode === MESSAGE_CODE.MESSAGE_CODE_310) {
+          slots.refetch();
+          setServerError(t("serverErrors.slotFull"));
+          return;
+        }
+      }
+      setServerError(getErrorMessage(err));
+    }
+  };
+
   return (
     <>
       {back}
-      <h1 className="text-3xl font-bold">{t("title")}</h1>
-      <p className="mt-1 text-neutral-muted">
-        {offering.unitType.name} · {facility.name}
-      </p>
 
-      <form onSubmit={onSubmit} className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
-        <div className="space-y-6">
+      <header className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight text-neutral-main">{t("title")}</h1>
+        <p className="text-sm text-neutral-muted">
+          {facility.name} · {offering.unitType.name}
+        </p>
+      </header>
+
+      <form onSubmit={onSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
           <Section
             title={t("unit.title")}
             headerExtra={
@@ -246,62 +301,65 @@ export function ReservationFormPage({
               </span>
             }
           >
-            {availableUnits.length === 0 ? (
-              <p className="text-sm text-neutral-muted">{t("unit.empty")}</p>
-            ) : (
-              <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                {availableUnits.map((u) => (
-                  <li key={u.id}>
-                    <label
-                      className={cn(
-                        "flex cursor-pointer flex-col rounded-xl border p-3 text-sm transition-colors",
-                        unitId === u.id
-                          ? "border-brand bg-brand-bg shadow-sm"
-                          : "border-neutral-border hover:border-brand/50"
-                      )}
-                    >
-                      <input
-                        type="radio"
-                        name="unit"
-                        value={u.id}
-                        checked={unitId === u.id}
-                        onChange={() => setUnitId(u.id)}
-                        className="sr-only"
-                      />
-                      <span className="font-semibold">{u.unitNumber}</span>
-                      <span className="text-neutral-muted">
-                        {t("unit.location", { floor: u.floor, zone: u.zone ?? "—" })}
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <p className="text-xs text-neutral-muted">{t("seatMap.unitHint")}</p>
+            <UnitSeatMapWeb
+              units={mapUnits}
+              selectedUnitId={unitId}
+              onSelect={(unit) => {
+                setUnitId(unit.id);
+                setRackSelection(null);
+              }}
+            />
+            {isRackWarehouse && unitId ? (
+              <div className="space-y-3 rounded-2xl border border-neutral-border bg-neutral-50/60 p-4">
+                <div>
+                  <h3 className="font-semibold text-neutral-main">{t("seatMap.rackTitle")}</h3>
+                  <p className="text-xs text-neutral-muted">{t("seatMap.rackHint")}</p>
+                </div>
+                {racks.isLoading ? (
+                  <Skeleton className="h-40 rounded-xl" />
+                ) : (
+                  <RackSeatMapWeb
+                    racks={racks.data ?? []}
+                    pricing={zonePricing.data ?? DEFAULT_RACK_ZONE_PRICING}
+                    fallbackPrice={offering?.pricePerUnit ?? null}
+                    selectedRackIds={selectedRackIds}
+                    onToggle={toggleRack}
+                  />
+                )}
+                {selectedRacks.length > 0 ? (
+                  <p className="rounded-xl bg-brand-bg px-3 py-2 text-sm font-semibold">
+                    {t("seatMap.selection", {
+                      count: selectedRacks.length,
+                      codes: selectedRacks.map((rack) => rack.rackCode).join(", "),
+                      total: formatCurrency(rackMonthlyTotal),
+                    })}
+                  </p>
+                ) : null}
+                <p className="text-xs text-neutral-muted">{t("seatMap.estimateNote")}</p>
+              </div>
+            ) : null}
           </Section>
 
           <Section title={t("schedule.title")}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field
-                label={t("schedule.checkInDate")}
-                hint={t("schedule.checkInHint", { days: MAX_CHECK_IN_DAYS_AHEAD })}
-              >
-                <input
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label={t("schedule.checkInDate")} hint={t("schedule.checkInHint")}>
+                <Input
                   type="date"
-                  className={fieldClass}
                   min={today}
                   max={lastCheckIn}
                   value={checkInDate}
                   onChange={(e) => {
                     setCheckInDate(e.target.value);
                     setSlot("");
-                    if (startDate && startDate < e.target.value) setStartDate("");
+                    if (!startDate || startDate < e.target.value) setStartDate(e.target.value);
                   }}
                 />
               </Field>
+
               <Field label={t("schedule.startDate")} hint={t("schedule.startHint")}>
-                <input
+                <Input
                   type="date"
-                  className={fieldClass}
                   min={checkInDate || today}
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
@@ -309,25 +367,38 @@ export function ReservationFormPage({
               </Field>
             </div>
 
-            <div className="space-y-1.5">
-              <span className="text-sm font-medium">{t("schedule.timeSlot")}</span>
+            <Field label={t("schedule.duration")} hint={t("schedule.durationHint")}>
+              <div className="relative">
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  min={offering.minRentalDays}
+                  placeholder={String(offering.minRentalDays)}
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                />
+                <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-neutral-muted">
+                  {t("schedule.durationUnit", { unit: tBilling(offering.billingUnit) })}
+                </span>
+              </div>
+            </Field>
+
+            <div className="space-y-2">
+              <span className="text-sm font-medium text-neutral-main">{t("schedule.slot")}</span>
               {!checkInDate ? (
-                <p className="text-sm text-neutral-muted">{t("schedule.pickDateFirst")}</p>
+                <p className="text-xs text-neutral-muted">{t("schedule.pickDateFirst")}</p>
               ) : slots.isLoading ? (
-                <Skeleton className="h-12 rounded-xl" />
-              ) : slots.isError ? (
-                <p className="text-sm text-red-600">{t("schedule.slotsError")}</p>
+                <Skeleton className="h-20 rounded-xl" />
               ) : (slots.data ?? []).length === 0 ? (
-                <p className="text-sm text-neutral-muted">{t("schedule.noSlots")}</p>
+                <p className="text-xs text-neutral-muted">{t("schedule.noSlots")}</p>
               ) : (
-                <div className="flex flex-wrap gap-2">
-                  {slots.data!.map((s) => (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  {(slots.data ?? []).map((s) => (
                     <button
-                      key={s.id}
                       type="button"
+                      key={s.id}
                       disabled={!s.isAvailable}
                       onClick={() => setSlot(s.slotName)}
-                      aria-pressed={slot === s.slotName}
                       className={cn(
                         "rounded-xl border px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50",
                         slot === s.slotName
@@ -347,26 +418,11 @@ export function ReservationFormPage({
                 </div>
               )}
             </div>
-
-            <Field
-              label={t("schedule.duration", { unit: tBilling(offering.billingUnit) })}
-              hint={t("schedule.durationHint", { min: offering.minRentalDays })}
-            >
-              <Input
-                type="number"
-                inputMode="numeric"
-                min={offering.minRentalDays}
-                step={1}
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-              />
-            </Field>
           </Section>
 
           {amenities.length > 0 && (
             <Section title={t("amenities.title")}>
-              <p className="text-sm text-neutral-muted">{t("amenities.note")}</p>
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {amenities.map((o) => (
                   <li
                     key={o.id}
@@ -413,9 +469,13 @@ export function ReservationFormPage({
           <h2 className="text-lg font-semibold">{t("summary.title")}</h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between gap-3">
-              <dt className="text-neutral-muted">{t("summary.price")}</dt>
+              <dt className="text-neutral-muted">
+                {isRackBooking
+                  ? t("summary.rackEstimate", { count: selectedRacks.length })
+                  : t("summary.price")}
+              </dt>
               <dd className="font-medium">
-                {formatCurrency(offering.pricePerUnit)} / {tBilling(offering.billingUnit)}
+                {formatCurrency(basePrice)} / {tBilling(offering.billingUnit)}
               </dd>
             </div>
             <div className="flex justify-between gap-3">
@@ -428,23 +488,24 @@ export function ReservationFormPage({
             </div>
           </dl>
           <p className="text-xs text-neutral-muted">{t("summary.holdNote")}</p>
-
-          {/* Terms Agreement & Immediate Forfeit Alert */}
-          <div className="rounded-xl border border-neutral-200 bg-neutral-50/80 p-3.5 space-y-2.5">
-            <label className="flex items-start gap-2.5 cursor-pointer text-xs leading-relaxed text-slate-700 select-none">
+          <div className="space-y-2 rounded-xl border border-neutral-border bg-neutral-50 p-3">
+            <ul className="list-disc space-y-1 pl-4 text-xs text-neutral-muted">
+              <li>{t("terms.freeCancel", { hours: FREE_CANCEL_HOURS })}</li>
+              <li>{t("terms.forfeit")}</li>
+            </ul>
+            <label className="flex cursor-pointer items-start gap-2 text-sm font-medium">
               <input
                 type="checkbox"
                 checked={termsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
-                className="mt-0.5 size-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                onChange={(event) => setTermsAccepted(event.target.checked)}
+                className="mt-0.5 size-4 accent-[var(--color-brand,#0b927e)]"
               />
-              <span>{t("terms")}</span>
+              {t("terms.accept")}
             </label>
-
-            {isImmediateForfeit && (
+            {isInsideForfeitWindow(checkInDate, slot) && (
               <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">
                 <AlertTriangle className="size-4 shrink-0 text-amber-600 mt-0.5" />
-                <span>{t("immediateWarning.description")}</span>
+                <span>{t("forfeitWarning.body")}</span>
               </div>
             )}
           </div>
@@ -464,34 +525,33 @@ export function ReservationFormPage({
         </aside>
       </form>
 
-      {/* Immediate Forfeit Warning Confirmation Modal */}
-      <Dialog open={showImmediateWarning} onOpenChange={setShowImmediateWarning}>
+      <Dialog open={forfeitConfirmOpen} onOpenChange={setForfeitConfirmOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-amber-100 text-amber-600 mb-2">
               <AlertTriangle className="size-6" />
             </div>
-            <DialogTitle className="text-center">{t("immediateWarning.title")}</DialogTitle>
+            <DialogTitle className="text-center">{t("forfeitWarning.title")}</DialogTitle>
             <DialogDescription className="text-center text-slate-600 text-sm">
-              {t("immediateWarning.description")}
+              {t("forfeitWarning.body")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-4 flex-col sm:flex-row gap-2">
             <Button
               type="button"
               variant="outline"
-              onClick={() => setShowImmediateWarning(false)}
+              onClick={() => setForfeitConfirmOpen(false)}
               disabled={create.isPending}
             >
-              {t("immediateWarning.cancel")}
+              {t("forfeitWarning.back")}
             </Button>
             <Button
               type="button"
               className="bg-amber-600 hover:bg-amber-700 text-white"
-              onClick={doCreateReservation}
+              onClick={() => void submit()}
               disabled={create.isPending}
             >
-              {create.isPending ? t("summary.submitting") : t("immediateWarning.confirm")}
+              {create.isPending ? t("summary.submitting") : t("forfeitWarning.continue")}
             </Button>
           </DialogFooter>
         </DialogContent>

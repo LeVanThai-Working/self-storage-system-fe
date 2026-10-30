@@ -7,7 +7,8 @@
     "search": "Tìm kiếm",
     "confirm": "Xác nhận",
     "back": "Quay lại",
-    "close": "Đóng"
+    "close": "Đóng",
+    "loadMore": "Xem thêm"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -427,11 +428,12 @@
       "load": "Tải hiện tại: %{weight}/%{max} kg"
     },
     "unracked": {
-      "title": "Hàng để sàn",
+      "title": "Khu lưu tạm",
       "stockIn": "Nhập hàng để sàn",
-      "empty": "Chưa có hàng để sàn",
-      "summary": "Hàng để sàn (%{qty} món)",
-      "skuCount": "%{count} mã hàng"
+      "empty": "Không có hàng ở khu lưu tạm",
+      "summary": "Khu lưu tạm (%{qty} món)",
+      "skuCount": "%{count} mã hàng",
+      "holdingHint": "Hàng ở khu lưu tạm chưa thể xuất. Nhân viên sẽ xếp lại lên kệ khi kệ sẵn sàng."
     },
     "position": {
       "tierOfRack": "Tầng %{tier} · Kệ %{rack}",
@@ -451,7 +453,11 @@
       "stockIn": "Nhập hàng vào tầng này",
       "stockOut": "Xuất",
       "move": "Chuyển",
-      "adjust": "Kiểm kê"
+      "adjust": "Kiểm kê",
+      "requestOutbound": "Yêu cầu xuất",
+      "requestMove": "Yêu cầu chuyển",
+      "notifyInbound": "Báo gửi hàng",
+      "reportIncident": "Báo sự cố ở tầng này"
     },
     "form": {
       "stockInTitle": "Nhập hàng",
@@ -537,7 +543,442 @@
         "out": "Xuất",
         "move": "Chuyển",
         "adjust": "Kiểm kê"
+      },
+      "by": "bởi %{name}"
+    },
+    "view": "Xem",
+    "staffOperatedHint": "Nhân viên kho sẽ thực hiện mọi thao tác nhập, xuất, chuyển hàng",
+    "overdueBanner": "Hợp đồng quá hạn · Chỉ có thể yêu cầu xuất hoặc chuyển hàng",
+    "attentionBanner": "%{count} món hàng cần chú ý (lưu tạm, hư hỏng, tranh chấp)",
+    "itemStatus": {
+      "temporary_holding": "Lưu tạm",
+      "damaged": "Hư hỏng",
+      "disputed": "Tranh chấp"
+    },
+    "attention": {
+      "title": "Hàng cần chú ý",
+      "empty": "Mọi món hàng của bạn đều ở trạng thái bình thường",
+      "from": "Từ kệ %{rack} · tầng %{tier}",
+      "hint": "Hàng lưu tạm hoặc đang xử lý sự cố chưa thể xuất. Cần chuyển sang kệ mới thì hãy liên hệ cơ sở để ký phụ lục đổi kệ.",
+      "contact": "Liên hệ hỗ trợ",
+      "group": {
+        "temporary_holding": "Đang ở khu lưu tạm (%{count})",
+        "damaged": "Hư hỏng – chờ giám định (%{count})",
+        "disputed": "Đang tranh chấp (%{count})"
       }
+    }
+  },
+  "media": {
+    "addPhoto": "Thêm ảnh",
+    "takePhoto": "Chụp ảnh",
+    "chooseFromLibrary": "Chọn từ thư viện",
+    "permissionDenied": "Bạn chưa cấp quyền truy cập camera hoặc thư viện ảnh",
+    "uploadFailed": "Tải ảnh lên thất bại",
+    "count": "%{count}/%{max} ảnh"
+  },
+  "sku": {
+    "catalogEntry": "Danh mục hàng",
+    "catalogTitle": "Danh mục hàng hoá",
+    "catalogSubtitle": "%{skus} mã hàng · %{qty} món đang lưu kho",
+    "searchPlaceholder": "Tìm theo mã, tên, barcode",
+    "loadError": "Không tải được danh mục hàng hoá",
+    "empty": "Chưa có mã hàng nào",
+    "emptyHint": "Tạo mã hàng để nhân viên kho nhận và xếp hàng của bạn lên kệ",
+    "emptySearch": "Không tìm thấy mã hàng phù hợp",
+    "locationCount": "%{count} vị trí",
+    "filter": {
+      "all": "Tất cả"
+    },
+    "status": {
+      "active": "Đang sử dụng",
+      "inactive": "Ngừng dùng"
+    },
+    "form": {
+      "createTitle": "Thêm mã hàng mới",
+      "editTitle": "Sửa mã hàng",
+      "save": "Lưu mã hàng",
+      "saveChanges": "Lưu thay đổi",
+      "created": "Đã tạo mã hàng %{code}",
+      "updated": "Đã cập nhật mã hàng",
+      "saveFailed": "Không lưu được mã hàng",
+      "image": "Hình ảnh hàng hoá",
+      "skuCode": "Mã SKU",
+      "name": "Tên hàng",
+      "namePlaceholder": "VD: Bộ tách trà men lam",
+      "barcode": "Mã vạch (barcode)",
+      "barcodeTaken": "Mã vạch này đã dùng cho mã hàng %{code}",
+      "category": "Danh mục",
+      "uom": "Đơn vị tính",
+      "sizeSection": "Kích thước (cm)",
+      "length": "Dài",
+      "width": "Rộng",
+      "height": "Cao",
+      "autoVolume": "Thể tích tự tính:",
+      "weight": "Khối lượng (kg)",
+      "sizeHint": "Kích thước và khối lượng giúp sơ đồ kệ vẽ đúng tỉ lệ và cảnh báo quá tải",
+      "description": "Mô tả / ghi chú",
+      "descriptionPlaceholder": "VD: Hàng dễ vỡ, xếp nhẹ tay",
+      "active": "Đang sử dụng",
+      "activeHint": "Tắt để ẩn khỏi các yêu cầu xuất mới",
+      "errors": {
+        "skuCode": "Mã SKU bắt buộc, tối đa 50 ký tự",
+        "name": "Tên hàng bắt buộc, tối đa 100 ký tự",
+        "barcode": "Mã vạch tối đa 50 ký tự",
+        "dimensions": "Nhập đủ dài, rộng, cao (tối thiểu 0,1 cm)",
+        "weightKg": "Khối lượng phải là số không âm"
+      }
+    },
+    "detail": {
+      "edit": "Sửa",
+      "barcode": "Barcode",
+      "uom": "Đơn vị",
+      "dimensions": "Kích thước",
+      "volume": "Thể tích",
+      "weight": "Khối lượng",
+      "totalStock": "Tổng tồn",
+      "tab": {
+        "locations": "Đang để ở",
+        "history": "Lịch sử"
+      },
+      "holdingArea": "Khu lưu tạm",
+      "holdingHint": "Phòng %{unit} · chờ xếp lại lên kệ",
+      "noLocations": "Mã hàng này chưa có trong kho",
+      "delete": "Xoá mã hàng",
+      "deleteTitle": "Xoá mã hàng?",
+      "deleteConfirm": "Mã hàng %{code} sẽ bị xoá khỏi danh mục.",
+      "deleted": "Đã xoá mã hàng %{code}",
+      "deleteBlocked": "Còn %{qty} %{uom} trong kho, cần xuất hết trước khi xoá"
+    },
+    "scan": {
+      "title": "Quét mã vạch",
+      "hint": "Đưa mã vạch vào khung để quét",
+      "totalAt": "Tổng tồn %{qty} %{uom} ở %{count} vị trí",
+      "viewOnMap": "Xem trên sơ đồ",
+      "requestOutbound": "Yêu cầu xuất",
+      "notFoundTitle": "Chưa có mã này",
+      "notFoundDesc": "Mã vạch %{barcode} chưa có trong danh mục của bạn.",
+      "createWithBarcode": "Tạo mã hàng với mã vạch này",
+      "rescan": "Quét lại"
+    }
+  },
+  "contractPicker": {
+    "title": "Chọn hợp đồng",
+    "placeholder": "Chọn hợp đồng liên quan",
+    "empty": "Bạn chưa có hợp đồng nào phù hợp",
+    "loadMore": "Xem thêm"
+  },
+  "inventoryRequest": {
+    "unitContract": "Phòng %{unit} · HĐ #%{code}",
+    "loadError": "Không tải được phiếu kho",
+    "itemsSummary": "Hàng trong phiếu (%{count} mã · %{qty} món)",
+    "discrepancy": "Giao thiếu: %{reason}",
+    "status": {
+      "pending": "Chờ lấy hàng",
+      "pending_confirmation": "Chờ bạn xác nhận",
+      "processing": "Đang xử lý",
+      "ready_to_putaway": "Sẵn sàng xếp kệ",
+      "completed": "Hoàn tất",
+      "disputed": "Khiếu nại",
+      "cancelled": "Đã huỷ",
+      "expired": "Hết hạn"
+    },
+    "recipient": {
+      "title": "Người nhận hàng",
+      "name": "Họ tên",
+      "phone": "Số điện thoại",
+      "plate": "Biển số xe",
+      "company": "Đơn vị vận chuyển"
+    },
+    "outbound": {
+      "title": "Yêu cầu xuất hàng",
+      "itemsTitle": "Hàng muốn lấy (%{count})",
+      "noItems": "Chưa chọn món hàng nào",
+      "addItems": "Thêm hàng từ kệ",
+      "available": "còn lấy được %{qty} %{uom}",
+      "pickerTitle": "Chọn hàng muốn lấy",
+      "holdingNote": "Hàng lưu tạm, hư hỏng hoặc tranh chấp chưa thể xuất",
+      "recipientTitle": "Người đến nhận (không bắt buộc)",
+      "notes": "Ghi chú cho nhân viên",
+      "notesPlaceholder": "VD: Hàng dễ vỡ, xin bốc cẩn thận",
+      "otpHint": "Sau khi gửi, bạn nhận mã QR và mã OTP 6 số. Người nhận đưa mã cho nhân viên kho để lấy hàng. Mã có hiệu lực theo thời hạn bạn chọn ở trên.",
+      "itemsRequired": "Chọn ít nhất một món hàng với số lượng hợp lệ",
+      "recipientInvalid": "Người nhận cần có họ tên và số điện thoại (tối thiểu 8 số)",
+      "submit": "Gửi yêu cầu xuất (%{count} món)",
+      "created": "Đã tạo phiếu %{code}",
+      "heldByOthers": "%{qty} %{uom} đang giữ cho phiếu xuất khác"
+    },
+    "pickup": {
+      "title": "Mã nhận hàng",
+      "otpLabel": "Mã OTP",
+      "otpOnce": "Chỉ hiển thị một lần – hãy lưu lại hoặc chia sẻ cho người nhận",
+      "otpHidden": "Mã OTP chỉ hiện ngay sau khi tạo phiếu. Bấm \"Cấp lại OTP\" nếu bạn chưa lưu mã. Mã QR ở trên vẫn dùng được.",
+      "expiresIn": "Hết hạn sau %{time}",
+      "processingBanner": "Nhân viên đang bốc hàng tại quầy. Bạn không thể huỷ yêu cầu lúc này.",
+      "share": "Chia sẻ cho người nhận",
+      "shareMessage": "Mã nhận hàng StorageHub %{code} tại %{facility}. OTP: %{otp}. Vui lòng đưa mã cho nhân viên kho.",
+      "cancel": "Huỷ yêu cầu",
+      "cancelTitle": "Huỷ yêu cầu xuất?",
+      "cancelPlaceholder": "Lý do huỷ (không bắt buộc)",
+      "cancelSubmit": "Xác nhận huỷ",
+      "cancelled": "Đã huỷ yêu cầu xuất",
+      "regenerateOtp": "Cấp lại OTP",
+      "otpRegenerated": "Đã cấp OTP mới, mã cũ không còn dùng được"
+    },
+    "inbound": {
+      "title": "Xác nhận nhận hàng",
+      "autoConfirmIn": "Tự xác nhận sau %{time}",
+      "notCountedYet": "Hàng chưa được cộng vào tồn kho cho tới khi bạn xác nhận và nhân viên xếp lên kệ.",
+      "evidence": "Ảnh bằng chứng (%{count})",
+      "deliverer": "Người giao",
+      "confirm": "Xác nhận đúng",
+      "confirmed": "Đã xác nhận phiếu nhập",
+      "dispute": "Khiếu nại",
+      "disputeTitle": "Khiếu nại phiếu nhập",
+      "disputePlaceholder": "VD: Tôi gửi 25 bộ nhưng phiếu ghi 20 bộ",
+      "disputeSubmit": "Gửi khiếu nại",
+      "disputeTooShort": "Lý do khiếu nại cần tối thiểu 5 ký tự",
+      "disputed": "Đã gửi khiếu nại"
+    },
+    "move": {
+      "title": "Yêu cầu chuyển vị trí",
+      "itemLabel": "Món hàng cần chuyển",
+      "from": "Từ",
+      "to": "Muốn chuyển đến",
+      "pickTarget": "Chọn tầng muốn chuyển đến",
+      "rack": "Kệ %{code}",
+      "tierItems": "%{count} mã hàng",
+      "onlyYourRacks": "Chỉ hiển thị kệ bạn đang thuê",
+      "quantity": "Số lượng",
+      "all": "Chuyển hết (%{qty})",
+      "reason": "Lý do / ghi chú",
+      "reasonPlaceholder": "VD: Gom hàng dùng thường xuyên xuống tầng thấp",
+      "staffHint": "Yêu cầu sẽ gửi tới nhân viên kho. Vị trí chỉ thay đổi sau khi nhân viên chuyển hàng thực tế, bạn sẽ thấy trong lịch sử.",
+      "submit": "Gửi yêu cầu",
+      "sent": "Đã gửi yêu cầu %{code}"
+    },
+    "timeline": {
+      "created": "Đã tạo yêu cầu",
+      "verified": "Nhân viên xác nhận mã",
+      "handedOver": "Bàn giao hoàn tất",
+      "received": "Nhân viên tiếp nhận hàng",
+      "confirmed": "Bạn đã xác nhận",
+      "autoConfirmed": "Tự động xác nhận sau 24 giờ",
+      "putaway": "Đã xếp lên kệ",
+      "preAdvised": "Bạn đã báo gửi hàng",
+      "arrived": "Nhân viên quét mã nhận hàng"
+    },
+    "list": {
+      "title": "Yêu cầu kho",
+      "empty": "Chưa có yêu cầu nào",
+      "pendingInbound": "%{count} phiếu nhập chờ bạn xác nhận",
+      "outboundLine": "Xuất %{qty} món",
+      "inboundLine": "Nhập %{qty} món",
+      "tab": {
+        "outbound": "Xuất",
+        "inbound": "Nhập",
+        "move": "Chuyển",
+        "activity": "Hoạt động"
+      }
+    },
+    "validity": {
+      "title": "Hiệu lực của mã",
+      "days": "%{count} ngày"
+    },
+    "preAdvised": {
+      "title": "Báo trước hàng gửi vào kho",
+      "detailTitle": "Phiếu nhập báo trước",
+      "activeOnly": "Chỉ hợp đồng đang hiệu lực mới được báo gửi hàng.",
+      "itemsTitle": "Hàng sẽ gửi (%{count} mã)",
+      "noItems": "Chưa chọn mã hàng nào",
+      "addItems": "Thêm từ danh mục hàng",
+      "pickerTitle": "Chọn mã hàng sẽ gửi",
+      "searchPlaceholder": "Tìm theo mã hoặc tên hàng",
+      "noSkus": "Bạn chưa có mã hàng nào đang dùng. Tạo mã hàng trước khi báo gửi.",
+      "createSku": "Tạo mã hàng",
+      "delivererTitle": "Người giao hàng (không bắt buộc)",
+      "delivererInvalid": "Người giao cần có họ tên và số điện thoại (tối thiểu 8 số)",
+      "deadline": "Hạn giao hàng tới kho",
+      "notesPlaceholder": "VD: Hàng đến bằng xe tải nhỏ, có 2 kiện dễ vỡ",
+      "otpHint": "Sau khi gửi, bạn nhận mã QR và mã OTP 6 số. Người giao đưa mã cho nhân viên kho khi tới nơi. Nhân viên kiểm đếm rồi xếp hàng lên kệ của bạn.",
+      "itemsRequired": "Chọn ít nhất một mã hàng với số lượng hợp lệ",
+      "submit": "Gửi báo trước (%{count} món)",
+      "created": "Đã tạo phiếu nhập %{code}",
+      "processingBanner": "Hàng đã tới, nhân viên đang kiểm đếm và xếp lên kệ. Bạn không thể huỷ phiếu lúc này.",
+      "share": "Chia sẻ cho người giao",
+      "shareMessage": "Mã gửi hàng StorageHub %{code} tại %{facility}. OTP: %{otp}. Vui lòng đưa mã cho nhân viên kho khi giao hàng.",
+      "cancelTitle": "Huỷ phiếu nhập báo trước?",
+      "cancelled": "Đã huỷ phiếu nhập"
+    }
+  },
+  "supportTicket": {
+    "loadError": "Không tải được yêu cầu hỗ trợ",
+    "status": {
+      "pending": "Chờ tiếp nhận",
+      "processing": "Đang xử lý",
+      "completed": "Đã hoàn tất",
+      "cancelled": "Đã huỷ"
+    },
+    "priority": {
+      "low": "Thấp",
+      "medium": "Trung bình",
+      "high": "Cao",
+      "urgent": "Khẩn"
+    },
+    "category": {
+      "billing_inquiry": "Thanh toán",
+      "contract_inquiry": "Hợp đồng",
+      "unit_change_request": "Đổi phòng kho",
+      "access_pin_reset": "Đặt lại mã PIN",
+      "service_complaint": "Khiếu nại dịch vụ",
+      "procedural_assistance": "Hướng dẫn thủ tục",
+      "general_inquiry": "Câu hỏi chung",
+      "inventory_move_request": "Chuyển vị trí hàng"
+    },
+    "form": {
+      "title": "Gửi yêu cầu hỗ trợ",
+      "category": "Loại yêu cầu",
+      "contract": "Hợp đồng liên quan",
+      "contractHint": "Yêu cầu sẽ được chuyển tới cơ sở của hợp đồng này",
+      "contractRequired": "Vui lòng chọn hợp đồng liên quan",
+      "priority": "Mức ưu tiên",
+      "subject": "Tiêu đề",
+      "subjectPlaceholder": "VD: Quên mã PIN mở cửa phòng",
+      "description": "Mô tả chi tiết",
+      "descriptionPlaceholder": "Mô tả vấn đề bạn cần cơ sở hỗ trợ",
+      "attachments": "Ảnh đính kèm (tối đa %{max})",
+      "hint": "Nhân viên cơ sở sẽ phản hồi trong giờ làm việc. Bạn có thể huỷ khi yêu cầu chưa được tiếp nhận.",
+      "titleInvalid": "Tiêu đề cần từ 3 đến 200 ký tự",
+      "descriptionInvalid": "Mô tả cần từ 5 đến 3000 ký tự",
+      "submit": "Gửi yêu cầu",
+      "created": "Đã gửi yêu cầu %{code}"
+    },
+    "detail": {
+      "title": "Chi tiết yêu cầu",
+      "staff": "Nhân viên cơ sở",
+      "stepSent": "Đã gửi yêu cầu",
+      "stepAccepted": "Nhân viên tiếp nhận",
+      "stepAcceptedBy": "%{name} tiếp nhận",
+      "stepCancelled": "Đã huỷ yêu cầu",
+      "stepResponded": "Có phản hồi",
+      "cancel": "Huỷ yêu cầu",
+      "cancelTitle": "Huỷ yêu cầu hỗ trợ?",
+      "cancelPlaceholder": "Lý do huỷ (không bắt buộc)",
+      "cancelConfirm": "Xác nhận huỷ",
+      "cancelled": "Đã huỷ yêu cầu",
+      "cancelReason": "Lý do huỷ: %{reason}"
+    }
+  },
+  "supportHub": {
+    "subtitle": "Gửi yêu cầu hoặc báo sự cố cho cơ sở kho",
+    "newTicket": "Gửi yêu cầu hỗ trợ",
+    "newTicketHint": "Thanh toán, hợp đồng, mã PIN…",
+    "newIncident": "Báo sự cố",
+    "newIncidentHint": "Hỏng khoá, thấm dột, kệ cong…",
+    "segment": {
+      "tickets": "Yêu cầu (%{count})",
+      "incidents": "Sự cố (%{count})"
+    },
+    "filter": {
+      "all": "Tất cả",
+      "open": "Đang xử lý"
+    },
+    "hasResponse": "Có phản hồi từ cơ sở",
+    "emptyTickets": "Bạn chưa gửi yêu cầu hỗ trợ nào",
+    "emptyIncidents": "Bạn chưa báo sự cố nào"
+  },
+  "incident": {
+    "loadError": "Không tải được sự cố",
+    "status": {
+      "reported": "Đã tiếp nhận",
+      "assigned": "Đã phân công",
+      "investigating": "Đang khảo sát",
+      "in_progress": "Đang sửa chữa",
+      "resolved": "Đã xử lý",
+      "closed": "Đã đóng",
+      "cancelled": "Đã huỷ"
+    },
+    "severity": {
+      "low": "Thấp",
+      "medium": "Trung bình",
+      "high": "Cao",
+      "critical": "Khẩn cấp"
+    },
+    "category": {
+      "structural": "Kết cấu",
+      "electrical": "Điện",
+      "water_leak": "Thấm dột",
+      "security": "An ninh",
+      "cleanliness": "Vệ sinh",
+      "other": "Khác",
+      "facility_damage": "Hư hại cơ sở vật chất",
+      "equipment_failure": "Hỏng hóc thiết bị",
+      "fire_water": "Cháy nổ / Ngập lụt",
+      "security_breach": "Vi phạm an ninh",
+      "natural_disaster": "Thiên tai / Bão lũ",
+      "power_outage": "Sự cố mất điện"
+    },
+    "liable": {
+      "customer": "Khách hàng",
+      "facility": "Cơ sở",
+      "third_party": "Bên thứ ba",
+      "force_majeure": "Bất khả kháng"
+    },
+    "step": {
+      "reported": "Tiếp nhận",
+      "assigned": "Phân công",
+      "investigating": "Khảo sát",
+      "resolved": "Đã xử lý",
+      "closed": "Nghiệm thu"
+    },
+    "form": {
+      "title": "Báo sự cố",
+      "subtitle": "Cơ sở sẽ phân công nhân viên xử lý",
+      "contract": "Hợp đồng",
+      "contractRequired": "Vui lòng chọn hợp đồng",
+      "location": "Vị trí gặp sự cố",
+      "unit": "Phòng %{unit}",
+      "rack": "Kệ %{rack}",
+      "locationHint": "Chọn kệ/tầng nếu sự cố nằm trên kệ",
+      "category": "Loại sự cố",
+      "categoryRequired": "Vui lòng chọn loại sự cố",
+      "severity": "Mức độ",
+      "criticalHint": "Khẩn cấp: cơ sở nhận thông báo ưu tiên",
+      "titleLabel": "Tiêu đề",
+      "titlePlaceholder": "VD: Thanh đỡ kệ A-04 bị cong",
+      "titleInvalid": "Tiêu đề cần từ 3 đến 200 ký tự",
+      "description": "Mô tả",
+      "descriptionPlaceholder": "Mô tả hiện trạng bạn thấy",
+      "descriptionInvalid": "Mô tả cần từ 5 đến 2000 ký tự",
+      "images": "Ảnh hiện trường (ít nhất 1)",
+      "imagesRequired": "Cần ít nhất 1 ảnh hiện trường",
+      "holdingHint": "Nếu nguy hiểm tới hàng hoá, nhân viên có thể tạm dời hàng của bạn xuống khu lưu tạm và sẽ thông báo cho bạn.",
+      "submit": "Gửi báo cáo sự cố",
+      "created": "Đã gửi sự cố %{code}"
+    },
+    "detail": {
+      "title": "Chi tiết sự cố",
+      "assignee": "Người phụ trách",
+      "investigation": "Ghi chú khảo sát",
+      "needsRelocation": "Cần di dời hàng",
+      "goodsInHolding": "Xem hàng của bạn đang ở khu lưu tạm",
+      "resolution": "Biên bản xử lý",
+      "solution": "Giải pháp",
+      "liable": "Bên chịu lỗi",
+      "repairCost": "Chi phí sửa chữa",
+      "damageFee": "Phí bồi thường",
+      "resolvedBy": "Xử lý bởi",
+      "feeNote": "Phí bồi thường sẽ được cộng vào hợp đồng khi đóng sự cố.",
+      "closeHint": "Nếu chưa hài lòng, hãy gửi yêu cầu hỗ trợ kèm mã sự cố",
+      "close": "Nghiệm thu & đóng sự cố",
+      "closed": "Đã nghiệm thu và đóng sự cố",
+      "cancel": "Huỷ sự cố",
+      "cancelTitle": "Huỷ sự cố này?",
+      "cancelPlaceholder": "Lý do huỷ (tối thiểu 5 ký tự)",
+      "cancelTooShort": "Lý do huỷ cần tối thiểu %{min} ký tự",
+      "cancelConfirm": "Xác nhận huỷ",
+      "cancelled": "Đã huỷ sự cố",
+      "cancelUnavailable": "Không thể huỷ khi sự cố đang được xử lý",
+      "cancelReason": "Lý do huỷ: %{reason}"
     }
   },
   "refunds": {

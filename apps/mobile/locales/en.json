@@ -7,7 +7,8 @@
     "search": "Search",
     "confirm": "Confirm",
     "back": "Back",
-    "close": "Close"
+    "close": "Close",
+    "loadMore": "Load more"
   },
   "auth": {
     "login": "Sign In",
@@ -427,11 +428,12 @@
       "load": "Current load: %{weight}/%{max} kg"
     },
     "unracked": {
-      "title": "Floor items",
+      "title": "Holding area",
       "stockIn": "Add floor items",
-      "empty": "No floor items yet",
-      "summary": "Floor items (%{qty} items)",
-      "skuCount": "%{count} SKUs"
+      "empty": "Nothing in the holding area",
+      "summary": "Holding area (%{qty} items)",
+      "skuCount": "%{count} SKUs",
+      "holdingHint": "Items in the holding area cannot be picked up yet. Staff will re-shelve them once a rack is ready."
     },
     "position": {
       "tierOfRack": "Tier %{tier} · Rack %{rack}",
@@ -451,7 +453,11 @@
       "stockIn": "Add items to this tier",
       "stockOut": "Take out",
       "move": "Move",
-      "adjust": "Recount"
+      "adjust": "Recount",
+      "requestOutbound": "Request pickup",
+      "requestMove": "Request move",
+      "notifyInbound": "Notify delivery",
+      "reportIncident": "Report an incident on this tier"
     },
     "form": {
       "stockInTitle": "Add items",
@@ -537,7 +543,442 @@
         "out": "Stock out",
         "move": "Move",
         "adjust": "Recount"
+      },
+      "by": "by %{name}"
+    },
+    "view": "View",
+    "staffOperatedHint": "Warehouse staff carry out every inbound, outbound and move",
+    "overdueBanner": "Contract overdue · You can only request pickups or moves",
+    "attentionBanner": "%{count} items need attention (holding, damaged, disputed)",
+    "itemStatus": {
+      "temporary_holding": "Holding",
+      "damaged": "Damaged",
+      "disputed": "Disputed"
+    },
+    "attention": {
+      "title": "Items needing attention",
+      "empty": "All your items are in normal condition",
+      "from": "From rack %{rack} · tier %{tier}",
+      "hint": "Items in holding or under an incident cannot be picked up. To move to a new rack, contact the facility to sign a rack-change addendum.",
+      "contact": "Contact support",
+      "group": {
+        "temporary_holding": "In the holding area (%{count})",
+        "damaged": "Damaged – awaiting assessment (%{count})",
+        "disputed": "Disputed (%{count})"
       }
+    }
+  },
+  "media": {
+    "addPhoto": "Add photo",
+    "takePhoto": "Take photo",
+    "chooseFromLibrary": "Choose from library",
+    "permissionDenied": "Camera or photo library access was not granted",
+    "uploadFailed": "Photo upload failed",
+    "count": "%{count}/%{max} photos"
+  },
+  "sku": {
+    "catalogEntry": "Item catalog",
+    "catalogTitle": "Item catalog",
+    "catalogSubtitle": "%{skus} SKUs · %{qty} items in storage",
+    "searchPlaceholder": "Search by code, name, barcode",
+    "loadError": "Could not load your item catalog",
+    "empty": "No SKUs yet",
+    "emptyHint": "Create SKUs so warehouse staff can receive and shelve your items",
+    "emptySearch": "No matching SKUs",
+    "locationCount": "%{count} locations",
+    "filter": {
+      "all": "All"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "form": {
+      "createTitle": "New SKU",
+      "editTitle": "Edit SKU",
+      "save": "Save SKU",
+      "saveChanges": "Save changes",
+      "created": "SKU %{code} created",
+      "updated": "SKU updated",
+      "saveFailed": "Could not save the SKU",
+      "image": "Item photo",
+      "skuCode": "SKU code",
+      "name": "Item name",
+      "namePlaceholder": "e.g. Blue porcelain tea set",
+      "barcode": "Barcode",
+      "barcodeTaken": "This barcode is already used by %{code}",
+      "category": "Category",
+      "uom": "Unit of measure",
+      "sizeSection": "Size (cm)",
+      "length": "Length",
+      "width": "Width",
+      "height": "Height",
+      "autoVolume": "Computed volume:",
+      "weight": "Weight (kg)",
+      "sizeHint": "Size and weight let the rack map draw items to scale and warn about overload",
+      "description": "Description / notes",
+      "descriptionPlaceholder": "e.g. Fragile, handle with care",
+      "active": "Active",
+      "activeHint": "Turn off to hide it from new outbound requests",
+      "errors": {
+        "skuCode": "SKU code is required, up to 50 characters",
+        "name": "Item name is required, up to 100 characters",
+        "barcode": "Barcode can be up to 50 characters",
+        "dimensions": "Enter length, width and height (at least 0.1 cm)",
+        "weightKg": "Weight must be a non-negative number"
+      }
+    },
+    "detail": {
+      "edit": "Edit",
+      "barcode": "Barcode",
+      "uom": "Unit",
+      "dimensions": "Size",
+      "volume": "Volume",
+      "weight": "Weight",
+      "totalStock": "In stock",
+      "tab": {
+        "locations": "Stored at",
+        "history": "History"
+      },
+      "holdingArea": "Holding area",
+      "holdingHint": "Unit %{unit} · waiting to be re-shelved",
+      "noLocations": "This SKU is not in storage",
+      "delete": "Delete SKU",
+      "deleteTitle": "Delete SKU?",
+      "deleteConfirm": "SKU %{code} will be removed from your catalog.",
+      "deleted": "SKU %{code} deleted",
+      "deleteBlocked": "%{qty} %{uom} still in storage, take everything out before deleting"
+    },
+    "scan": {
+      "title": "Scan barcode",
+      "hint": "Point the camera at a barcode",
+      "totalAt": "%{qty} %{uom} in stock across %{count} locations",
+      "viewOnMap": "View on rack map",
+      "requestOutbound": "Request pickup",
+      "notFoundTitle": "Not in your catalog",
+      "notFoundDesc": "Barcode %{barcode} is not in your catalog yet.",
+      "createWithBarcode": "Create SKU with this barcode",
+      "rescan": "Scan again"
+    }
+  },
+  "contractPicker": {
+    "title": "Choose a contract",
+    "placeholder": "Choose the related contract",
+    "empty": "You have no eligible contracts",
+    "loadMore": "Load more"
+  },
+  "inventoryRequest": {
+    "unitContract": "Unit %{unit} · Contract #%{code}",
+    "loadError": "Could not load the request",
+    "itemsSummary": "Items (%{count} SKUs · %{qty} pcs)",
+    "discrepancy": "Short delivery: %{reason}",
+    "status": {
+      "pending": "Awaiting pickup",
+      "pending_confirmation": "Awaiting your confirmation",
+      "processing": "Processing",
+      "ready_to_putaway": "Ready to shelve",
+      "completed": "Completed",
+      "disputed": "Disputed",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
+    "recipient": {
+      "title": "Recipient",
+      "name": "Full name",
+      "phone": "Phone number",
+      "plate": "Vehicle plate",
+      "company": "Carrier"
+    },
+    "outbound": {
+      "title": "Request pickup",
+      "itemsTitle": "Items to pick up (%{count})",
+      "noItems": "No items selected",
+      "addItems": "Add items from racks",
+      "available": "%{qty} %{uom} available",
+      "pickerTitle": "Choose items to pick up",
+      "holdingNote": "Items in holding, damaged or disputed cannot be picked up",
+      "recipientTitle": "Who will collect (optional)",
+      "notes": "Notes for staff",
+      "notesPlaceholder": "e.g. Fragile, please handle with care",
+      "otpHint": "After sending you get a QR code and a 6-digit OTP. The recipient shows it to warehouse staff to collect the goods. The code is valid for the period you chose above.",
+      "itemsRequired": "Select at least one item with a valid quantity",
+      "recipientInvalid": "Recipient needs a name and a phone number (at least 8 digits)",
+      "submit": "Send pickup request (%{count} pcs)",
+      "created": "Request %{code} created",
+      "heldByOthers": "%{qty} %{uom} held by other pickup requests"
+    },
+    "pickup": {
+      "title": "Pickup code",
+      "otpLabel": "OTP",
+      "otpOnce": "Shown only once – save it or share it with the collector",
+      "otpHidden": "The OTP is shown only right after the request is created. Tap \"New OTP\" if you did not save it. The QR code above still works.",
+      "expiresIn": "Expires in %{time}",
+      "processingBanner": "Staff are picking your items at the counter. You can no longer cancel.",
+      "share": "Share with collector",
+      "shareMessage": "StorageHub pickup %{code} at %{facility}. OTP: %{otp}. Please show this to warehouse staff.",
+      "cancel": "Cancel request",
+      "cancelTitle": "Cancel pickup request?",
+      "cancelPlaceholder": "Reason (optional)",
+      "cancelSubmit": "Confirm cancel",
+      "cancelled": "Pickup request cancelled",
+      "regenerateOtp": "New OTP",
+      "otpRegenerated": "New OTP issued, the old one no longer works"
+    },
+    "inbound": {
+      "title": "Confirm received goods",
+      "autoConfirmIn": "Auto-confirms in %{time}",
+      "notCountedYet": "Goods are added to your stock only after you confirm and staff shelve them.",
+      "evidence": "Evidence photos (%{count})",
+      "deliverer": "Delivered by",
+      "confirm": "Confirm",
+      "confirmed": "Inbound request confirmed",
+      "dispute": "Dispute",
+      "disputeTitle": "Dispute inbound request",
+      "disputePlaceholder": "e.g. I sent 25 sets but the slip says 20",
+      "disputeSubmit": "Send dispute",
+      "disputeTooShort": "The reason needs at least 5 characters",
+      "disputed": "Dispute sent"
+    },
+    "move": {
+      "title": "Request a move",
+      "itemLabel": "Item to move",
+      "from": "From",
+      "to": "Move to",
+      "pickTarget": "Choose the destination tier",
+      "rack": "Rack %{code}",
+      "tierItems": "%{count} SKUs",
+      "onlyYourRacks": "Only racks you rent are shown",
+      "quantity": "Quantity",
+      "all": "Move all (%{qty})",
+      "reason": "Reason / notes",
+      "reasonPlaceholder": "e.g. Keep frequently used items on a low tier",
+      "staffHint": "Warehouse staff receive this request. The position changes only after staff move the items; you will see it in the history.",
+      "submit": "Send request",
+      "sent": "Request %{code} sent"
+    },
+    "timeline": {
+      "created": "Request created",
+      "verified": "Staff verified the code",
+      "handedOver": "Handover completed",
+      "received": "Staff received the goods",
+      "confirmed": "You confirmed",
+      "autoConfirmed": "Auto-confirmed after 24 hours",
+      "putaway": "Shelved",
+      "preAdvised": "You announced the delivery",
+      "arrived": "Staff scanned the code on arrival"
+    },
+    "list": {
+      "title": "Warehouse requests",
+      "empty": "No requests yet",
+      "pendingInbound": "%{count} inbound requests await your confirmation",
+      "outboundLine": "Pickup of %{qty} pcs",
+      "inboundLine": "Inbound of %{qty} pcs",
+      "tab": {
+        "outbound": "Pickups",
+        "inbound": "Inbound",
+        "move": "Moves",
+        "activity": "Activity"
+      }
+    },
+    "validity": {
+      "title": "Code validity",
+      "days": "%{count} days"
+    },
+    "preAdvised": {
+      "title": "Announce a delivery",
+      "detailTitle": "Pre-advised inbound",
+      "activeOnly": "Only active contracts can announce deliveries.",
+      "itemsTitle": "Goods on the way (%{count} SKUs)",
+      "noItems": "No SKU selected yet",
+      "addItems": "Add from your SKU catalog",
+      "pickerTitle": "Pick the SKUs you are sending",
+      "searchPlaceholder": "Search by code or name",
+      "noSkus": "You have no active SKUs. Create one before announcing a delivery.",
+      "createSku": "Create SKU",
+      "delivererTitle": "Deliverer (optional)",
+      "delivererInvalid": "The deliverer needs a name and a phone number (at least 8 digits)",
+      "deadline": "Delivery deadline",
+      "notesPlaceholder": "E.g. arriving by small truck, 2 fragile boxes",
+      "otpHint": "After sending you get a QR code and a 6-digit OTP. The deliverer shows it to warehouse staff on arrival. Staff count the goods and put them on your racks.",
+      "itemsRequired": "Pick at least one SKU with a valid quantity",
+      "submit": "Send notice (%{count} items)",
+      "created": "Inbound request %{code} created",
+      "processingBanner": "The goods have arrived and staff are counting and shelving them. You cannot cancel now.",
+      "share": "Share with the deliverer",
+      "shareMessage": "StorageHub delivery code %{code} at %{facility}. OTP: %{otp}. Please show it to warehouse staff on delivery.",
+      "cancelTitle": "Cancel this pre-advised inbound?",
+      "cancelled": "Inbound request cancelled"
+    }
+  },
+  "supportTicket": {
+    "loadError": "Could not load the support request",
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "category": {
+      "billing_inquiry": "Billing",
+      "contract_inquiry": "Contract",
+      "unit_change_request": "Change unit",
+      "access_pin_reset": "Reset PIN",
+      "service_complaint": "Complaint",
+      "procedural_assistance": "Procedures",
+      "general_inquiry": "General",
+      "inventory_move_request": "Move goods"
+    },
+    "form": {
+      "title": "New support request",
+      "category": "Request type",
+      "contract": "Related contract",
+      "contractHint": "The request goes to this contract's facility",
+      "contractRequired": "Please choose the related contract",
+      "priority": "Priority",
+      "subject": "Subject",
+      "subjectPlaceholder": "e.g. Forgot my unit door PIN",
+      "description": "Details",
+      "descriptionPlaceholder": "Describe what you need help with",
+      "attachments": "Photos (up to %{max})",
+      "hint": "Facility staff reply during working hours. You can cancel until the request is accepted.",
+      "titleInvalid": "Subject must be 3 to 200 characters",
+      "descriptionInvalid": "Details must be 5 to 3000 characters",
+      "submit": "Send request",
+      "created": "Request %{code} sent"
+    },
+    "detail": {
+      "title": "Request details",
+      "staff": "Facility staff",
+      "stepSent": "Request sent",
+      "stepAccepted": "Accepted by staff",
+      "stepAcceptedBy": "Accepted by %{name}",
+      "stepCancelled": "Request cancelled",
+      "stepResponded": "Response received",
+      "cancel": "Cancel request",
+      "cancelTitle": "Cancel this request?",
+      "cancelPlaceholder": "Reason (optional)",
+      "cancelConfirm": "Confirm cancel",
+      "cancelled": "Request cancelled",
+      "cancelReason": "Cancellation reason: %{reason}"
+    }
+  },
+  "supportHub": {
+    "subtitle": "Send a request or report an incident to the facility",
+    "newTicket": "New support request",
+    "newTicketHint": "Billing, contract, PIN…",
+    "newIncident": "Report incident",
+    "newIncidentHint": "Broken lock, leak, bent rack…",
+    "segment": {
+      "tickets": "Requests (%{count})",
+      "incidents": "Incidents (%{count})"
+    },
+    "filter": {
+      "all": "All",
+      "open": "In progress"
+    },
+    "hasResponse": "Facility replied",
+    "emptyTickets": "You have no support requests",
+    "emptyIncidents": "You have not reported any incidents"
+  },
+  "incident": {
+    "loadError": "Could not load the incident",
+    "status": {
+      "reported": "Reported",
+      "assigned": "Assigned",
+      "investigating": "Investigating",
+      "in_progress": "Repairing",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "cancelled": "Cancelled"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "category": {
+      "structural": "Structural",
+      "electrical": "Electrical",
+      "water_leak": "Water leak",
+      "security": "Security",
+      "cleanliness": "Cleanliness",
+      "other": "Other",
+      "facility_damage": "Facility damage",
+      "equipment_failure": "Equipment failure",
+      "fire_water": "Fire / Water",
+      "security_breach": "Security breach",
+      "natural_disaster": "Natural disaster",
+      "power_outage": "Power outage"
+    },
+    "liable": {
+      "customer": "Customer",
+      "facility": "Facility",
+      "third_party": "Third party",
+      "force_majeure": "Force majeure"
+    },
+    "step": {
+      "reported": "Reported",
+      "assigned": "Assigned",
+      "investigating": "Survey",
+      "resolved": "Resolved",
+      "closed": "Accepted"
+    },
+    "form": {
+      "title": "Report incident",
+      "subtitle": "The facility will assign a staff member",
+      "contract": "Contract",
+      "contractRequired": "Please choose a contract",
+      "location": "Where is the problem",
+      "unit": "Unit %{unit}",
+      "rack": "Rack %{rack}",
+      "locationHint": "Pick the rack/tier if the problem is on a rack",
+      "category": "Incident type",
+      "categoryRequired": "Please choose an incident type",
+      "severity": "Severity",
+      "criticalHint": "Critical: the facility gets a priority alert",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. Rack A-04 beam is bent",
+      "titleInvalid": "Title must be 3 to 200 characters",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe what you see",
+      "descriptionInvalid": "Description must be 5 to 2000 characters",
+      "images": "Scene photos (at least 1)",
+      "imagesRequired": "At least 1 scene photo is required",
+      "holdingHint": "If your goods are at risk, staff may move them to the holding area and will notify you.",
+      "submit": "Submit incident report",
+      "created": "Incident %{code} reported"
+    },
+    "detail": {
+      "title": "Incident details",
+      "assignee": "Assignee",
+      "investigation": "Investigation notes",
+      "needsRelocation": "Goods need relocation",
+      "goodsInHolding": "See your goods in the holding area",
+      "resolution": "Resolution report",
+      "solution": "Work done",
+      "liable": "Liable party",
+      "repairCost": "Repair cost",
+      "damageFee": "Damage fee",
+      "resolvedBy": "Resolved by",
+      "feeNote": "The damage fee is added to your contract when the incident is closed.",
+      "closeHint": "Not satisfied? Send a support request with the incident code",
+      "close": "Accept & close incident",
+      "closed": "Incident accepted and closed",
+      "cancel": "Cancel incident",
+      "cancelTitle": "Cancel this incident?",
+      "cancelPlaceholder": "Reason (at least 5 characters)",
+      "cancelTooShort": "The reason needs at least %{min} characters",
+      "cancelConfirm": "Confirm cancel",
+      "cancelled": "Incident cancelled",
+      "cancelUnavailable": "You cannot cancel while the incident is being handled",
+      "cancelReason": "Cancellation reason: %{reason}"
     }
   },
   "refunds": {

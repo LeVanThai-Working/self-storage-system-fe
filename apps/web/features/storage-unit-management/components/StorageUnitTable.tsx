@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
   Boxes,
@@ -20,11 +21,12 @@ import {
   SlidersHorizontal,
   Sparkles,
   Trash2,
+  Warehouse,
   Wrench,
   X,
   Archive,
 } from "lucide-react";
-import { RoleEnum } from "@self-storage-system-fe/shared";
+import { RoleEnum, UnitTypeCategoryEnum } from "@self-storage-system-fe/shared";
 import { useAuthStore } from "@/features/auth/store";
 import { UnitStatusBadge } from "@/components/common/UnitStatusBadge";
 import { DimensionBadge } from "@/components/common/DimensionBadge";
@@ -70,6 +72,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
   const t = useTranslations("facilityManager.storageUnits");
   const getErrorMessage = useApiErrorMessage();
   const isManager = mode === "manager";
+  const locale = useLocale();
   const [viewMode, setViewMode] = useState<StorageUnitViewMode>("table");
 
   // Facility the logged-in manager is responsible for
@@ -620,6 +623,15 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                         {/* Actions */}
                         <td className="py-4 px-6 text-right">
                           <div className="inline-flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                            {unit.unitType?.category === UnitTypeCategoryEnum.WAREHOUSE_RACK ? (
+                              <Link
+                                href={`/${locale}/${isManager ? "facility-manager" : "facility-staff"}/storage-units/${unit.id}/racks`}
+                                title={t("actions.rackMap")}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+                              >
+                                <Warehouse className="w-4 h-4" />
+                              </Link>
+                            ) : null}
                             <button
                               type="button"
                               disabled={!canToggleMaintenance(unit.status)}

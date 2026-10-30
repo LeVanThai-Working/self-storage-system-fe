@@ -1,5 +1,5 @@
-import { RackStatusEnum, RackTierStatusEnum, RackZoneEnum } from "../enums/storageRack.enum";
-import { PaginationQuery } from "./common.types";
+import type { RackStatusEnum, RackTierStatusEnum, RackZoneEnum } from "../enums/storageRack.enum";
+import type { InventoryDimensions } from "./customerInventory.types";
 
 export interface RackTierResponse {
   id: string;
@@ -9,16 +9,28 @@ export interface RackTierResponse {
   tierNumber: number;
   tierCode: string; // e.g. "RK-01-T1"
   maxWeightKg?: number | null;
-  dimensions?: {
-    length: number;
-    width: number;
-    height: number;
-  } | null;
+  dimensions?: InventoryDimensions | null;
   volume?: number | null;
   status: RackTierStatusEnum | "available" | "occupied" | "maintenance" | "inactive";
   notes?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface StorageRackFacilityRef {
+  id: string;
+  name: string;
+  city?: string;
+  address?: string;
+  status?: string;
+}
+
+export interface StorageRackUnitRef {
+  id: string;
+  unitNumber: string;
+  floor?: number;
+  zone?: string;
+  status?: string;
 }
 
 export interface StorageRackResponse {
@@ -28,81 +40,22 @@ export interface StorageRackResponse {
   rackCode: string; // e.g. "RK-01"
   aisle?: string | null; // e.g. "A"
   bay?: number | null; // e.g. 1
-  zone?: RackZoneEnum | "PRIME" | "STANDARD" | "ECONOMY" | null;
+  zone?: RackZoneEnum | null;
   customPrice?: number | null; // Đơn giá thuê riêng theo tháng nếu có
   currentContractId?: string | null;
+  /** Hidden (null) for customers; they get `isMine` instead. */
   currentCustomerId?: string | null;
+  isMine?: boolean | null;
   name?: string | null;
   tierCount: number;
   status:
     RackStatusEnum | "available" | "reserved" | "rented" | "active" | "maintenance" | "inactive";
   notes?: string | null;
   tiers?: RackTierResponse[] | null;
-  facility?: {
-    id: string;
-    name: string;
-    city?: string;
-    address?: string;
-    status?: string;
-  } | null;
-  storageUnit?: {
-    id: string;
-    unitNumber: string;
-    floor?: number;
-    zone?: string;
-    status?: string;
-  } | null;
+  facility?: StorageRackFacilityRef | null;
+  storageUnit?: StorageRackUnitRef | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export type StorageRackListResponse = StorageRackResponse[];
-
-export interface CreateStorageRackRequest {
-  storageUnitId: string;
-  rackCode: string;
-  aisle?: string;
-  bay?: number;
-  zone?: RackZoneEnum;
-  customPrice?: number | null;
-  name?: string;
-  tierCount?: number;
-  status?: RackStatusEnum;
-  notes?: string;
-  defaultTierMaxWeightKg?: number;
-  defaultTierDimensions?: {
-    length: number;
-    width: number;
-    height: number;
-  };
-}
-
-export interface UpdateStorageRackRequest {
-  name?: string;
-  aisle?: string;
-  bay?: number;
-  zone?: RackZoneEnum;
-  customPrice?: number | null;
-  status?: RackStatusEnum;
-  notes?: string;
-}
-
-export interface UpdateRackTierRequest {
-  maxWeightKg?: number;
-  dimensions?: {
-    length: number;
-    width: number;
-    height: number;
-  };
-  status?: RackTierStatusEnum;
-  notes?: string;
-}
-
-export interface StorageRackQuery extends PaginationQuery {
-  facilityId?: string;
-  storageUnitId?: string;
-  status?: RackStatusEnum;
-  rackCode?: string;
-  aisle?: string;
-  zone?: RackZoneEnum;
-}

@@ -2,9 +2,21 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { View, ScrollView, Pressable, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
-import { ArrowLeft, CircleAlert, Info, LayoutGrid, Search, ShieldAlert } from "lucide-react-native";
 import {
-  ContractStatusEnum,
+  ArrowLeft,
+  ArrowLeftRight,
+  ArrowUpFromLine,
+  CircleAlert,
+  ClipboardList,
+  Info,
+  LayoutGrid,
+  Search,
+  ShieldAlert,
+  Truck,
+  TriangleAlert,
+} from "lucide-react-native";
+import {
+  InventoryItemStatusEnum,
   type MessageLocale,
   type SkuLocationsResponse,
   type TreeTier,
@@ -14,25 +26,23 @@ import { Text } from "@/components/ui/text";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/stores/language.store";
 import { useContractDetail } from "@/features/contracts/hooks/useContracts";
-import { useStorageUnitTree } from "@/features/customer-inventory/hooks/useCustomerInventory";
+import {
+  useCustomerInventoryRecords,
+  useStorageUnitTree,
+} from "@/features/customer-inventory/hooks/useCustomerInventory";
 import { RackMapSummaryBar } from "@/features/customer-inventory/components/RackMapSummaryBar";
 import { RackCard } from "@/features/customer-inventory/components/RackCard";
 import { UnrackedSection } from "@/features/customer-inventory/components/UnrackedSection";
 import { TierDetailModal } from "@/features/customer-inventory/components/TierDetailModal";
-import { StockInModal } from "@/features/customer-inventory/components/StockInModal";
-import { StockOutModal } from "@/features/customer-inventory/components/StockOutModal";
-import { StockMoveModal } from "@/features/customer-inventory/components/StockMoveModal";
-import { StockAdjustModal } from "@/features/customer-inventory/components/StockAdjustModal";
 import { LocateSheet } from "@/features/customer-inventory/components/LocateSheet";
 import { LocateResultBanner } from "@/features/customer-inventory/components/LocateResultBanner";
 import { TierHistoryModal } from "@/features/customer-inventory/components/TierHistoryModal";
-import type {
-  StockActionType,
-  StockFormTarget,
-} from "@/features/customer-inventory/types/rackMap.types";
+import type { RequestActionType } from "@/features/customer-inventory/types/rackMap.types";
 import {
   INVENTORY_ERROR,
   buildFloorLabel,
+  findTierInTree,
+  getContractRequestRights,
   resolveInventoryError,
   sortTiersTopDown,
 } from "@/features/customer-inventory/utils/rackMapFormat";
@@ -62,9 +72,7 @@ export default function ContractRackMapScreen() {
   const treeQuery = useStorageUnitTree(storageUnitId);
   const tree = treeQuery.data;
 
-  const [forcedReadOnly, setForcedReadOnly] = useState(false);
   const [detailTarget, setDetailTarget] = useState<DetailTarget>(undefined);
-  const [stockForm, setStockForm] = useState<StockFormTarget | null>(null);
   const [historyTierId, setHistoryTierId] = useState<string | null>(null);
   const [collapsedRackIds, setCollapsedRackIds] = useState<Set<string>>(() => new Set());
   const [locateOpen, setLocateOpen] = useState(false);
@@ -73,7 +81,19 @@ export default function ContractRackMapScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const rackOffsetsRef = useRef<Map<string, number>>(new Map());
 
-  const readOnly = forcedReadOnly || contract?.status !== ContractStatusEnum.ACTIVE;
+  const rights = getContractRequestRights(contract?.status);
+  const readOnly = !rights.canRequestOutbound && !rights.canRequestMove;
+  const attentionQuery = useCustomerInventoryRecords(
+    { contractId, minQuantity: 1, limit: 100 },
+    Boolean(contractId)
+  );
+  const attentionCount = useMemo(
+    () =>
+      (attentionQuery.data?.items ?? []).filter(
+        (item) => item.status && item.status !== InventoryItemStatusEnum.NORMAL
+      ).length,
+    [attentionQuery.data]
+  );
   const { refetch: refetchContract } = contractQuery;
   const { refetch: refetchTree } = treeQuery;
 
@@ -127,19 +147,6 @@ export default function ContractRackMapScreen() {
   const handleRefresh = () => {
     refetchContract();
     if (storageUnitId) refetchTree();
-  };
-
-  const handleApiError = (messageCode?: string) => {
-    if (messageCode === INVENTORY_ERROR.CONTRACT_NOT_ACTIVE) {
-      setForcedReadOnly(true);
-    }
-    if (
-      messageCode === INVENTORY_ERROR.TIER_LOCKED ||
-      messageCode === INVENTORY_ERROR.TIER_NOT_IN_UNIT ||
-      messageCode === INVENTORY_ERROR.CONTRACT_NOT_ACTIVE
-    ) {
-      refetchTree();
-    }
   };
 
   const toggleRack = (rackId: string) => {
@@ -204,12 +211,17 @@ export default function ContractRackMapScreen() {
 
   const handleTierPress = (tier: TreeTier) => setDetailTarget(tier.id);
 
-  const handleAction = (type: StockActionType, item?: TreeTierItem) => {
-    if (detailTarget === undefined) return;
-    setStockForm({ type, tierId: detailTarget, item });
+  /** Opens the request form for a tier (optionally preselecting one item). */
+  const handleRequest = (type: RequestActionType, item?: TreeTierItem) => {
+    const tierId = typeof detailTarget === "string" ? detailTarget : undefined;
+    setDetailTarget(undefined);
+    const params = { id: contractId, tierId, skuId: item?.sku.id };
+    if (type === "outbound") {
+      router.push({ pathname: "/contracts/[id]/outbound/new", params });
+    } else {
+      router.push({ pathname: "/contracts/[id]/move-request", params });
+    }
   };
-
-  const closeStockForm = () => setStockForm(null);
 
   const isLoading = contractQuery.isLoading || (Boolean(storageUnitId) && treeQuery.isLoading);
   const forbidden = treeError?.messageCode === INVENTORY_ERROR.FORBIDDEN;
@@ -235,6 +247,16 @@ export default function ContractRackMapScreen() {
         >
           {t("rackMap.title")}
         </Text>
+        <Pressable
+          onPress={() =>
+            router.push({ pathname: "/contracts/[id]/requests", params: { id: contractId } })
+          }
+          hitSlop={6}
+          accessibilityLabel={t("inventoryRequest.list.title")}
+          className="h-8 w-8 items-center justify-center rounded-full border border-brand/40 active:opacity-70"
+        >
+          <ClipboardList size={15} color="#0B927E" />
+        </Pressable>
         {tree ? (
           <Pressable
             onPress={() => setLocateOpen(true)}
@@ -323,6 +345,28 @@ export default function ContractRackMapScreen() {
               {t("rackMap.readOnlyBanner")}
             </Text>
           </View>
+        ) : rights.overdue ? (
+          <View className="flex-row items-start gap-2 rounded-2xl border border-cta/30 bg-cta-light/60 p-3 dark:bg-cta/10">
+            <Info size={14} color="#D34D0F" />
+            <Text className="flex-1 text-xs leading-4 text-cta-dark">
+              {t("rackMap.overdueBanner")}
+            </Text>
+          </View>
+        ) : null}
+
+        {attentionCount > 0 ? (
+          <Pressable
+            onPress={() =>
+              router.push({ pathname: "/contracts/[id]/attention", params: { id: contractId } })
+            }
+            className="flex-row items-center gap-2.5 rounded-2xl border border-cta/30 bg-cta-light/60 p-3 active:opacity-80 dark:bg-cta/10"
+          >
+            <TriangleAlert size={16} color="#D34D0F" />
+            <Text className="flex-1 text-xs font-bold text-cta-dark">
+              {t("rackMap.attentionBanner", { count: attentionCount })}
+            </Text>
+            <Text className="text-xs font-bold text-cta-dark">{t("rackMap.view")}</Text>
+          </Pressable>
         ) : null}
 
         <RackMapSummaryBar summary={tree.summary} showTiers={hasRacks} />
@@ -354,9 +398,6 @@ export default function ContractRackMapScreen() {
         <UnrackedSection
           items={tree.unrackedItems}
           locationLabel={buildFloorLabel(tree.facility?.code, tree.storageUnit.unitNumber)}
-          onStockIn={
-            !hasRacks && !readOnly ? () => setStockForm({ type: "in", tierId: null }) : undefined
-          }
           highlighted={floorHighlighted}
           dimmed={highlightActive && !floorHighlighted}
           onPress={() => setDetailTarget(null)}
@@ -364,19 +405,6 @@ export default function ContractRackMapScreen() {
       </ScrollView>
     );
   };
-
-  const formProps =
-    tree && stockForm && storageUnitId
-      ? {
-          visible: true,
-          onClose: closeStockForm,
-          contractId,
-          storageUnitId,
-          tree,
-          target: stockForm,
-          onApiError: handleApiError,
-        }
-      : null;
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
@@ -386,12 +414,21 @@ export default function ContractRackMapScreen() {
       {tree && detailTarget !== undefined ? (
         <TierDetailModal
           key={String(detailTarget)}
-          visible={!stockForm && !historyTierId}
+          visible={!historyTierId}
           onClose={() => setDetailTarget(undefined)}
           tree={tree}
           tierId={detailTarget}
-          readOnly={readOnly}
-          onAction={handleAction}
+          rights={rights}
+          onRequest={handleRequest}
+          onReportIncident={() => {
+            const found =
+              typeof detailTarget === "string" ? findTierInTree(tree, detailTarget) : null;
+            setDetailTarget(undefined);
+            router.push({
+              pathname: "/incidents/new",
+              params: { contractId, rackId: found?.rack.id, tierId: found?.tier.id },
+            });
+          }}
           onShowHistory={
             typeof detailTarget === "string" ? () => setHistoryTierId(detailTarget) : undefined
           }
@@ -407,10 +444,56 @@ export default function ContractRackMapScreen() {
         />
       ) : null}
 
-      {formProps && stockForm?.type === "in" ? <StockInModal {...formProps} /> : null}
-      {formProps && stockForm?.type === "out" ? <StockOutModal {...formProps} /> : null}
-      {formProps && stockForm?.type === "move" ? <StockMoveModal {...formProps} /> : null}
-      {formProps && stockForm?.type === "adjust" ? <StockAdjustModal {...formProps} /> : null}
+      {tree && !locateResult ? (
+        <View className="gap-2 border-t border-neutral-border bg-white px-4 pb-5 pt-2.5 dark:border-neutral-800 dark:bg-neutral-900">
+          <Text variant="muted" className="text-center text-[10px]">
+            {t("rackMap.staffOperatedHint")}
+          </Text>
+          <View className="flex-row gap-2">
+            <Pressable
+              disabled={!rights.canRequestMove}
+              onPress={() => handleRequest("move")}
+              className={`flex-1 flex-row items-center justify-center gap-1 rounded-xl border border-neutral-border py-2.5 active:opacity-80 dark:border-neutral-700 ${
+                rights.canRequestMove ? "" : "opacity-40"
+              }`}
+            >
+              <ArrowLeftRight size={13} color="#0B927E" />
+              <Text className="text-[11px] font-bold text-neutral-700 dark:text-neutral-200">
+                {t("rackMap.action.requestMove")}
+              </Text>
+            </Pressable>
+            <Pressable
+              disabled={!rights.canNotifyInbound}
+              onPress={() =>
+                router.push({
+                  pathname: "/contracts/[id]/inbound/new",
+                  params: { id: contractId },
+                })
+              }
+              className={`flex-1 flex-row items-center justify-center gap-1 rounded-xl border border-neutral-border py-2.5 active:opacity-80 dark:border-neutral-700 ${
+                rights.canNotifyInbound ? "" : "opacity-40"
+              }`}
+            >
+              <Truck size={13} color="#0B927E" />
+              <Text className="text-[11px] font-bold text-neutral-700 dark:text-neutral-200">
+                {t("rackMap.action.notifyInbound")}
+              </Text>
+            </Pressable>
+            <Pressable
+              disabled={!rights.canRequestOutbound}
+              onPress={() => handleRequest("outbound")}
+              className={`flex-1 flex-row items-center justify-center gap-1 rounded-xl bg-cta py-2.5 active:opacity-80 ${
+                rights.canRequestOutbound ? "" : "opacity-40"
+              }`}
+            >
+              <ArrowUpFromLine size={13} color="#FFFFFF" />
+              <Text className="text-[11px] font-bold text-white">
+                {t("rackMap.action.requestOutbound")}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
 
       {tree && locateOpen ? (
         <LocateSheet

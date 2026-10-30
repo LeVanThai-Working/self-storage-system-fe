@@ -19,6 +19,7 @@ export const dateStringSchema = z.string().refine((val) => !isNaN(Date.parse(val
   message: "Invalid date format (must be a valid ISO 8601 date string)",
 });
 
+/** Mirrors BE `createReservationSchema`: the customer picks the exact unit and a check-in slot. */
 export const createReservationSchema = z.object({
   facilityId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid facility ID format"),
   storageUnitId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid storage unit ID format"),
@@ -31,8 +32,12 @@ export const createReservationSchema = z.object({
   startDate: dateStringSchema.optional(),
   rentalDuration: z.number().int().min(1, "Rental duration must be at least 1"),
   rentalTargetType: z.nativeEnum(RentalTargetTypeEnum).optional(),
+  /**
+   * Racks picked on the seat map (WAREHOUSE_RACK only). BE reserves them atomically and prices the
+   * booking per rack; an empty list holds the whole unit instead, so send at least one rack.
+   */
   rentedRackIds: z
-    .array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid rack ID format"))
+    .array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid storage rack ID format"))
     .optional(),
   amenities: z.array(reservationAmenityInputSchema).optional().default([]),
   notes: z.string().max(1000).optional(),

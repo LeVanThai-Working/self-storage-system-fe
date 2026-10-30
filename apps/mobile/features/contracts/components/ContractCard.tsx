@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Pressable, ActivityIndicator } from "react-native";
+import { View, Pressable } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -18,7 +18,6 @@ import {
   Droplets,
   KeyRound,
   LayoutGrid,
-  Lock,
   Sparkles,
   Thermometer,
   Video,

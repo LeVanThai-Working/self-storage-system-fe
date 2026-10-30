@@ -1798,9 +1798,12 @@
       "storageUnits": "Phòng kho",
       "sectionFacility": "VẬN HÀNH CƠ SỞ",
       "requests": "Yêu cầu đề xuất",
+      "dashboard": "Tổng quan",
+      "inventoryRequests": "Yêu cầu kho",
+      "incidents": "Sự cố",
+      "supportTickets": "Hỗ trợ khách",
       "payments": "Quản lý thanh toán",
-      "reconciliation": "Đối soát ngân hàng",
-      "dashboard": "Tổng quan"
+      "reconciliation": "Đối soát ngân hàng"
     },
     "sidebar": {
       "assignedFacility": "Cơ sở phụ trách",
@@ -1877,7 +1880,8 @@
         "deleteBlocked": "Không thể xóa phòng đang được đặt chỗ hoặc đang cho thuê",
         "startMaintenance": "Bật bảo trì",
         "reopen": "Hoàn tất bảo trì / Mở lại phòng",
-        "maintenanceBlocked": "Chỉ phòng Còn trống hoặc Đang bảo trì mới chuyển trạng thái bảo trì được"
+        "maintenanceBlocked": "Chỉ phòng Còn trống hoặc Đang bảo trì mới chuyển trạng thái bảo trì được",
+        "rackMap": "Sơ đồ kệ & hàng hoá"
       },
       "formModal": {
         "createTitle": "Thêm Phòng kho mới",
@@ -2476,7 +2480,8 @@
         "holdNote": "Phòng và tiện ích được giữ cho bạn trong 15 phút kể từ khi đặt. Quá hạn mà chưa đóng cọc, đơn sẽ tự hết hạn.",
         "submit": "Đặt giữ chỗ & thanh toán cọc",
         "submitting": "Đang tạo đơn…",
-        "cancel": "Huỷ"
+        "cancel": "Huỷ",
+        "rackEstimate": "Giá thuê kệ ({count} kệ)"
       },
       "errors": {
         "unit": "Vui lòng chọn phòng kho.",
@@ -2484,9 +2489,39 @@
         "slot": "Vui lòng chọn một khung giờ còn chỗ.",
         "startDate": "Ngày bắt đầu thuê phải từ ngày đến nhận kho trở đi.",
         "duration": "Thời hạn thuê tối thiểu là {min}.",
-        "terms": "Vui lòng đồng ý với Điều khoản & Chính sách trước khi tiếp tục."
+        "racks": "Vui lòng chọn ít nhất một kệ trên sơ đồ.",
+        "rackTaken": "Một kệ bạn chọn vừa có người giữ. Sơ đồ đã được tải lại, vui lòng chọn lại.",
+        "terms": "Vui lòng đồng ý Điều khoản & Chính sách đặt chỗ"
       },
-      "terms": "Tôi đã đọc và đồng ý với Điều khoản đặt giữ chỗ & Chính sách hủy/hoàn cọc (24h).",
+      "seatMap": {
+        "entrance": "CỬA RA VÀO · LỐI ĐI CHÍNH",
+        "freeCount": "{free}/{total} phòng còn trống",
+        "floor": "Tầng {floor}",
+        "unavailable": "Phòng này không còn trống",
+        "perMonth": "{price}/tháng",
+        "taken": "Đã thuê",
+        "racksTitle": "Chọn kệ trong phòng",
+        "noRacks": "Phòng này chưa có kệ.",
+        "selection": "{count} kệ · {codes} · {total}/tháng",
+        "estimateNote": "Giá kệ là tạm tính. Cơ sở sẽ xác nhận kệ và giá chính thức.",
+        "legend": {
+          "free": "Còn trống",
+          "picked": "Bạn chọn",
+          "taken": "Đã có người thuê",
+          "maintenance": "Bảo trì"
+        }
+      },
+      "terms": {
+        "freeCancel": "Huỷ trước giờ nhận kho từ {hours} giờ trở lên: hoàn 100% cọc.",
+        "forfeit": "Huỷ sát giờ, hoặc không đến sau thời gian ân hạn: mất 100% cọc.",
+        "accept": "Tôi đồng ý Điều khoản & Chính sách đặt chỗ, huỷ cọc"
+      },
+      "forfeitWarning": {
+        "title": "Cọc sẽ không được hoàn",
+        "body": "Đơn đặt sát giờ hẹn, nếu hủy đơn sau khi thanh toán bạn sẽ không được hoàn lại tiền cọc. Bạn có chắc chắn muốn tiếp tục?",
+        "back": "Quay lại",
+        "continue": "Tiếp tục đặt chỗ"
+      },
       "immediateWarning": {
         "title": "Cảnh báo đặt sát giờ hẹn (< 24 giờ)",
         "description": "Đơn đặt sát giờ hẹn check-in (< 24 giờ). Theo chính sách, nếu bạn hủy đơn sau khi thanh toán cọc, bạn sẽ không được hoàn lại tiền cọc (mất 100% cọc). Bạn có chắc chắn muốn tiếp tục?",
@@ -2645,5 +2680,549 @@
       "facilityFault": "Lỗi cơ sở kho"
     },
     "slaNotice": "Thời gian hoàn tiền dự kiến trong vòng 3 ngày làm việc kể từ khi yêu cầu được phê duyệt."
+  },
+  "inventoryOps": {
+    "requestStatus": {
+      "pending": "Chờ lấy hàng",
+      "pending_confirmation": "Chờ khách xác nhận",
+      "processing": "Đang xử lý",
+      "ready_to_putaway": "Sẵn sàng xếp kệ",
+      "completed": "Hoàn tất",
+      "disputed": "Khiếu nại",
+      "cancelled": "Đã huỷ",
+      "expired": "Hết hạn"
+    },
+    "itemStatus": {
+      "normal": "Bình thường",
+      "temporary_holding": "Lưu tạm",
+      "damaged": "Hư hỏng",
+      "disputed": "Tranh chấp"
+    },
+    "tierSelect": {
+      "placeholder": "Chọn kệ · tầng",
+      "holding": "Khu lưu tạm (hạ khỏi kệ)"
+    },
+    "queue": {
+      "title": "Yêu cầu kho",
+      "subtitle": "Phiếu xuất, phiếu nhập của khách tại cơ sở",
+      "codePlaceholder": "Quét QR hoặc nhập OTP 6 số…",
+      "requestCodePlaceholder": "Mã phiếu REQ-OUT-… / REQ-IN-…",
+      "otpNeedsRequestCode": "Nhập OTP cần kèm mã phiếu",
+      "verify": "Xác thực",
+      "verified": "Mã hợp lệ · {code} chuyển sang Đang xử lý",
+      "type": {
+        "all": "Tất cả",
+        "outbound": "Xuất",
+        "inbound": "Nhập"
+      },
+      "allStatuses": "Tất cả trạng thái",
+      "searchPlaceholder": "Tìm mã phiếu",
+      "receiveInbound": "Tiếp nhận hàng nhập",
+      "col": {
+        "code": "Mã",
+        "type": "Loại",
+        "unit": "Phòng",
+        "items": "Số món",
+        "transporter": "Người giao / nhận",
+        "createdAt": "Tạo lúc",
+        "status": "Trạng thái"
+      },
+      "action": {
+        "detail": "Chi tiết",
+        "handover": "Bàn giao",
+        "putaway": "Xếp lên kệ"
+      },
+      "empty": "Chưa có yêu cầu nào",
+      "pageInfo": "Trang {page}/{pages} · {total} yêu cầu"
+    },
+    "detail": {
+      "notFound": "Không tìm thấy phiếu kho",
+      "outboundTitle": "Bàn giao {code}",
+      "inboundTitle": "Phiếu nhập {code}",
+      "subtitle": "Phòng {unit} · tạo ngày {date}",
+      "col": {
+        "position": "Vị trí",
+        "sku": "Hàng",
+        "requested": "Yêu cầu",
+        "actual": "Thực tế"
+      },
+      "recipient": "Người nhận",
+      "deliverer": "Người giao",
+      "evidence": "Bằng chứng",
+      "discrepancy": "Chênh lệch: {reason}",
+      "hint": {
+        "pending": "Khách chưa tới lấy hàng. Xác thực QR/OTP ở trang Yêu cầu kho khi người nhận có mặt.",
+        "pendingConfirmation": "Đang chờ khách xác nhận phiếu nhập (tự xác nhận sau 24 giờ).",
+        "disputed": "Khách đã khiếu nại phiếu nhập này. Liên hệ khách để đối chiếu."
+      }
+    },
+    "handover": {
+      "verifiedAt": "Mã nhận hàng hợp lệ · xác thực {time}",
+      "pickList": "Danh sách lấy hàng",
+      "actual": "Thực giao",
+      "discrepancyTitle": "Chênh lệch khi bàn giao ({count} mã)",
+      "discrepancyReason": "Lý do giao thiếu",
+      "discrepancyImages": "Ảnh chênh lệch",
+      "discrepancyRequired": "Có hàng giao thiếu, vui lòng nhập lý do",
+      "evidence": "Ảnh bàn giao",
+      "evidenceHint": "Bắt buộc ít nhất 1 ảnh",
+      "evidenceRequired": "Cần ít nhất 1 ảnh bàn giao",
+      "signature": "Chữ ký người nhận",
+      "signatureClear": "Ký lại",
+      "signatureHint": "Ký vào khung (không bắt buộc)",
+      "staffNotes": "Ghi chú nhân viên",
+      "complete": "Hoàn tất bàn giao ({count} món)",
+      "completed": "Đã hoàn tất bàn giao"
+    },
+    "putaway": {
+      "title": "Xếp hàng lên kệ",
+      "tier": "Tầng xếp",
+      "hint": "Chỉ chọn kệ thuộc hợp đồng của khách. Kệ khách khác sẽ bị từ chối (637).",
+      "missingTier": "Còn {count} mã hàng chưa chọn tầng",
+      "submit": "Hoàn tất xếp kệ",
+      "done": "Đã xếp hàng lên kệ, tồn kho đã cập nhật"
+    },
+    "inbound": {
+      "back": "Yêu cầu kho",
+      "title": "Tiếp nhận hàng nhập",
+      "subtitle": "Lập phiếu khi hàng của khách tới kho. Khách xác nhận xong mới cộng tồn.",
+      "contract": "Hợp đồng",
+      "contractPlaceholder": "Chọn hợp đồng đang hiệu lực",
+      "contractRequired": "Vui lòng chọn hợp đồng",
+      "items": "Hàng tiếp nhận",
+      "newSku": "Tạo mã hàng hộ",
+      "skuPlaceholder": "Chọn mã hàng",
+      "addRow": "Thêm dòng",
+      "tierHint": "Có thể chọn sẵn tầng, hoặc để trống và xếp kệ sau khi khách xác nhận.",
+      "itemsRequired": "Cần ít nhất 1 mã hàng với số lượng hợp lệ",
+      "evidence": "Ảnh tiếp nhận",
+      "evidenceHint": "Bắt buộc tối thiểu {min} ảnh: xe giao, tình trạng kiện, phiếu giao",
+      "evidenceMin": "Cần tối thiểu {min} ảnh tiếp nhận",
+      "transporter": "Người giao hàng",
+      "transporterName": "Họ tên",
+      "transporterPhone": "Số điện thoại",
+      "transporterPlate": "Biển số xe",
+      "transporterCompany": "Đơn vị vận chuyển",
+      "transporterRequired": "Cần họ tên và số điện thoại người giao",
+      "signature": "Chữ ký người giao",
+      "signatureClear": "Ký lại",
+      "signatureHint": "Ký vào khung (không bắt buộc)",
+      "staffNotes": "Ghi chú (VD: 1 kiện móp góc)",
+      "submit": "Tạo phiếu nhập",
+      "created": "Đã tạo phiếu {code}, chờ khách xác nhận",
+      "customerConfirmHint": "Khách nhận thông báo và có 24 giờ để xác nhận hoặc khiếu nại.",
+      "newSkuTitle": "Tạo mã hàng cho {customer}",
+      "newSkuCode": "Mã SKU",
+      "newSkuName": "Tên hàng",
+      "newSkuUom": "Đơn vị tính",
+      "newSkuSave": "Tạo mã hàng",
+      "skuCreated": "Đã tạo mã hàng {code}",
+      "cancel": "Huỷ"
+    },
+    "unit": {
+      "back": "Phòng kho",
+      "title": "Kho hàng · Phòng {unit}",
+      "subtitle": "Sơ đồ kệ và thao tác trên hàng",
+      "subtitleContract": "Sơ đồ kệ và thao tác trên hàng · HĐ {code}",
+      "treeForbidden": "Bạn chỉ xem được hàng trên kệ của phòng thuộc cơ sở mình phụ trách. Sơ đồ kệ vẫn hiển thị.",
+      "entrance": "CỬA RA VÀO · LỐI ĐI CHÍNH",
+      "noRacks": "Phòng này chưa có kệ",
+      "aisle": "Dãy {aisle}",
+      "legend": {
+        "rented": "Đang thuê",
+        "free": "Còn trống",
+        "maintenance": "Bảo trì"
+      },
+      "pickRack": "Chọn một kệ trên sơ đồ",
+      "rackTitle": "Kệ {rack}",
+      "tiers": "{count} tầng",
+      "rackIncident": "Sự cố kệ",
+      "emptyTier": "Tầng trống",
+      "pickItem": "Chọn một món hàng để thao tác",
+      "action": {
+        "move": "Dời hàng",
+        "adjust": "Kiểm kê",
+        "status": "Trạng thái"
+      },
+      "moveTo": "Chuyển đến",
+      "quantity": "Số lượng",
+      "ticketCode": "Theo yêu cầu (mã SUP)",
+      "countedQuantity": "Số lượng thực tế",
+      "systemQuantity": "Hệ thống: {qty}",
+      "newStatus": "Trạng thái mới",
+      "itemStatus": {
+        "normal": "Bình thường",
+        "temporary_holding": "Lưu tạm",
+        "damaged": "Hư hỏng",
+        "disputed": "Tranh chấp"
+      },
+      "incidentId": "Mã sự cố (ID)",
+      "incidentIdPlaceholder": "ID sự cố liên quan (nếu có)",
+      "reason": "Lý do",
+      "reasonMin": "Lý do tối thiểu {min} ký tự",
+      "notifyHint": "Lý do được lưu vào lịch sử hàng của khách.",
+      "pickTarget": "Chọn vị trí chuyển đến",
+      "noContract": "Không xác định được hợp đồng của phòng này",
+      "submit": {
+        "move": "Xác nhận đã dời",
+        "adjust": "Cập nhật kiểm kê",
+        "status": "Cập nhật trạng thái"
+      },
+      "moved": "Đã dời hàng",
+      "adjusted": "Đã cập nhật kiểm kê",
+      "statusUpdated": "Đã cập nhật trạng thái hàng",
+      "incidentRequired": "Đánh dấu hư hỏng cần mã sự cố hợp lệ (24 ký tự)"
+    },
+    "rackIncident": {
+      "title": "Xử lý sự cố kệ {rack}",
+      "subtitle": "Di dời hàng an toàn và cập nhật tình trạng kệ",
+      "mode": {
+        "migrate": "Dời cả kệ sang kệ mới",
+        "evacuate": "Hạ xuống khu lưu tạm"
+      },
+      "target": "Kệ đích",
+      "targetPlaceholder": "Chọn kệ trống cùng số tầng",
+      "targetHint": "Chỉ kệ trống, sẵn sàng và có cùng số tầng mới hợp lệ.",
+      "tiers": "{count} tầng",
+      "notFree": "không trống",
+      "evacuateHint": "Toàn bộ hàng trên kệ chuyển sang Lưu tạm và không xuất được cho tới khi xếp lại.",
+      "basis": "Căn cứ",
+      "basisOption": {
+        "incident": "Theo sự cố đã báo",
+        "addendum": "Theo phụ lục hợp đồng đã ký",
+        "emergency": "Lý do khẩn cấp"
+      },
+      "incidentIdPlaceholder": "ID sự cố",
+      "addendumIdPlaceholder": "ID phụ lục",
+      "emergencyPlaceholder": "Mô tả lý do (tối thiểu 10 ký tự)",
+      "pickTarget": "Vui lòng chọn kệ đích",
+      "basisRequired": "Cần sự cố, phụ lục hoặc lý do khẩn cấp (≥10 ký tự)",
+      "evacuateBasisRequired": "Cần sự cố hoặc lý do khẩn cấp (≥10 ký tự)",
+      "migrateNote": "Di dời khẩn cấp đưa kệ cũ sang Bảo trì; di dời theo phụ lục trả kệ cũ về Còn trống.",
+      "evacuateNote": "Kệ sẽ chuyển sang Bảo trì.",
+      "migrated": "Đã dời {count} món sang kệ {to}",
+      "evacuated": "Đã hạ {count} món xuống khu lưu tạm",
+      "submitMigrate": "Xác nhận di dời",
+      "submitEvacuate": "Hạ xuống khu lưu tạm",
+      "cancel": "Huỷ"
+    }
+  },
+  "supportDesk": {
+    "title": "Hỗ trợ khách",
+    "subtitle": "Yêu cầu từ khách hàng thuộc cơ sở",
+    "kpi": {
+      "urgentPending": "Khẩn chờ tiếp nhận"
+    },
+    "tabs": {
+      "all": "Tất cả"
+    },
+    "status": {
+      "pending": "Chờ tiếp nhận",
+      "processing": "Đang xử lý",
+      "completed": "Đã hoàn tất",
+      "cancelled": "Đã huỷ"
+    },
+    "priority": {
+      "low": "Thấp",
+      "medium": "Trung bình",
+      "high": "Cao",
+      "urgent": "Khẩn"
+    },
+    "category": {
+      "billing_inquiry": "Thanh toán",
+      "contract_inquiry": "Hợp đồng",
+      "unit_change_request": "Đổi phòng kho",
+      "access_pin_reset": "Đặt lại mã PIN",
+      "service_complaint": "Khiếu nại dịch vụ",
+      "procedural_assistance": "Hướng dẫn thủ tục",
+      "general_inquiry": "Câu hỏi chung",
+      "inventory_move_request": "Chuyển vị trí hàng"
+    },
+    "searchPlaceholder": "Tìm mã, tiêu đề…",
+    "filter": {
+      "allCategories": "Tất cả loại",
+      "allPriorities": "Mọi mức ưu tiên"
+    },
+    "col": {
+      "code": "Mã",
+      "customer": "Khách hàng",
+      "category": "Loại",
+      "title": "Tiêu đề",
+      "priority": "Ưu tiên",
+      "contract": "Hợp đồng",
+      "assignee": "Phụ trách",
+      "createdAt": "Tạo lúc",
+      "status": "Trạng thái"
+    },
+    "empty": "Không có yêu cầu nào",
+    "pageInfo": "Trang {page}/{pages} · {total} yêu cầu",
+    "sheet": {
+      "kicker": "Chi tiết yêu cầu",
+      "customer": "Khách hàng",
+      "content": "Nội dung yêu cầu",
+      "openContract": "Mở hợp đồng của khách",
+      "acceptTitle": "Tiếp nhận yêu cầu",
+      "assignSelf": "Tôi tự nhận xử lý",
+      "accept": "Nhận xử lý",
+      "accepted": "Đã tiếp nhận yêu cầu",
+      "staff": "Nhân viên cơ sở",
+      "responseTitle": "Phản hồi khách",
+      "responsePlaceholder": "Nội dung phản hồi chính thức gửi khách",
+      "responseMin": "Phản hồi cần tối thiểu {min} ký tự",
+      "attachments": "Ảnh đính kèm (tối đa {max})",
+      "complete": "Gửi phản hồi & hoàn tất",
+      "completed": "Đã gửi phản hồi, yêu cầu hoàn tất",
+      "cancelReason": "Khách đã huỷ: {reason}",
+      "openRackMap": "Mở sơ đồ kệ của khách"
+    }
+  },
+  "incidentDesk": {
+    "title": "Sự cố cơ sở",
+    "subtitle": "Báo cáo hỏng hóc, thấm dột, an ninh từ khách và nhân viên",
+    "report": "Báo sự cố",
+    "searchPlaceholder": "Tìm mã, tiêu đề…",
+    "empty": "Không có sự cố nào",
+    "pageInfo": "Trang {page}/{pages} · {total} sự cố",
+    "kpi": {
+      "reported": "Chờ phân công",
+      "investigating": "Đang khảo sát",
+      "resolved": "Đã xử lý – chờ đóng",
+      "critical": "Khẩn cấp chờ phân công",
+      "closed": "Đã đóng"
+    },
+    "filter": {
+      "allStatuses": "Tất cả trạng thái",
+      "allCategories": "Tất cả loại",
+      "allSeverities": "Mọi mức độ"
+    },
+    "col": {
+      "code": "Mã",
+      "severity": "Mức độ",
+      "category": "Loại",
+      "title": "Tiêu đề",
+      "location": "Vị trí",
+      "reporter": "Người báo",
+      "assignee": "Phụ trách",
+      "createdAt": "Tạo lúc",
+      "status": "Trạng thái"
+    },
+    "status": {
+      "reported": "Đã tiếp nhận",
+      "assigned": "Đã phân công",
+      "investigating": "Đang khảo sát",
+      "in_progress": "Đang sửa chữa",
+      "resolved": "Đã xử lý",
+      "closed": "Đã đóng",
+      "cancelled": "Đã huỷ"
+    },
+    "severity": {
+      "low": "Thấp",
+      "medium": "Trung bình",
+      "high": "Cao",
+      "critical": "Khẩn cấp"
+    },
+    "category": {
+      "structural": "Kết cấu",
+      "electrical": "Điện",
+      "water_leak": "Thấm dột",
+      "security": "An ninh",
+      "cleanliness": "Vệ sinh",
+      "other": "Khác",
+      "facility_damage": "Hư hại cơ sở vật chất",
+      "equipment_failure": "Hỏng hóc thiết bị",
+      "fire_water": "Cháy nổ / Ngập lụt",
+      "security_breach": "Vi phạm an ninh",
+      "natural_disaster": "Thiên tai / Bão lũ",
+      "power_outage": "Sự cố mất điện"
+    },
+    "form": {
+      "title": "Báo sự cố",
+      "unit": "Phòng kho (tuỳ chọn)",
+      "commonArea": "Khu vực chung",
+      "floor": "Tầng {floor}",
+      "category": "Loại sự cố",
+      "severity": "Mức độ",
+      "titleLabel": "Tiêu đề",
+      "description": "Mô tả",
+      "images": "Ảnh hiện trường (ít nhất 1)",
+      "imagesRequired": "Cần ít nhất 1 ảnh hiện trường",
+      "titleInvalid": "Tiêu đề cần từ 3 đến 200 ký tự",
+      "descriptionInvalid": "Mô tả cần từ 5 đến 2000 ký tự",
+      "cancel": "Huỷ",
+      "submit": "Gửi báo cáo",
+      "created": "Đã tạo sự cố {code}"
+    },
+    "detail": {
+      "notFound": "Không tìm thấy sự cố",
+      "reportTitle": "Thông tin báo cáo",
+      "reporter": "Người báo",
+      "contract": "Hợp đồng",
+      "commonArea": "Khu vực chung",
+      "unit": "Phòng {unit}",
+      "rack": "Kệ {rack}",
+      "tier": "Tầng T{tier}",
+      "role": {
+        "customer": "Khách hàng",
+        "facility_staff": "Nhân viên",
+        "facility_manager": "Quản lý cơ sở",
+        "business_ops_manager": "Vận hành",
+        "system_admin": "Quản trị"
+      }
+    },
+    "timeline": {
+      "title": "Tiến trình",
+      "reported": "{name} báo sự cố",
+      "assigned": "Phân công cho {name}",
+      "investigated": "Đã khảo sát",
+      "needsRelocation": "Cần di dời hàng",
+      "resolved": "Đã lập biên bản xử lý",
+      "closed": "Đã nghiệm thu và đóng",
+      "cancelled": "Đã huỷ sự cố"
+    },
+    "warehouse": {
+      "title": "Liên quan kho",
+      "subtitle": "Sự cố trên kệ ở mức nghiêm trọng. Có thể di dời hàng khẩn cấp.",
+      "open": "Xử lý sự cố kệ {rack}"
+    },
+    "action": {
+      "title": "Xử lý",
+      "view": "Xem",
+      "assign": "Phân công",
+      "assignLabel": "Phân công nhân viên",
+      "assignPlaceholder": "Chọn nhân viên",
+      "assigned": "Đã phân công",
+      "assignedTo": "Phụ trách: {name}",
+      "investigateLabel": "Ghi chú khảo sát",
+      "putUnitUnderMaintenance": "Đưa phòng vào bảo trì (chỉ áp dụng phòng trống)",
+      "requiresRelocation": "Cần di dời hàng",
+      "saveInvestigation": "Lưu khảo sát",
+      "investigated": "Đã lưu khảo sát",
+      "resolveTitle": "Lập biên bản xử lý",
+      "solution": "Giải pháp đã thực hiện",
+      "evidence": "Ảnh sau xử lý (ít nhất 1)",
+      "evidenceRequired": "Cần ít nhất 1 ảnh sau xử lý",
+      "liableParty": "Bên chịu lỗi",
+      "liable": {
+        "customer": "Khách hàng",
+        "facility": "Cơ sở",
+        "third_party": "Bên thứ ba",
+        "force_majeure": "Bất khả kháng"
+      },
+      "repairCost": "Chi phí sửa chữa (₫)",
+      "damageFee": "Phí bồi thường khách trả (₫)",
+      "damageFeeHint": "Phí bồi thường chỉ áp dụng khi bên chịu lỗi là khách hàng và được cộng vào hợp đồng khi đóng sự cố.",
+      "resolve": "Hoàn tất xử lý",
+      "resolved": "Đã lập biên bản xử lý",
+      "resolutionTitle": "Biên bản xử lý",
+      "feeShort": "phí bồi thường {fee}",
+      "closeNotes": "Ghi chú nghiệm thu (tuỳ chọn)",
+      "close": "Nghiệm thu & đóng sự cố",
+      "closed": "Đã đóng sự cố",
+      "cancelReason": "Lý do huỷ (tối thiểu 5 ký tự)",
+      "cancel": "Huỷ sự cố",
+      "cancelled": "Đã huỷ sự cố",
+      "textMin": "Nội dung cần tối thiểu {min} ký tự",
+      "nothingToDo": "Bạn không có thao tác nào ở bước này."
+    }
+  },
+  "rackStructure": {
+    "back": "Phòng kho",
+    "title": "Phòng {unit} · Kho kệ thuê chung",
+    "floor": "Tầng {floor}",
+    "zone": "Khu {zone}",
+    "tabs": {
+      "structure": "Cấu trúc kệ",
+      "goods": "Hàng hoá"
+    },
+    "provision": "Tự sinh kệ theo cấu hình",
+    "provisioned": "Đã sinh {count} kệ mới",
+    "kpi": {
+      "total": "Tổng kệ",
+      "rented": "Đang thuê",
+      "free": "Còn trống",
+      "maintenance": "Bảo trì"
+    },
+    "mapTitle": "Sơ đồ kệ phòng {unit}",
+    "entrance": "CỬA RA VÀO · LỐI ĐI CHÍNH",
+    "empty": "Phòng này chưa có kệ.",
+    "emptyManager": "Phòng này chưa có kệ. Dùng \"Tự sinh kệ theo cấu hình\" hoặc \"Tạo kệ\".",
+    "perMonth": "{price}/tháng",
+    "tiers": "{count} tầng",
+    "legend": {
+      "rented": "Đang thuê",
+      "reserved": "Đã giữ chỗ",
+      "free": "Còn trống",
+      "maintenance": "Bảo trì",
+      "inactive": "Ngưng dùng"
+    },
+    "status": {
+      "available": "Còn trống",
+      "reserved": "Đã giữ chỗ",
+      "rented": "Đang thuê",
+      "active": "Còn trống",
+      "maintenance": "Bảo trì",
+      "inactive": "Ngưng dùng"
+    },
+    "tierStatus": {
+      "available": "Trống",
+      "occupied": "Có hàng",
+      "maintenance": "Bảo trì",
+      "inactive": "Ngưng dùng"
+    },
+    "create": {
+      "open": "Tạo kệ",
+      "title": "Tạo kệ mới",
+      "subtitle": "Thêm kệ thủ công trong phòng {unit}",
+      "rackCode": "Mã kệ",
+      "name": "Tên kệ",
+      "aisle": "Dãy",
+      "bay": "Ô",
+      "zone": "Zone",
+      "zoneNone": "Chưa chọn",
+      "customPrice": "Giá riêng (₫/tháng)",
+      "customPriceHint": "Để trống = theo giá zone",
+      "tierCount": "Số tầng",
+      "maxWeight": "Tải trọng mặc định mỗi tầng (kg)",
+      "dimensions": "Kích thước tầng (D×R×C cm)",
+      "length": "Dài",
+      "width": "Rộng",
+      "height": "Cao",
+      "notes": "Ghi chú",
+      "invalid": "Thông tin kệ chưa hợp lệ, kiểm tra mã kệ và số tầng",
+      "codeTaken": "Mã kệ đã tồn tại trong phòng",
+      "cancel": "Huỷ",
+      "submit": "Tạo kệ",
+      "created": "Đã tạo kệ {code}"
+    },
+    "detail": {
+      "title": "Kệ {code}",
+      "aisle": "Dãy {aisle}",
+      "bay": "Ô {bay}",
+      "infoTitle": "Thông tin kệ",
+      "name": "Tên kệ",
+      "aisleLabel": "Dãy",
+      "bayLabel": "Ô",
+      "zone": "Zone",
+      "customPrice": "Giá riêng (₫/tháng)",
+      "customPriceHint": "Để trống = theo giá zone",
+      "status": "Trạng thái",
+      "zonePriceNote": "Đang áp dụng giá zone {price}",
+      "notes": "Ghi chú",
+      "tiersTitle": "Các tầng ({count})",
+      "tiersHint": "Thể tích tự tính khi đổi kích thước. Tầng ở trạng thái Bảo trì hoặc Ngưng dùng sẽ không nhận hàng mới.",
+      "col": {
+        "tier": "Tầng",
+        "code": "Mã tầng",
+        "maxWeight": "Tải trọng (kg)",
+        "dimensions": "D×R×C (cm)",
+        "volume": "Thể tích",
+        "status": "Trạng thái"
+      },
+      "edit": "Sửa",
+      "close": "Đóng",
+      "save": "Lưu thay đổi",
+      "saved": "Đã cập nhật kệ {code}",
+      "tierSaved": "Đã cập nhật tầng {tier}"
+    }
   }
 }
