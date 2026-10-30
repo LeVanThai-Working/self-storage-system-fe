@@ -119,7 +119,7 @@ export function ReservationDetailPage({ id }: { id: string }) {
           <Row label={t("checkInDate")} value={formatDate(r.checkInDate)} />
           <Row label={t("checkInSlot")} value={r.checkInTimeSlot} />
           <Row label={t("startDate")} value={formatDate(r.startDate)} />
-          <Row label={t("duration")} value={`${r.rentalDuration} ${tBilling(r.billingUnit)}`} />
+          <Row label={t("duration")} value={t("durationDays", { count: r.rentalDuration })} />
         </Card>
 
         <Card title={t("sections.payment")}>

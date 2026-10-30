@@ -48,6 +48,14 @@ export interface ReservationResponse {
     | "overdue";
   expiresAt?: string | null;
   graceExpiresAt?: string | null;
+  arrivedAt?: string | null;
+  arrivedBy?: UserSnapshot | null;
+  earlyCheckIn?: boolean | null;
+  outOfSlot?: boolean | null;
+  graceExtendedAt?: string | null;
+  graceExtensionReason?: string | null;
+  /** Set while a unit reassignment proposal is awaiting the customer. */
+  pendingUnitChange?: unknown | null;
   receivedBy?: UserSnapshot | null;
   receivedAt?: string | null;
   assignedBy?: UserSnapshot | null;

@@ -106,9 +106,9 @@ export function ReservationFormPage({
   const [duration, setDuration] = useState("");
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [tried, setTried] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
   const [forfeitConfirmOpen, setForfeitConfirmOpen] = useState(false);
 
   const slots = useAvailableTimeSlots(facilityId, checkInDate);
@@ -397,7 +397,7 @@ export function ReservationFormPage({
             </div>
 
             <Field
-              label={t("schedule.duration", { unit: tBilling(offering.billingUnit) })}
+              label={t("schedule.duration")}
               hint={t("schedule.durationHint", { min: offering.minRentalDays })}
             >
               <Input
@@ -455,6 +455,16 @@ export function ReservationFormPage({
               onChange={(e) => setNotes(e.target.value)}
             />
           </Section>
+
+          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-neutral-border bg-white p-5 text-sm">
+            <input
+              type="checkbox"
+              className="mt-0.5 size-4 accent-brand"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+            />
+            <span>{t("terms.label")}</span>
+          </label>
         </div>
 
         <aside className="h-fit space-y-4 rounded-2xl border border-neutral-border bg-white p-5 lg:sticky lg:top-28">

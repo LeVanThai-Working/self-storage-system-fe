@@ -73,6 +73,25 @@ export {
   type StorageUnitResponse,
 };
 
+export interface MarkReservationArrivedRequest {
+  notes?: string;
+}
+
+export interface ExtendReservationGraceRequest {
+  /** 1-72 hours */
+  extensionHours: number;
+  /** 5-500 characters */
+  reason: string;
+}
+
+export interface ReassignReservationUnitRequest {
+  newStorageUnitId: string;
+  /** 3-500 characters */
+  reason: string;
+  oldUnitStatus?: "under_maintenance" | "available";
+  customerAgreed?: boolean;
+}
+
 export type ManagerReservationQuickTab =
   | "ALL"
   | "PENDING"

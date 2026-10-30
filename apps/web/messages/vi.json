@@ -2251,6 +2251,56 @@
         "submitting": "Đang xác nhận...",
         "success": "Đã xác nhận chốt đơn đặt chỗ thành công!"
       },
+      "flowActions": {
+        "buttons": {
+          "markArrived": "Khách đã đến",
+          "extendGrace": "Gia hạn chờ",
+          "reassignUnit": "Đổi ô kho"
+        },
+        "arrived": {
+          "title": "Xác nhận khách đã đến",
+          "subtitle": "Đơn {code}: ghi nhận khách đã có mặt tại cơ sở để làm thủ tục check-in.",
+          "notes": "Ghi chú (không bắt buộc)",
+          "close": "Đóng",
+          "submit": "Xác nhận đã đến",
+          "submitting": "Đang lưu...",
+          "success": "Đã ghi nhận khách đến cơ sở."
+        },
+        "grace": {
+          "title": "Gia hạn thời gian chờ check-in",
+          "subtitle": "Đơn {code}: cho khách thêm thời gian đến nhận kho.",
+          "hours": "Số giờ gia hạn",
+          "hoursHint": "Từ 1 đến 72 giờ.",
+          "reason": "Lý do (tối thiểu 5 ký tự)",
+          "close": "Đóng",
+          "submit": "Gia hạn",
+          "submitting": "Đang lưu...",
+          "success": "Đã gia hạn thời gian chờ.",
+          "errorHours": "Số giờ gia hạn phải là số nguyên từ 1 đến 72.",
+          "errorReason": "Vui lòng nhập lý do (tối thiểu 5 ký tự)."
+        },
+        "reassign": {
+          "title": "Đổi ô kho cho đơn",
+          "subtitle": "Đơn {code} đang ở ô {unit}. Chọn ô kho trống cùng loại để thay thế.",
+          "newUnit": "Ô kho mới",
+          "pickUnit": "Chọn ô kho trống...",
+          "loadingUnits": "Đang tải ô kho...",
+          "noUnits": "Hiện không có ô kho trống cùng loại.",
+          "floor": "Tầng {floor}",
+          "reason": "Lý do đổi (tối thiểu 3 ký tự)",
+          "oldUnitStatus": "Trạng thái ô kho cũ sau khi đổi",
+          "oldUnderMaintenance": "Chuyển sang bảo trì",
+          "oldAvailable": "Trả về trống",
+          "customerAgreed": "Khách hàng đã đồng ý đổi ô kho (áp dụng ngay, không cần chờ khách phản hồi)",
+          "close": "Đóng",
+          "submit": "Đổi ô kho",
+          "submitting": "Đang lưu...",
+          "successApplied": "Đã đổi ô kho.",
+          "successProposed": "Đã gửi đề xuất đổi ô kho, chờ khách phản hồi.",
+          "errorUnit": "Vui lòng chọn ô kho mới.",
+          "errorReason": "Vui lòng nhập lý do (tối thiểu 3 ký tự)."
+        }
+      },
       "assignStaffModal": {
         "title": "Phân công / Đổi nhân viên tiếp đón",
         "subtitle": "Chỉ định nhân viên cơ sở phụ trách đón tiếp khách hàng khi đến làm thủ tục check-in.",
@@ -2301,6 +2351,10 @@
         "referenceCodePlaceholder": "Ví dụ: FT26085123456 hoặc số phiếu thu...",
         "noteLabel": "Ghi chú đối soát (bắt buộc)",
         "notePlaceholder": "Nhập nội dung xác minh giao dịch (tối thiểu 2 ký tự, ví dụ: Đã nhận đủ tiền mặt tại quầy lễ tân)...",
+        "validationProofRequired": "Vui lòng tải lên ảnh biên lai hoặc ảnh chứng từ thu tiền.",
+        "proofLabelTransfer": "Ủy nhiệm chi / Biên lai chuyển khoản (bắt buộc) *",
+        "proofLabelCash": "Phiếu thu / Ảnh chụp tiền mặt đã thu (bắt buộc) *",
+        "proofDescription": "Tải lên ảnh chụp chứng từ để đối soát",
         "validationNoteRequired": "Vui lòng nhập ghi chú đối soát từ 2 đến 1000 ký tự.",
         "noPaymentSessionError": "Không tìm thấy phiên thanh toán hợp lệ để xác nhận.",
         "close": "Đóng",
@@ -2439,8 +2493,8 @@
         "noSlots": "Cơ sở chưa mở khung giờ nào cho ngày này.",
         "left": "còn {count} chỗ",
         "full": "đã đầy",
-        "duration": "Thời hạn thuê ({unit})",
-        "durationHint": "Tối thiểu {min}."
+        "duration": "Thời hạn thuê (ngày)",
+        "durationHint": "Tối thiểu {min} ngày."
       },
       "amenities": {
         "title": "3. Tiện ích kèm theo (tuỳ chọn)",
@@ -2448,6 +2502,9 @@
         "free": "Miễn phí",
         "left": "còn {count}",
         "quantity": "Số lượng {name}"
+      },
+      "terms": {
+        "label": "Tôi đồng ý với điều khoản đặt giữ chỗ (bắt buộc)."
       },
       "notes": {
         "title": "Ghi chú",
@@ -2581,6 +2638,7 @@
       "checkInSlot": "Khung giờ",
       "startDate": "Ngày bắt đầu thuê",
       "duration": "Thời hạn thuê",
+      "durationDays": "{count} ngày",
       "price": "Đơn giá",
       "deposit": "Tiền cọc",
       "paid": "Đã thanh toán",

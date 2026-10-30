@@ -2251,6 +2251,56 @@
         "submitting": "Confirming...",
         "success": "Reservation confirmed successfully!"
       },
+      "flowActions": {
+        "buttons": {
+          "markArrived": "Customer arrived",
+          "extendGrace": "Extend grace",
+          "reassignUnit": "Change unit"
+        },
+        "arrived": {
+          "title": "Confirm customer arrival",
+          "subtitle": "Reservation {code}: record that the customer is at the facility for check-in.",
+          "notes": "Notes (optional)",
+          "close": "Close",
+          "submit": "Confirm arrival",
+          "submitting": "Saving...",
+          "success": "Customer arrival recorded."
+        },
+        "grace": {
+          "title": "Extend check-in grace period",
+          "subtitle": "Reservation {code}: give the customer more time to pick up the unit.",
+          "hours": "Hours to extend",
+          "hoursHint": "Between 1 and 72 hours.",
+          "reason": "Reason (at least 5 characters)",
+          "close": "Close",
+          "submit": "Extend",
+          "submitting": "Saving...",
+          "success": "Grace period extended.",
+          "errorHours": "Hours must be a whole number from 1 to 72.",
+          "errorReason": "Please enter a reason (at least 5 characters)."
+        },
+        "reassign": {
+          "title": "Change storage unit",
+          "subtitle": "Reservation {code} is on unit {unit}. Pick a free unit of the same type to replace it.",
+          "newUnit": "New unit",
+          "pickUnit": "Pick an available unit...",
+          "loadingUnits": "Loading units...",
+          "noUnits": "No free unit of the same type right now.",
+          "floor": "Floor {floor}",
+          "reason": "Reason (at least 3 characters)",
+          "oldUnitStatus": "Old unit status after the change",
+          "oldUnderMaintenance": "Set to maintenance",
+          "oldAvailable": "Release as available",
+          "customerAgreed": "Customer already agreed to the change (applies immediately, no need to wait for their reply)",
+          "close": "Close",
+          "submit": "Change unit",
+          "submitting": "Saving...",
+          "successApplied": "Unit changed.",
+          "successProposed": "Proposal sent, waiting for the customer to respond.",
+          "errorUnit": "Please pick a new unit.",
+          "errorReason": "Please enter a reason (at least 3 characters)."
+        }
+      },
       "assignStaffModal": {
         "title": "Assign / Reassign Staff",
         "subtitle": "Assign facility staff in charge of welcoming the customer and supporting check-in.",
@@ -2301,6 +2351,10 @@
         "referenceCodePlaceholder": "e.g. FT26085123456 or receipt number...",
         "noteLabel": "Verification Note (required)",
         "notePlaceholder": "Enter payment verification note (2–1000 characters, e.g. Received cash in full at reception)...",
+        "validationProofRequired": "Please upload the receipt or payment proof image.",
+        "proofLabelTransfer": "Transfer slip / bank receipt (required) *",
+        "proofLabelCash": "Receipt / photo of the cash collected (required) *",
+        "proofDescription": "Upload a photo of the proof for reconciliation",
         "validationNoteRequired": "Please enter a verification note between 2 and 1000 characters.",
         "noPaymentSessionError": "No active payment session found to confirm.",
         "close": "Close",
@@ -2439,8 +2493,8 @@
         "noSlots": "The facility has no time slots open for this date.",
         "left": "{count} left",
         "full": "full",
-        "duration": "Rental period ({unit})",
-        "durationHint": "Minimum {min}."
+        "duration": "Rental period (days)",
+        "durationHint": "Minimum {min} days."
       },
       "amenities": {
         "title": "3. Add-ons (optional)",
@@ -2448,6 +2502,9 @@
         "free": "Free",
         "left": "{count} left",
         "quantity": "Quantity of {name}"
+      },
+      "terms": {
+        "label": "I accept the reservation terms (required)."
       },
       "notes": {
         "title": "Notes",
@@ -2581,6 +2638,7 @@
       "checkInSlot": "Time slot",
       "startDate": "Rental start date",
       "duration": "Rental period",
+      "durationDays": "{count} days",
       "price": "Unit price",
       "deposit": "Deposit",
       "paid": "Paid",

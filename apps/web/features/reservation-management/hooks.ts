@@ -11,7 +11,10 @@ import {
   fetchManagerReservations,
   fetchManagerReservationStatusCount,
   fetchPaymentsByReservation,
+  extendReservationGrace,
   fetchReservationById,
+  markReservationArrived,
+  reassignReservationUnit,
   receiveReservation,
   rejectReservation,
 } from "./api";
@@ -23,6 +26,9 @@ import {
   type CancelReservationRequest,
   type ConfirmManualPaymentRequest,
   type ConfirmReservationRequest,
+  type ExtendReservationGraceRequest,
+  type MarkReservationArrivedRequest,
+  type ReassignReservationUnitRequest,
   type ManagerReservationFilterParams,
   type RejectReservationRequest,
 } from "./types";
@@ -265,6 +271,33 @@ export const useConfirmManualPayment = () => {
       paymentId: string;
       payload: ConfirmManualPaymentRequest;
     }) => confirmManualPayment(paymentId, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useMarkReservationArrived = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: MarkReservationArrivedRequest }) =>
+      markReservationArrived(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useExtendReservationGrace = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: ExtendReservationGraceRequest }) =>
+      extendReservationGrace(id, payload),
+    onSuccess: invalidateAll,
+  });
+};
+
+export const useReassignReservationUnit = () => {
+  const invalidateAll = useInvalidateReservationQueries();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: ReassignReservationUnitRequest }) =>
+      reassignReservationUnit(id, payload),
     onSuccess: invalidateAll,
   });
 };
