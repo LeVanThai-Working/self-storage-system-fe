@@ -33,3 +33,9 @@ export { Text } from "./text";
 export type { TextProps } from "./text";
 
 export { GlobalToast } from "./toast";
+
+export { BottomSheet } from "./bottom-sheet";
+export { ImagePickerField } from "./image-picker-field";
+export { FieldLabel, FieldError } from "./form-field";
+export { StatusPill, TONE_CLASS } from "./status-pill";
+export type { StatusTone } from "./status-pill";

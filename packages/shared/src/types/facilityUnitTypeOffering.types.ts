@@ -9,6 +9,8 @@ export interface FacilityUnitTypeOfferingResponse {
   unitType: UnitTypeSnapshot;
   billingUnit: BillingUnitEnum;
   pricePerUnit: number;
+  /** WAREHOUSE_RACK only: monthly price per rack by zone (a rack's customPrice overrides it). */
+  rackZonePricing?: Record<"PRIME" | "STANDARD" | "ECONOMY", number> | null;
   depositMultiplier: number;
   minRentalDays: number;
   status: FacilityUnitTypeOfferingStatusEnum;

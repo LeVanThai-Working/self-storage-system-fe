@@ -49,6 +49,20 @@ export const ENTITY_SUBJECT_DICTIONARY: Record<string, { vi: string; en: string 
   manager: { vi: "Quản lý", en: "Manager" },
   staff: { vi: "Nhân viên", en: "Staff" },
   "assigned staff": { vi: "Nhân viên tiếp đón", en: "Assigned Staff" },
+  sku: { vi: "Mã hàng", en: "SKU" },
+  "customer sku": { vi: "Mã hàng", en: "Customer SKU" },
+  customersku: { vi: "Mã hàng", en: "Customer SKU" },
+  inventory: { vi: "Tồn kho", en: "Inventory" },
+  "customer inventory": { vi: "Tồn kho", en: "Customer inventory" },
+  "inventory request": { vi: "Phiếu kho", en: "Inventory request" },
+  "storage rack": { vi: "Kệ", en: "Storage rack" },
+  storagerack: { vi: "Kệ", en: "Storage rack" },
+  rack: { vi: "Kệ", en: "Rack" },
+  "rack tier": { vi: "Tầng kệ", en: "Rack tier" },
+  racktier: { vi: "Tầng kệ", en: "Rack tier" },
+  incident: { vi: "Sự cố", en: "Incident" },
+  "support ticket": { vi: "Yêu cầu hỗ trợ", en: "Support ticket" },
+  supportticket: { vi: "Yêu cầu hỗ trợ", en: "Support ticket" },
 };
 
 /**

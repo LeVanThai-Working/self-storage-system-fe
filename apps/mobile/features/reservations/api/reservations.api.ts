@@ -44,11 +44,17 @@ export async function createReservationApi(
 ): Promise<ApiResponse<ReservationResponse>> {
   const body: CreateReservationRequest = {
     facilityId: payload.facilityId,
+    storageUnitId: payload.storageUnitId,
+    checkInDate: ensureIsoDateString(payload.checkInDate),
+    checkInTimeSlot: payload.checkInTimeSlot,
     facilityUnitTypeOfferingId: payload.facilityUnitTypeOfferingId,
-    startDate: ensureIsoDateString(payload.startDate),
+    startDate: payload.startDate ? ensureIsoDateString(payload.startDate) : undefined,
     rentalDuration: Number(payload.rentalDuration),
     amenities: payload.amenities ?? [],
     notes: payload.notes?.trim() ? payload.notes.trim() : undefined,
+    rentedRackIds: payload.rentedRackIds?.length ? payload.rentedRackIds : undefined,
+    // BE rejects a reservation without accepted terms (322).
+    termsAccepted: payload.termsAccepted,
   };
 
   const response = await api.post<ApiResponse<ReservationResponse>>("/reservations", body);

@@ -1,5 +1,14 @@
+export enum RackZoneEnum {
+  PRIME = "PRIME",
+  STANDARD = "STANDARD",
+  ECONOMY = "ECONOMY",
+}
+
 export enum RackStatusEnum {
-  ACTIVE = "active",
+  AVAILABLE = "available",
+  RESERVED = "reserved",
+  RENTED = "rented",
+  ACTIVE = "active", // Maintained for backward compatibility
   MAINTENANCE = "maintenance",
   INACTIVE = "inactive",
 }

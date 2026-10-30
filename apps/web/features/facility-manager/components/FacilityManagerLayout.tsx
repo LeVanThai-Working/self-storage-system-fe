@@ -10,6 +10,9 @@ import {
   FileSignature,
   FileText,
   LayoutDashboard,
+  ClipboardList,
+  Headset,
+  TriangleAlert,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -59,6 +62,21 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
       href: `/${locale}/facility-manager/storage-units`,
       label: t("nav.storageUnits"),
       icon: Boxes,
+    },
+    {
+      href: `/${locale}/facility-manager/inventory-requests`,
+      label: t("nav.inventoryRequests"),
+      icon: ClipboardList,
+    },
+    {
+      href: `/${locale}/facility-manager/incidents`,
+      label: t("nav.incidents"),
+      icon: TriangleAlert,
+    },
+    {
+      href: `/${locale}/facility-manager/support-tickets`,
+      label: t("nav.supportTickets"),
+      icon: Headset,
     },
     {
       href: `/${locale}/facility-manager/requests`,

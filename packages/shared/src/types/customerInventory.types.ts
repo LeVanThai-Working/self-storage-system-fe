@@ -1,6 +1,6 @@
 import type { ContractStatusEnum } from "../enums/contract.enum";
-import type { MovementTypeEnum } from "../enums/customerInventory.enum";
-import type { RackStatusEnum, RackTierStatusEnum } from "../enums/storageRack.enum";
+import type { InventoryItemStatusEnum, MovementTypeEnum } from "../enums/customerInventory.enum";
+import type { RackStatusEnum, RackTierStatusEnum, RackZoneEnum } from "../enums/storageRack.enum";
 import type { StorageUnitStatusEnum } from "../enums/storageUnit.enum";
 import type { RoleEnum } from "../enums/user.enum";
 
@@ -83,6 +83,13 @@ export interface CustomerInventoryResponse {
   rackTierId?: string | null;
   skuId: string;
   quantity: number;
+  /** Held by PENDING outbound requests (BE G11). */
+  pendingOutboundQuantity?: number;
+  /** `quantity - pendingOutboundQuantity`: the most a new outbound request can take. */
+  availableQuantity?: number;
+  status?: InventoryItemStatusEnum;
+  holdingReason?: string | null;
+  relatedIncidentId?: string | null;
   lastMovementAt: string;
   notes?: string | null;
   customer?: InventoryCustomerSnapshot | null;
@@ -143,6 +150,12 @@ export interface TreeTierItemSku {
 export interface TreeTierItem {
   inventoryId: string;
   quantity: number;
+  pendingOutboundQuantity?: number;
+  availableQuantity?: number;
+  /** Older rows may lack it; treat as `normal`. */
+  status?: InventoryItemStatusEnum;
+  holdingReason?: string | null;
+  relatedIncidentId?: string | null;
   lastMovementAt: string;
   notes?: string | null;
   sku: TreeTierItemSku;
@@ -164,6 +177,14 @@ export interface TreeRack {
   rackCode: string;
   name?: string | null;
   status?: RackStatusEnum | null;
+  /** Rack layout fields for the cinema-style map. */
+  aisle?: string | null;
+  bay?: number | null;
+  zone?: RackZoneEnum | null;
+  customPrice?: number | null;
+  /** Null on racks of other customers (BE G6 masking). */
+  currentContractId?: string | null;
+  isMine?: boolean | null;
   tierCount: number;
   tiers: TreeTier[];
 }

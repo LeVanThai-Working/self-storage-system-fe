@@ -1792,7 +1792,10 @@
       "storageUnits": "Storage units",
       "sectionFacility": "FACILITY OPERATIONS",
       "requests": "Request Center",
-      "dashboard": "Overview"
+      "dashboard": "Overview",
+      "inventoryRequests": "Warehouse requests",
+      "incidents": "Incidents",
+      "supportTickets": "Customer support"
     },
     "sidebar": {
       "assignedFacility": "Assigned facility",
@@ -1868,7 +1871,8 @@
         "deleteBlocked": "Cannot delete a unit that is reserved or occupied",
         "startMaintenance": "Start maintenance",
         "reopen": "Finish maintenance / Reopen unit",
-        "maintenanceBlocked": "Only Available or Under maintenance units can change maintenance status"
+        "maintenanceBlocked": "Only Available or Under maintenance units can change maintenance status",
+        "rackMap": "Racks & inventory"
       },
       "formModal": {
         "createTitle": "Add Storage Unit",
@@ -2514,15 +2518,47 @@
         "holdNote": "The unit and add-ons are held for 15 minutes after booking. If the deposit is not paid in time, the reservation expires.",
         "submit": "Reserve and pay deposit",
         "submitting": "Creating reservation…",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "rackEstimate": "Rack rent ({count} racks)"
       },
       "errors": {
         "unit": "Please choose a storage unit.",
         "checkInDate": "Please choose a check-in date.",
         "slot": "Please choose a time slot that still has room.",
         "startDate": "The rental must start on or after the check-in date.",
-        "duration": "The minimum rental period is {min} days.",
-        "terms": "Please accept the reservation terms."
+        "duration": "The minimum rental period is {min}.",
+        "racks": "Please pick at least one rack on the map.",
+        "rackTaken": "One of the racks you picked was just taken. The map has been reloaded, please pick again.",
+        "terms": "Please accept the booking terms & policy"
+      },
+      "seatMap": {
+        "entrance": "ENTRANCE · MAIN AISLE",
+        "freeCount": "{free} of {total} units available",
+        "floor": "Floor {floor}",
+        "unavailable": "This unit is not available",
+        "perMonth": "{price}/month",
+        "taken": "Taken",
+        "racksTitle": "Pick racks in this unit",
+        "noRacks": "This unit has no racks yet.",
+        "selection": "{count} racks · {codes} · {total}/month",
+        "estimateNote": "Rack prices are estimates. The facility confirms your racks and the final price.",
+        "legend": {
+          "free": "Available",
+          "picked": "Your pick",
+          "taken": "Taken",
+          "maintenance": "Maintenance"
+        }
+      },
+      "terms": {
+        "freeCancel": "Cancel at least {hours} hours before check-in: 100% deposit refund.",
+        "forfeit": "Cancel later, or not showing up after the grace period: the deposit is forfeited.",
+        "accept": "I agree to the Booking Terms & Cancellation Policy"
+      },
+      "forfeitWarning": {
+        "title": "Deposit will not be refunded",
+        "body": "Your check-in is less than 24 hours away. If you cancel after paying, the deposit will not be refunded. Do you want to continue?",
+        "back": "Go back",
+        "continue": "Continue booking"
       }
     },
     "payment": {
@@ -2633,6 +2669,544 @@
       "keep": "Keep reservation",
       "confirm": "Confirm cancellation",
       "cancelling": "Cancelling…"
+    }
+  },
+  "inventoryOps": {
+    "requestStatus": {
+      "pending": "Awaiting pickup",
+      "pending_confirmation": "Awaiting customer",
+      "processing": "Processing",
+      "ready_to_putaway": "Ready to shelve",
+      "completed": "Completed",
+      "disputed": "Disputed",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
+    "itemStatus": {
+      "normal": "Normal",
+      "temporary_holding": "Holding",
+      "damaged": "Damaged",
+      "disputed": "Disputed"
+    },
+    "tierSelect": {
+      "placeholder": "Choose rack · tier",
+      "holding": "Holding area (off the rack)"
+    },
+    "queue": {
+      "title": "Warehouse requests",
+      "subtitle": "Customer pickup and inbound requests at this facility",
+      "codePlaceholder": "Scan QR or enter 6-digit OTP…",
+      "requestCodePlaceholder": "Request code REQ-OUT-… / REQ-IN-…",
+      "otpNeedsRequestCode": "An OTP needs the request code",
+      "verify": "Verify",
+      "verified": "Code valid · {code} is now processing",
+      "type": {
+        "all": "All",
+        "outbound": "Pickup",
+        "inbound": "Inbound"
+      },
+      "allStatuses": "All statuses",
+      "searchPlaceholder": "Search request code",
+      "receiveInbound": "Receive goods",
+      "col": {
+        "code": "Code",
+        "type": "Type",
+        "unit": "Unit",
+        "items": "Items",
+        "transporter": "Carrier / collector",
+        "createdAt": "Created",
+        "status": "Status"
+      },
+      "action": {
+        "detail": "Details",
+        "handover": "Hand over",
+        "putaway": "Shelve"
+      },
+      "empty": "No requests yet",
+      "pageInfo": "Page {page}/{pages} · {total} requests"
+    },
+    "detail": {
+      "notFound": "Request not found",
+      "outboundTitle": "Hand over {code}",
+      "inboundTitle": "Inbound {code}",
+      "subtitle": "Unit {unit} · created {date}",
+      "col": {
+        "position": "Position",
+        "sku": "Item",
+        "requested": "Requested",
+        "actual": "Actual"
+      },
+      "recipient": "Collector",
+      "deliverer": "Delivered by",
+      "evidence": "Evidence",
+      "discrepancy": "Discrepancy: {reason}",
+      "hint": {
+        "pending": "The collector has not arrived yet. Verify the QR/OTP on the requests page when they do.",
+        "pendingConfirmation": "Waiting for the customer to confirm (auto-confirms after 24 hours).",
+        "disputed": "The customer disputed this inbound request. Contact them to reconcile."
+      }
+    },
+    "handover": {
+      "verifiedAt": "Pickup code valid · verified {time}",
+      "pickList": "Pick list",
+      "actual": "Handed over",
+      "discrepancyTitle": "Short handover ({count} SKUs)",
+      "discrepancyReason": "Reason for shortage",
+      "discrepancyImages": "Shortage photos",
+      "discrepancyRequired": "Some items are short, please give a reason",
+      "evidence": "Handover photos",
+      "evidenceHint": "At least 1 photo required",
+      "evidenceRequired": "At least 1 handover photo is required",
+      "signature": "Collector signature",
+      "signatureClear": "Clear",
+      "signatureHint": "Sign inside the box (optional)",
+      "staffNotes": "Staff notes",
+      "complete": "Complete handover ({count} pcs)",
+      "completed": "Handover completed"
+    },
+    "putaway": {
+      "title": "Shelve items",
+      "tier": "Tier",
+      "hint": "Only racks under the customer's contract are accepted (637 otherwise).",
+      "missingTier": "{count} SKUs still need a tier",
+      "submit": "Complete shelving",
+      "done": "Items shelved, stock updated"
+    },
+    "inbound": {
+      "back": "Warehouse requests",
+      "title": "Receive goods",
+      "subtitle": "Record goods arriving for a customer. Stock is added once the customer confirms.",
+      "contract": "Contract",
+      "contractPlaceholder": "Choose an active contract",
+      "contractRequired": "Please choose a contract",
+      "items": "Received items",
+      "newSku": "Create SKU for customer",
+      "skuPlaceholder": "Choose SKU",
+      "addRow": "Add row",
+      "tierHint": "Pick a tier now, or leave it empty and shelve after the customer confirms.",
+      "itemsRequired": "Add at least 1 SKU with a valid quantity",
+      "evidence": "Receiving photos",
+      "evidenceHint": "At least {min} photos: vehicle, package condition, delivery slip",
+      "evidenceMin": "At least {min} receiving photos are required",
+      "transporter": "Delivered by",
+      "transporterName": "Full name",
+      "transporterPhone": "Phone number",
+      "transporterPlate": "Vehicle plate",
+      "transporterCompany": "Carrier",
+      "transporterRequired": "Driver name and phone number are required",
+      "signature": "Driver signature",
+      "signatureClear": "Clear",
+      "signatureHint": "Sign inside the box (optional)",
+      "staffNotes": "Notes (e.g. one dented box)",
+      "submit": "Create inbound request",
+      "created": "Request {code} created, awaiting customer",
+      "customerConfirmHint": "The customer is notified and has 24 hours to confirm or dispute.",
+      "newSkuTitle": "New SKU for {customer}",
+      "newSkuCode": "SKU code",
+      "newSkuName": "Item name",
+      "newSkuUom": "Unit of measure",
+      "newSkuSave": "Create SKU",
+      "skuCreated": "SKU {code} created",
+      "cancel": "Cancel"
+    },
+    "unit": {
+      "back": "Storage units",
+      "title": "Inventory · Unit {unit}",
+      "subtitle": "Rack map and item operations",
+      "subtitleContract": "Rack map and item operations · Contract {code}",
+      "treeForbidden": "You can only see rack contents of units in your own facility. The rack layout is still shown.",
+      "entrance": "ENTRANCE · MAIN AISLE",
+      "noRacks": "This unit has no racks",
+      "aisle": "Aisle {aisle}",
+      "legend": {
+        "rented": "Rented",
+        "free": "Free",
+        "maintenance": "Maintenance"
+      },
+      "pickRack": "Choose a rack on the map",
+      "rackTitle": "Rack {rack}",
+      "tiers": "{count} tiers",
+      "rackIncident": "Rack incident",
+      "emptyTier": "Empty tier",
+      "pickItem": "Choose an item to work on",
+      "action": {
+        "move": "Move",
+        "adjust": "Recount",
+        "status": "Status"
+      },
+      "moveTo": "Move to",
+      "quantity": "Quantity",
+      "ticketCode": "For request (SUP code)",
+      "countedQuantity": "Counted quantity",
+      "systemQuantity": "System: {qty}",
+      "newStatus": "New status",
+      "itemStatus": {
+        "normal": "Normal",
+        "temporary_holding": "Holding",
+        "damaged": "Damaged",
+        "disputed": "Disputed"
+      },
+      "incidentId": "Incident ID",
+      "incidentIdPlaceholder": "Related incident ID (if any)",
+      "reason": "Reason",
+      "reasonMin": "Reason needs at least {min} characters",
+      "notifyHint": "The reason is saved in the customer's item history.",
+      "pickTarget": "Choose where to move it",
+      "noContract": "Could not determine this unit's contract",
+      "submit": {
+        "move": "Confirm move",
+        "adjust": "Save recount",
+        "status": "Update status"
+      },
+      "moved": "Items moved",
+      "adjusted": "Recount saved",
+      "statusUpdated": "Item status updated",
+      "incidentRequired": "Marking goods as damaged needs a valid incident ID (24 characters)"
+    },
+    "rackIncident": {
+      "title": "Rack incident · {rack}",
+      "subtitle": "Move goods to safety and update the rack status",
+      "mode": {
+        "migrate": "Move whole rack",
+        "evacuate": "Drop to holding area"
+      },
+      "target": "Destination rack",
+      "targetPlaceholder": "Choose an empty rack with the same tier count",
+      "targetHint": "Only empty, available racks with the same tier count are valid.",
+      "tiers": "{count} tiers",
+      "notFree": "not free",
+      "evacuateHint": "Every item on the rack becomes Holding and cannot be picked up until re-shelved.",
+      "basis": "Basis",
+      "basisOption": {
+        "incident": "Reported incident",
+        "addendum": "Signed contract addendum",
+        "emergency": "Emergency reason"
+      },
+      "incidentIdPlaceholder": "Incident ID",
+      "addendumIdPlaceholder": "Addendum ID",
+      "emergencyPlaceholder": "Describe the reason (at least 10 characters)",
+      "pickTarget": "Please choose a destination rack",
+      "basisRequired": "An incident, addendum or emergency reason (≥10 chars) is required",
+      "evacuateBasisRequired": "An incident or emergency reason (≥10 chars) is required",
+      "migrateNote": "Emergency moves put the old rack under maintenance; addendum moves free it.",
+      "evacuateNote": "The rack will be set to maintenance.",
+      "migrated": "Moved {count} items to rack {to}",
+      "evacuated": "Dropped {count} items to the holding area",
+      "submitMigrate": "Confirm move",
+      "submitEvacuate": "Drop to holding",
+      "cancel": "Cancel"
+    }
+  },
+  "supportDesk": {
+    "title": "Customer support",
+    "subtitle": "Requests from customers of this facility",
+    "kpi": {
+      "urgentPending": "Urgent, not accepted"
+    },
+    "tabs": {
+      "all": "All"
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "category": {
+      "billing_inquiry": "Billing",
+      "contract_inquiry": "Contract",
+      "unit_change_request": "Change unit",
+      "access_pin_reset": "Reset PIN",
+      "service_complaint": "Complaint",
+      "procedural_assistance": "Procedures",
+      "general_inquiry": "General",
+      "inventory_move_request": "Move goods"
+    },
+    "searchPlaceholder": "Search code, title…",
+    "filter": {
+      "allCategories": "All types",
+      "allPriorities": "All priorities"
+    },
+    "col": {
+      "code": "Code",
+      "customer": "Customer",
+      "category": "Type",
+      "title": "Title",
+      "priority": "Priority",
+      "contract": "Contract",
+      "assignee": "Assignee",
+      "createdAt": "Created",
+      "status": "Status"
+    },
+    "empty": "No requests",
+    "pageInfo": "Page {page}/{pages} · {total} requests",
+    "sheet": {
+      "kicker": "Request details",
+      "customer": "Customer",
+      "content": "Request",
+      "openContract": "Open customer contract",
+      "acceptTitle": "Accept request",
+      "assignSelf": "I will handle it",
+      "accept": "Accept",
+      "accepted": "Request accepted",
+      "staff": "Facility staff",
+      "responseTitle": "Reply to customer",
+      "responsePlaceholder": "Official reply sent to the customer",
+      "responseMin": "The reply needs at least {min} characters",
+      "attachments": "Photos (up to {max})",
+      "complete": "Send reply & complete",
+      "completed": "Reply sent, request completed",
+      "cancelReason": "Cancelled by customer: {reason}",
+      "openRackMap": "Open the customer's rack map"
+    }
+  },
+  "incidentDesk": {
+    "title": "Facility incidents",
+    "subtitle": "Damage, leaks and security reports from customers and staff",
+    "report": "Report incident",
+    "searchPlaceholder": "Search code, title…",
+    "empty": "No incidents",
+    "pageInfo": "Page {page}/{pages} · {total} incidents",
+    "kpi": {
+      "reported": "Awaiting assignment",
+      "investigating": "Investigating",
+      "resolved": "Resolved – to close",
+      "critical": "Critical, unassigned",
+      "closed": "Closed"
+    },
+    "filter": {
+      "allStatuses": "All statuses",
+      "allCategories": "All types",
+      "allSeverities": "All severities"
+    },
+    "col": {
+      "code": "Code",
+      "severity": "Severity",
+      "category": "Type",
+      "title": "Title",
+      "location": "Location",
+      "reporter": "Reporter",
+      "assignee": "Assignee",
+      "createdAt": "Created",
+      "status": "Status"
+    },
+    "status": {
+      "reported": "Reported",
+      "assigned": "Assigned",
+      "investigating": "Investigating",
+      "in_progress": "Repairing",
+      "resolved": "Resolved",
+      "closed": "Closed",
+      "cancelled": "Cancelled"
+    },
+    "severity": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "critical": "Critical"
+    },
+    "category": {
+      "structural": "Structural",
+      "electrical": "Electrical",
+      "water_leak": "Water leak",
+      "security": "Security",
+      "cleanliness": "Cleanliness",
+      "other": "Other"
+    },
+    "form": {
+      "title": "Report incident",
+      "unit": "Storage unit (optional)",
+      "commonArea": "Common area",
+      "floor": "Floor {floor}",
+      "category": "Incident type",
+      "severity": "Severity",
+      "titleLabel": "Title",
+      "description": "Description",
+      "images": "Scene photos (at least 1)",
+      "imagesRequired": "At least 1 scene photo is required",
+      "titleInvalid": "Title must be 3 to 200 characters",
+      "descriptionInvalid": "Description must be 5 to 2000 characters",
+      "cancel": "Cancel",
+      "submit": "Submit report",
+      "created": "Incident {code} created"
+    },
+    "detail": {
+      "notFound": "Incident not found",
+      "reportTitle": "Report",
+      "reporter": "Reporter",
+      "contract": "Contract",
+      "commonArea": "Common area",
+      "unit": "Unit {unit}",
+      "rack": "Rack {rack}",
+      "tier": "Tier T{tier}",
+      "role": {
+        "customer": "Customer",
+        "facility_staff": "Staff",
+        "facility_manager": "Facility manager",
+        "business_ops_manager": "Operations",
+        "system_admin": "Admin"
+      }
+    },
+    "timeline": {
+      "title": "Progress",
+      "reported": "{name} reported the incident",
+      "assigned": "Assigned to {name}",
+      "investigated": "Investigated",
+      "needsRelocation": "Goods need relocation",
+      "resolved": "Resolution report filed",
+      "closed": "Accepted and closed",
+      "cancelled": "Incident cancelled"
+    },
+    "warehouse": {
+      "title": "Warehouse impact",
+      "subtitle": "Serious incident on a rack. Goods can be moved urgently.",
+      "open": "Handle rack {rack} incident"
+    },
+    "action": {
+      "title": "Handling",
+      "view": "View",
+      "assign": "Assign",
+      "assignLabel": "Assign staff",
+      "assignPlaceholder": "Choose staff",
+      "assigned": "Incident assigned",
+      "assignedTo": "Assignee: {name}",
+      "investigateLabel": "Investigation notes",
+      "putUnitUnderMaintenance": "Put unit under maintenance (empty units only)",
+      "requiresRelocation": "Goods need relocation",
+      "saveInvestigation": "Save investigation",
+      "investigated": "Investigation saved",
+      "resolveTitle": "Resolution report",
+      "solution": "Work done",
+      "evidence": "After-repair photos (at least 1)",
+      "evidenceRequired": "At least 1 after-repair photo is required",
+      "liableParty": "Liable party",
+      "liable": {
+        "customer": "Customer",
+        "facility": "Facility",
+        "third_party": "Third party",
+        "force_majeure": "Force majeure"
+      },
+      "repairCost": "Repair cost (₫)",
+      "damageFee": "Damage fee charged (₫)",
+      "damageFeeHint": "The damage fee only applies when the customer is liable and is added to the contract on closing.",
+      "resolve": "Complete resolution",
+      "resolved": "Resolution report filed",
+      "resolutionTitle": "Resolution report",
+      "feeShort": "damage fee {fee}",
+      "closeNotes": "Closing notes (optional)",
+      "close": "Accept & close incident",
+      "closed": "Incident closed",
+      "cancelReason": "Cancellation reason (at least 5 characters)",
+      "cancel": "Cancel incident",
+      "cancelled": "Incident cancelled",
+      "textMin": "Please write at least {min} characters",
+      "nothingToDo": "There is nothing for you to do at this step."
+    }
+  },
+  "rackStructure": {
+    "back": "Storage units",
+    "title": "Unit {unit} · Shared rack warehouse",
+    "floor": "Floor {floor}",
+    "zone": "Zone {zone}",
+    "tabs": {
+      "structure": "Rack structure",
+      "goods": "Goods"
+    },
+    "provision": "Generate racks from config",
+    "provisioned": "{count} new racks generated",
+    "kpi": {
+      "total": "Racks",
+      "rented": "Rented",
+      "free": "Free",
+      "maintenance": "Maintenance"
+    },
+    "mapTitle": "Rack map of unit {unit}",
+    "entrance": "ENTRANCE · MAIN AISLE",
+    "empty": "This unit has no racks yet.",
+    "emptyManager": "This unit has no racks yet. Use \"Generate racks from config\" or \"Create rack\".",
+    "perMonth": "{price}/month",
+    "tiers": "{count} tiers",
+    "legend": {
+      "rented": "Rented",
+      "reserved": "Reserved",
+      "free": "Free",
+      "maintenance": "Maintenance",
+      "inactive": "Inactive"
+    },
+    "status": {
+      "available": "Free",
+      "reserved": "Reserved",
+      "rented": "Rented",
+      "active": "Free",
+      "maintenance": "Maintenance",
+      "inactive": "Inactive"
+    },
+    "tierStatus": {
+      "available": "Empty",
+      "occupied": "Occupied",
+      "maintenance": "Maintenance",
+      "inactive": "Inactive"
+    },
+    "create": {
+      "open": "Create rack",
+      "title": "New rack",
+      "subtitle": "Add a rack by hand in unit {unit}",
+      "rackCode": "Rack code",
+      "name": "Rack name",
+      "aisle": "Aisle",
+      "bay": "Bay",
+      "zone": "Zone",
+      "zoneNone": "Not set",
+      "customPrice": "Custom price (₫/month)",
+      "customPriceHint": "Empty = zone price",
+      "tierCount": "Tiers",
+      "maxWeight": "Default max load per tier (kg)",
+      "dimensions": "Tier size (L×W×H cm)",
+      "length": "Length",
+      "width": "Width",
+      "height": "Height",
+      "notes": "Notes",
+      "invalid": "Rack details are invalid, check the rack code and tier count",
+      "codeTaken": "This rack code already exists in the unit",
+      "cancel": "Cancel",
+      "submit": "Create rack",
+      "created": "Rack {code} created"
+    },
+    "detail": {
+      "title": "Rack {code}",
+      "aisle": "Aisle {aisle}",
+      "bay": "Bay {bay}",
+      "infoTitle": "Rack details",
+      "name": "Rack name",
+      "aisleLabel": "Aisle",
+      "bayLabel": "Bay",
+      "zone": "Zone",
+      "customPrice": "Custom price (₫/month)",
+      "customPriceHint": "Empty = zone price",
+      "status": "Status",
+      "zonePriceNote": "Zone price applies: {price}",
+      "notes": "Notes",
+      "tiersTitle": "Tiers ({count})",
+      "tiersHint": "Volume is recomputed when the size changes. Tiers under maintenance or inactive accept no new goods.",
+      "col": {
+        "tier": "Tier",
+        "code": "Code",
+        "maxWeight": "Max load (kg)",
+        "dimensions": "L×W×H (cm)",
+        "volume": "Volume",
+        "status": "Status"
+      },
+      "edit": "Edit",
+      "close": "Close",
+      "save": "Save changes",
+      "saved": "Rack {code} updated",
+      "tierSaved": "Tier {tier} updated"
     }
   }
 }
