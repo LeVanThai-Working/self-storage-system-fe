@@ -109,7 +109,6 @@ export function ReservationFormPage({
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [tried, setTried] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
   const [forfeitConfirmOpen, setForfeitConfirmOpen] = useState(false);
 
   const slots = useAvailableTimeSlots(facilityId, checkInDate);
