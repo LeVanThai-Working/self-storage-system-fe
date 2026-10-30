@@ -49,6 +49,18 @@ export const ENTITY_SUBJECT_DICTIONARY: Record<string, { vi: string; en: string 
   manager: { vi: "Quản lý", en: "Manager" },
   staff: { vi: "Nhân viên", en: "Staff" },
   "assigned staff": { vi: "Nhân viên tiếp đón", en: "Assigned Staff" },
+  addendum: { vi: "Phụ lục hợp đồng", en: "Contract addendum" },
+  terms: { vi: "Điều khoản", en: "Terms" },
+  party: { vi: "Bên ký", en: "Party" },
+  customer: { vi: "Khách hàng", en: "Customer" },
+  settlement: { vi: "Quyết toán cọc", en: "Settlement" },
+  photos: { vi: "Ảnh hiện trường", en: "Photos" },
+  inventory: { vi: "Hàng hóa lưu kho", en: "Inventory" },
+  incident: { vi: "Sự cố hư hỏng", en: "Incident" },
+  files: { vi: "Hồ sơ chứng từ", en: "Files" },
+  category: { vi: "Danh mục vi phạm", en: "Category" },
+  overdue: { vi: "Thời gian quá hạn", en: "Overdue" },
+  entity: { vi: "Đối tượng", en: "Entity" },
 };
 
 /**

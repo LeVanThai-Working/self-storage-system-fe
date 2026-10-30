@@ -133,7 +133,8 @@
     "MESSAGE_CODE_504": "Không thể hủy phiên thanh toán ở trạng thái hiện tại",
     "MESSAGE_CODE_505": "Đơn chưa ở bước chờ thanh toán hoặc đã được thanh toán xong",
     "MESSAGE_CODE_506": "Xác thực giao dịch thanh toán thất bại",
-    "MESSAGE_CODE_507": "Khoản thanh toán đã hoàn tất trước đó"
+    "MESSAGE_CODE_507": "Khoản thanh toán đã hoàn tất trước đó",
+    "MESSAGE_CODE_629": "Không thể đổi trạng thái bảo trì hoặc mở kho khi vẫn còn hàng tồn kho của khách bên trong"
   },
   "systemAdmin": {
     "nav": {
@@ -141,6 +142,8 @@
       "userManagement": "Quản lý Người dùng",
       "auditLogs": "Nhật ký hệ thống",
       "trash": "Thùng rác & khôi phục",
+      "payments": "Quản lý thanh toán",
+      "reconciliation": "Đối soát ngân hàng",
       "facilityManagement": "Quản lý Cơ sở",
       "settings": "Cài đặt hệ thống"
     },
@@ -787,6 +790,8 @@
       "offerings": "Bảng giá theo cơ sở",
       "facilityAmenities": "Phân bổ tiện ích",
       "approvals": "Phê duyệt đề xuất",
+      "payments": "Quản lý thanh toán",
+      "reconciliation": "Đối soát ngân hàng",
       "analytics": "Báo cáo & Phân tích",
       "sectionOperations": "VẬN HÀNH CHI NHÁNH"
     },
@@ -1782,6 +1787,7 @@
     "reserved": "Đã giữ chỗ",
     "occupied": "Đang thuê",
     "under_maintenance": "Đang bảo trì",
+    "pending_clearance": "Chờ dọn kho / Niêm phong",
     "inactive": "Ngừng sử dụng"
   },
   "facilityManager": {
@@ -1792,6 +1798,8 @@
       "storageUnits": "Phòng kho",
       "sectionFacility": "VẬN HÀNH CƠ SỞ",
       "requests": "Yêu cầu đề xuất",
+      "payments": "Quản lý thanh toán",
+      "reconciliation": "Đối soát ngân hàng",
       "dashboard": "Tổng quan"
     },
     "sidebar": {
@@ -1821,6 +1829,7 @@
         "reserved": "Đã giữ chỗ",
         "occupied": "Đang thuê",
         "under_maintenance": "Đang bảo trì",
+        "pending_clearance": "Chờ dọn kho / Niêm phong",
         "inactive": "Ngừng sử dụng"
       },
       "sortBy": {
@@ -1938,6 +1947,7 @@
       },
       "maintenanceModal": {
         "startHint": "Phòng sẽ chuyển sang Đang bảo trì và tạm ngừng nhận đặt chỗ cho đến khi được mở lại.",
+        "startFromClearanceHint": "Phòng kho đang chờ xử lý dọn dẹp hàng bỏ lại hoặc niêm phong tài sản. Chuyển sang bảo trì sau khi đã dọn sạch toàn bộ hàng tồn kho của khách.",
         "reopenHint": "Xác nhận phòng đã dọn dẹp / khắc phục xong. Phòng sẽ chuyển về Còn trống và nhận đặt chỗ trở lại.",
         "notesLabel": "Ghi chú của phòng",
         "startPlaceholder": "Ví dụ: Rò rỉ nước trần, chờ thợ sửa...",
@@ -1950,12 +1960,15 @@
         },
         "close": "Đóng",
         "confirmStart": "Bật bảo trì",
+        "confirmStartFromClearance": "Chuyển sang bảo trì",
         "confirmReopen": "Hoàn tất & Mở lại phòng",
         "saving": "Đang cập nhật...",
         "successStart": "Đã chuyển phòng {unitNumber} sang Đang bảo trì",
+        "successStartFromClearance": "Đã chuyển phòng {unitNumber} sang bảo trì",
         "successReopen": "Đã mở lại phòng {unitNumber}",
         "errors": {
-          "invalidStatus": "Trạng thái phòng đã thay đổi nên không thể chuyển bảo trì. Vui lòng làm mới và thử lại."
+          "invalidStatus": "Trạng thái phòng đã thay đổi nên không thể chuyển bảo trì. Vui lòng làm mới và thử lại.",
+          "inventoryRemaining": "Không thể đổi trạng thái bảo trì khi vẫn còn hàng tồn kho của khách bên trong."
         }
       }
     },
@@ -2079,9 +2092,14 @@
         "pending": "Chờ tiếp nhận",
         "received": "Đã tiếp nhận",
         "awaitingDeposit": "Chờ đặt cọc",
-        "paymentSuccessful": "Đã đặt cọc",
+        "paymentSuccessful": "Đã cọc",
         "confirmed": "Đã xác nhận",
-        "closed": "Đã hoàn tất"
+        "closed": "Đã hoàn tất",
+        "pendingPayment": "Chờ cọc (15p)",
+        "overdue": "Quá hạn (Ân hạn)",
+        "completed": "Đã hoàn tất",
+        "cancelled": "Đã hủy",
+        "expired": "Hết hạn"
       },
       "statuses": {
         "pending": "Chờ tiếp nhận",
@@ -2421,7 +2439,8 @@
       "unit": {
         "title": "1. Chọn phòng kho",
         "empty": "Hiện không còn phòng trống thuộc loại kho này.",
-        "location": "Tầng {floor} · Dãy {zone}"
+        "location": "Tầng {floor} · Dãy {zone}",
+        "mapNotice": "Sơ đồ 2D đang kết nối"
       },
       "schedule": {
         "title": "2. Lịch nhận kho & thời gian thuê",
@@ -2464,7 +2483,15 @@
         "checkInDate": "Vui lòng chọn ngày đến nhận kho.",
         "slot": "Vui lòng chọn một khung giờ còn chỗ.",
         "startDate": "Ngày bắt đầu thuê phải từ ngày đến nhận kho trở đi.",
-        "duration": "Thời hạn thuê tối thiểu là {min}."
+        "duration": "Thời hạn thuê tối thiểu là {min}.",
+        "terms": "Vui lòng đồng ý với Điều khoản & Chính sách trước khi tiếp tục."
+      },
+      "terms": "Tôi đã đọc và đồng ý với Điều khoản đặt giữ chỗ & Chính sách hủy/hoàn cọc (24h).",
+      "immediateWarning": {
+        "title": "Cảnh báo đặt sát giờ hẹn (< 24 giờ)",
+        "description": "Đơn đặt sát giờ hẹn check-in (< 24 giờ). Theo chính sách, nếu bạn hủy đơn sau khi thanh toán cọc, bạn sẽ không được hoàn lại tiền cọc (mất 100% cọc). Bạn có chắc chắn muốn tiếp tục?",
+        "confirm": "Tôi hiểu & Tiếp tục",
+        "cancel": "Xem lại thông tin"
       }
     },
     "payment": {
@@ -2560,7 +2587,22 @@
       "cancelReason": "Lý do hủy",
       "notes": "Ghi chú",
       "amenitiesNote": "Phí tiện ích được tính trong hợp đồng thuê, không thu cùng tiền cọc.",
-      "free": "Miễn phí"
+      "free": "Miễn phí",
+      "arrivedBanner": "Khách hàng đã có mặt tại cơ sở lúc {time} (Đã xác nhận có mặt, đơn được bảo lưu không bị hủy do vắng mặt)",
+      "pendingUnitChange": {
+        "title": "Đề xuất đổi phòng kho từ cơ sở",
+        "body": "Cơ sở đề xuất đổi sang phòng kho mới: {unit}. Lý do: {reason}",
+        "accept": "Chấp thuận đổi phòng",
+        "reject": "Từ chối (Hủy & Hoàn 100% cọc)",
+        "rejectTitle": "Xác nhận từ chối đổi phòng kho",
+        "rejectDesc": "Nếu từ chối đổi kho do sự cố từ cơ sở, đơn đặt chỗ sẽ được hủy và hệ thống tự động hoàn lại 100% tiền cọc cho bạn.",
+        "rejectReason": "Lý do từ chối (tuỳ chọn)",
+        "rejectPlaceholder": "Nhập lý do từ chối nếu có...",
+        "confirmReject": "Xác nhận từ chối",
+        "cancel": "Quay lại",
+        "acceptSuccess": "Đã chấp thuận đề xuất đổi phòng kho thành công!",
+        "rejectSuccess": "Đã từ chối đề xuất đổi phòng kho. Đơn sẽ được hoàn cọc."
+      }
     },
     "cancel": {
       "title": "Hủy đơn {code}",
@@ -2573,7 +2615,35 @@
       "reasonPlaceholder": "Ít nhất 3 ký tự",
       "keep": "Giữ đơn",
       "confirm": "Xác nhận hủy",
-      "cancelling": "Đang hủy…"
+      "cancelling": "Đang hủy…",
+      "bankSection": "Thông tin nhận hoàn tiền cọc (tuỳ chọn)",
+      "bankName": "Tên ngân hàng",
+      "bankNamePlaceholder": "VD: Vietcombank, Techcombank, MB Bank...",
+      "accountNumber": "Số tài khoản",
+      "accountNumberPlaceholder": "VD: 190368...",
+      "accountHolder": "Tên chủ tài khoản",
+      "accountHolderPlaceholder": "VD: NGUYEN VAN A"
     }
+  },
+  "refundRequest": {
+    "title": "Yêu cầu hoàn tiền",
+    "subtitle": "Quản lý hoàn tiền tập trung với kiểm soát Maker-Checker",
+    "status": {
+      "pendingApproval": "Chờ duyệt",
+      "approved": "Đã duyệt (Chờ chi)",
+      "paid": "Đã hoàn tất",
+      "rejected": "Đã từ chối",
+      "cancelled": "Đã hủy"
+    },
+    "reason": {
+      "customerCancel": "Khách hủy đơn",
+      "facilityCancel": "Cơ sở hủy đơn",
+      "systemCancel": "Hệ thống hủy đơn",
+      "latePayment": "Chuyển tiền muộn",
+      "amountMismatch": "Chuyển sai số tiền",
+      "depositSettlement": "Quyết toán cọc dư",
+      "facilityFault": "Lỗi cơ sở kho"
+    },
+    "slaNotice": "Thời gian hoàn tiền dự kiến trong vòng 3 ngày làm việc kể từ khi yêu cầu được phê duyệt."
   }
 }

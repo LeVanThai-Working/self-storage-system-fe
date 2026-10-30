@@ -7,12 +7,18 @@ import {
   type PaginatedData,
   type ReservationResponse,
   type UpdateReservationRequest,
+  RespondUnitReassignRequest,
 } from "@self-storage-system-fe/shared";
 import {
   cancelReservationApi,
   createReservationApi,
+  fetchAvailableTimeSlotsApi,
+  fetchAvailableUnitsApi,
+  fetchFacilityMapLayoutApi,
+  fetchUnitStorageRacksApi,
   getMyReservationsApi,
   getReservationByIdApi,
+  respondUnitReassignApi,
   retryReservationPaymentApi,
   updateReservationApi,
 } from "../api/reservations.api";
@@ -285,6 +291,66 @@ export function useRetryReservationPayment(reservationId: string) {
       if (res.data) {
         queryClient.setQueryData(["reservation-detail", reservationId], res.data);
       }
+      queryClient.invalidateQueries({ queryKey: ["reservation-detail", reservationId] });
+      queryClient.invalidateQueries({ queryKey: ["my-reservations"] });
+    },
+  });
+}
+
+/**
+ * Fetches free physical storage units for a given facility and unit type.
+ */
+export function useAvailableUnits(facilityId?: string, unitTypeId?: string) {
+  return useQuery({
+    queryKey: ["available-units", facilityId, unitTypeId ?? "all"],
+    queryFn: () => fetchAvailableUnitsApi(facilityId!, unitTypeId),
+    enabled: Boolean(facilityId),
+  });
+}
+
+/**
+ * Fetches full 2D map layout for a facility.
+ */
+export function useFacilityMapLayout(facilityId?: string, enabled = true) {
+  return useQuery({
+    queryKey: ["facility-map-layout", facilityId],
+    queryFn: () => fetchFacilityMapLayoutApi(facilityId!),
+    enabled: Boolean(facilityId) && enabled,
+  });
+}
+
+/**
+ * Fetches racks and tiers for a storage unit.
+ */
+export function useUnitStorageRacks(unitId?: string, enabled = true) {
+  return useQuery({
+    queryKey: ["unit-storage-racks", unitId],
+    queryFn: () => fetchUnitStorageRacksApi(unitId!),
+    enabled: Boolean(unitId) && enabled,
+  });
+}
+
+/**
+ * Fetches available check-in time slots on a given date at a facility.
+ */
+export function useAvailableTimeSlots(facilityId?: string, date?: string) {
+  return useQuery({
+    queryKey: ["available-time-slots", facilityId, date],
+    queryFn: () => fetchAvailableTimeSlotsApi(facilityId!, date!),
+    enabled: Boolean(facilityId && date),
+  });
+}
+
+/**
+ * Customer responds to facility manager's storage unit reassignment proposal.
+ */
+export function useRespondUnitReassign(reservationId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: RespondUnitReassignRequest) =>
+      respondUnitReassignApi(reservationId, payload),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reservation-detail", reservationId] });
       queryClient.invalidateQueries({ queryKey: ["my-reservations"] });
     },

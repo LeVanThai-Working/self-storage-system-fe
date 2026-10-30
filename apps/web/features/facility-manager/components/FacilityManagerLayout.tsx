@@ -10,6 +10,9 @@ import {
   FileSignature,
   FileText,
   LayoutDashboard,
+  RotateCcw,
+  Receipt,
+  ArrowLeftRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -64,6 +67,21 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
       href: `/${locale}/facility-manager/requests`,
       label: t("nav.requests"),
       icon: FileText,
+    },
+    {
+      href: `/${locale}/facility-manager/payments`,
+      label: locale === "en" ? "Payments" : "Thanh toán",
+      icon: Receipt,
+    },
+    {
+      href: `/${locale}/facility-manager/reconciliation`,
+      label: locale === "en" ? "Reconciliation" : "Đối soát ngân hàng",
+      icon: ArrowLeftRight,
+    },
+    {
+      href: `/${locale}/facility-manager/refunds`,
+      label: locale === "en" ? "Refund Approvals" : "Phê duyệt hoàn tiền",
+      icon: RotateCcw,
     },
   ];
 

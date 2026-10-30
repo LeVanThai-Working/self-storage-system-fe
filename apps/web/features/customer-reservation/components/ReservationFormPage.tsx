@@ -1,10 +1,10 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowLeft } from "lucide-react";
+import { AlertTriangle, ArrowLeft, MapPin } from "lucide-react";
 import {
   FacilityAmenityOfferingStatusEnum,
   FacilityUnitTypeOfferingStatusEnum,
@@ -12,6 +12,14 @@ import {
   type PublicAmenityOfferingResponse,
 } from "@self-storage-system-fe/shared";
 import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -27,10 +35,21 @@ const MAX_SERVICE_QUANTITY = 99;
 const fieldClass =
   "w-full rounded-xl border border-slate-200/80 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-700 outline-none transition-all focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20";
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  headerExtra,
+  children,
+}: {
+  title: string;
+  headerExtra?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <section className="space-y-4 rounded-2xl border border-neutral-border bg-white p-5">
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        {headerExtra}
+      </div>
       {children}
     </section>
   );
@@ -81,6 +100,8 @@ export function ReservationFormPage({
   const [duration, setDuration] = useState("");
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showImmediateWarning, setShowImmediateWarning] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [tried, setTried] = useState(false);
 
@@ -95,6 +116,84 @@ export function ReservationFormPage({
       <ArrowLeft className="size-4" /> {t("back")}
     </Link>
   );
+
+  const offering = detail.data?.unitTypeOfferings.find(
+    (o) => o.unitTypeId === unitTypeId && o.status === FacilityUnitTypeOfferingStatusEnum.ACTIVE
+  );
+
+  const facility = detail.data?.facility;
+  const availableUnits = units.data ?? [];
+  const amenities = (detail.data?.amenityOfferings ?? []).filter(
+    (o) => o.status === FacilityAmenityOfferingStatusEnum.ACTIVE && maxQuantity(o) > 0
+  );
+
+  const deposit = offering ? depositFor(offering.pricePerUnit, offering.depositMultiplier) : 0;
+  const durationNumber = Number(duration);
+  const selectedSlot = slots.data?.find((s) => s.slotName === slot);
+  const today = localDateString();
+  const lastCheckIn = localDateString(MAX_CHECK_IN_DAYS_AHEAD);
+
+  /** Check if check-in is within 24h of now -> BE immediateForfeitWarning invariant */
+  const isImmediateForfeit = Boolean(checkInDate && checkInDate <= today);
+
+  const problem = (() => {
+    if (!unitId) return t("errors.unit");
+    if (!checkInDate) return t("errors.checkInDate");
+    if (!selectedSlot?.isAvailable) return t("errors.slot");
+    if (!startDate || startDate < checkInDate) return t("errors.startDate");
+    if (!Number.isInteger(durationNumber) || !offering || durationNumber < offering.minRentalDays) {
+      return t("errors.duration", { min: offering?.minRentalDays ?? 1 });
+    }
+    if (!termsAccepted) return t("errors.terms");
+    return null;
+  })();
+
+  // Validation messages stay live once the user has tried to submit, so they clear as the form is fixed.
+  const error = (tried ? problem : null) ?? serverError;
+
+  const setQuantity = (o: PublicAmenityOfferingResponse, raw: string) => {
+    const next = Math.min(Math.max(Math.floor(Number(raw)) || 0, 0), maxQuantity(o));
+    setQuantities((q) => ({ ...q, [o.id]: next }));
+  };
+
+  const doCreateReservation = async () => {
+    if (!offering || !facilityId) return;
+    setShowImmediateWarning(false);
+    setServerError(null);
+    try {
+      const reservation = await create.mutateAsync({
+        facilityId,
+        storageUnitId: unitId,
+        facilityUnitTypeOfferingId: offering.id,
+        checkInDate: toVietnamIso(checkInDate),
+        checkInTimeSlot: slot,
+        startDate: toVietnamIso(startDate),
+        rentalDuration: durationNumber,
+        amenities: Object.entries(quantities)
+          .filter(([, quantity]) => quantity > 0)
+          .map(([facilityAmenityOfferingId, quantity]) => ({
+            facilityAmenityOfferingId,
+            quantity,
+          })),
+        notes: notes.trim() || undefined,
+        termsAccepted: true,
+      });
+      router.push(`/${locale}/customer/reservations/${reservation.id}/payment`);
+    } catch (err) {
+      setServerError(getErrorMessage(err));
+    }
+  };
+
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setTried(true);
+    if (problem) return;
+    if (isImmediateForfeit) {
+      setShowImmediateWarning(true);
+      return;
+    }
+    await doCreateReservation();
+  };
 
   if (!facilityId || !unitTypeId) {
     return (
@@ -117,11 +216,7 @@ export function ReservationFormPage({
     );
   }
 
-  const offering = detail.data?.unitTypeOfferings.find(
-    (o) => o.unitTypeId === unitTypeId && o.status === FacilityUnitTypeOfferingStatusEnum.ACTIVE
-  );
-
-  if (detail.isError || !detail.data || !offering) {
+  if (detail.isError || !detail.data || !offering || !facility) {
     return (
       <>
         {back}
@@ -132,64 +227,6 @@ export function ReservationFormPage({
     );
   }
 
-  const facility = detail.data.facility;
-  const availableUnits = units.data ?? [];
-  const amenities = detail.data.amenityOfferings.filter(
-    (o) => o.status === FacilityAmenityOfferingStatusEnum.ACTIVE && maxQuantity(o) > 0
-  );
-
-  const deposit = depositFor(offering.pricePerUnit, offering.depositMultiplier);
-  const durationNumber = Number(duration);
-  const selectedSlot = slots.data?.find((s) => s.slotName === slot);
-  const today = localDateString();
-  const lastCheckIn = localDateString(MAX_CHECK_IN_DAYS_AHEAD);
-
-  const problem = (() => {
-    if (!unitId) return t("errors.unit");
-    if (!checkInDate) return t("errors.checkInDate");
-    if (!selectedSlot?.isAvailable) return t("errors.slot");
-    if (!startDate || startDate < checkInDate) return t("errors.startDate");
-    if (!Number.isInteger(durationNumber) || durationNumber < offering.minRentalDays) {
-      return t("errors.duration", { min: offering.minRentalDays });
-    }
-    return null;
-  })();
-  // Validation messages stay live once the user has tried to submit, so they clear as the form is fixed.
-  const error = (tried ? problem : null) ?? serverError;
-
-  const setQuantity = (o: PublicAmenityOfferingResponse, raw: string) => {
-    const next = Math.min(Math.max(Math.floor(Number(raw)) || 0, 0), maxQuantity(o));
-    setQuantities((q) => ({ ...q, [o.id]: next }));
-  };
-
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setTried(true);
-    if (problem) return;
-    setServerError(null);
-    try {
-      const reservation = await create.mutateAsync({
-        facilityId,
-        storageUnitId: unitId,
-        facilityUnitTypeOfferingId: offering.id,
-        checkInDate: toVietnamIso(checkInDate),
-        checkInTimeSlot: slot,
-        startDate: toVietnamIso(startDate),
-        rentalDuration: durationNumber,
-        amenities: Object.entries(quantities)
-          .filter(([, quantity]) => quantity > 0)
-          .map(([facilityAmenityOfferingId, quantity]) => ({
-            facilityAmenityOfferingId,
-            quantity,
-          })),
-        notes: notes.trim() || undefined,
-      });
-      router.push(`/${locale}/customer/reservations/${reservation.id}/payment`);
-    } catch (err) {
-      setServerError(getErrorMessage(err));
-    }
-  };
-
   return (
     <>
       {back}
@@ -198,9 +235,17 @@ export function ReservationFormPage({
         {offering.unitType.name} · {facility.name}
       </p>
 
-      <form onSubmit={onSubmit} className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
+      <form onSubmit={onSubmit} className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
-          <Section title={t("unit.title")}>
+          <Section
+            title={t("unit.title")}
+            headerExtra={
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-700">
+                <MapPin className="size-3" />
+                {t("unit.mapNotice")}
+              </span>
+            }
+          >
             {availableUnits.length === 0 ? (
               <p className="text-sm text-neutral-muted">{t("unit.empty")}</p>
             ) : (
@@ -211,7 +256,7 @@ export function ReservationFormPage({
                       className={cn(
                         "flex cursor-pointer flex-col rounded-xl border p-3 text-sm transition-colors",
                         unitId === u.id
-                          ? "border-brand bg-brand-bg"
+                          ? "border-brand bg-brand-bg shadow-sm"
                           : "border-neutral-border hover:border-brand/50"
                       )}
                     >
@@ -286,13 +331,12 @@ export function ReservationFormPage({
                       className={cn(
                         "rounded-xl border px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50",
                         slot === s.slotName
-                          ? "border-brand bg-brand-bg"
+                          ? "border-brand bg-brand-bg font-semibold"
                           : "border-neutral-border hover:border-brand/50"
                       )}
                     >
-                      <span className="block font-semibold">{s.slotName}</span>
+                      <span className="block">{s.slotName}</span>
                       <span className="block text-xs text-neutral-muted">
-                        {/* Slot names are often just the hours, so only repeat them when they add info */}
                         {s.slotName.includes(s.startTime) ? "" : `${s.startTime} – ${s.endTime} · `}
                         {s.isAvailable
                           ? t("schedule.left", { count: s.availableCapacity })
@@ -385,6 +429,26 @@ export function ReservationFormPage({
           </dl>
           <p className="text-xs text-neutral-muted">{t("summary.holdNote")}</p>
 
+          {/* Terms Agreement & Immediate Forfeit Alert */}
+          <div className="rounded-xl border border-neutral-200 bg-neutral-50/80 p-3.5 space-y-2.5">
+            <label className="flex items-start gap-2.5 cursor-pointer text-xs leading-relaxed text-slate-700 select-none">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="mt-0.5 size-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+              />
+              <span>{t("terms")}</span>
+            </label>
+
+            {isImmediateForfeit && (
+              <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800">
+                <AlertTriangle className="size-4 shrink-0 text-amber-600 mt-0.5" />
+                <span>{t("immediateWarning.description")}</span>
+              </div>
+            )}
+          </div>
+
           {error && (
             <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
               {error}
@@ -399,6 +463,39 @@ export function ReservationFormPage({
           </Link>
         </aside>
       </form>
+
+      {/* Immediate Forfeit Warning Confirmation Modal */}
+      <Dialog open={showImmediateWarning} onOpenChange={setShowImmediateWarning}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-amber-100 text-amber-600 mb-2">
+              <AlertTriangle className="size-6" />
+            </div>
+            <DialogTitle className="text-center">{t("immediateWarning.title")}</DialogTitle>
+            <DialogDescription className="text-center text-slate-600 text-sm">
+              {t("immediateWarning.description")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4 flex-col sm:flex-row gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowImmediateWarning(false)}
+              disabled={create.isPending}
+            >
+              {t("immediateWarning.cancel")}
+            </Button>
+            <Button
+              type="button"
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+              onClick={doCreateReservation}
+              disabled={create.isPending}
+            >
+              {create.isPending ? t("summary.submitting") : t("immediateWarning.confirm")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -2,13 +2,17 @@ import api from "@/lib/api/axios";
 import {
   cleanQueryParams,
   type ApiResponse,
+  type AvailableTimeSlotItemResponse,
+  type CancelReservationRequest,
+  type CreateReservationRequest,
   type PaginatedData,
   type PaginationMeta,
-  type ReservationResponse,
-  type CreateReservationRequest,
-  type UpdateReservationRequest,
-  type CancelReservationRequest,
   type ReservationQuery,
+  type ReservationResponse,
+  type RespondUnitReassignRequest,
+  type StorageRackResponse,
+  type StorageUnitResponse,
+  type UpdateReservationRequest,
 } from "@self-storage-system-fe/shared";
 
 const createDefaultPagination = (page = 1, limit = 10): PaginationMeta => ({
@@ -37,18 +41,22 @@ export function ensureIsoDateString(value: string | Date): string {
 
 /**
  * 1. POST /reservations
- * Customer creates a new reservation (initial status = PENDING).
+ * Customer creates a new reservation (initial status = PENDING_PAYMENT, 15m hold).
  */
 export async function createReservationApi(
   payload: CreateReservationRequest
 ): Promise<ApiResponse<ReservationResponse>> {
   const body: CreateReservationRequest = {
     facilityId: payload.facilityId,
+    storageUnitId: payload.storageUnitId,
+    checkInDate: ensureIsoDateString(payload.checkInDate),
+    checkInTimeSlot: payload.checkInTimeSlot,
     facilityUnitTypeOfferingId: payload.facilityUnitTypeOfferingId,
-    startDate: ensureIsoDateString(payload.startDate),
+    startDate: payload.startDate ? ensureIsoDateString(payload.startDate) : undefined,
     rentalDuration: Number(payload.rentalDuration),
     amenities: payload.amenities ?? [],
     notes: payload.notes?.trim() ? payload.notes.trim() : undefined,
+    termsAccepted: payload.termsAccepted ?? true,
   };
 
   const response = await api.post<ApiResponse<ReservationResponse>>("/reservations", body);
@@ -100,7 +108,7 @@ export async function getReservationByIdApi(id: string): Promise<ReservationResp
 
 /**
  * 4. PATCH /reservations/{id}
- * Customer updates an existing reservation (ONLY allowed when status === 'pending').
+ * Customer updates an existing reservation.
  */
 export async function updateReservationApi(
   id: string,
@@ -123,7 +131,7 @@ export async function updateReservationApi(
 
 /**
  * 5. POST /reservations/{id}/cancel
- * Customer cancels a reservation with a required cancellationReason.
+ * Customer cancels a reservation with cancellationReason and optional bank refund info.
  */
 export async function cancelReservationApi(
   id: string,
@@ -131,12 +139,84 @@ export async function cancelReservationApi(
 ): Promise<ApiResponse<ReservationResponse>> {
   const response = await api.post<ApiResponse<ReservationResponse>>(`/reservations/${id}/cancel`, {
     cancellationReason: payload.cancellationReason.trim(),
+    refundBankName: payload.refundBankName?.trim() || undefined,
+    refundAccountNumber: payload.refundAccountNumber?.trim() || undefined,
+    refundAccountHolder: payload.refundAccountHolder?.trim() || undefined,
   });
   return response.data;
 }
 
 /**
- * 6. POST /reservations/{id}/retry-payment
+ * 6. POST /reservations/{id}/respond-reassign
+ * Khách phản hồi chấp thuận ('accept') hoặc từ chối ('reject') đổi phòng kho từ cơ sở.
+ */
+export async function respondUnitReassignApi(
+  id: string,
+  payload: RespondUnitReassignRequest
+): Promise<ApiResponse<ReservationResponse>> {
+  const response = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/respond-reassign`,
+    payload
+  );
+  return response.data;
+}
+
+/**
+ * 7. GET /storage-units/facility/{facilityId}/available
+ * Lấy danh sách các phòng kho vật lý đang trống thuộc cơ sở & loại kho.
+ */
+export async function fetchAvailableUnitsApi(
+  facilityId: string,
+  unitTypeId?: string
+): Promise<StorageUnitResponse[]> {
+  const response = await api.get<ApiResponse<StorageUnitResponse[]>>(
+    `/storage-units/facility/${facilityId}/available`,
+    { params: cleanQueryParams({ unitTypeId }) }
+  );
+  return response.data.data;
+}
+
+/**
+ * 7.1. GET /storage-units/facility/{facilityId}/map-layout
+ * Toàn bộ sơ đồ mặt bằng 2D của cơ sở để khách chọn kho trực quan.
+ */
+export async function fetchFacilityMapLayoutApi(
+  facilityId: string
+): Promise<StorageUnitResponse[]> {
+  const response = await api.get<ApiResponse<StorageUnitResponse[]>>(
+    `/storage-units/facility/${facilityId}/map-layout`
+  );
+  return response.data.data;
+}
+
+/**
+ * 7.2. GET /storage-racks/unit/{unitId}
+ * Lấy danh sách kệ & tầng kệ bên trong 1 phòng kho (dành cho thuê theo kệ kho WAREHOUSE_RACK).
+ */
+export async function fetchUnitStorageRacksApi(unitId: string): Promise<StorageRackResponse[]> {
+  const response = await api.get<ApiResponse<StorageRackResponse[]>>(
+    `/storage-racks/unit/${unitId}`
+  );
+  return response.data.data;
+}
+
+/**
+ * 8. GET /facility-time-slots/facility/{facilityId}/available
+ * Lấy các ca hẹn check-in còn trống trong ngày tại cơ sở.
+ */
+export async function fetchAvailableTimeSlotsApi(
+  facilityId: string,
+  date: string
+): Promise<AvailableTimeSlotItemResponse[]> {
+  const response = await api.get<ApiResponse<AvailableTimeSlotItemResponse[]>>(
+    `/facility-time-slots/facility/${facilityId}/available`,
+    { params: { date } }
+  );
+  return response.data.data;
+}
+
+/**
+ * 9. POST /reservations/{id}/retry-payment
  * Transitions reservation from PAYMENT_FAILED back to PENDING_PAYMENT so customer can retry deposit payment.
  */
 export async function retryReservationPaymentApi(

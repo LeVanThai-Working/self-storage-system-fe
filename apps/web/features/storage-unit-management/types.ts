@@ -1,23 +1,50 @@
 import {
   StorageUnitStatusEnum,
+  RackZoneEnum,
+  RackStatusEnum,
+  RackTierStatusEnum,
+  RentalTargetTypeEnum,
   type StorageUnitResponse,
   type StorageUnitQuery,
+  type AvailableStorageUnitQuery,
   type CreateStorageUnitRequest,
   type UpdateStorageUnitRequest,
   type ToggleMaintenanceRequest,
+  type ReconcileStorageUnitsResponse,
+  type StorageRackResponse,
+  type RackTierResponse,
+  type CreateStorageRackRequest,
+  type UpdateStorageRackRequest,
+  type UpdateRackTierRequest,
+  type StorageRackQuery,
   type FacilityResponse,
   type FacilityUnitTypeOfferingResponse,
   type PaginatedData,
   type PaginationMeta,
 } from "@self-storage-system-fe/shared";
 
-export { StorageUnitStatusEnum };
+export {
+  StorageUnitStatusEnum,
+  RackZoneEnum,
+  RackStatusEnum,
+  RackTierStatusEnum,
+  RentalTargetTypeEnum,
+};
+
 export type {
   StorageUnitResponse,
   StorageUnitQuery,
+  AvailableStorageUnitQuery,
   CreateStorageUnitRequest,
   UpdateStorageUnitRequest,
   ToggleMaintenanceRequest,
+  ReconcileStorageUnitsResponse,
+  StorageRackResponse,
+  RackTierResponse,
+  CreateStorageRackRequest,
+  UpdateStorageRackRequest,
+  UpdateRackTierRequest,
+  StorageRackQuery,
   FacilityResponse,
   FacilityUnitTypeOfferingResponse,
   PaginatedData,
@@ -43,15 +70,18 @@ export interface StorageUnitFilters {
   status?: StorageUnitStatusEnum;
 }
 
-/** Units in these states are held by a reservation/contract and must not be deleted or re-typed. */
+/** Units in these states are held by a reservation/contract or awaiting clearance and must not be deleted or re-typed. */
 export const LOCKED_STATUSES: StorageUnitStatusEnum[] = [
   StorageUnitStatusEnum.RESERVED,
   StorageUnitStatusEnum.OCCUPIED,
+  StorageUnitStatusEnum.PENDING_CLEARANCE,
 ];
 
 export const isUnitLocked = (status: StorageUnitStatusEnum): boolean =>
   LOCKED_STATUSES.includes(status);
 
-/** Maintenance only switches between AVAILABLE and UNDER_MAINTENANCE. */
+/** Maintenance can be toggled for AVAILABLE, UNDER_MAINTENANCE, and PENDING_CLEARANCE. */
 export const canToggleMaintenance = (status: StorageUnitStatusEnum): boolean =>
-  status === StorageUnitStatusEnum.AVAILABLE || status === StorageUnitStatusEnum.UNDER_MAINTENANCE;
+  status === StorageUnitStatusEnum.AVAILABLE ||
+  status === StorageUnitStatusEnum.UNDER_MAINTENANCE ||
+  status === StorageUnitStatusEnum.PENDING_CLEARANCE;

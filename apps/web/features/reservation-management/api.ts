@@ -7,14 +7,20 @@ import {
   type AvailableStorageUnitQuery,
   type CancelReservationRequest,
   type ConfirmManualPaymentRequest,
+  type ConfirmRefundRequest,
   type ConfirmReservationRequest,
+  type ExtendGracePeriodRequest,
+  type ForceCancelReservationRequest,
   type ManagerReservationFilterParams,
+  type MarkCustomerArrivedRequest,
   type PaymentPaginatedResponse,
   type PaymentResponse,
+  type ReassignStorageUnitRequest,
   type RejectReservationRequest,
   type ReservationPaginatedResponse,
   type ReservationResponse,
   type ReservationStatusEnum,
+  type RespondUnitReassignRequest,
   type StorageUnitListResponse,
 } from "./types";
 
@@ -26,18 +32,19 @@ function toIsoDateStringIfPresent(value?: string): string | undefined {
 }
 
 /**
- * 3.1. GET /reservations — Danh sách đơn đặt chỗ tại cơ sở của Facility Staff / Manager
+ * 1. GET /reservations — Danh sách đơn đặt chỗ
  */
 export async function fetchManagerReservations(
   params: ManagerReservationFilterParams
 ): Promise<ReservationPaginatedResponse> {
   const query: Record<string, string | number> = {
-    facilityId: params.facilityId,
     page: params.page ?? 1,
     limit: params.limit ?? 10,
     sortBy: params.sortBy ?? "createdAt",
     sortOrder: params.sortOrder ?? "desc",
   };
+
+  if (params.facilityId) query.facilityId = params.facilityId;
 
   if (params.status) query.status = params.status;
   if (params.refundStatus) query.refundStatus = params.refundStatus;
@@ -65,17 +72,17 @@ export async function fetchManagerReservations(
 }
 
 /**
- * Lấy tổng số đơn theo từng trạng thái cho các Quick Filter Cards
+ * Lấy tổng số đơn theo từng trạng thái cho các Quick Filter Tabs
  */
 export async function fetchManagerReservationStatusCount(
-  facilityId: string,
+  facilityId?: string,
   status?: ReservationStatusEnum
 ): Promise<number> {
   const params: Record<string, string | number> = {
-    facilityId,
     page: 1,
     limit: 1,
   };
+  if (facilityId) params.facilityId = facilityId;
   if (status) params.status = status;
 
   const { data } = await api.get<ApiResponse<ReservationPaginatedResponse>>("/reservations", {
@@ -85,7 +92,7 @@ export async function fetchManagerReservationStatusCount(
 }
 
 /**
- * 3.2. GET /reservations/{id} — Chi tiết một đơn đặt chỗ
+ * 2. GET /reservations/{id} — Chi tiết một đơn đặt chỗ
  */
 export async function fetchReservationById(id: string): Promise<ReservationResponse> {
   const { data } = await api.get<ApiResponse<ReservationResponse>>(`/reservations/${id}`);
@@ -93,15 +100,153 @@ export async function fetchReservationById(id: string): Promise<ReservationRespo
 }
 
 /**
- * 3.3. POST /reservations/{id}/receive — Tiếp nhận đơn (PENDING -> RECEIVED)
+ * 3. POST /reservations/{id}/confirm — Xác nhận đơn sau thanh toán & phân công nhân viên
  */
-export async function receiveReservation(id: string): Promise<ReservationResponse> {
-  const { data } = await api.post<ApiResponse<ReservationResponse>>(`/reservations/${id}/receive`);
+export async function confirmReservation(
+  id: string,
+  payload: ConfirmReservationRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/confirm`,
+    payload
+  );
   return data.data!;
 }
 
 /**
- * 3.4. GET /storage-units/facility/{facilityId}/available — Lấy danh sách ô kho vật lý đang trống (AVAILABLE)
+ * 4. POST /reservations/{id}/assign-staff — Đổi nhân viên đón tiếp phụ trách đơn
+ */
+export async function assignReservationStaff(
+  id: string,
+  payload: AssignReservationStaffRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/assign-staff`,
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * 5. POST /reservations/{id}/mark-arrived — Ghi nhận khách đã đến cơ sở (chống hủy No-show)
+ */
+export async function markCustomerArrived(
+  id: string,
+  payload?: MarkCustomerArrivedRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/mark-arrived`,
+    payload ?? {}
+  );
+  return data.data!;
+}
+
+/**
+ * 6. POST /reservations/{id}/extend-grace — Gia hạn thời gian ân hạn nhận kho (1–72 giờ)
+ */
+export async function extendGracePeriod(
+  id: string,
+  payload: ExtendGracePeriodRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/extend-grace`,
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * 7. POST /reservations/{id}/reassign-unit — Đổi kho hoặc gửi đề xuất đổi kho 2 bước
+ */
+export async function reassignStorageUnit(
+  id: string,
+  payload: ReassignStorageUnitRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/reassign-unit`,
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * 8. POST /reservations/{id}/respond-reassign — Khách phản hồi chấp thuận / từ chối đổi kho
+ */
+export async function respondUnitReassign(
+  id: string,
+  payload: RespondUnitReassignRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/respond-reassign`,
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * 9. POST /reservations/{id}/cancel — Hủy đơn đặt chỗ (áp dụng phạt cọc 2 bậc)
+ */
+export async function cancelReservation(
+  id: string,
+  payload: CancelReservationRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/cancel`,
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * 10. POST /reservations/{id}/force-cancel — Hủy khẩn cấp do sự cố kho (hoàn 100% cọc)
+ */
+export async function forceCancelReservation(
+  id: string,
+  payload: ForceCancelReservationRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/force-cancel`,
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * 11. POST /reservations/{id}/confirm-refund — Quản lý xác nhận đã hoàn cọc (Maker-Checker)
+ */
+export async function confirmRefund(
+  id: string,
+  payload: ConfirmRefundRequest
+): Promise<ReservationResponse> {
+  const { data } = await api.post<ApiResponse<ReservationResponse>>(
+    `/reservations/${id}/confirm-refund`,
+    payload
+  );
+  return data.data!;
+}
+
+/**
+ * 12. POST /reservations/process-expired — Quét xử lý đơn hết hạn giữ chỗ (15 phút)
+ */
+export async function processExpiredReservations(): Promise<{ processedCount: number }> {
+  const { data } = await api.post<ApiResponse<{ processedCount: number }>>(
+    "/reservations/process-expired"
+  );
+  return data.data!;
+}
+
+/**
+ * 13. POST /reservations/process-overdue — Quét đơn trễ hẹn (OVERDUE) và đơn bỏ hẹn (No-show)
+ */
+export async function processOverdueReservations(): Promise<{ processedCount: number }> {
+  const { data } = await api.post<ApiResponse<{ processedCount: number }>>(
+    "/reservations/process-overdue"
+  );
+  return data.data!;
+}
+
+/**
+ * 14. GET /storage-units/facility/{facilityId}/available — Lấy danh sách ô kho vật lý đang trống
  */
 export async function fetchAvailableStorageUnitsForFacility(
   facilityId: string,
@@ -117,85 +262,7 @@ export async function fetchAvailableStorageUnitsForFacility(
 }
 
 /**
- * 3.5. POST /reservations/{id}/assign-unit — Gán ô kho vật lý và tạo thời hạn giữ chỗ
- */
-export async function assignStorageUnitToReservation(
-  id: string,
-  payload: AssignStorageUnitRequest
-): Promise<ReservationResponse> {
-  const { data } = await api.post<ApiResponse<ReservationResponse>>(
-    `/reservations/${id}/assign-unit`,
-    payload
-  );
-  return data.data!;
-}
-
-/**
- * 3.6. POST /reservations/{id}/reject — Từ chối đơn đặt chỗ (PENDING/RECEIVED -> REJECTED)
- */
-export async function rejectReservation(
-  id: string,
-  payload: RejectReservationRequest
-): Promise<ReservationResponse> {
-  const { data } = await api.post<ApiResponse<ReservationResponse>>(
-    `/reservations/${id}/reject`,
-    payload
-  );
-  return data.data!;
-}
-
-/**
- * 3.7. POST /reservations/{id}/confirm — Xác nhận đơn đặt chỗ & phân công nhân viên tiếp đón (PAYMENT_SUCCESSFUL -> CONFIRMED)
- */
-export async function confirmReservation(
-  id: string,
-  payload: ConfirmReservationRequest
-): Promise<ReservationResponse> {
-  const { data } = await api.post<ApiResponse<ReservationResponse>>(
-    `/reservations/${id}/confirm`,
-    payload
-  );
-  return data.data!;
-}
-
-/**
- * POST /reservations/{id}/assign-staff — Phân công hoặc đổi nhân viên tiếp đón check-in
- */
-export async function assignReservationStaff(
-  id: string,
-  payload: AssignReservationStaffRequest
-): Promise<ReservationResponse> {
-  const { data } = await api.post<ApiResponse<ReservationResponse>>(
-    `/reservations/${id}/assign-staff`,
-    payload
-  );
-  return data.data!;
-}
-
-/**
- * 3.8. POST /reservations/{id}/cancel — Hủy đơn đặt chỗ
- */
-export async function cancelReservation(
-  id: string,
-  payload: CancelReservationRequest
-): Promise<ReservationResponse> {
-  const { data } = await api.post<ApiResponse<ReservationResponse>>(
-    `/reservations/${id}/cancel`,
-    payload
-  );
-  return data.data!;
-}
-
-/**
- * 3.9. POST /reservations/{id}/complete — Hoàn tất đơn / Bàn giao sang Hợp đồng (CONFIRMED -> COMPLETED)
- */
-export async function completeReservation(id: string): Promise<ReservationResponse> {
-  const { data } = await api.post<ApiResponse<ReservationResponse>>(`/reservations/${id}/complete`);
-  return data.data!;
-}
-
-/**
- * 3.10a. POST /payments — Lấy hoặc khởi tạo phiên thanh toán cọc (idempotent) cho đơn ở PENDING_PAYMENT / PAYMENT_FAILED
+ * 15. POST /payments — Khởi tạo phiên thanh toán cọc
  */
 export async function createOrGetReservationDepositPayment(
   reservationId: string
@@ -208,7 +275,7 @@ export async function createOrGetReservationDepositPayment(
 }
 
 /**
- * Lấy danh sách giao dịch thanh toán của đơn đặt chỗ
+ * GET /payments — Lấy danh sách giao dịch thanh toán
  */
 export async function fetchPaymentsByReservation(
   reservationId: string
@@ -224,7 +291,15 @@ export async function fetchPaymentsByReservation(
 }
 
 /**
- * 3.10b. POST /payments/{id}/confirm-manual — Xác nhận thanh toán thủ công (Tiền mặt / Chuyển khoản tại quầy)
+ * GET /payments/{id}
+ */
+export async function fetchPaymentById(paymentId: string): Promise<PaymentResponse> {
+  const { data } = await api.get<ApiResponse<PaymentResponse>>(`/payments/${paymentId}`);
+  return data.data!;
+}
+
+/**
+ * POST /payments/{id}/confirm-manual — Xác nhận thanh toán tiền mặt tại quầy kèm ảnh hóa đơn
  */
 export async function confirmManualPayment(
   paymentId: string,
@@ -235,4 +310,46 @@ export async function confirmManualPayment(
     payload
   );
   return data.data!;
+}
+
+/**
+ * POST /payments/{id}/cancel — Hủy phiên thanh toán
+ */
+export async function cancelPayment(
+  paymentId: string,
+  cancellationReason: string
+): Promise<PaymentResponse> {
+  const { data } = await api.post<ApiResponse<PaymentResponse>>(`/payments/${paymentId}/cancel`, {
+    cancellationReason,
+  });
+  return data.data!;
+}
+
+// Legacy compatibility stubs
+export async function receiveReservation(id: string): Promise<ReservationResponse> {
+  return fetchReservationById(id);
+}
+
+export async function assignStorageUnitToReservation(
+  id: string,
+  payload: AssignStorageUnitRequest
+): Promise<ReservationResponse> {
+  return reassignStorageUnit(id, {
+    newStorageUnitId: payload.storageUnitId,
+    reason: payload.notes || "Assigned storage unit",
+    customerAgreed: true,
+  });
+}
+
+export async function rejectReservation(
+  id: string,
+  payload: RejectReservationRequest
+): Promise<ReservationResponse> {
+  return cancelReservation(id, {
+    cancellationReason: payload.rejectionReason,
+  });
+}
+
+export async function completeReservation(id: string): Promise<ReservationResponse> {
+  return fetchReservationById(id);
 }

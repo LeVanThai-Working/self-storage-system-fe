@@ -373,11 +373,20 @@
     "freeAmenity": "Miễn phí",
     "availableAmenityQty": "Khả dụng: %{count} suất/thiết bị",
     "noAmenities": "Cơ sở hiện chưa có danh mục tiện ích đi kèm.",
-    "loginRequiredForBooking": "Vui lòng đăng nhập để tiếp tục đặt chỗ gói kho đã chọn."
+    "loginRequiredForBooking": "Vui lòng đăng nhập để tiếp tục đặt chỗ gói kho đã chọn.",
+    "mapSectionTitle": "Sơ đồ mặt bằng & Vị trí ô kho",
+    "mapSectionBadge": "Bản đồ 2D tương tác",
+    "mapSectionSubtitle": "Xem sơ đồ các tầng và chọn ô kho trực quan",
+    "mapOpenFullBtn": "Mở toàn màn hình sơ đồ 2D (Tất cả các tầng)",
+    "mapSelectUnitPrompt": "Chạm vào ô màu xanh để chọn kho và tiếp tục đặt chỗ",
+    "mapNoUnitsAvailable": "Hiện chưa có ô kho nào được cấu hình trên sơ đồ cơ sở này.",
+    "floorLabel": "Tầng %{floor}",
+    "zoneLabel": "Khu %{zone}",
+    "unitsCount": "%{count} phòng"
   },
   "reservationHandoff": {
     "selectedPackageBanner": "Gói kho đã chọn từ Tra cứu Kho",
-    "clearSelection": "Đổi gói khác",
+    "clearSelection": "Thay đổi",
     "facilityLabel": "Cơ sở:",
     "unitTypeLabel": "Loại kho:",
     "dimensionsLabel": "Kích thước:",
@@ -530,5 +539,15 @@
         "adjust": "Kiểm kê"
       }
     }
+  },
+  "refunds": {
+    "title": "Yêu cầu hoàn tiền",
+    "subtitle": "Lịch sử và tiến trình hoàn tiền của bạn",
+    "viewDetails": "Xem chi tiết",
+    "totalRefunded": "Tổng tiền đã hoàn cho bạn",
+    "slaNotice": "Thời gian hoàn tiền dự kiến trong vòng 3 ngày làm việc kể từ khi yêu cầu được phê duyệt.",
+    "cancelRequest": "Hủy yêu cầu hoàn tiền",
+    "cancelSuccess": "Hủy yêu cầu hoàn tiền thành công",
+    "noRefunds": "Chưa có yêu cầu hoàn tiền nào"
   }
 }

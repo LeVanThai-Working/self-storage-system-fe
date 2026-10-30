@@ -50,88 +50,104 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_100: "MESSAGE_CODE_100",
 
   // Reservation Message Codes
-  // Reservation Not Found
   MESSAGE_CODE_300: "MESSAGE_CODE_300",
-  // Invalid Reservation Status Transition
   MESSAGE_CODE_301: "MESSAGE_CODE_301",
-  // Reservation Cannot Be Updated After Being Received
   MESSAGE_CODE_302: "MESSAGE_CODE_302",
-  // Reservation Cannot Be Cancelled
   MESSAGE_CODE_303: "MESSAGE_CODE_303",
-  // Reservation Has Expired
   MESSAGE_CODE_304: "MESSAGE_CODE_304",
-  // Selected Storage Unit Is Not Available
   MESSAGE_CODE_305: "MESSAGE_CODE_305",
-  // Start Date Cannot Be In The Past
   MESSAGE_CODE_306: "MESSAGE_CODE_306",
-  // Insufficient Amenity Quantity For {0}
   MESSAGE_CODE_307: "MESSAGE_CODE_307",
-  // Check-in Date Has Already Passed, Cannot Confirm Reservation
+  MESSAGE_CODE_309: "MESSAGE_CODE_309",
+  MESSAGE_CODE_310: "MESSAGE_CODE_310",
+  MESSAGE_CODE_311: "MESSAGE_CODE_311",
+  MESSAGE_CODE_312: "MESSAGE_CODE_312",
+  MESSAGE_CODE_313: "MESSAGE_CODE_313",
+  MESSAGE_CODE_314: "MESSAGE_CODE_314",
+  MESSAGE_CODE_315: "MESSAGE_CODE_315",
+  MESSAGE_CODE_316: "MESSAGE_CODE_316",
+  MESSAGE_CODE_317: "MESSAGE_CODE_317",
+  MESSAGE_CODE_318: "MESSAGE_CODE_318",
   MESSAGE_CODE_319: "MESSAGE_CODE_319",
+  MESSAGE_CODE_320: "MESSAGE_CODE_320",
+  MESSAGE_CODE_322: "MESSAGE_CODE_322",
+  MESSAGE_CODE_323: "MESSAGE_CODE_323",
+  MESSAGE_CODE_324: "MESSAGE_CODE_324",
+  MESSAGE_CODE_325: "MESSAGE_CODE_325",
+  MESSAGE_CODE_326: "MESSAGE_CODE_326",
+  MESSAGE_CODE_327: "MESSAGE_CODE_327",
+  MESSAGE_CODE_328: "MESSAGE_CODE_328",
+  MESSAGE_CODE_329: "MESSAGE_CODE_329",
+  MESSAGE_CODE_330: "MESSAGE_CODE_330",
+  MESSAGE_CODE_331: "MESSAGE_CODE_331",
 
   // Contract Message Codes
-  // Contract Not Found
   MESSAGE_CODE_400: "MESSAGE_CODE_400",
-  // Invalid Contract Status Transition
   MESSAGE_CODE_401: "MESSAGE_CODE_401",
-  // Storage Unit Is Not Available For Contract
   MESSAGE_CODE_402: "MESSAGE_CODE_402",
-  // Reservation Must Be Confirmed Or Completed To Create Contract
+  MESSAGE_CODE_403: "MESSAGE_CODE_403",
+  MESSAGE_CODE_404: "MESSAGE_CODE_404",
+  MESSAGE_CODE_405: "MESSAGE_CODE_405",
   MESSAGE_CODE_406: "MESSAGE_CODE_406",
-  // Storage Unit Facility Mismatch
   MESSAGE_CODE_407: "MESSAGE_CODE_407",
-  // Insufficient Amenity Quantity For Contract
   MESSAGE_CODE_408: "MESSAGE_CODE_408",
-  // Contract Addendum Not Found
   MESSAGE_CODE_409: "MESSAGE_CODE_409",
-  // Invalid Contract Addendum Status Transition
   MESSAGE_CODE_410: "MESSAGE_CODE_410",
-  // Contract Terms Must Be Accepted
   MESSAGE_CODE_411: "MESSAGE_CODE_411",
-  // Party Has Already Signed
   MESSAGE_CODE_412: "MESSAGE_CODE_412",
-  // Insufficient Contracted Amenity Quantity To Remove
   MESSAGE_CODE_413: "MESSAGE_CODE_413",
-  // Customer Must Sign Contract Before Check-In
   MESSAGE_CODE_414: "MESSAGE_CODE_414",
+  MESSAGE_CODE_415: "MESSAGE_CODE_415",
+  MESSAGE_CODE_416: "MESSAGE_CODE_416",
+  MESSAGE_CODE_417: "MESSAGE_CODE_417",
+  MESSAGE_CODE_418: "MESSAGE_CODE_418",
+  MESSAGE_CODE_419: "MESSAGE_CODE_419",
+  MESSAGE_CODE_420: "MESSAGE_CODE_420",
+  MESSAGE_CODE_421: "MESSAGE_CODE_421",
+  MESSAGE_CODE_422: "MESSAGE_CODE_422",
+  MESSAGE_CODE_423: "MESSAGE_CODE_423",
+  MESSAGE_CODE_424: "MESSAGE_CODE_424",
+  MESSAGE_CODE_425: "MESSAGE_CODE_425",
+  MESSAGE_CODE_426: "MESSAGE_CODE_426",
+  MESSAGE_CODE_427: "MESSAGE_CODE_427",
+  MESSAGE_CODE_428: "MESSAGE_CODE_428",
+  MESSAGE_CODE_431: "MESSAGE_CODE_431",
 
   // Payment Message Codes
-  // Payment Not Found / Invalid Session
   MESSAGE_CODE_500: "MESSAGE_CODE_500",
-  // Facility Bank Account Not Configured
   MESSAGE_CODE_501: "MESSAGE_CODE_501",
-  // Payment Has Expired
   MESSAGE_CODE_502: "MESSAGE_CODE_502",
-  // Contract Is Not In Pending Deposit Status
   MESSAGE_CODE_503: "MESSAGE_CODE_503",
-  // Payment Cannot Be Cancelled
   MESSAGE_CODE_504: "MESSAGE_CODE_504",
-  // Order Is Not Awaiting Payment
   MESSAGE_CODE_505: "MESSAGE_CODE_505",
-  // Webhook Verification Failed
   MESSAGE_CODE_506: "MESSAGE_CODE_506",
-  // Payment Already Settled
   MESSAGE_CODE_507: "MESSAGE_CODE_507",
+  MESSAGE_CODE_508: "MESSAGE_CODE_508",
+  MESSAGE_CODE_509: "MESSAGE_CODE_509",
+  MESSAGE_CODE_510: "MESSAGE_CODE_510",
+  MESSAGE_CODE_511: "MESSAGE_CODE_511",
+  MESSAGE_CODE_512: "MESSAGE_CODE_512",
+  MESSAGE_CODE_513: "MESSAGE_CODE_513",
+  MESSAGE_CODE_514: "MESSAGE_CODE_514",
+  MESSAGE_CODE_515: "MESSAGE_CODE_515",
+  MESSAGE_CODE_516: "MESSAGE_CODE_516",
+  MESSAGE_CODE_517: "MESSAGE_CODE_517",
+  MESSAGE_CODE_518: "MESSAGE_CODE_518",
+  MESSAGE_CODE_519: "MESSAGE_CODE_519",
+  MESSAGE_CODE_520: "MESSAGE_CODE_520",
+  MESSAGE_CODE_521: "MESSAGE_CODE_521",
 
   // Customer Inventory Message Codes
-  // Rack Tier Not Found
   MESSAGE_CODE_601: "MESSAGE_CODE_601",
-  // Customer SKU Not Found
   MESSAGE_CODE_610: "MESSAGE_CODE_610",
-  // Inventory Record Not Found
   MESSAGE_CODE_620: "MESSAGE_CODE_620",
-  // Insufficient Inventory Quantity
   MESSAGE_CODE_621: "MESSAGE_CODE_621",
-  // Contract Must Be Active To Perform Inventory Operations
   MESSAGE_CODE_622: "MESSAGE_CODE_622",
-  // Rack Tier Does Not Belong To Storage Unit
   MESSAGE_CODE_624: "MESSAGE_CODE_624",
-  // Rack Tier Is Inactive Or Under Maintenance
   MESSAGE_CODE_625: "MESSAGE_CODE_625",
-  // Destination Tier Must Be Different From Source Tier
   MESSAGE_CODE_627: "MESSAGE_CODE_627",
-  // SKU Does Not Belong To Customer
   MESSAGE_CODE_628: "MESSAGE_CODE_628",
+  MESSAGE_CODE_629: "MESSAGE_CODE_629",
 } as const;
 
 export type MessageCode = (typeof MESSAGE_CODE)[keyof typeof MESSAGE_CODE];
@@ -162,18 +178,46 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_122: "You Do Not Have Permission To Manage {0}",
   MESSAGE_CODE_200: "{0} Is Required",
   MESSAGE_CODE_201: "Invalid Token",
+
+  // Reservation
   MESSAGE_CODE_300: "Reservation Not Found",
   MESSAGE_CODE_301: "Invalid Reservation Status Transition",
   MESSAGE_CODE_302: "Reservation Cannot Be Updated After Being Received",
   MESSAGE_CODE_303: "Reservation Cannot Be Cancelled",
   MESSAGE_CODE_304: "Reservation Has Expired",
-  MESSAGE_CODE_305: "Selected Storage Unit Is Not Available",
+  MESSAGE_CODE_305: "Storage Unit Is Not Available For Reservation",
   MESSAGE_CODE_306: "Start Date Cannot Be In The Past",
   MESSAGE_CODE_307: "Insufficient Amenity Quantity For {0}",
-  MESSAGE_CODE_319: "Check-in Date Has Already Passed, Cannot Confirm Reservation",
+  MESSAGE_CODE_309: "Storage Unit Has Just Been Booked By Another Customer",
+  MESSAGE_CODE_310: "Time Slot Has Reached Maximum Capacity",
+  MESSAGE_CODE_311: "Invalid Or Inactive Check-in Time Slot",
+  MESSAGE_CODE_312: "Facility Cannot Cancel A Confirmed Reservation",
+  MESSAGE_CODE_313: "Check-in Date Is Too Far In The Future",
+  MESSAGE_CODE_314: "Too Many Pending Reservations",
+  MESSAGE_CODE_315: "Check-in Time Slot Has Already Passed",
+  MESSAGE_CODE_316: "Replacement Unit Tier Is Lower Than Reserved",
+  MESSAGE_CODE_317: "Refund Is Not Pending",
+  MESSAGE_CODE_318: "Reservation Has An Active Linked Contract",
+  MESSAGE_CODE_319: "Check-in Date Has Already Passed",
+  MESSAGE_CODE_320: "Maker-Checker Violation",
+  MESSAGE_CODE_322: "Reservation Terms Must Be Accepted",
+  MESSAGE_CODE_323: "Force Cancellation Requires Incident Details Or Incident ID",
+  MESSAGE_CODE_324: "Reservation Cannot Be Force Cancelled In Current Status",
+  MESSAGE_CODE_325: "Reservation Cannot Be Marked As Arrived In Current Status",
+  MESSAGE_CODE_326: "Customer Has Already Been Marked As Arrived",
+  MESSAGE_CODE_327: "Reservation Grace Period Cannot Be Extended In Current Status",
+  MESSAGE_CODE_328: "Check-in time slot requires at least {0} minutes preparation lead time",
+  MESSAGE_CODE_329: "Start date cannot exceed {0} days after check-in date",
+  MESSAGE_CODE_330: "No Pending Unit Reassign Proposal Found",
+  MESSAGE_CODE_331: "Another Unit Reassign Proposal Is Already Pending",
+
+  // Contract
   MESSAGE_CODE_400: "Contract Not Found",
   MESSAGE_CODE_401: "Invalid Contract Status Transition",
   MESSAGE_CODE_402: "Storage Unit Is Not Available For Contract",
+  MESSAGE_CODE_403: "Contract Has Already Been Checked In",
+  MESSAGE_CODE_404: "Contract Extension Date Must Be Greater Than Current End Date",
+  MESSAGE_CODE_405: "Cannot Delete Entity With Active Contracts",
   MESSAGE_CODE_406: "Reservation Must Be Confirmed Or Completed To Create Contract",
   MESSAGE_CODE_407: "Storage Unit Facility Mismatch",
   MESSAGE_CODE_408: "Insufficient Amenity Quantity For Contract",
@@ -183,14 +227,50 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_412: "Party Has Already Signed",
   MESSAGE_CODE_413: "Insufficient Contracted Amenity Quantity To Remove",
   MESSAGE_CODE_414: "Customer Must Sign Contract Before Check-In",
-  MESSAGE_CODE_500: "Payment Session Not Found",
-  MESSAGE_CODE_501: "Facility Bank Account Is Not Configured",
+  MESSAGE_CODE_415: "Customer Must Sign Contract Addendum Before Staff Sign",
+  MESSAGE_CODE_416:
+    "Direct Contract Renewal Is Deprecated. Please Use Contract Addendum (RENEW) via POST /contracts/{id}/addendums",
+  MESSAGE_CODE_417: "Contract Deposit Settlement Disputed",
+  MESSAGE_CODE_418: "Contract Inspection Photos Required For Damage Assessment",
+  MESSAGE_CODE_419: "Deposit Settlement Already Confirmed",
+  MESSAGE_CODE_420: "Cannot Check Out Contract While Customer Inventory Remains",
+  MESSAGE_CODE_421: "Cannot Check Out Contract While Open Incidents Exist",
+  MESSAGE_CODE_422: "Cannot Void Contract: Linked Reservation Is No Longer Active",
+  MESSAGE_CODE_423: "Cannot Create Contract Draft Before Check-In Date Unless Customer Has Arrived",
+  MESSAGE_CODE_424: "Reservation Check-In Deadline Has Expired",
+  MESSAGE_CODE_425:
+    "Contract dates were adjusted. Customer must re-sign the updated draft before check-in",
+  MESSAGE_CODE_426: "Contract Termination Requires At Least One Report File And One Evidence Photo",
+  MESSAGE_CODE_427: "Violation Termination Requires Violation Category",
+  MESSAGE_CODE_428:
+    "Overdue Payment Termination Requires Overdue Grace Period Exceeded (At Least 5 Days Overdue)",
+  MESSAGE_CODE_431: "Valid Signing Authorization Required For Facility Manager To Sign Or Check-In",
+
+  // Payment
+  MESSAGE_CODE_500: "Payment Not Found",
+  MESSAGE_CODE_501: "Invalid Payment Status Transition",
   MESSAGE_CODE_502: "Payment Has Expired",
-  MESSAGE_CODE_503: "Contract Is Not In Pending Deposit Status",
-  MESSAGE_CODE_504: "Payment Cannot Be Cancelled",
+  MESSAGE_CODE_503: "Invalid SePay Webhook Authentication",
+  MESSAGE_CODE_504: "Payment Amount Insufficient",
   MESSAGE_CODE_505: "Order Is Not Awaiting Payment",
-  MESSAGE_CODE_506: "Webhook Verification Failed",
+  MESSAGE_CODE_506: "Contract Deposit Not Paid",
   MESSAGE_CODE_507: "Payment Already Settled",
+  MESSAGE_CODE_508: "Payment Account Mismatch",
+  MESSAGE_CODE_509: "Proof Image Is Required For Manual Payment Confirmation",
+  MESSAGE_CODE_510: "Payment Transaction Not Found",
+  MESSAGE_CODE_511: "Refund Request Not Found",
+  MESSAGE_CODE_512: "Invalid Refund Request Status Transition",
+  MESSAGE_CODE_513: "Total Refund Amount Exceeds Net Settled Amount",
+  MESSAGE_CODE_514: "Refund Approver Cannot Be Requester",
+  MESSAGE_CODE_515: "Reference Code Is Required For Paid Refund",
+  MESSAGE_CODE_516: "Paid Refund Cannot Be Modified",
+  MESSAGE_CODE_517: "Payment Transaction Already Assigned",
+  MESSAGE_CODE_518: "Payment Transaction Amount Mismatch",
+  MESSAGE_CODE_519: "Contract First Period Rent Not Paid",
+  MESSAGE_CODE_520: "Contract Deposit Must Be Paid Before First Period Rent",
+  MESSAGE_CODE_521: "Contract First Period Rent Already Paid",
+
+  // Inventory
   MESSAGE_CODE_601: "Rack Tier Not Found",
   MESSAGE_CODE_610: "Customer SKU Not Found",
   MESSAGE_CODE_620: "Inventory Record Not Found",
@@ -200,6 +280,8 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_625: "Rack Tier Is Inactive Or Under Maintenance",
   MESSAGE_CODE_627: "Destination Tier Must Be Different From Source Tier",
   MESSAGE_CODE_628: "SKU Does Not Belong To Customer",
+  MESSAGE_CODE_629:
+    "Cannot change maintenance status or clear unit while customer inventory items remain",
 };
 
 /**
@@ -228,35 +310,102 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_122: "Bạn không có quyền quản lý {0}",
   MESSAGE_CODE_200: "{0} không được để trống",
   MESSAGE_CODE_201: "Mã token không hợp lệ hoặc đã hết hạn",
-  MESSAGE_CODE_300: "Đơn đặt chỗ không tồn tại",
-  MESSAGE_CODE_301: "Trạng thái đơn đặt chỗ đã thay đổi, vui lòng tải lại",
+
+  // Reservation
+  MESSAGE_CODE_300: "Không tìm thấy đơn đặt chỗ",
+  MESSAGE_CODE_301: "Chuyển đổi trạng thái đơn đặt chỗ không hợp lệ",
   MESSAGE_CODE_302: "Đơn đã được cơ sở tiếp nhận xử lý nên không thể chỉnh sửa thông tin",
   MESSAGE_CODE_303: "Đơn đặt chỗ không thể hủy ở trạng thái hiện tại",
-  MESSAGE_CODE_304: "Thời gian giữ chỗ của đơn đã hết hạn",
-  MESSAGE_CODE_305: "Ô kho được chọn hiện không còn trống",
+  MESSAGE_CODE_304: "Đơn đặt chỗ đã hết hạn giữ chỗ",
+  MESSAGE_CODE_305: "Phòng kho hiện không còn trống để đặt chỗ",
   MESSAGE_CODE_306: "Ngày bắt đầu thuê không được nằm trong quá khứ",
-  MESSAGE_CODE_307: "Tiện ích {0} tại cơ sở không đủ số lượng tồn kho",
+  MESSAGE_CODE_307: "Không đủ số lượng tiện ích khả dụng cho {0}",
+  MESSAGE_CODE_309: "Phòng kho vừa được khách hàng khác giữ chỗ",
+  MESSAGE_CODE_310: "Khung giờ hẹn này đã đạt số lượng tiếp đón tối đa",
+  MESSAGE_CODE_311: "Khung giờ hẹn không hợp lệ hoặc đang tạm đóng",
+  MESSAGE_CODE_312:
+    "Cơ sở không được phép hủy đơn đã xác nhận (vui lòng đổi kho hoặc hủy khẩn cấp)",
+  MESSAGE_CODE_313: "Ngày nhận kho vượt quá giới hạn đặt trước cho phép",
+  MESSAGE_CODE_314: "Quý khách đã đạt giới hạn số đơn đặt chỗ đang chờ thanh toán",
+  MESSAGE_CODE_315: "Khung giờ hẹn trong ngày hôm nay đã trôi qua",
+  MESSAGE_CODE_316: "Không được phép đổi sang phòng kho có đơn giá thấp hơn gói đã đặt",
+  MESSAGE_CODE_317: "Đơn đặt chỗ không có khoản hoàn tiền nào đang chờ giải ngân",
+  MESSAGE_CODE_318: "Không thể hủy đơn do đang có hợp đồng thuê kho liên kết đang xử lý",
   MESSAGE_CODE_319: "Đã quá ngày hẹn nhận kho, không thể xác nhận đơn",
-  MESSAGE_CODE_400: "Hợp đồng không tồn tại",
-  MESSAGE_CODE_401: "Chuyển trạng thái hợp đồng không hợp lệ",
-  MESSAGE_CODE_402: "Phòng kho không khả dụng để tạo hợp đồng",
-  MESSAGE_CODE_406: "Đơn đặt chỗ phải được xác nhận trước khi tạo hợp đồng",
-  MESSAGE_CODE_407: "Phòng kho không thuộc cơ sở đang chọn",
-  MESSAGE_CODE_408: "Tiện ích không đủ số lượng khả dụng trong kho cơ sở",
+  MESSAGE_CODE_320: "Người xác nhận hoàn tiền phải khác người xác nhận thu tiền",
+  MESSAGE_CODE_322: "Quý khách vui lòng đồng ý với Điều khoản & Chính sách đặt chỗ",
+  MESSAGE_CODE_323: "Hủy khẩn cấp yêu cầu đính kèm biên bản sự cố hoặc mã sự cố",
+  MESSAGE_CODE_324: "Trạng thái đơn hiện tại không hợp lệ để thực hiện hủy khẩn cấp",
+  MESSAGE_CODE_325: "Không thể ghi nhận khách đến cho đơn ở trạng thái hiện tại",
+  MESSAGE_CODE_326: "Khách hàng đã được ghi nhận có mặt tại cơ sở trước đó",
+  MESSAGE_CODE_327: "Đơn không ở trạng thái hợp lệ để gia hạn thời gian ân hạn",
+  MESSAGE_CODE_328: "Ca nhận kho trong ngày yêu cầu đặt trước tối thiểu {0} phút",
+  MESSAGE_CODE_329: "Ngày bắt đầu thuê không được vượt quá {0} ngày sau ngày nhận kho",
+  MESSAGE_CODE_330: "Không tìm thấy đề xuất đổi kho nào đang chờ phản hồi",
+  MESSAGE_CODE_331: "Đơn đặt chỗ đang có một đề xuất đổi kho khác chờ phản hồi",
+
+  // Contract
+  MESSAGE_CODE_400: "Không tìm thấy hợp đồng",
+  MESSAGE_CODE_401: "Chuyển đổi trạng thái hợp đồng không hợp lệ",
+  MESSAGE_CODE_402: "Phòng kho không khả dụng để lập hợp đồng",
+  MESSAGE_CODE_403: "Hợp đồng đã được ký nhận kho và kích hoạt trước đó",
+  MESSAGE_CODE_404: "Ngày gia hạn mới phải lớn hơn ngày kết thúc hiện tại",
+  MESSAGE_CODE_405: "Không thể xóa đối tượng đang có hợp đồng hoạt động",
+  MESSAGE_CODE_406: "Đơn đặt chỗ phải ở trạng thái đã xác nhận để lập hợp đồng",
+  MESSAGE_CODE_407: "Phòng kho không thuộc cơ sở của hợp đồng",
+  MESSAGE_CODE_408: "Không đủ số lượng tiện ích khả dụng cho hợp đồng",
   MESSAGE_CODE_409: "Không tìm thấy phụ lục hợp đồng",
   MESSAGE_CODE_410: "Chuyển đổi trạng thái phụ lục hợp đồng không hợp lệ",
-  MESSAGE_CODE_411: "Vui lòng đồng ý với các điều khoản trước khi ký xác nhận",
-  MESSAGE_CODE_412: "Bên này đã ký xác nhận trước đó",
+  MESSAGE_CODE_411: "Quý khách vui lòng đồng ý với Điều khoản hợp đồng",
+  MESSAGE_CODE_412: "Bên ký đã hoàn tất ký trước đó",
   MESSAGE_CODE_413: "Số lượng tiện ích yêu cầu tháo dỡ vượt quá số lượng đang thuê hợp lệ",
-  MESSAGE_CODE_414: "Khách hàng phải ký hợp đồng trước khi cơ sở ký bàn giao kho",
-  MESSAGE_CODE_500: "Không tìm thấy phiên thanh toán",
-  MESSAGE_CODE_501: "Cơ sở kho chưa cấu hình tài khoản ngân hàng nhận thanh toán",
-  MESSAGE_CODE_502: "Mã QR thanh toán đã hết hạn",
-  MESSAGE_CODE_503: "Hợp đồng chưa ở trạng thái chờ đặt cọc",
-  MESSAGE_CODE_504: "Không thể hủy phiên thanh toán ở trạng thái hiện tại",
-  MESSAGE_CODE_505: "Đơn chưa ở bước chờ thanh toán hoặc đã được thanh toán xong",
-  MESSAGE_CODE_506: "Xác thực giao dịch thanh toán thất bại",
-  MESSAGE_CODE_507: "Khoản thanh toán đã hoàn tất trước đó",
+  MESSAGE_CODE_414: "Khách hàng phải ký hợp đồng trước khi Quản lý hoàn tất nhận kho",
+  MESSAGE_CODE_415: "Khách hàng phải ký phụ lục trước khi Quản lý ký duyệt",
+  MESSAGE_CODE_416: "Tính năng gia hạn trực tiếp đã đóng. Vui lòng tạo phụ lục gia hạn (RENEW)",
+  MESSAGE_CODE_417: "Quyết toán cọc đang trong quá trình giải quyết tranh chấp",
+  MESSAGE_CODE_418: "Bắt buộc đính kèm ảnh hiện trường khi có phát sinh chi phí hư hại",
+  MESSAGE_CODE_419: "Quyết toán tiền cọc đã được xác nhận trước đó",
+  MESSAGE_CODE_420: "Không thể nghiệm thu trả kho: vẫn còn hàng hóa của khách lưu trong kho",
+  MESSAGE_CODE_421: "Không thể nghiệm thu trả kho: hợp đồng đang có sự cố hư hỏng chưa đóng",
+  MESSAGE_CODE_422: "Không thể hủy vô hiệu (VOID): đơn đặt chỗ liên kết không còn hoạt động",
+  MESSAGE_CODE_423: "Chưa đến ngày hẹn nhận kho và khách chưa có mặt tại cơ sở",
+  MESSAGE_CODE_424: "Đã quá hạn nhận kho của đơn đặt chỗ và khách chưa có mặt tại cơ sở",
+  MESSAGE_CODE_425:
+    "Ngày thuê đã thay đổi do nhận kho trễ. Khách hàng cần ký lại bản nháp đã cập nhật",
+  MESSAGE_CODE_426: "Chấm dứt hợp đồng yêu cầu tối thiểu 1 biên bản thanh lý và 1 ảnh hiện trường",
+  MESSAGE_CODE_427: "Chấm dứt do vi phạm yêu cầu phân loại hành vi vi phạm cụ thể",
+  MESSAGE_CODE_428:
+    "Chấm dứt do nợ tiền yêu cầu hợp đồng phải ở trạng thái quá hạn (OVERDUE) tối thiểu 5 ngày",
+  MESSAGE_CODE_431:
+    "Quản lý cơ sở cần có Văn bản ủy quyền ký (Signing Authorization) còn hiệu lực để ký hợp đồng hoặc xác nhận Check-in",
+
+  // Payment
+  MESSAGE_CODE_500: "Không tìm thấy thông tin đơn thanh toán",
+  MESSAGE_CODE_501: "Trạng thái đơn thanh toán không hợp lệ để thực hiện thao tác",
+  MESSAGE_CODE_502: "Đơn thanh toán đã hết hạn hoặc đã bị hủy trước đó",
+  MESSAGE_CODE_503: "Xác thực Webhook cổng thanh toán không hợp lệ",
+  MESSAGE_CODE_504: "Số tiền thanh toán không đủ (legacy)",
+  MESSAGE_CODE_505: "Đơn hàng không ở trạng thái chờ thanh toán",
+  MESSAGE_CODE_506: "Tiền cọc hợp đồng chưa được thanh toán",
+  MESSAGE_CODE_507: "Đơn thanh toán này đã được thanh toán hoàn tất trước đó",
+  MESSAGE_CODE_508: "Số tài khoản thụ hưởng không khớp với hệ thống",
+  MESSAGE_CODE_509: "Bắt buộc cung cấp ảnh chụp chứng từ/biên lai khi xác nhận thủ công",
+  MESSAGE_CODE_510: "Không tìm thấy giao dịch ngân hàng tương ứng",
+  MESSAGE_CODE_511: "Không tìm thấy yêu cầu hoàn tiền",
+  MESSAGE_CODE_512: "Chuyển đổi trạng thái yêu cầu hoàn tiền không hợp lệ",
+  MESSAGE_CODE_513: "Tổng số tiền hoàn vượt quá số tiền thực tế khách đã đóng trừ tiền phạt",
+  MESSAGE_CODE_514:
+    "Người phê duyệt hoàn tiền không được là người tạo yêu cầu (Vi phạm Maker-Checker)",
+  MESSAGE_CODE_515: "Bắt buộc nhập mã tham chiếu giao dịch ngân hàng khi xác nhận đã chuyển tiền",
+  MESSAGE_CODE_516: "Yêu cầu hoàn tiền đã hoàn tất chi trả (PAID) không thể chỉnh sửa hay hủy bỏ",
+  MESSAGE_CODE_517: "Giao dịch ngân hàng đã được gán hoặc không ở trạng thái UNMATCHED",
+  MESSAGE_CODE_518: "Số tiền giao dịch ngân hàng không khớp với số tiền của đơn thanh toán",
+  MESSAGE_CODE_519: "Tiền thuê kỳ đầu của hợp đồng chưa được thanh toán",
+  MESSAGE_CODE_520:
+    "Hợp đồng bắt buộc phải thanh toán tiền cọc trước khi thanh toán tiền thuê kỳ đầu",
+  MESSAGE_CODE_521: "Tiền thuê kỳ đầu của hợp đồng này đã được thanh toán xong",
+
+  // Inventory
   MESSAGE_CODE_601: "Không tìm thấy tầng kệ",
   MESSAGE_CODE_610: "Không tìm thấy mã hàng",
   MESSAGE_CODE_620: "Không tìm thấy bản ghi tồn kho",
@@ -266,6 +415,8 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_625: "Tầng kệ đang ngừng hoạt động hoặc bảo trì",
   MESSAGE_CODE_627: "Vị trí đích phải khác vị trí nguồn",
   MESSAGE_CODE_628: "Mã hàng không thuộc về khách hàng",
+  MESSAGE_CODE_629:
+    "Không thể đổi trạng thái bảo trì hoặc mở kho khi vẫn còn hàng tồn kho của khách bên trong",
 };
 
 export const MESSAGE_DICTIONARY = MESSAGE_DICTIONARY_EN;

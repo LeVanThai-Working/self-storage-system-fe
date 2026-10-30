@@ -29,7 +29,7 @@ interface UnitMaintenanceDialogProps {
   onEdit?: (unit: StorageUnitResponse) => void;
 }
 
-/** Unit summary + maintenance switch (AVAILABLE <-> UNDER_MAINTENANCE), shared by table and map views. */
+/** Unit summary + maintenance switch (AVAILABLE <-> UNDER_MAINTENANCE / PENDING_CLEARANCE -> UNDER_MAINTENANCE), shared by table and map views. */
 export const UnitMaintenanceDialog = ({
   unit,
   isOpen,
@@ -45,6 +45,7 @@ export const UnitMaintenanceDialog = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const isUnderMaintenance = unit.status === StorageUnitStatusEnum.UNDER_MAINTENANCE;
+  const isPendingClearance = unit.status === StorageUnitStatusEnum.PENDING_CLEARANCE;
   const toggleable = canToggleMaintenance(unit.status);
 
   const handleToggle = async () => {
@@ -56,22 +57,34 @@ export const UnitMaintenanceDialog = ({
     }
 
     try {
+      // If currently UNDER_MAINTENANCE -> false (reopen to AVAILABLE).
+      // If AVAILABLE or PENDING_CLEARANCE -> true (switch to UNDER_MAINTENANCE).
+      const nextMaintenanceStatus = isUnderMaintenance ? false : true;
+
       await toggleMutation.mutateAsync({
         id: unit.id,
         payload: {
-          isUnderMaintenance: !isUnderMaintenance,
+          isUnderMaintenance: nextMaintenanceStatus,
           // The backend overwrites the unit notes when `notes` is sent, so only send real changes.
           ...(trimmed !== (unit.notes ?? "").trim() && { notes: trimmed }),
         },
       });
-      toast.success(
-        isUnderMaintenance
-          ? tm("successReopen", { unitNumber: unit.unitNumber })
-          : tm("successStart", { unitNumber: unit.unitNumber })
-      );
+
+      if (isPendingClearance) {
+        toast.success(tm("successStartFromClearance", { unitNumber: unit.unitNumber }));
+      } else if (isUnderMaintenance) {
+        toast.success(tm("successReopen", { unitNumber: unit.unitNumber }));
+      } else {
+        toast.success(tm("successStart", { unitNumber: unit.unitNumber }));
+      }
       onClose();
     } catch (err: unknown) {
-      setErrorMessage(getErrorMessage(err, { MESSAGE_CODE_101: tm("errors.invalidStatus") }));
+      setErrorMessage(
+        getErrorMessage(err, {
+          MESSAGE_CODE_101: tm("errors.invalidStatus"),
+          MESSAGE_CODE_629: tm("errors.inventoryRemaining"),
+        })
+      );
     }
   };
 
@@ -132,10 +145,16 @@ export const UnitMaintenanceDialog = ({
                 className={`p-3.5 rounded-2xl border text-xs leading-relaxed ${
                   isUnderMaintenance
                     ? "bg-emerald-50 border-emerald-200/80 text-emerald-800"
-                    : "bg-orange-50 border-orange-200/80 text-orange-800"
+                    : isPendingClearance
+                      ? "bg-amber-50 border-amber-200/80 text-amber-900"
+                      : "bg-orange-50 border-orange-200/80 text-orange-800"
                 }`}
               >
-                {isUnderMaintenance ? tm("reopenHint") : tm("startHint")}
+                {isUnderMaintenance
+                  ? tm("reopenHint")
+                  : isPendingClearance
+                    ? tm("startFromClearanceHint")
+                    : tm("startHint")}
               </div>
 
               <div>
@@ -198,7 +217,9 @@ export const UnitMaintenanceDialog = ({
               className={`px-5 py-2.5 rounded-xl text-white text-xs font-bold shadow-md transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 ${
                 isUnderMaintenance
                   ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20"
-                  : "bg-orange-500 hover:bg-orange-600 shadow-orange-500/20"
+                  : isPendingClearance
+                    ? "bg-amber-600 hover:bg-amber-700 shadow-amber-600/20"
+                    : "bg-orange-500 hover:bg-orange-600 shadow-orange-500/20"
               }`}
             >
               {toggleMutation.isPending ? (
@@ -210,9 +231,11 @@ export const UnitMaintenanceDialog = ({
               )}
               {toggleMutation.isPending
                 ? tm("saving")
-                : isUnderMaintenance
-                  ? tm("confirmReopen")
-                  : tm("confirmStart")}
+                : isPendingClearance
+                  ? tm("confirmStartFromClearance")
+                  : isUnderMaintenance
+                    ? tm("confirmReopen")
+                    : tm("confirmStart")}
             </button>
           )}
         </DialogFooter>

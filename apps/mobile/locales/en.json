@@ -373,7 +373,16 @@
     "freeAmenity": "Free",
     "availableAmenityQty": "Available: %{count} units/slots",
     "noAmenities": "No additional amenities listed for this facility.",
-    "loginRequiredForBooking": "Please sign in to proceed with your storage reservation."
+    "loginRequiredForBooking": "Please sign in to proceed with your storage reservation.",
+    "mapSectionTitle": "2D Floor Plan & Unit Layout",
+    "mapSectionBadge": "Interactive 2D Map",
+    "mapSectionSubtitle": "Inspect floor plans and pick your storage unit visually",
+    "mapOpenFullBtn": "Open Fullscreen 2D Map (All Floors)",
+    "mapSelectUnitPrompt": "Tap any green unit to select room and proceed to booking",
+    "mapNoUnitsAvailable": "No storage units currently configured on this facility floor plan.",
+    "floorLabel": "Floor %{floor}",
+    "zoneLabel": "Zone %{zone}",
+    "unitsCount": "%{count} units"
   },
   "reservationHandoff": {
     "selectedPackageBanner": "Selected Storage Package",
@@ -530,5 +539,15 @@
         "adjust": "Recount"
       }
     }
+  },
+  "refunds": {
+    "title": "Refund Requests",
+    "subtitle": "Your refund history and progress",
+    "viewDetails": "View Details",
+    "totalRefunded": "Total Refunded to You",
+    "slaNotice": "Estimated refund processing time is within 3 business days from approval.",
+    "cancelRequest": "Cancel Refund Request",
+    "cancelSuccess": "Refund request cancelled successfully",
+    "noRefunds": "No refund requests found"
   }
 }

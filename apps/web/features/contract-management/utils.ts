@@ -3,11 +3,16 @@ import {
   BillingUnitEnum,
   ContractAddendumStatusEnum,
   ContractAddendumTypeEnum,
+  ContractDepositStatusEnum,
   ContractSourceEnum,
   ContractStatusEnum,
+  ContractTerminationTypeEnum,
   MESSAGE_CODE,
+  OVERDUE_PENALTY_MULTIPLIER,
+  OVERDUE_TERMINATION_GRACE_DAYS,
   RentalUnitEnum,
   RoleEnum,
+  ViolationCategoryEnum,
   type ContractAddendumResponse,
   type ContractResponse,
 } from "./types";
@@ -124,6 +129,94 @@ export function getBillingUnitLabel(
 }
 
 /**
+ * Nhãn loại phụ lục hợp đồng (RENEW vs UNIT_CHANGE)
+ */
+export function getContractAddendumTypeLabel(
+  type: ContractAddendumTypeEnum | string,
+  locale: "vi" | "en" = "vi"
+): string {
+  const isEn = locale === "en";
+  switch (String(type).toLowerCase()) {
+    case ContractAddendumTypeEnum.RENEW:
+      return isEn ? "Contract Extension (RENEW)" : "Gia hạn hợp đồng (RENEW)";
+    case ContractAddendumTypeEnum.UNIT_CHANGE:
+      return isEn ? "Emergency Unit Transfer (UNIT_CHANGE)" : "Điều chuyển kho sự cố (UNIT_CHANGE)";
+    case ContractAddendumTypeEnum.ADD:
+      return isEn ? "Add Amenities" : "Thuê thêm tiện ích";
+    case ContractAddendumTypeEnum.REMOVE:
+      return isEn ? "Remove Amenities" : "Trả bớt tiện ích";
+    default:
+      return String(type);
+  }
+}
+
+/**
+ * Nhãn trạng thái cọc hợp đồng (depositStatus)
+ */
+export function getContractDepositStatusLabel(
+  status?: ContractDepositStatusEnum | string | null,
+  locale: "vi" | "en" = "vi"
+): string {
+  const isEn = locale === "en";
+  switch (String(status ?? "").toLowerCase()) {
+    case ContractDepositStatusEnum.HELD:
+      return isEn ? "Deposit Held" : "Đang giữ cọc";
+    case ContractDepositStatusEnum.APPLIED:
+      return isEn ? "Deposit Applied" : "Đã đối trừ";
+    case ContractDepositStatusEnum.PARTIALLY_REFUNDED:
+      return isEn ? "Partially Refunded" : "Hoàn trả một phần";
+    case ContractDepositStatusEnum.REFUNDED:
+      return isEn ? "Deposit Refunded" : "Đã hoàn cọc";
+    case ContractDepositStatusEnum.FORFEITED:
+      return isEn ? "Deposit Forfeited" : "Tịch thu cọc";
+    case ContractDepositStatusEnum.DISPUTED:
+      return isEn ? "Settlement Disputed" : "Đang tranh chấp cọc";
+    default:
+      return isEn ? "Unsettled" : "Chưa thanh toán cọc";
+  }
+}
+
+/**
+ * Nhãn phương thức chấm dứt hợp đồng (terminationType)
+ */
+export function getContractTerminationTypeLabel(
+  type?: ContractTerminationTypeEnum | string | null,
+  locale: "vi" | "en" = "vi"
+): string {
+  const isEn = locale === "en";
+  switch (String(type ?? "").toLowerCase()) {
+    case ContractTerminationTypeEnum.MUTUAL:
+      return isEn ? "Mutual Agreement" : "Thỏa thuận đôi bên (MUTUAL)";
+    case ContractTerminationTypeEnum.CUSTOMER_REQUEST:
+      return isEn ? "Customer Request" : "Khách yêu cầu chấm dứt (CUSTOMER_REQUEST)";
+    case ContractTerminationTypeEnum.VIOLATION:
+      return isEn ? "Policy Violation" : "Vi phạm hợp đồng (VIOLATION)";
+    default:
+      return String(type ?? "—");
+  }
+}
+
+/**
+ * Nhãn phân loại vi phạm chấm dứt (violationCategory)
+ */
+export function getViolationCategoryLabel(
+  category?: ViolationCategoryEnum | string | null,
+  locale: "vi" | "en" = "vi"
+): string {
+  const isEn = locale === "en";
+  switch (String(category ?? "").toLowerCase()) {
+    case ViolationCategoryEnum.PROHIBITED_GOODS:
+      return isEn ? "Prohibited Goods Stored" : "Chứa hàng cấm / nguy hại";
+    case ViolationCategoryEnum.OVERDUE_PAYMENT:
+      return isEn ? "Overdue Payment (>= 5 Days)" : "Nợ tiền quá hạn (>= 5 ngày)";
+    case ViolationCategoryEnum.PROPERTY_DAMAGE:
+      return isEn ? "Facility / Property Damage" : "Phá hoại tài sản / cơ sở vật chất";
+    default:
+      return String(category ?? "—");
+  }
+}
+
+/**
  * Tính số ngày thuê giữa startDate và endDate
  */
 export function getContractDurationDays(startDate: string, endDate: string): number {
@@ -131,6 +224,36 @@ export function getContractDurationDays(startDate: string, endDate: string): num
   const endMs = new Date(endDate).getTime();
   if (Number.isNaN(startMs) || Number.isNaN(endMs) || endMs <= startMs) return 1;
   return Math.max(1, Math.ceil((endMs - startMs) / (1000 * 60 * 60 * 24)));
+}
+
+/**
+ * Tính số ngày quá hạn (overdue days) dựa trên endDate và hiện tại
+ */
+export function getContractOverdueDays(endDate: string, referenceNowMs = Date.now()): number {
+  const endMs = new Date(endDate).getTime();
+  if (Number.isNaN(endMs)) return 0;
+  const diffMs = referenceNowMs - endMs;
+  return diffMs > 0 ? Math.ceil(diffMs / (1000 * 60 * 60 * 24)) : 0;
+}
+
+/**
+ * Kiểm tra xem hợp đồng có đủ điều kiện chấm dứt do vi phạm nợ tiền OVERDUE_PAYMENT hay không:
+ * - Phải ở trạng thái OVERDUE
+ * - Số ngày quá hạn phải >= OVERDUE_TERMINATION_GRACE_DAYS (5 ngày)
+ */
+export function canTerminateForOverduePayment(
+  contract: ContractResponse,
+  referenceNowMs = Date.now()
+): { allowed: boolean; overdueDays: number; requiredDays: number } {
+  const overdueDays = getContractOverdueDays(contract.endDate, referenceNowMs);
+  const isOverdueStatus = contract.status === ContractStatusEnum.OVERDUE;
+  const allowed = isOverdueStatus && overdueDays >= OVERDUE_TERMINATION_GRACE_DAYS;
+
+  return {
+    allowed,
+    overdueDays,
+    requiredDays: OVERDUE_TERMINATION_GRACE_DAYS,
+  };
 }
 
 /**
@@ -185,10 +308,10 @@ export function isContractDepositSatisfied(contract: ContractResponse): boolean 
 }
 
 /**
- * Kiểm tra đã thanh toán tiền thuê kỳ đầu (`firstCyclePaidAt`)
+ * Kiểm tra đã thanh toán tiền thuê kỳ đầu (`firstPeriodPaidAt` hoặc `firstCyclePaidAt`)
  */
-export function isContractFirstCyclePaid(contract: ContractResponse): boolean {
-  return Boolean(contract.firstCyclePaidAt);
+export function isContractFirstPeriodPaid(contract: ContractResponse): boolean {
+  return Boolean(contract.firstPeriodPaidAt || contract.firstCyclePaidAt);
 }
 
 /**
@@ -218,7 +341,6 @@ export function canCheckInContract(contract: ContractResponse, userRole?: string
 
 /**
  * Tính tổng số lượng của một tiện ích đang nằm trong các phụ lục REMOVE chờ duyệt/ký
- * (status === 'pending_approval' || status === 'draft')
  */
 export function getPendingRemoveAmenityQty(
   addendums: ContractAddendumResponse[] | undefined,
@@ -243,8 +365,7 @@ export function getPendingRemoveAmenityQty(
 }
 
 /**
- * Tính số lượng tối đa có thể yêu cầu tháo dỡ / trả bớt cho một tiện ích đang thuê:
- * maxRemovableQty = item.quantity - pendingRemoveQty
+ * Tính số lượng tối đa có thể yêu cầu tháo dỡ / trả bớt cho một tiện ích đang thuê
  */
 export function getMaxRemovableAmenityQty(
   contract: ContractResponse,
@@ -301,7 +422,7 @@ export function calculateCheckoutSettlementPreview(
   const estimatedOverdueFee =
     contract.overdueFee && contract.overdueFee > 0
       ? contract.overdueFee
-      : Math.round(1.5 * dailyRate * computedOverdueDays);
+      : Math.round(OVERDUE_PENALTY_MULTIPLIER * dailyRate * computedOverdueDays);
 
   const totalDeductions = safeDamageFee + estimatedOverdueFee;
   const refundAmount = Math.max(0, depositAmount - totalDeductions);
@@ -327,32 +448,48 @@ const CONTRACT_ERROR_MESSAGES_VI: Record<string, string> = {
   [MESSAGE_CODE.MESSAGE_CODE_104]: "Không tìm thấy dữ liệu yêu cầu.",
   [MESSAGE_CODE.MESSAGE_CODE_105]: "Hợp đồng cho đơn đặt chỗ này đã tồn tại trong hệ thống.",
   [MESSAGE_CODE.MESSAGE_CODE_319]: "Đã quá ngày hẹn nhận kho, không thể xác nhận đơn đặt chỗ.",
-  [MESSAGE_CODE.MESSAGE_CODE_400]: "Hợp đồng không tồn tại.",
-  [MESSAGE_CODE.MESSAGE_CODE_401]: "Chuyển trạng thái hợp đồng không hợp lệ.",
-  [MESSAGE_CODE.MESSAGE_CODE_402]: "Phòng kho không khả dụng để tạo hợp đồng.",
-  [MESSAGE_CODE.MESSAGE_CODE_406]: "Đơn đặt chỗ phải được xác nhận trước khi tạo hợp đồng.",
-  [MESSAGE_CODE.MESSAGE_CODE_407]: "Phòng kho không thuộc cơ sở đang chọn.",
-  [MESSAGE_CODE.MESSAGE_CODE_408]: "Tiện ích không đủ số lượng khả dụng trong kho cơ sở.",
-  [MESSAGE_CODE.MESSAGE_CODE_409]:
-    "Không thể ký hợp đồng trước khi hoàn tất thanh toán tiền thuê kỳ đầu tiên (firstCyclePaidAt).",
-  [MESSAGE_CODE.MESSAGE_CODE_410]:
-    "Bên này đã thực hiện ký xác nhận hợp đồng hoặc phụ lục hợp đồng trước đó.",
-  [MESSAGE_CODE.MESSAGE_CODE_411]: "Vui lòng đồng ý với các điều khoản trước khi ký xác nhận.",
-  [MESSAGE_CODE.MESSAGE_CODE_412]: "Bên này đã ký xác nhận trước đó.",
+  [MESSAGE_CODE.MESSAGE_CODE_400]: "Không tìm thấy hợp đồng.",
+  [MESSAGE_CODE.MESSAGE_CODE_401]: "Chuyển đổi trạng thái hợp đồng không hợp lệ.",
+  [MESSAGE_CODE.MESSAGE_CODE_402]: "Phòng kho không khả dụng để lập hợp đồng.",
+  [MESSAGE_CODE.MESSAGE_CODE_403]: "Hợp đồng đã được ký nhận kho và kích hoạt trước đó.",
+  [MESSAGE_CODE.MESSAGE_CODE_404]: "Ngày gia hạn mới phải lớn hơn ngày kết thúc hiện tại.",
+  [MESSAGE_CODE.MESSAGE_CODE_405]: "Không thể xóa đối tượng đang có hợp đồng hoạt động.",
+  [MESSAGE_CODE.MESSAGE_CODE_406]: "Đơn đặt chỗ phải ở trạng thái đã xác nhận để lập hợp đồng.",
+  [MESSAGE_CODE.MESSAGE_CODE_407]: "Phòng kho không thuộc cơ sở của hợp đồng.",
+  [MESSAGE_CODE.MESSAGE_CODE_408]: "Không đủ số lượng tiện ích khả dụng cho hợp đồng.",
+  [MESSAGE_CODE.MESSAGE_CODE_409]: "Không tìm thấy phụ lục hợp đồng.",
+  [MESSAGE_CODE.MESSAGE_CODE_410]: "Chuyển đổi trạng thái phụ lục hợp đồng không hợp lệ.",
+  [MESSAGE_CODE.MESSAGE_CODE_411]: "Quý khách vui lòng đồng ý với Điều khoản hợp đồng.",
+  [MESSAGE_CODE.MESSAGE_CODE_412]: "Bên ký đã hoàn tất ký trước đó.",
   [MESSAGE_CODE.MESSAGE_CODE_413]:
-    "Số lượng yêu cầu tháo dỡ / trả bớt vượt quá số lượng đang thuê trên hợp đồng (hoặc đang có yêu cầu tháo dỡ chờ xử lý).",
-  [MESSAGE_CODE.MESSAGE_CODE_414]: "Khách hàng phải ký hợp đồng trước khi cơ sở ký bàn giao kho.",
-  [MESSAGE_CODE.MESSAGE_CODE_500]: "Hợp đồng không ở trạng thái hợp lệ để thực hiện thao tác này.",
-  [MESSAGE_CODE.MESSAGE_CODE_501]:
-    "Ngày kết thúc hợp đồng không hợp lệ (endDate phải sau startDate, hoặc newEndDate phải sau endDate hiện tại).",
-  [MESSAGE_CODE.MESSAGE_CODE_502]:
-    "Đơn đặt chỗ (Reservation) không ở trạng thái hợp lệ để tạo hợp đồng (phải là CONFIRMED) hoặc đã có hợp đồng.",
-  [MESSAGE_CODE.MESSAGE_CODE_503]: "Kho lưu trữ không khả dụng để tạo hợp đồng.",
-  [MESSAGE_CODE.MESSAGE_CODE_504]: "Không đủ số lượng tồn kho tiện ích (Amenity) tại cơ sở.",
-  [MESSAGE_CODE.MESSAGE_CODE_505]:
-    "Bắt buộc phải đồng ý điều khoản (termsAccepted: true) khi ký xác nhận.",
-  [MESSAGE_CODE.MESSAGE_CODE_506]:
-    "Hợp đồng chưa được thanh toán tiền cọc (depositPaidAt === null), không thể ký xác nhận.",
+    "Số lượng tiện ích yêu cầu tháo dỡ vượt quá số lượng đang thuê hợp lệ.",
+  [MESSAGE_CODE.MESSAGE_CODE_414]:
+    "Khách hàng phải ký hợp đồng trước khi Quản lý hoàn tất nhận kho.",
+  [MESSAGE_CODE.MESSAGE_CODE_415]: "Khách hàng phải ký phụ lục trước khi Quản lý ký duyệt.",
+  [MESSAGE_CODE.MESSAGE_CODE_416]:
+    "Tính năng gia hạn trực tiếp đã đóng. Vui lòng tạo phụ lục gia hạn (RENEW).",
+  [MESSAGE_CODE.MESSAGE_CODE_417]: "Quyết toán cọc đang trong quá trình giải quyết tranh chấp.",
+  [MESSAGE_CODE.MESSAGE_CODE_418]:
+    "Bắt buộc đính kèm ảnh hiện trường khi có phát sinh chi phí hư hại.",
+  [MESSAGE_CODE.MESSAGE_CODE_419]: "Quyết toán tiền cọc đã được xác nhận trước đó.",
+  [MESSAGE_CODE.MESSAGE_CODE_420]:
+    "Không thể nghiệm thu trả kho: vẫn còn hàng hóa của khách lưu trong kho.",
+  [MESSAGE_CODE.MESSAGE_CODE_421]:
+    "Không thể nghiệm thu trả kho: hợp đồng đang có sự cố hư hỏng chưa đóng.",
+  [MESSAGE_CODE.MESSAGE_CODE_422]:
+    "Không thể hủy vô hiệu (VOID): đơn đặt chỗ liên kết không còn hoạt động.",
+  [MESSAGE_CODE.MESSAGE_CODE_423]: "Chưa đến ngày hẹn nhận kho và khách chưa có mặt tại cơ sở.",
+  [MESSAGE_CODE.MESSAGE_CODE_424]:
+    "Đã quá hạn nhận kho của đơn đặt chỗ và khách chưa có mặt tại cơ sở.",
+  [MESSAGE_CODE.MESSAGE_CODE_425]:
+    "Ngày thuê đã thay đổi do nhận kho trễ. Khách hàng cần ký lại bản nháp đã cập nhật trước khi kích hoạt.",
+  [MESSAGE_CODE.MESSAGE_CODE_426]:
+    "Chấm dứt hợp đồng yêu cầu tối thiểu 1 biên bản thanh lý và 1 ảnh hiện trường.",
+  [MESSAGE_CODE.MESSAGE_CODE_427]: "Chấm dứt do vi phạm yêu cầu phân loại hành vi vi phạm cụ thể.",
+  [MESSAGE_CODE.MESSAGE_CODE_428]:
+    "Chấm dứt do nợ tiền yêu cầu hợp đồng phải ở trạng thái quá hạn (OVERDUE) tối thiểu 5 ngày.",
+  [MESSAGE_CODE.MESSAGE_CODE_629]:
+    "Không thể thực hiện thao tác: vẫn còn hàng hóa của khách trong kho.",
   [MESSAGE_CODE.MESSAGE_CODE_121]: "Cần vai trò Quản lý cơ sở để thực hiện hành động này.",
   [MESSAGE_CODE.MESSAGE_CODE_122]:
     "Nhân viên được gán không thuộc cơ sở hiện tại hoặc bạn không có quyền thao tác trên cơ sở này.",
@@ -366,29 +503,44 @@ const CONTRACT_ERROR_MESSAGES_EN: Record<string, string> = {
   [MESSAGE_CODE.MESSAGE_CODE_400]: "Contract not found.",
   [MESSAGE_CODE.MESSAGE_CODE_401]: "Invalid contract status transition.",
   [MESSAGE_CODE.MESSAGE_CODE_402]: "Storage unit is not available to create a contract.",
+  [MESSAGE_CODE.MESSAGE_CODE_403]: "Contract has already been checked in.",
+  [MESSAGE_CODE.MESSAGE_CODE_404]: "Contract extension date must be greater than current end date.",
+  [MESSAGE_CODE.MESSAGE_CODE_405]: "Cannot delete entity with active contracts.",
   [MESSAGE_CODE.MESSAGE_CODE_406]:
     "Reservation must be confirmed or completed to create a contract.",
   [MESSAGE_CODE.MESSAGE_CODE_407]: "Storage unit facility mismatch.",
   [MESSAGE_CODE.MESSAGE_CODE_408]: "Insufficient amenity quantity for contract.",
-  [MESSAGE_CODE.MESSAGE_CODE_409]:
-    "Cannot sign contract before first billing cycle payment is completed.",
-  [MESSAGE_CODE.MESSAGE_CODE_410]: "This party has already signed the contract or addendum.",
+  [MESSAGE_CODE.MESSAGE_CODE_409]: "Contract addendum not found.",
+  [MESSAGE_CODE.MESSAGE_CODE_410]: "Invalid contract addendum status transition.",
   [MESSAGE_CODE.MESSAGE_CODE_411]: "Contract terms must be accepted before signing.",
   [MESSAGE_CODE.MESSAGE_CODE_412]: "Party has already signed.",
   [MESSAGE_CODE.MESSAGE_CODE_413]:
     "Requested removal quantity exceeds active contract amenity quantity.",
   [MESSAGE_CODE.MESSAGE_CODE_414]: "Customer must sign contract before check-in handover.",
-  [MESSAGE_CODE.MESSAGE_CODE_500]:
-    "The contract is not in a valid status to perform this operation.",
-  [MESSAGE_CODE.MESSAGE_CODE_501]:
-    "Invalid contract end date (endDate must be after startDate, or newEndDate must be after current endDate).",
-  [MESSAGE_CODE.MESSAGE_CODE_502]:
-    "Reservation is not in a valid status to create a contract (must be CONFIRMED) or already has a contract.",
-  [MESSAGE_CODE.MESSAGE_CODE_503]: "Storage unit is not available to create a contract.",
-  [MESSAGE_CODE.MESSAGE_CODE_504]: "Insufficient amenity stock quantity at this facility.",
-  [MESSAGE_CODE.MESSAGE_CODE_505]: "Terms must be accepted (termsAccepted: true) upon signing.",
-  [MESSAGE_CODE.MESSAGE_CODE_506]:
-    "Contract deposit has not been paid (depositPaidAt === null). Cannot proceed with signing.",
+  [MESSAGE_CODE.MESSAGE_CODE_415]: "Customer must sign contract addendum before staff sign.",
+  [MESSAGE_CODE.MESSAGE_CODE_416]:
+    "Direct contract renewal is deprecated. Please use contract addendum (RENEW).",
+  [MESSAGE_CODE.MESSAGE_CODE_417]: "Contract deposit settlement is disputed.",
+  [MESSAGE_CODE.MESSAGE_CODE_418]: "Inspection photos are required when damage fee is assessed.",
+  [MESSAGE_CODE.MESSAGE_CODE_419]: "Deposit settlement has already been confirmed.",
+  [MESSAGE_CODE.MESSAGE_CODE_420]:
+    "Cannot check out contract while customer inventory remains in storage unit.",
+  [MESSAGE_CODE.MESSAGE_CODE_421]: "Cannot check out contract while open incidents exist.",
+  [MESSAGE_CODE.MESSAGE_CODE_422]: "Cannot void contract: linked reservation is no longer active.",
+  [MESSAGE_CODE.MESSAGE_CODE_423]:
+    "Cannot create contract draft before check-in date unless customer has arrived.",
+  [MESSAGE_CODE.MESSAGE_CODE_424]: "Reservation check-in deadline has expired.",
+  [MESSAGE_CODE.MESSAGE_CODE_425]:
+    "Contract dates were adjusted. Customer must re-sign the updated draft before check-in.",
+  [MESSAGE_CODE.MESSAGE_CODE_426]:
+    "Contract termination requires at least one report file and one evidence photo.",
+  [MESSAGE_CODE.MESSAGE_CODE_427]: "Violation termination requires violation category.",
+  [MESSAGE_CODE.MESSAGE_CODE_428]:
+    "Overdue payment termination requires overdue grace period exceeded (at least 5 days overdue).",
+  [MESSAGE_CODE.MESSAGE_CODE_431]:
+    "Valid Signing Authorization is required for Facility Manager to sign or check-in.",
+  [MESSAGE_CODE.MESSAGE_CODE_629]:
+    "Cannot perform operation while customer inventory remains in unit.",
   [MESSAGE_CODE.MESSAGE_CODE_121]: "Facility Manager role required for this action.",
   [MESSAGE_CODE.MESSAGE_CODE_122]:
     "Assigned staff does not belong to this facility or you do not have permission for this facility.",

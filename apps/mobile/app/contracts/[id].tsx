@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   ScrollView,
@@ -106,7 +106,6 @@ export default function ContractDetailScreen() {
 
   // Contract signing state (Step 1 DRAFT)
   const [contractTermsAccepted, setContractTermsAccepted] = useState(true);
-  const [contractSignNotes, setContractSignNotes] = useState("");
 
   // Payment QR Modal state
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
@@ -154,6 +153,47 @@ export default function ContractDetailScreen() {
       }
     }, [contractId, refetch])
   );
+
+  // Auto-poll payment status while modal is open and payment is pending
+  useEffect(() => {
+    if (
+      !paymentModalOpen ||
+      !activePayment?.id ||
+      activePayment.status !== PaymentStatusEnum.PENDING
+    ) {
+      return;
+    }
+
+    let isSubscribed = true;
+    const interval = setInterval(async () => {
+      try {
+        const latest = await getPaymentByIdApi(activePayment.id);
+        if (!isSubscribed) return;
+        if (latest.status === PaymentStatusEnum.PAID) {
+          setActivePayment(latest);
+          toast.success(
+            isEn
+              ? "Payment confirmed! Updating contract..."
+              : "Đã xác nhận thanh toán thành công! Đang cập nhật hợp đồng..."
+          );
+          await refetch();
+          setPaymentModalOpen(false);
+        } else if (
+          latest.status === PaymentStatusEnum.CANCELLED ||
+          latest.status === PaymentStatusEnum.EXPIRED
+        ) {
+          setActivePayment(latest);
+        }
+      } catch {
+        // Silently swallow polling tick errors
+      }
+    }, 2500);
+
+    return () => {
+      isSubscribed = false;
+      clearInterval(interval);
+    };
+  }, [paymentModalOpen, activePayment?.id, activePayment?.status, isEn, refetch, toast]);
 
   const handleBack = () => {
     if (router.canGoBack()) {
@@ -221,7 +261,6 @@ export default function ContractDetailScreen() {
     try {
       const updated = await signContractMutation.mutateAsync({
         termsAccepted: true,
-        notes: contractSignNotes.trim() || undefined,
       });
       toast.success(
         updated.status === ContractStatusEnum.ACTIVE
@@ -230,9 +269,8 @@ export default function ContractDetailScreen() {
             : "Đã ký xác nhận! Cả 2 bên đã hoàn tất ký, hợp đồng đã kích hoạt sang Đang thuê (ACTIVE)."
           : isEn
             ? "Contract signed! Waiting for facility staff handover signature."
-            : "Bạn đã ký xác nhận hợp đồng! Hợp đồng sẽ kích hoạt ngay khi nhân viên cơ sở ký bàn giao kho."
+            : "Bạn đã ký xác nhận hợp đồng! Hợp đồng sẽ kích hoạt ngay khi phía cơ sở ký bàn giao kho."
       );
-      setContractSignNotes("");
     } catch (err) {
       const resolved = resolveReservationErrorMessage(err, currentLocale, "contract");
       toast.error(resolved.message);
@@ -425,6 +463,7 @@ export default function ContractDetailScreen() {
   const isActive = contract.status === ContractStatusEnum.ACTIVE;
   const isFromReservation = contract.source === ContractSourceEnum.RESERVATION;
   const isDepositSatisfied = isFromReservation || Boolean(contract.depositPaidAt);
+  const isFirstPeriodPaid = Boolean(contract.firstPeriodPaidAt || contract.firstCyclePaidAt);
   const canCustomerSignContract = isDraft && isDepositSatisfied && !contract.customerSigned;
 
   const isCompletedOrSettled =
@@ -583,10 +622,70 @@ export default function ContractDetailScreen() {
               ) : null}
             </View>
 
-            {/* Step 2: Dual-Party Signature Progress */}
+            {/* Step 2: First Period Rent (T1.6 Payable after deposit is satisfied) */}
+            <View
+              className={`rounded-2xl border p-3 gap-1 ${
+                isFirstPeriodPaid
+                  ? "border-brand/40 bg-brand-light/25 dark:bg-brand/15"
+                  : "border-amber-300 bg-amber-50 dark:bg-amber-950/30"
+              }`}
+            >
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center gap-1.5 flex-1">
+                  {isFirstPeriodPaid ? (
+                    <CheckCircle2 size={14} color="#0B927E" />
+                  ) : (
+                    <Clock size={14} color="#D97706" />
+                  )}
+                  <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                    {isEn ? "2. First Period Rent" : "2. Tiền thuê kỳ đầu"}
+                  </Text>
+                </View>
+                <Text className="text-xs font-extrabold text-brand">
+                  {formatVnd(contract.totalPeriodicPrice)}
+                </Text>
+              </View>
+
+              <Text variant="muted" className="text-[11px]">
+                {isFirstPeriodPaid
+                  ? `${isEn ? "Paid at:" : "Đã thanh toán lúc:"} ${formatDateTime(
+                      contract.firstPeriodPaidAt || contract.firstCyclePaidAt || ""
+                    )}`
+                  : !isDepositSatisfied
+                    ? isEn
+                      ? "Payable after security deposit is settled"
+                      : "Sẽ mở thanh toán sau khi hoàn tất tiền cọc"
+                    : isEn
+                      ? "Awaiting first period rent payment"
+                      : "Chưa thanh toán tiền thuê kỳ đầu"}
+              </Text>
+
+              {!isFirstPeriodPaid && isDepositSatisfied ? (
+                <Pressable
+                  onPress={() => handleOpenPaymentQr(PaymentPurposeEnum.RENT_FIRST_PERIOD)}
+                  disabled={createPaymentMutation.isPending}
+                  className="mt-2 flex-row items-center justify-center gap-2 rounded-xl bg-cta py-2.5 px-4 active:opacity-90"
+                >
+                  {createPaymentMutation.isPending ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <>
+                      <QrCode size={15} color="#FFFFFF" />
+                      <Text className="text-xs font-bold text-white">
+                        {isEn
+                          ? "Pay First Period Rent (VietQR)"
+                          : "Thanh toán Tiền thuê kỳ đầu (QR)"}
+                      </Text>
+                    </>
+                  )}
+                </Pressable>
+              ) : null}
+            </View>
+
+            {/* Step 3: Dual-Party Signature Progress */}
             <View className="gap-2">
               <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200">
-                {isEn ? "2. Dual-Party Signature Progress" : "2. Tiến độ Ký Xác nhận 2 bên"}
+                {isEn ? "3. Dual-Party Signature Progress" : "3. Tiến độ Ký Xác nhận 2 bên"}
               </Text>
 
               <View className="flex-row gap-2.5">
@@ -640,7 +739,7 @@ export default function ContractDetailScreen() {
                 >
                   <View className="flex-row items-center justify-between">
                     <Text className="text-[11px] font-extrabold text-neutral-dark dark:text-neutral-100">
-                      {isEn ? "Facility Staff" : "Nhân viên cơ sở"}
+                      {isEn ? "Facility Staff" : "Phía cơ sở"}
                     </Text>
                     {contract.staffSigned ? (
                       <CheckCircle2 size={14} color="#0B927E" />
@@ -693,18 +792,6 @@ export default function ContractDetailScreen() {
                   </Text>
                 </Pressable>
 
-                <TextInput
-                  value={contractSignNotes}
-                  onChangeText={setContractSignNotes}
-                  placeholder={
-                    isEn
-                      ? "Optional notes when signing..."
-                      : "Ghi chú thêm khi ký hợp đồng (không bắt buộc)..."
-                  }
-                  placeholderTextColor="#94A3B8"
-                  className="rounded-xl border border-neutral-border dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-xs text-neutral-dark dark:text-neutral-100"
-                />
-
                 <Pressable
                   onPress={handleCustomerSignContract}
                   disabled={!contractTermsAccepted || signContractMutation.isPending}
@@ -732,7 +819,7 @@ export default function ContractDetailScreen() {
                 <Text className="flex-1 text-xs font-semibold text-brand leading-4">
                   {isEn
                     ? "You have signed this contract! Once facility staff signs the handover, your contract will automatically become ACTIVE."
-                    : "Bạn đã ký xác nhận hợp đồng! Ngay khi nhân viên cơ sở ký xác nhận bàn giao kho, hợp đồng sẽ tự động chuyển sang Đang thuê (ACTIVE)."}
+                    : "Bạn đã ký xác nhận hợp đồng! Ngay khi phía cơ sở ký xác nhận bàn giao kho, hợp đồng sẽ tự động chuyển sang Đang thuê (ACTIVE)."}
                 </Text>
               </View>
             ) : null}
@@ -1075,6 +1162,64 @@ export default function ContractDetailScreen() {
                       : "Chưa đóng cọc"}
               </Text>
             </View>
+
+            {/* First Period Rent Box */}
+            <View
+              className={`mt-1 rounded-xl border p-2.5 gap-1 ${
+                isFirstPeriodPaid
+                  ? "border-brand/30 bg-brand-light/30 dark:bg-brand/15"
+                  : "border-amber-300 bg-amber-50 dark:bg-amber-950/30"
+              }`}
+            >
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center gap-1.5">
+                  {isFirstPeriodPaid ? (
+                    <CheckCircle2 size={13} color="#0B927E" />
+                  ) : (
+                    <Clock size={13} color="#D97706" />
+                  )}
+                  <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                    {isEn ? "First Period Rent:" : "Tiền thuê kỳ đầu:"}
+                  </Text>
+                </View>
+                <Text className="text-xs font-extrabold text-brand">
+                  {formatVnd(contract.totalPeriodicPrice)}
+                </Text>
+              </View>
+
+              <Text variant="muted" className="text-[10px]">
+                {isFirstPeriodPaid
+                  ? `${isEn ? "Paid at:" : "Đã thanh toán lúc:"} ${formatDateTime(
+                      contract.firstPeriodPaidAt || contract.firstCyclePaidAt || ""
+                    )}`
+                  : !isDepositSatisfied
+                    ? isEn
+                      ? "Payable after security deposit is settled"
+                      : "Sẽ mở thanh toán sau khi hoàn tất tiền cọc"
+                    : isEn
+                      ? "Awaiting first period payment"
+                      : "Chưa thanh toán tiền thuê kỳ đầu"}
+              </Text>
+
+              {!isFirstPeriodPaid && isDepositSatisfied && (isDraft || isActive) ? (
+                <Pressable
+                  onPress={() => handleOpenPaymentQr(PaymentPurposeEnum.RENT_FIRST_PERIOD)}
+                  disabled={createPaymentMutation.isPending}
+                  className="mt-2 flex-row items-center justify-center gap-2 rounded-xl bg-cta py-2 px-3 active:opacity-90"
+                >
+                  {createPaymentMutation.isPending ? (
+                    <ActivityIndicator size="small" color="#FFFFFF" />
+                  ) : (
+                    <>
+                      <QrCode size={14} color="#FFFFFF" />
+                      <Text className="text-xs font-bold text-white">
+                        {isEn ? "Pay First Period Rent (QR)" : "Quét mã QR thanh toán kỳ đầu"}
+                      </Text>
+                    </>
+                  )}
+                </Pressable>
+              ) : null}
+            </View>
           </View>
         </View>
 
@@ -1356,7 +1501,13 @@ export default function ContractDetailScreen() {
           <View className="rounded-t-3xl bg-white dark:bg-neutral-900 p-5 gap-4 max-h-[88%]">
             <View className="flex-row items-center justify-between">
               <Text className="text-base font-extrabold text-neutral-dark dark:text-neutral-100">
-                {isEn ? "Pay Contract Deposit (VietQR)" : "Thanh toán Tiền cọc Hợp đồng (VietQR)"}
+                {activePayment?.purpose === PaymentPurposeEnum.RENT_FIRST_PERIOD
+                  ? isEn
+                    ? "Pay First Period Rent (VietQR)"
+                    : "Thanh toán Tiền thuê kỳ đầu (VietQR)"
+                  : isEn
+                    ? "Pay Contract Deposit (VietQR)"
+                    : "Thanh toán Tiền cọc Hợp đồng (VietQR)"}
               </Text>
               <Pressable onPress={() => setPaymentModalOpen(false)} hitSlop={10}>
                 <X size={20} color="#647B80" />
@@ -1423,25 +1574,6 @@ export default function ContractDetailScreen() {
                     </Text>
                   </View>
                 </View>
-
-                <Pressable
-                  onPress={handleCheckPaymentStatus}
-                  disabled={isCheckingPayment}
-                  className="flex-row items-center justify-center gap-2 rounded-xl bg-brand py-3 px-4 active:opacity-90"
-                >
-                  {isCheckingPayment ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
-                  ) : (
-                    <>
-                      <RefreshCw size={15} color="#FFFFFF" />
-                      <Text className="text-xs font-extrabold text-white">
-                        {isEn
-                          ? "I Have Transferred — Check Status"
-                          : "Tôi đã chuyển khoản — Kiểm tra trạng thái"}
-                      </Text>
-                    </>
-                  )}
-                </Pressable>
               </ScrollView>
             ) : null}
           </View>

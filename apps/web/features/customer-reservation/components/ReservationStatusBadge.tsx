@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import type { CustomerReservationStatus } from "../types";
 import { STATUS_STYLES } from "../utils";
 
-export function ReservationStatusBadge({ status }: { status: CustomerReservationStatus }) {
+export function ReservationStatusBadge({ status }: { status: CustomerReservationStatus | string }) {
   const t = useTranslations("customerReservation.status");
   return (
     <span

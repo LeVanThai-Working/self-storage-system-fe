@@ -12,6 +12,9 @@ import {
   Tag,
   Package,
   FileCheck2,
+  RotateCcw,
+  Receipt,
+  ArrowLeftRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -79,6 +82,24 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       exact: false,
       label: t("nav.approvals"),
       icon: FileCheck2,
+    },
+    {
+      href: `/${locale}/business-ops/payments`,
+      exact: false,
+      label: locale === "en" ? "Payments" : "Thanh toán",
+      icon: Receipt,
+    },
+    {
+      href: `/${locale}/business-ops/reconciliation`,
+      exact: false,
+      label: locale === "en" ? "Reconciliation" : "Đối soát ngân hàng",
+      icon: ArrowLeftRight,
+    },
+    {
+      href: `/${locale}/business-ops/refunds`,
+      exact: false,
+      label: locale === "en" ? "Refund Queue" : "Hàng đợi hoàn tiền",
+      icon: RotateCcw,
     },
     {
       href: `/${locale}/business-ops/analytics`,

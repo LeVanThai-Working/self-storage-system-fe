@@ -232,7 +232,7 @@ export function ContractCard({
                   : "Đã đủ điều kiện: Nhấn vào để ký xác nhận hợp đồng thuê kho."
                 : isEn
                   ? "You have signed! Waiting for facility staff handover signature."
-                  : "Bạn đã ký hợp đồng! Đang chờ nhân viên cơ sở ký bàn giao kho."}
+                  : "Bạn đã ký hợp đồng! Đang chờ phía cơ sở ký bàn giao kho."}
           </Text>
         </View>
       ) : null}

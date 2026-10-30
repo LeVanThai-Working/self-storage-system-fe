@@ -2,12 +2,28 @@
 
 import React from "react";
 import { useLocale } from "next-intl";
-import { CheckCircle2, Clock, MinusCircle, PlusCircle, Sparkles, UserCheck } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRightLeft,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  HelpCircle,
+  MinusCircle,
+  PlusCircle,
+  ShieldAlert,
+  Sparkles,
+  UserCheck,
+  XCircle,
+} from "lucide-react";
 import {
   ContractAddendumStatusEnum,
   ContractAddendumTypeEnum,
+  ContractDepositStatusEnum,
   ContractSourceEnum,
   ContractStatusEnum,
+  ContractTerminationTypeEnum,
+  ViolationCategoryEnum,
 } from "../types";
 
 interface ContractStatusTone {
@@ -178,34 +194,103 @@ export const ContractDepositBadge: React.FC<ContractDepositBadgeProps> = ({
   );
 };
 
+interface ContractDepositStatusBadgeProps {
+  status?: ContractDepositStatusEnum | string | null;
+}
+
+export const ContractDepositStatusBadge: React.FC<ContractDepositStatusBadgeProps> = ({
+  status,
+}) => {
+  const isEn = useLocale() === "en";
+  if (!status) return null;
+
+  switch (String(status).toLowerCase()) {
+    case ContractDepositStatusEnum.HELD:
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-bold border bg-blue-50 text-blue-700 border-blue-200">
+          <Clock className="w-3 h-3 shrink-0" />
+          {isEn ? "Deposit Held" : "Đang giữ cọc"}
+        </span>
+      );
+    case ContractDepositStatusEnum.APPLIED:
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-bold border bg-teal-50 text-teal-700 border-teal-200">
+          <CheckCircle2 className="w-3 h-3 shrink-0" />
+          {isEn ? "Deposit Applied" : "Đã đối trừ cọc"}
+        </span>
+      );
+    case ContractDepositStatusEnum.PARTIALLY_REFUNDED:
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-bold border bg-amber-50 text-amber-700 border-amber-200">
+          <AlertTriangle className="w-3 h-3 shrink-0" />
+          {isEn ? "Partially Refunded" : "Hoàn trả một phần"}
+        </span>
+      );
+    case ContractDepositStatusEnum.REFUNDED:
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-200">
+          <CheckCircle2 className="w-3 h-3 shrink-0" />
+          {isEn ? "Deposit Refunded" : "Đã hoàn cọc 100%"}
+        </span>
+      );
+    case ContractDepositStatusEnum.FORFEITED:
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-bold border bg-rose-50 text-rose-700 border-rose-200">
+          <XCircle className="w-3 h-3 shrink-0" />
+          {isEn ? "Deposit Forfeited" : "Tịch thu cọc 100%"}
+        </span>
+      );
+    case ContractDepositStatusEnum.DISPUTED:
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-bold border bg-purple-50 text-purple-700 border-purple-200">
+          <HelpCircle className="w-3 h-3 shrink-0" />
+          {isEn ? "Settlement Disputed" : "Đang khiếu nại tranh chấp"}
+        </span>
+      );
+    default:
+      return null;
+  }
+};
+
 interface ContractAddendumTypeBadgeProps {
-  type: ContractAddendumTypeEnum;
+  type: ContractAddendumTypeEnum | string;
 }
 
 export const ContractAddendumTypeBadge: React.FC<ContractAddendumTypeBadgeProps> = ({ type }) => {
   const isEn = useLocale() === "en";
-  const isAdd = type === ContractAddendumTypeEnum.ADD;
+  const normalized = String(type).toLowerCase();
+
+  if (normalized === ContractAddendumTypeEnum.RENEW) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-bold border bg-emerald-50 text-emerald-700 border-emerald-200">
+        <Calendar className="w-3 h-3 shrink-0" />
+        {isEn ? "Renewal (RENEW)" : "Gia hạn hợp đồng"}
+      </span>
+    );
+  }
+
+  if (normalized === ContractAddendumTypeEnum.UNIT_CHANGE) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-bold border bg-indigo-50 text-indigo-700 border-indigo-200">
+        <ArrowRightLeft className="w-3 h-3 shrink-0" />
+        {isEn ? "Unit Transfer (UNIT_CHANGE)" : "Điều chuyển kho sự cố"}
+      </span>
+    );
+  }
+
+  if (normalized === ContractAddendumTypeEnum.ADD) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-bold border bg-teal-50 text-teal-700 border-teal-200">
+        <PlusCircle className="w-3 h-3 shrink-0" />
+        {isEn ? "Add Amenities" : "Thuê thêm tiện ích"}
+      </span>
+    );
+  }
 
   return (
-    <span
-      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-bold border ${
-        isAdd
-          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-          : "bg-orange-50 text-orange-700 border-orange-200"
-      }`}
-    >
-      {isAdd ? (
-        <PlusCircle className="w-3 h-3 shrink-0" />
-      ) : (
-        <MinusCircle className="w-3 h-3 shrink-0" />
-      )}
-      {isAdd
-        ? isEn
-          ? "Add / Install Amenities"
-          : "Thuê thêm / Lắp đặt"
-        : isEn
-          ? "Remove / Return Amenities"
-          : "Tháo dỡ / Trả bớt"}
+    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-bold border bg-orange-50 text-orange-700 border-orange-200">
+      <MinusCircle className="w-3 h-3 shrink-0" />
+      {isEn ? "Remove Amenities" : "Tháo dỡ / Trả bớt"}
     </span>
   );
 };
@@ -229,8 +314,8 @@ export function getAddendumStatusTone(
         text: "text-teal-700",
         border: "border-teal-200",
         dot: "bg-teal-500",
-        labelVi: "Chờ ký 2 bên",
-        labelEn: "Pending Signature",
+        labelVi: "Bản nháp (Chờ ký 2 bên)",
+        labelEn: "Draft (Pending Sign)",
       };
     case ContractAddendumStatusEnum.ACTIVE:
       return {
@@ -288,5 +373,53 @@ export const ContractAddendumStatusBadge: React.FC<ContractAddendumStatusBadgePr
       <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
       {isEn ? tone.labelEn : tone.labelVi}
     </span>
+  );
+};
+
+interface ContractTerminationBadgeProps {
+  terminationType?: ContractTerminationTypeEnum | null;
+  violationCategory?: ViolationCategoryEnum | null;
+}
+
+export const ContractTerminationBadge: React.FC<ContractTerminationBadgeProps> = ({
+  terminationType,
+  violationCategory,
+}) => {
+  const isEn = useLocale() === "en";
+  if (!terminationType) return null;
+
+  return (
+    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border bg-rose-50 text-rose-800 border-rose-200">
+      <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
+      <span>
+        {terminationType === ContractTerminationTypeEnum.MUTUAL
+          ? isEn
+            ? "Mutual Termination"
+            : "Thỏa thuận đôi bên"
+          : terminationType === ContractTerminationTypeEnum.CUSTOMER_REQUEST
+            ? isEn
+              ? "Customer Request"
+              : "Khách yêu cầu chấm dứt"
+            : isEn
+              ? "Violation Termination"
+              : "Vi phạm hợp đồng"}
+      </span>
+      {violationCategory && (
+        <span className="text-[11px] font-normal text-rose-600">
+          •{" "}
+          {violationCategory === ViolationCategoryEnum.PROHIBITED_GOODS
+            ? isEn
+              ? "Prohibited Goods"
+              : "Hàng cấm"
+            : violationCategory === ViolationCategoryEnum.OVERDUE_PAYMENT
+              ? isEn
+                ? "Overdue Payment"
+                : "Nợ tiền quá hạn"
+              : isEn
+                ? "Property Damage"
+                : "Phá hoại kho"}
+        </span>
+      )}
+    </div>
   );
 };

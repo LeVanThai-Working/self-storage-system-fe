@@ -1,19 +1,23 @@
 import type { ApiResponse, PaginatedData, PaginationMeta } from "@self-storage-system-fe/shared";
 import api from "@/lib/api/axios";
 import {
+  ContractAddendumTypeEnum,
   PaymentPurposeEnum,
   UserStatusEnum,
   type ApproveContractAddendumRequest,
   type CancelContractAddendumRequest,
   type CancelContractRequest,
+  type CancelDraftContractRequest,
   type CheckInContractRequest,
   type CheckOutContractRequest,
+  type CloudinarySignatureResponse,
   type ConfirmManualPaymentRequest,
   type ContractFilterParams,
   type ContractPaginatedData,
   type ContractResponse,
   type CreateContractAddendumRequest,
   type CreateContractRequest,
+  type DisputeSettlementRequest,
   type FacilityStaffItem,
   type FacilityStaffPaginatedData,
   type FacilityStaffQuery,
@@ -130,6 +134,22 @@ export async function createContract(payload: CreateContractRequest): Promise<Co
 }
 
 /**
+ * 2.1b. POST /contracts/walk-in — Tạo hợp đồng khách vãng lai tại quầy (inline KYC)
+ */
+export async function createWalkInContract(
+  payload: CreateContractRequest
+): Promise<ContractResponse> {
+  try {
+    const { data } = await api.post<ApiResponse<ContractResponse>>("/contracts/walk-in", payload);
+    return data.data;
+  } catch {
+    // Fallback to standard /contracts if /contracts/walk-in is an alias
+    const { data } = await api.post<ApiResponse<ContractResponse>>("/contracts", payload);
+    return data.data;
+  }
+}
+
+/**
  * 2.2. GET /contracts — Danh sách hợp đồng tại cơ sở
  */
 export async function fetchContracts(params: ContractFilterParams): Promise<ContractPaginatedData> {
@@ -146,10 +166,16 @@ export async function fetchContracts(params: ContractFilterParams): Promise<Cont
   if (params.facilityId) query.facilityId = params.facilityId;
   if (params.customerId?.trim()) query.customerId = params.customerId.trim();
   if (params.storageUnitId) query.storageUnitId = params.storageUnitId;
+  if (params.facilityUnitTypeOfferingId)
+    query.facilityUnitTypeOfferingId = params.facilityUnitTypeOfferingId;
   if (params.assignedStaffId) query.assignedStaffId = params.assignedStaffId;
   if (params.status) query.status = params.status;
   if (params.source) query.source = params.source;
   if (params.contractCode?.trim()) query.contractCode = params.contractCode.trim();
+  if (params.startDateFrom) query.startDateFrom = params.startDateFrom;
+  if (params.startDateTo) query.startDateTo = params.startDateTo;
+  if (params.endDateFrom) query.endDateFrom = params.endDateFrom;
+  if (params.endDateTo) query.endDateTo = params.endDateTo;
 
   const { data } = await api.get("/contracts", { params: query });
   const normalized = normalizePaginatedEnvelope<ContractResponse>(
@@ -217,7 +243,7 @@ export async function fetchContractById(id: string): Promise<ContractResponse> {
 }
 
 /**
- * 2.4. POST /contracts/{id}/check-in — Nhân viên xác nhận bàn giao kho & ký (Staff)
+ * 2.4. POST /contracts/{id}/check-in — Quản lý/Nhân viên bàn giao kho & ký (Staff)
  */
 export async function checkInContract(
   id: string,
@@ -231,11 +257,11 @@ export async function checkInContract(
 }
 
 /**
- * 2.5. POST /contracts/{id}/cancel — Huỷ hợp đồng nháp (DRAFT -> CANCELLED)
+ * 2.5. POST /contracts/{id}/cancel — Huỷ hợp đồng nháp (DRAFT -> CANCELLED hoặc VOID)
  */
 export async function cancelContract(
   id: string,
-  payload: CancelContractRequest
+  payload: CancelContractRequest | CancelDraftContractRequest
 ): Promise<ContractResponse> {
   const { data } = await api.post<ApiResponse<ContractResponse>>(
     `/contracts/${id}/cancel`,
@@ -245,18 +271,32 @@ export async function cancelContract(
 }
 
 /**
- * 2.6. POST /contracts/{id}/renew — Gia hạn hợp đồng (ACTIVE / OVERDUE -> ACTIVE)
+ * 2.6. POST /contracts/{id}/renew — Gia hạn hợp đồng (Được chuyển tiếp sang Phụ lục RENEW)
+ * Lưu ý: BE đã vô hiệu hóa endpoint trực tiếp (trả 400 MESSAGE_CODE_416).
+ * FE tự động chuyển sang gọi POST /contracts/{id}/addendums với type: 'renew'.
  */
 export async function renewContract(
   id: string,
   payload: RenewContractRequest
 ): Promise<ContractResponse> {
-  const { data } = await api.post<ApiResponse<ContractResponse>>(`/contracts/${id}/renew`, payload);
-  return data.data;
+  try {
+    return await createContractAddendum(id, {
+      type: ContractAddendumTypeEnum.RENEW,
+      newEndDate: payload.newEndDate,
+      notes: payload.note,
+    });
+  } catch {
+    // Fallback directly if backend still accepts old endpoint
+    const { data } = await api.post<ApiResponse<ContractResponse>>(
+      `/contracts/${id}/renew`,
+      payload
+    );
+    return data.data;
+  }
 }
 
 /**
- * 2.7a. POST /contracts/{id}/addendums — Tạo yêu cầu Phụ lục hợp đồng (ADD / REMOVE tiện ích)
+ * 2.7a. POST /contracts/{id}/addendums — Tạo yêu cầu Phụ lục hợp đồng (RENEW hoặc UNIT_CHANGE)
  */
 export async function createContractAddendum(
   id: string,
@@ -300,7 +340,7 @@ export async function rejectContractAddendum(
 }
 
 /**
- * 2.7d. POST /contracts/{id}/addendums/{addendumId}/staff-sign — Nhân viên/Quản lý xác nhận lắp đặt hoặc tháo dỡ & ký phụ lục
+ * 2.7d. POST /contracts/{id}/addendums/{addendumId}/staff-sign — Quản lý ký phụ lục DRAFT & áp dụng hiệu lực
  */
 export async function staffSignContractAddendum(
   id: string,
@@ -315,7 +355,7 @@ export async function staffSignContractAddendum(
 }
 
 /**
- * 2.7e. POST /contracts/{id}/addendums/{addendumId}/cancel — Huỷ yêu cầu Phụ lục (khi đang pending_approval hoặc draft)
+ * 2.7e. POST /contracts/{id}/addendums/{addendumId}/cancel — Huỷ yêu cầu Phụ lục
  */
 export async function cancelContractAddendum(
   id: string,
@@ -344,7 +384,7 @@ export async function checkOutContract(
 }
 
 /**
- * 2.9. POST /contracts/{id}/terminate — Chấm dứt hợp đồng trước hạn (ACTIVE / OVERDUE -> TERMINATED, Chỉ FACILITY_MANAGER)
+ * 2.9. POST /contracts/{id}/terminate — Chấm dứt hợp đồng an toàn (kèm biên bản & ảnh hiện trường)
  */
 export async function terminateContract(
   id: string,
@@ -358,7 +398,99 @@ export async function terminateContract(
 }
 
 /**
- * 3.1. POST /payments — Tạo hoặc lấy phiên thanh toán cọc (purpose: 'contract_deposit') hoặc thu tiền kỳ đầu (purpose: 'contract_first_cycle')
+ * 2.10. GET /contracts/{id}/draft-pdf — Xuất bản in PDF/HTML nháp cho 2 bên ký sống
+ */
+export async function getDraftContractPdfContent(
+  id: string
+): Promise<{ type: "html" | "url"; content: string }> {
+  const response = await api.get<string | Record<string, unknown>>(`/contracts/${id}/draft-pdf`, {
+    responseType: "text",
+    headers: {
+      Accept: "text/html, application/xhtml+xml, application/json, text/plain, */*",
+    },
+  });
+
+  const raw = response.data;
+
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (trimmed.startsWith("<!DOCTYPE") || trimmed.includes("<html") || trimmed.includes("<body")) {
+      return { type: "html", content: raw };
+    }
+
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed?.data?.url) return { type: "url", content: parsed.data.url };
+      if (parsed?.url) return { type: "url", content: parsed.url };
+      if (parsed?.data?.html) return { type: "html", content: parsed.data.html };
+      if (parsed?.html) return { type: "html", content: parsed.html };
+      if (
+        typeof parsed?.data === "string" &&
+        (parsed.data.includes("<html") || parsed.data.startsWith("<!DOCTYPE"))
+      ) {
+        return { type: "html", content: parsed.data };
+      }
+    } catch {
+      return { type: "html", content: raw };
+    }
+  } else if (typeof raw === "object" && raw !== null) {
+    const rawObj = raw as Record<string, unknown>;
+    const rawData = rawObj.data as Record<string, unknown> | undefined;
+    if (typeof rawData?.url === "string") return { type: "url", content: rawData.url };
+    if (typeof rawObj.url === "string") return { type: "url", content: rawObj.url };
+    if (typeof rawData?.html === "string") return { type: "html", content: rawData.html };
+    if (typeof rawObj.html === "string") return { type: "html", content: rawObj.html };
+  }
+
+  return { type: "html", content: String(raw) };
+}
+
+export async function getDraftContractPdfUrl(id: string): Promise<string> {
+  const result = await getDraftContractPdfContent(id);
+  if (result.type === "url") return result.content;
+  const blob = new Blob([result.content], { type: "text/html" });
+  return URL.createObjectURL(blob);
+}
+
+/**
+ * 2.11. POST /contracts/process-overdue — Quét hàng loạt hợp đồng quá hạn endDate sang OVERDUE
+ */
+export async function processOverdueContracts(): Promise<{
+  processedCount?: number;
+  message?: string;
+}> {
+  const { data } = await api.post<ApiResponse<{ processedCount?: number; message?: string }>>(
+    "/contracts/process-overdue"
+  );
+  return data.data;
+}
+
+/**
+ * 2.12. POST /contracts/{id}/settlement/confirm — Khách hàng xác nhận quyết toán cọc
+ */
+export async function confirmContractSettlement(id: string): Promise<ContractResponse> {
+  const { data } = await api.post<ApiResponse<ContractResponse>>(
+    `/contracts/${id}/settlement/confirm`
+  );
+  return data.data;
+}
+
+/**
+ * 2.13. POST /contracts/{id}/settlement/dispute — Khách hàng khiếu nại tranh chấp quyết toán cọc
+ */
+export async function disputeContractSettlement(
+  id: string,
+  payload: DisputeSettlementRequest
+): Promise<ContractResponse> {
+  const { data } = await api.post<ApiResponse<ContractResponse>>(
+    `/contracts/${id}/settlement/dispute`,
+    payload
+  );
+  return data.data;
+}
+
+/**
+ * 3.1. POST /payments — Tạo hoặc lấy phiên thanh toán cọc (purpose: 'contract_deposit')
  */
 export async function createContractDepositPayment(
   contractId: string,
@@ -428,4 +560,47 @@ export async function fetchStorageUnitById(storageUnitId: string): Promise<Stora
     `/storage-units/${storageUnitId}`
   );
   return data.data;
+}
+
+/**
+ * 4.1. POST /upload/signature — Lấy chữ ký tải file trực tiếp lên Cloudinary
+ */
+export async function getCloudinaryUploadSignature(
+  folder = "self-storage/contracts"
+): Promise<CloudinarySignatureResponse> {
+  const { data } = await api.post<ApiResponse<CloudinarySignatureResponse>>("/upload/signature", {
+    folder,
+  });
+  return data.data;
+}
+
+/**
+ * 4.2. Upload file trực tiếp từ Client lên Cloudinary theo chuẩn BE
+ */
+export async function uploadContractDocumentToCloudinary(
+  file: File | Blob,
+  folder = "self-storage/contracts"
+): Promise<{ secure_url: string }> {
+  const sig = await getCloudinaryUploadSignature(folder);
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("api_key", sig.apiKey);
+  formData.append("timestamp", String(sig.timestamp));
+  formData.append("signature", sig.signature);
+  formData.append("folder", sig.folder);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/auto/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errorJson = await res.json().catch(() => ({}));
+    throw new Error(
+      errorJson?.error?.message || `Failed to upload file to Cloudinary (status ${res.status})`
+    );
+  }
+
+  const json = await res.json();
+  return { secure_url: json.secure_url };
 }

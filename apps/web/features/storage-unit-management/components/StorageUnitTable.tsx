@@ -22,7 +22,10 @@ import {
   Trash2,
   Wrench,
   X,
+  Archive,
 } from "lucide-react";
+import { RoleEnum } from "@self-storage-system-fe/shared";
+import { useAuthStore } from "@/features/auth/store";
 import { UnitStatusBadge } from "@/components/common/UnitStatusBadge";
 import { DimensionBadge } from "@/components/common/DimensionBadge";
 import { useApiErrorMessage } from "@/features/auth/error-message";
@@ -48,6 +51,8 @@ import { StorageUnitFormModal } from "./StorageUnitFormModal";
 import { DeleteStorageUnitModal } from "./DeleteStorageUnitModal";
 import { StorageUnitMapView } from "./StorageUnitMapView";
 import { UnitMaintenanceDialog } from "./UnitMaintenanceDialog";
+import { StorageRackManagementModal } from "./StorageRackManagementModal";
+import { ReconcileStorageUnitsButton } from "./ReconcileStorageUnitsButton";
 
 const PAGE_SIZE = 10;
 
@@ -107,6 +112,11 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
   const [editingUnit, setEditingUnit] = useState<StorageUnitResponse | null>(null);
   const [deletingUnit, setDeletingUnit] = useState<{ id: string; unitNumber: string } | null>(null);
   const [maintenanceUnit, setMaintenanceUnit] = useState<StorageUnitResponse | null>(null);
+  const [rackUnit, setRackUnit] = useState<StorageUnitResponse | null>(null);
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const canReconcile =
+    currentUser?.role === RoleEnum.BUSINESS_OPS_MANAGER ||
+    currentUser?.role === RoleEnum.SYSTEM_ADMIN;
   const [lastDeletedUnit, setLastDeletedUnit] = useState<{
     id: string;
     unitNumber: string;
@@ -304,6 +314,8 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
               </button>
             ))}
           </div>
+
+          {canReconcile && <ReconcileStorageUnitsButton />}
 
           {isManager && (
             <button
@@ -624,6 +636,15 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                               <Wrench className="w-4 h-4" />
                             </button>
 
+                            <button
+                              type="button"
+                              onClick={() => setRackUnit(unit)}
+                              title="Kệ kho & Tầng kệ (Racks & Tiers)"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
+                            >
+                              <Archive className="w-4 h-4" />
+                            </button>
+
                             {isManager && (
                               <>
                                 <button
@@ -757,6 +778,17 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
             setUndoError(null);
             setUndoBannerVisible(true);
           }}
+        />
+      )}
+
+      {/* Modal: Rack management */}
+      {rackUnit && (
+        <StorageRackManagementModal
+          key={rackUnit.id}
+          unit={rackUnit}
+          isOpen={Boolean(rackUnit)}
+          onClose={() => setRackUnit(null)}
+          isManager={isManager}
         />
       )}
 

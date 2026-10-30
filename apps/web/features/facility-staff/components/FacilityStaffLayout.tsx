@@ -2,7 +2,15 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Bell, Boxes, Building2, FileSignature, CalendarCheck } from "lucide-react";
+import {
+  Bell,
+  Boxes,
+  Building2,
+  FileSignature,
+  CalendarCheck,
+  RotateCcw,
+  Receipt,
+} from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -10,6 +18,7 @@ import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { EditProfileModal } from "@/features/auth/components/EditProfileModal";
 import { useAuthStore } from "@/features/auth/store";
 import { useMyFacility } from "@/features/storage-unit-management/hooks";
+import { useFacility } from "@/features/facility-management/hooks";
 
 interface FacilityStaffLayoutProps {
   children: React.ReactNode;
@@ -28,7 +37,22 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
   const pathname = usePathname();
   const t = useTranslations("facilityManager");
   const currentUser = useAuthStore((state) => state.currentUser);
-  const { data: facility } = useMyFacility();
+  const userRecord = currentUser as unknown as Record<string, unknown> | null;
+  const userFacilityId =
+    (typeof userRecord?.facilityId === "string" && userRecord.facilityId) ||
+    (typeof userRecord?.assignedFacilityId === "string" && userRecord.assignedFacilityId) ||
+    ((userRecord?.facility as Record<string, unknown>)?.id as string | undefined);
+
+  const userFacilitySnapshot =
+    userRecord?.facility && typeof userRecord.facility === "object"
+      ? (userRecord.facility as { name?: string; city?: string })
+      : undefined;
+
+  const facilityQuery = useFacility(userFacilityId ?? "", {
+    enabled: Boolean(userFacilityId) && !userFacilitySnapshot,
+  });
+
+  const facility = userFacilitySnapshot || facilityQuery.data;
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const navItems = [
@@ -46,6 +70,16 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
       href: `/${locale}/facility-staff/storage-units`,
       label: t("nav.storageUnits"),
       icon: Boxes,
+    },
+    {
+      href: `/${locale}/facility-staff/payments`,
+      label: locale === "en" ? "Payments" : "Thanh toán",
+      icon: Receipt,
+    },
+    {
+      href: `/${locale}/facility-staff/refunds`,
+      label: locale === "en" ? "Refund Requests" : "Yêu cầu hoàn tiền",
+      icon: RotateCcw,
     },
   ];
 
@@ -109,7 +143,11 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
             <span>{t("sidebar.assignedFacility")}</span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            {facility ? `${facility.name} · ${facility.city}` : t("sidebar.noFacility")}
+            {facility
+              ? `${facility.name} · ${facility.city}`
+              : locale === "en"
+                ? "Assigned facility"
+                : "Cơ sở phân công"}
           </p>
         </div>
       </aside>
@@ -120,7 +158,10 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm shadow-slate-100/50">
           <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
             <Building2 className="w-4 h-4 text-emerald-600" />
-            <span>{facility?.name ?? t("sidebar.noFacility")}</span>
+            <span>
+              {facility?.name ??
+                (locale === "en" ? "Staff Workspace" : "Không gian làm việc nhân viên")}
+            </span>
           </div>
 
           <div className="flex items-center gap-5 ml-4">

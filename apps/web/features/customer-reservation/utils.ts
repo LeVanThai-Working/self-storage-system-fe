@@ -8,7 +8,7 @@ export const MAX_CHECK_IN_DAYS_AHEAD = 30;
 /** Cancelling at least this long before check-in refunds the deposit in full (BE policy). */
 const FULL_REFUND_WINDOW_MS = DAY_MS;
 
-export const STATUS_STYLES: Record<CustomerReservationStatus, string> = {
+export const STATUS_STYLES: Record<string, string> = {
   [CustomerReservationStatus.PENDING_PAYMENT]: "bg-amber-50 text-amber-700 border-amber-200/80",
   [CustomerReservationStatus.PAYMENT_SUCCESSFUL]: "bg-sky-50 text-sky-700 border-sky-200/80",
   [CustomerReservationStatus.CONFIRMED]: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
@@ -19,7 +19,7 @@ export const STATUS_STYLES: Record<CustomerReservationStatus, string> = {
 };
 
 /** Statuses from which the customer may still cancel (BE rule; a live contract blocks it server-side). */
-const CANCELLABLE: CustomerReservationStatus[] = [
+const CANCELLABLE: string[] = [
   CustomerReservationStatus.PENDING_PAYMENT,
   CustomerReservationStatus.PAYMENT_SUCCESSFUL,
   CustomerReservationStatus.CONFIRMED,
