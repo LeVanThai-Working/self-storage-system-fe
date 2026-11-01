@@ -2,7 +2,6 @@
 
 import React from "react";
 import {
-  Bell,
   Search,
   Building2,
   LayoutDashboard,
@@ -21,6 +20,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { useAuthStore } from "@/features/auth/store";
+import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
+import { NotificationBell } from "@/features/notification/components/NotificationBell";
 
 interface BusinessOpsLayoutProps {
   children: React.ReactNode;
@@ -189,14 +190,9 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-5 ml-4">
-            <button
-              aria-label="Notifications"
-              className="relative p-2.5 text-slate-500 hover:text-emerald-600 transition-colors rounded-full hover:bg-slate-50"
-            >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-white"></span>
-            </button>
+          <div className="flex items-center gap-4 ml-4">
+            <LocaleSwitcher />
+            <NotificationBell />
 
             <div className="flex items-center gap-3 pl-5 border-l border-slate-200">
               <div className="text-right hidden sm:block">
