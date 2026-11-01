@@ -18,6 +18,7 @@ export interface LocalImageFile {
   uri: string;
   fileName?: string | null;
   mimeType?: string | null;
+  base64?: string | null;
 }
 
 /**
@@ -44,8 +45,24 @@ export async function uploadImageToCloudinary(
   const type = file.mimeType || "image/jpeg";
 
   const formData = new FormData();
-  // React Native FormData accepts a { uri, name, type } descriptor instead of a Blob.
-  formData.append("file", { uri: file.uri, name, type } as unknown as Blob);
+
+  if (file.base64) {
+    // Cloudinary natively accepts Base64 Data URI strings.
+    // This completely bypasses the React Native "Unsupported FormDataPart" error in modern Expo/RN runtimes.
+    const dataUri = `data:${type};base64,${file.base64}`;
+    formData.append("file", dataUri);
+  } else {
+    // If base64 is missing, attempt to convert local URI to a standard Blob via fetch
+    try {
+      const response = await fetch(file.uri);
+      const blob = await response.blob();
+      formData.append("file", blob, name);
+    } catch {
+      // Legacy React Native pseudo-blob object fallback
+      formData.append("file", { uri: file.uri, name, type } as unknown as Blob);
+    }
+  }
+
   formData.append("api_key", sig.apiKey);
   formData.append("timestamp", String(sig.timestamp));
   formData.append("signature", sig.signature);

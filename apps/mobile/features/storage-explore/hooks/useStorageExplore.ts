@@ -15,8 +15,10 @@ import { AppApiError } from "@/lib/api/axios";
 import {
   getFacilityPublicDetailApi,
   getPublicAmenitiesApi,
+  getPublicAmenityByIdApi,
   getPublicFacilitiesApi,
   getPublicOfferingsApi,
+  getPublicOfferingByIdApi,
   getPublicUnitTypeByIdApi,
   getPublicUnitTypesApi,
   searchFacilitiesByAmenityApi,
@@ -370,14 +372,13 @@ export function useFacilityAvailableOfferingsPaginated(params: {
           billingUnit: item.billingUnit,
           minRentalDays: item.minRentalDays,
           status: item.status,
-          availableUnitsCount: matched?.availableUnitsCount ?? rawAvailable ?? 1,
+          availableUnitsCount: matched?.availableUnitsCount ?? rawAvailable ?? 0,
         };
       });
     }
 
-    // Filter only available offerings (availableUnitsCount > 0) and selected category
+    // Filter by selected category (keep all offerings including out-of-stock so user sees status)
     const filtered = combined.filter((item) => {
-      if (item.availableUnitsCount <= 0) return false;
       if (category !== "ALL" && item.unitType?.category !== category) return false;
       return true;
     });
@@ -431,4 +432,28 @@ export function useFacilityAvailableOfferingsPaginated(params: {
       offeringsApiQuery.refetch();
     },
   };
+}
+
+/**
+ * Fetches detail of a single facility unit type offering.
+ */
+export function usePublicOfferingDetail(id?: string) {
+  return useQuery({
+    queryKey: ["public-offering-detail", id],
+    queryFn: () => getPublicOfferingByIdApi(id!),
+    enabled: Boolean(id),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+/**
+ * Fetches detail of a single public amenity.
+ */
+export function usePublicAmenityDetail(id?: string) {
+  return useQuery({
+    queryKey: ["public-amenity-detail", id],
+    queryFn: () => getPublicAmenityByIdApi(id!),
+    enabled: Boolean(id),
+    staleTime: 1000 * 60 * 5,
+  });
 }

@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from "react";
 import {
   View,
   Image,
-  ScrollView,
+  FlatList,
   Pressable,
   Dimensions,
   type LayoutChangeEvent,
@@ -25,7 +25,7 @@ export function DetailImageCarousel({
   fallbackLabel,
   height = 216,
 }: DetailImageCarouselProps) {
-  const scrollViewRef = useRef<ScrollView>(null);
+  const flatListRef = useRef<FlatList<string>>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [carouselWidth, setCarouselWidth] = useState<number>(
     Math.max(Dimensions.get("window").width - 32, 280)
@@ -36,8 +36,8 @@ export function DetailImageCarousel({
   );
 
   const handleLayout = (event: LayoutChangeEvent) => {
-    const width = Math.round(event.nativeEvent.layout.width);
-    if (width > 0 && width !== carouselWidth) {
+    const width = Math.floor(event.nativeEvent.layout.width);
+    if (width > 0 && Math.abs(width - carouselWidth) > 0.5) {
       setCarouselWidth(width);
     }
   };
@@ -45,9 +45,9 @@ export function DetailImageCarousel({
   const scrollToSlide = useCallback(
     (index: number) => {
       setActiveIndex(index);
-      if (carouselWidth > 0) {
-        scrollViewRef.current?.scrollTo({
-          x: index * carouselWidth,
+      if (carouselWidth > 0 && flatListRef.current) {
+        flatListRef.current.scrollToIndex({
+          index,
           animated: true,
         });
       }
@@ -95,27 +95,48 @@ export function DetailImageCarousel({
     <View
       onLayout={handleLayout}
       style={{ height }}
-      className="relative w-full overflow-hidden rounded-3xl border border-neutral-border dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900"
+      className="relative w-full overflow-hidden rounded-3xl bg-neutral-100 dark:bg-neutral-900"
     >
-      <ScrollView
-        ref={scrollViewRef}
+      <FlatList
+        ref={flatListRef}
+        data={validImages}
+        keyExtractor={(_, idx) => `carousel-img-${idx}`}
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         bounces={false}
         decelerationRate="fast"
+        snapToInterval={carouselWidth}
+        snapToAlignment="start"
         scrollEventThrottle={16}
         onMomentumScrollEnd={handleMomentumScrollEnd}
-      >
-        {validImages.map((uri, idx) => (
-          <View key={`carousel-img-${idx}`} style={{ width: carouselWidth, height }}>
-            <Image source={{ uri }} style={{ width: carouselWidth, height }} resizeMode="cover" />
+        getItemLayout={(_, index) => ({
+          length: carouselWidth,
+          offset: carouselWidth * index,
+          index,
+        })}
+        renderItem={({ item }) => (
+          <View
+            style={{ width: carouselWidth, height, overflow: "hidden" }}
+            className="items-center justify-center bg-neutral-900"
+          >
+            <Image
+              source={{ uri: item }}
+              style={{ width: carouselWidth, height }}
+              resizeMode="cover"
+            />
           </View>
-        ))}
-      </ScrollView>
+        )}
+      />
+
+      {/* Absolute Border Overlay (prevents subpixel width calculation drift) */}
+      <View
+        pointerEvents="none"
+        className="absolute inset-0 rounded-3xl border border-neutral-border dark:border-neutral-800"
+      />
 
       {/* Slide Counter Badge */}
-      <View className="absolute right-3.5 top-3.5 rounded-full bg-black/50 px-2.5 py-1">
+      <View className="absolute right-3.5 top-3.5 rounded-full bg-black/60 px-2.5 py-1">
         <Text className="text-[11px] font-bold text-white">
           {activeIndex + 1}/{validImages.length}
         </Text>

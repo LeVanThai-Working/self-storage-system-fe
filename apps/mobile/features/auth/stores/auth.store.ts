@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { tokenStorage } from "@/lib/storage/tokenStorage";
 import type { AuthUser } from "../types/auth.types";
-import { getMeApi, logoutApi } from "../api/auth.api";
+import { getMeApi, getMyProfileApi, logoutApi } from "../api/auth.api";
 
 interface AuthState {
   user: AuthUser | null;
@@ -47,8 +47,16 @@ export const useAuthStore = create<AuthState>((set) => ({
         return;
       }
 
-      // Restore user session by querying the authenticated profile
+      // Restore user session by querying the authenticated profile & user
       const user = await getMeApi();
+      try {
+        const profile = await getMyProfileApi();
+        if (profile?.avatarUrl) {
+          user.avatarUrl = profile.avatarUrl;
+        }
+      } catch (profileError) {
+        console.warn("Session restore profile fetch failed:", profileError);
+      }
       set({ user, isAuthenticated: true, isInitializing: false });
     } catch (error) {
       console.warn("Session restore failed or access token expired:", error);

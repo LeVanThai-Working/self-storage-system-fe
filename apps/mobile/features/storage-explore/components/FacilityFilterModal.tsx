@@ -37,7 +37,7 @@ interface FacilityFilterModalProps {
   onReset: () => void;
 }
 
-const DEFAULT_CITIES = ["Hà Nội", "Hồ Chí Minh", "Đà Nẵng", "Hải Phòng", "Cần Thơ"];
+// Dynamic cities from database only
 
 export function FacilityFilterModal({
   visible,
@@ -88,7 +88,7 @@ export function FacilityFilterModal({
     onClose();
   };
 
-  const citySuggestions = Array.from(new Set([...suggestedCities, ...DEFAULT_CITIES])).slice(0, 8);
+  const citySuggestions = suggestedCities;
 
   const sortOptions: { value: FacilitySortBy; label: string }[] = [
     { value: "createdAt", label: t("storageExplore.sortByCreatedAt") },

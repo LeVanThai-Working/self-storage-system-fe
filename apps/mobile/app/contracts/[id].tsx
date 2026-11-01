@@ -16,6 +16,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DetailHeader } from "@/components/layout/DetailHeader";
 import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
 import { useFacilityPublicDetail } from "@/features/storage-explore/hooks/useStorageExplore";
@@ -34,7 +35,6 @@ import {
 } from "@self-storage-system-fe/shared";
 import {
   AlertCircle,
-  ArrowLeft,
   Boxes,
   Building2,
   Calendar,
@@ -52,7 +52,6 @@ import {
   Plus,
   QrCode,
   Receipt,
-  RefreshCw,
   ShieldAlert,
   Sparkles,
   UserCheck,
@@ -110,7 +109,6 @@ export default function ContractDetailScreen() {
   // Payment QR Modal state
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [activePayment, setActivePayment] = useState<PaymentResponse | null>(null);
-  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
 
   // Create Addendum Modal state (ADD / REMOVE)
   const [addendumModalType, setAddendumModalType] = useState<ContractAddendumTypeEnum | null>(null);
@@ -216,35 +214,6 @@ export default function ContractDetailScreen() {
     } catch (err) {
       const resolved = resolveReservationErrorMessage(err, currentLocale, "payment");
       toast.error(resolved.message);
-    }
-  };
-
-  const handleCheckPaymentStatus = async () => {
-    if (!activePayment?.id) return;
-    setIsCheckingPayment(true);
-    try {
-      const latest = await getPaymentByIdApi(activePayment.id);
-      setActivePayment(latest);
-      if (latest.status === PaymentStatusEnum.PAID) {
-        toast.success(
-          isEn
-            ? "Payment confirmed! Updating contract..."
-            : "Đã xác nhận thanh toán thành công! Đang cập nhật hợp đồng..."
-        );
-        await refetch();
-        setPaymentModalOpen(false);
-      } else {
-        toast.info(
-          isEn
-            ? "Waiting for bank transfer confirmation..."
-            : "Hệ thống đang chờ nhận giao dịch chuyển khoản..."
-        );
-      }
-    } catch (err) {
-      const resolved = resolveReservationErrorMessage(err, currentLocale, "payment");
-      toast.error(resolved.message);
-    } finally {
-      setIsCheckingPayment(false);
     }
   };
 
@@ -413,13 +382,11 @@ export default function ContractDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-        <View className="flex-row items-center gap-3 px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-          <Pressable onPress={handleBack} hitSlop={10} className="p-1">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <Skeleton className="h-6 w-48 rounded-lg" />
-        </View>
+      <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
+        <DetailHeader
+          title={<Skeleton className="h-6 w-48 rounded-lg bg-white/20" />}
+          onBack={handleBack}
+        />
         <View className="p-4 gap-4">
           <Skeleton className="h-32 w-full rounded-3xl" />
           <Skeleton className="h-56 w-full rounded-3xl" />
@@ -432,15 +399,11 @@ export default function ContractDetailScreen() {
   if (isError || !contract) {
     const resolvedErr = resolveReservationErrorMessage(error, currentLocale, "contract");
     return (
-      <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-        <View className="flex-row items-center gap-3 px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-          <Pressable onPress={handleBack} hitSlop={10} className="p-1">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <Text className="text-base font-extrabold text-neutral-dark dark:text-neutral-100">
-            {isEn ? "Contract Details" : "Chi tiết hợp đồng thuê kho"}
-          </Text>
-        </View>
+      <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
+        <DetailHeader
+          title={isEn ? "Contract Details" : "Chi tiết hợp đồng thuê kho"}
+          onBack={handleBack}
+        />
         <View className="flex-1 items-center justify-center p-6">
           <AlertCircle size={40} color="#EF4444" />
           <Text className="mt-3 text-base font-bold text-neutral-dark dark:text-neutral-100 text-center">
@@ -476,36 +439,23 @@ export default function ContractDetailScreen() {
     contract.additionalPaymentRequired > 0;
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-      {/* Top Bar */}
-      <View className="flex-row items-center justify-between px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-        <View className="flex-row items-center gap-3 flex-1">
-          <Pressable onPress={handleBack} hitSlop={10} className="p-1 active:opacity-70">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <View className="flex-1">
-            <Text
-              className="text-sm font-extrabold text-neutral-dark dark:text-neutral-100"
-              numberOfLines={1}
-            >
-              #{contract.contractCode}
+    <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
+      {/* Top Bar with Brand Detail Header */}
+      <DetailHeader
+        title={`#${contract.contractCode}`}
+        subtitle={`${getContractSourceLabel(contract.source, currentLocale)} • ${formatDateTime(contract.createdAt)}`}
+        onBack={handleBack}
+        rightElement={
+          <Badge
+            variant="outline"
+            className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1`}
+          >
+            <Text className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
+              {statusMeta.label}
             </Text>
-            <Text variant="muted" className="text-[11px]">
-              {getContractSourceLabel(contract.source, currentLocale)} •{" "}
-              {formatDateTime(contract.createdAt)}
-            </Text>
-          </View>
-        </View>
-
-        <Badge
-          variant="outline"
-          className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1`}
-        >
-          <Text className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
-            {statusMeta.label}
-          </Text>
-        </Badge>
-      </View>
+          </Badge>
+        }
+      />
 
       <ScrollView
         contentContainerClassName="p-4 pb-16 gap-4"

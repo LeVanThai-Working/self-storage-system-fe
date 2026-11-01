@@ -13,6 +13,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DetailHeader } from "@/components/layout/DetailHeader";
 import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
 import {
@@ -21,7 +22,6 @@ import {
   type MessageLocale,
 } from "@self-storage-system-fe/shared";
 import {
-  ArrowLeft,
   Building2,
   MapPin,
   Phone,
@@ -115,7 +115,7 @@ export default function ReservationDetailScreen() {
             : "Đã từ chối đổi kho. Hệ thống sẽ hoàn cọc."
       );
       void refetch();
-    } catch (err) {
+    } catch {
       toast.error(
         isEn ? "Failed to respond. Please try again." : "Không thể xử lý. Vui lòng thử lại."
       );
@@ -229,14 +229,13 @@ export default function ReservationDetailScreen() {
     return (
       <SafeAreaView
         key="reservation-detail-loading"
+        edges={["bottom"]}
         className="flex-1 bg-neutral-bg dark:bg-neutral-950"
       >
-        <View className="flex-row items-center gap-3 px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-          <Pressable onPress={handleBack} hitSlop={10} className="p-1">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <Skeleton className="h-6 w-48 rounded-lg" />
-        </View>
+        <DetailHeader
+          title={<Skeleton className="h-6 w-48 rounded-lg bg-white/20" />}
+          onBack={handleBack}
+        />
         <View className="p-4 gap-4">
           <Skeleton className="h-28 w-full rounded-3xl" />
           <Skeleton className="h-72 w-full rounded-3xl" />
@@ -251,16 +250,13 @@ export default function ReservationDetailScreen() {
     return (
       <SafeAreaView
         key="reservation-detail-error"
+        edges={["bottom"]}
         className="flex-1 bg-neutral-bg dark:bg-neutral-950"
       >
-        <View className="flex-row items-center gap-3 px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-          <Pressable onPress={handleBack} hitSlop={10} className="p-1">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <Text className="text-base font-extrabold text-neutral-dark dark:text-neutral-100">
-            {isEn ? "Reservation Detail" : "Chi tiết đơn đặt chỗ"}
-          </Text>
-        </View>
+        <DetailHeader
+          title={isEn ? "Reservation Detail" : "Chi tiết đơn đặt chỗ"}
+          onBack={handleBack}
+        />
         <View className="flex-1 items-center justify-center p-6">
           <AlertCircle size={40} color="#EF4444" />
           <Text className="mt-3 text-base font-bold text-neutral-dark dark:text-neutral-100 text-center">
@@ -296,36 +292,25 @@ export default function ReservationDetailScreen() {
   return (
     <SafeAreaView
       key="reservation-detail-loaded"
+      edges={["bottom"]}
       className="flex-1 bg-neutral-bg dark:bg-neutral-950"
     >
-      {/* Top Bar with Borderless ArrowLeft Back Button */}
-      <View className="flex-row items-center justify-between px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-        <View className="flex-row items-center gap-3 flex-1">
-          <Pressable onPress={handleBack} hitSlop={10} className="p-1 active:opacity-70">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <View className="flex-1">
-            <Text
-              className="text-sm font-extrabold text-neutral-dark dark:text-neutral-100"
-              numberOfLines={1}
-            >
-              #{reservation.reservationCode}
+      {/* Top Bar with Brand Detail Header */}
+      <DetailHeader
+        title={`#${reservation.reservationCode}`}
+        subtitle={`${isEn ? "Created:" : "Ngày tạo:"} ${formatDateTime(reservation.createdAt)}`}
+        onBack={handleBack}
+        rightElement={
+          <Badge
+            variant="outline"
+            className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1`}
+          >
+            <Text className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
+              {statusMeta.label}
             </Text>
-            <Text variant="muted" className="text-[11px]">
-              {isEn ? "Created:" : "Ngày tạo:"} {formatDateTime(reservation.createdAt)}
-            </Text>
-          </View>
-        </View>
-
-        <Badge
-          variant="outline"
-          className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1`}
-        >
-          <Text className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
-            {statusMeta.label}
-          </Text>
-        </Badge>
-      </View>
+          </Badge>
+        }
+      />
 
       <ScrollView
         contentContainerClassName="p-4 pb-28 gap-4"

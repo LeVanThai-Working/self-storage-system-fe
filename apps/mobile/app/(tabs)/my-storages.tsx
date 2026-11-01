@@ -4,7 +4,6 @@ import {
   FlatList,
   Pressable,
   TextInput,
-  Modal,
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
@@ -41,14 +40,6 @@ import {
 } from "@/features/contracts/hooks/useContracts";
 import { ContractCard } from "@/features/contracts/components/ContractCard";
 
-function derivePinFromContract(contract: ContractResponse): string {
-  const digits = contract.id.replace(/\D/g, "");
-  if (digits.length >= 6) {
-    return digits.slice(-6);
-  }
-  return (digits + "849201").slice(0, 6);
-}
-
 export default function MyStoragesScreen() {
   const router = useRouter();
   const { t, locale } = useTranslation();
@@ -65,7 +56,6 @@ export default function MyStoragesScreen() {
   const [showSortOptions, setShowSortOptions] = useState<boolean>(false);
 
   const [openingContractId, setOpeningContractId] = useState<string | null>(null);
-  const [pinModalContract, setPinModalContract] = useState<ContractResponse | null>(null);
 
   const contractsQuery = useMyContractsInfinite({
     filterTab,
@@ -311,7 +301,6 @@ export default function MyStoragesScreen() {
               locale={currentLocale}
               onPress={handleOpenDetail}
               onUnlockPress={handleUnlockSmartLock}
-              onViewPinPress={(c) => setPinModalContract(c)}
               onRackMapPress={(c) =>
                 router.push({ pathname: "/contracts/[id]/rack-map" as any, params: { id: c.id } })
               }
@@ -372,55 +361,6 @@ export default function MyStoragesScreen() {
           }
         />
       )}
-
-      {/* Access PIN Modal */}
-      {pinModalContract ? (
-        <Modal
-          visible={Boolean(pinModalContract)}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setPinModalContract(null)}
-        >
-          <View className="flex-1 items-center justify-center bg-black/60 p-6">
-            <View className="w-full max-w-sm rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 shadow-2xl">
-              <View className="flex-row items-center justify-between pb-3 border-b border-neutral-border dark:border-neutral-800">
-                <Text variant="title" className="font-bold text-neutral-dark dark:text-neutral-100">
-                  {t("myStorages.pinModalTitle")}
-                </Text>
-                <Pressable
-                  onPress={() => setPinModalContract(null)}
-                  hitSlop={8}
-                  className="rounded-full p-1"
-                >
-                  <X size={18} color="#647B80" />
-                </Pressable>
-              </View>
-
-              <Text variant="muted" className="text-xs mt-3 leading-5">
-                {t("myStorages.pinModalDesc")}
-              </Text>
-
-              <View className="my-5 items-center justify-center rounded-2xl bg-brand-light dark:bg-brand/20 p-5">
-                <Text className="text-3xl font-extrabold tracking-widest text-brand">
-                  {derivePinFromContract(pinModalContract)}
-                </Text>
-                <Text variant="muted" className="text-xs mt-1">
-                  #{pinModalContract.contractCode}
-                </Text>
-              </View>
-
-              <Pressable
-                onPress={() => setPinModalContract(null)}
-                className="items-center justify-center rounded-xl bg-neutral-900 dark:bg-neutral-100 py-3"
-              >
-                <Text className="text-xs font-bold text-white dark:text-neutral-900">
-                  {t("common.close")}
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-      ) : null}
     </SafeAreaView>
   );
 }
