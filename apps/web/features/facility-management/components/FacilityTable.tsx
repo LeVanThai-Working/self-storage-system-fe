@@ -2,7 +2,8 @@
 
 import React, { useState, useTransition } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Building2,
   Search,
@@ -19,6 +20,7 @@ import {
   Trash2,
   SlidersHorizontal,
   Layers,
+  Boxes,
   CheckCircle2,
   AlertTriangle,
   XCircle,
@@ -31,6 +33,8 @@ import { DeleteFacilityModal } from "./DeleteFacilityModal";
 import { AssignManagerModal } from "./AssignManagerModal";
 
 export const FacilityTable = () => {
+  const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("businessOps.facilities");
   const [, startTransition] = useTransition();
 
@@ -398,7 +402,18 @@ export const FacilityTable = () => {
                     hours?.open && hours?.close ? `${hours.open} - ${hours.close}` : "24/7";
 
                   return (
-                    <tr key={facility.id} className="hover:bg-slate-50/80 transition-colors group">
+                    <tr
+                      key={facility.id}
+                      onClick={() =>
+                        router.push(`/${locale}/business-ops/facilities/${facility.id}`)
+                      }
+                      className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
+                      title={
+                        locale === "vi"
+                          ? "Nhấn để xem danh sách ô kho của cơ sở"
+                          : "Click to view facility storage units"
+                      }
+                    >
                       {/* Facility Name & Address */}
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3.5">
@@ -477,7 +492,23 @@ export const FacilityTable = () => {
 
                       {/* Actions */}
                       <td className="py-4 px-6 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                        <div
+                          className="flex items-center justify-end gap-1.5"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {/* View Storage Units Action */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/${locale}/business-ops/facilities/${facility.id}`);
+                            }}
+                            title={locale === "vi" ? "Xem danh sách ô kho" : "View storage units"}
+                            className="p-2 rounded-xl text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                          >
+                            <Boxes className="w-4 h-4" />
+                          </button>
+
                           {/* Assign Manager Action */}
                           <button
                             type="button"

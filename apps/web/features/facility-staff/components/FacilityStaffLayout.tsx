@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import {
-  Bell,
   Boxes,
   Building2,
   CalendarCheck,
@@ -22,6 +21,8 @@ import { EditProfileModal } from "@/features/auth/components/EditProfileModal";
 import { useAuthStore } from "@/features/auth/store";
 import { useMyFacility } from "@/features/storage-unit-management/hooks";
 import { useFacility } from "@/features/facility-management/hooks";
+import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
+import { NotificationBell } from "@/features/notification/components/NotificationBell";
 
 interface FacilityStaffLayoutProps {
   children: React.ReactNode;
@@ -182,14 +183,9 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
             </span>
           </div>
 
-          <div className="flex items-center gap-5 ml-4">
-            <button
-              aria-label="Notifications"
-              className="relative p-2.5 text-slate-500 hover:text-emerald-600 transition-colors rounded-full hover:bg-slate-50"
-            >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white"></span>
-            </button>
+          <div className="flex items-center gap-4 ml-4">
+            <LocaleSwitcher />
+            <NotificationBell />
 
             <div className="flex items-center gap-3 pl-5 border-l border-slate-200">
               <button
