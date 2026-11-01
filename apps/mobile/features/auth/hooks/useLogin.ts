@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { loginApi, getMeApi } from "../api/auth.api";
+import { loginApi, getMeApi, getMyProfileApi } from "../api/auth.api";
 import { tokenStorage } from "@/lib/storage/tokenStorage";
 import { useAuthStore } from "../stores/auth.store";
 import { useReservationHandoffStore } from "@/features/storage-explore/stores/reservationHandoff.store";
@@ -45,6 +45,16 @@ export function useLogin() {
         } else {
           throw meError;
         }
+      }
+
+      // Also retrieve user's profile to populate avatarUrl
+      try {
+        const profile = await getMyProfileApi();
+        if (profile?.avatarUrl) {
+          user.avatarUrl = profile.avatarUrl;
+        }
+      } catch (profileError) {
+        console.warn("GET /profile/me failed during login:", profileError);
       }
 
       return user;

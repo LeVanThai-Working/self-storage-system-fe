@@ -109,5 +109,136 @@ export async function resetPasswordApi(data: ResetPasswordRequest): Promise<void
  * Change user password with current password confirmation.
  */
 export async function changePasswordApi(data: ChangePasswordRequest): Promise<void> {
-  await api.post("/auth/change-password", data);
+  await api.patch("/auth/change-password", data);
+}
+
+export interface ProfileResponse {
+  id: string;
+  userId: string;
+  avatarUrl?: string;
+  dateOfBirth?: string;
+  address?: string;
+  gender?: string;
+  idCardLast4?: string;
+  idCardFrontPhotoUrl?: string;
+  idCardBackPhotoUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Fetch authenticated customer's profile from /profile/me.
+ * Profile collection holds avatarUrl, dateOfBirth, address, gender.
+ */
+export async function getMyProfileApi(): Promise<ProfileResponse> {
+  const response = await api.get<ApiResponse<ProfileResponse> | ProfileResponse>("/profile/me");
+  const resData = response.data;
+  if (
+    resData &&
+    typeof resData === "object" &&
+    "data" in resData &&
+    (resData as ApiResponse<ProfileResponse>).data
+  ) {
+    return (resData as ApiResponse<ProfileResponse>).data;
+  }
+  return resData as ProfileResponse;
+}
+
+/**
+ * Update authenticated customer's profile on /profile/me (avatarUrl, address, dateOfBirth, gender).
+ */
+export async function updateMyProfileApi(data: {
+  avatarUrl?: string;
+  address?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  idCardFrontPhotoUrl?: string;
+  idCardBackPhotoUrl?: string;
+}): Promise<ProfileResponse> {
+  const response = await api.patch<ApiResponse<ProfileResponse> | ProfileResponse>(
+    "/profile/me",
+    data
+  );
+  const resData = response.data;
+  if (
+    resData &&
+    typeof resData === "object" &&
+    "data" in resData &&
+    (resData as ApiResponse<ProfileResponse>).data
+  ) {
+    return (resData as ApiResponse<ProfileResponse>).data;
+  }
+  return resData as ProfileResponse;
+}
+
+/**
+ * Update user entity in users collection on /users/{id} (name, phoneNumber).
+ */
+export async function updateUserApi(
+  userId: string,
+  data: {
+    name?: string;
+    phoneNumber?: string;
+  }
+): Promise<AuthUserResponse> {
+  const response = await api.patch<ApiResponse<AuthUserResponse> | AuthUserResponse>(
+    `/users/${userId}`,
+    data
+  );
+  const resData = response.data;
+  if (
+    resData &&
+    typeof resData === "object" &&
+    "data" in resData &&
+    (resData as ApiResponse<AuthUserResponse>).data
+  ) {
+    return (resData as ApiResponse<AuthUserResponse>).data;
+  }
+  return resData as AuthUserResponse;
+}
+
+/**
+ * Update user profile across both users and profiles collections.
+ */
+export async function updateProfileApi(data: {
+  userId?: string;
+  name?: string;
+  phoneNumber?: string;
+  avatarUrl?: string;
+  address?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  idCardFrontPhotoUrl?: string;
+  idCardBackPhotoUrl?: string;
+}): Promise<{ user?: AuthUserResponse; profile?: ProfileResponse }> {
+  let updatedUser: AuthUserResponse | undefined;
+  let updatedProfile: ProfileResponse | undefined;
+
+  if (data.userId && (data.name !== undefined || data.phoneNumber !== undefined)) {
+    updatedUser = await updateUserApi(data.userId, {
+      name: data.name,
+      phoneNumber: data.phoneNumber,
+    });
+  }
+
+  const hasProfileFields =
+    data.avatarUrl !== undefined ||
+    data.address !== undefined ||
+    data.dateOfBirth !== undefined ||
+    data.gender !== undefined ||
+    data.idCardFrontPhotoUrl !== undefined ||
+    data.idCardBackPhotoUrl !== undefined;
+
+  if (hasProfileFields) {
+    updatedProfile = await updateMyProfileApi({
+      avatarUrl: data.avatarUrl,
+      address: data.address,
+      dateOfBirth: data.dateOfBirth,
+      gender: data.gender,
+      idCardFrontPhotoUrl: data.idCardFrontPhotoUrl,
+      idCardBackPhotoUrl: data.idCardBackPhotoUrl,
+    });
+  }
+
+  return { user: updatedUser, profile: updatedProfile };
 }

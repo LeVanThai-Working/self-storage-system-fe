@@ -87,11 +87,18 @@ function RootLayoutNav() {
     const inAuthGroup = firstSegment === "(auth)";
     const inPublicFacilityDetail = firstSegment === "facilities";
     const inPublicUnitTypeDetail = firstSegment === "unit-types";
+    const inPublicAmenityDetail = firstSegment === "amenities";
+    const inPublicOfferingDetail = firstSegment === "offerings";
     const inPublicExploreTab =
       !firstSegment || (firstSegment === "(tabs)" && (!secondSegment || secondSegment === "index"));
 
     const isPublicRoute =
-      inAuthGroup || inPublicFacilityDetail || inPublicUnitTypeDetail || inPublicExploreTab;
+      inAuthGroup ||
+      inPublicFacilityDetail ||
+      inPublicUnitTypeDetail ||
+      inPublicAmenityDetail ||
+      inPublicOfferingDetail ||
+      inPublicExploreTab;
 
     if (!isAuthenticated && !isPublicRoute) {
       // Unauthenticated user attempting to access protected customer route
@@ -110,6 +117,9 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="profile" options={{ headerShown: false }} />
+        <Stack.Screen name="offerings/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="amenities/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="facilities/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="facilities/[id]/offerings" options={{ headerShown: false }} />
         <Stack.Screen name="unit-types/[id]" options={{ headerShown: false }} />

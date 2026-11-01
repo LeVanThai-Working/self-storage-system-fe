@@ -18,6 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DetailHeader } from "@/components/layout/DetailHeader";
 import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
 import {
@@ -27,13 +28,11 @@ import {
   type PaymentResponse,
 } from "@self-storage-system-fe/shared";
 import {
-  ArrowLeft,
   QrCode,
   Copy,
   Check,
   AlertTriangle,
   CheckCircle2,
-  RefreshCw,
   Timer,
   Building,
   ShieldAlert,
@@ -253,31 +252,6 @@ export default function ReservationPaymentScreen() {
     }, 2000);
   };
 
-  const handleManualCheck = async () => {
-    if (!payment?.id) return;
-    const result = await refetchPayment();
-    const updated = result.data;
-    if (updated?.status === PaymentStatusEnum.PAID) {
-      toast.success(isEn ? "Deposit transfer verified!" : "Hệ thống đã ghi nhận đủ tiền đặt cọc!");
-    } else if (updated?.status === PaymentStatusEnum.PARTIALLY_PAID) {
-      toast.info(
-        isEn
-          ? `Received ${formatVnd(updated.paidAmount)}. Please transfer the remaining ${formatVnd(
-              Math.max(0, updated.amount - updated.paidAmount)
-            )}.`
-          : `Đã nhận ${formatVnd(updated.paidAmount)}. Vui lòng chuyển thêm ${formatVnd(
-              Math.max(0, updated.amount - updated.paidAmount)
-            )}.`
-      );
-    } else {
-      toast.info(
-        isEn
-          ? "Still waiting for SePay bank confirmation. We check automatically every 4 seconds."
-          : "Hệ thống đang chờ ngân hàng xác nhận qua SePay (tự động kiểm tra mỗi 4 giây)."
-      );
-    }
-  };
-
   const handleCancelPaymentSession = async () => {
     if (!payment?.id) return;
     const trimmed = cancelReason.trim();
@@ -310,13 +284,15 @@ export default function ReservationPaymentScreen() {
 
   if (initPaymentMutation.isPending && !payment) {
     return (
-      <SafeAreaView key="payment-loading" className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-        <View className="flex-row items-center gap-3 px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-          <Pressable onPress={handleBackToReservation} hitSlop={10} className="p-1">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <Skeleton className="h-6 w-52 rounded-lg" />
-        </View>
+      <SafeAreaView
+        key="payment-loading"
+        edges={["bottom"]}
+        className="flex-1 bg-neutral-bg dark:bg-neutral-950"
+      >
+        <DetailHeader
+          title={<Skeleton className="h-6 w-52 rounded-lg bg-white/20" />}
+          onBack={handleBackToReservation}
+        />
         <View className="p-4 gap-4">
           <Skeleton className="h-80 w-full rounded-3xl" />
           <Skeleton className="h-52 w-full rounded-3xl" />
@@ -327,15 +303,15 @@ export default function ReservationPaymentScreen() {
 
   if (initError || !payment) {
     return (
-      <SafeAreaView key="payment-error" className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-        <View className="flex-row items-center gap-3 px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-          <Pressable onPress={handleBackToReservation} hitSlop={10} className="p-1">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <Text className="text-base font-extrabold text-neutral-dark dark:text-neutral-100">
-            {isEn ? "VietQR Deposit Payment" : "Thanh toán tiền cọc VietQR"}
-          </Text>
-        </View>
+      <SafeAreaView
+        key="payment-error"
+        edges={["bottom"]}
+        className="flex-1 bg-neutral-bg dark:bg-neutral-950"
+      >
+        <DetailHeader
+          title={isEn ? "VietQR Deposit Payment" : "Thanh toán tiền cọc VietQR"}
+          onBack={handleBackToReservation}
+        />
 
         <View className="flex-1 items-center justify-center p-6">
           <AlertTriangle size={42} color="#EF4444" />
@@ -370,36 +346,27 @@ export default function ReservationPaymentScreen() {
     payment.status === PaymentStatusEnum.PARTIALLY_PAID;
 
   return (
-    <SafeAreaView key="payment-loaded" className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-      {/* Header with Borderless ArrowLeft Back Button */}
-      <View className="flex-row items-center justify-between px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-        <View className="flex-row items-center gap-3 flex-1">
-          <Pressable
-            onPress={handleBackToReservation}
-            hitSlop={10}
-            className="p-1 active:opacity-70"
+    <SafeAreaView
+      key="payment-loaded"
+      edges={["bottom"]}
+      className="flex-1 bg-neutral-bg dark:bg-neutral-950"
+    >
+      {/* Header with Brand Detail Header */}
+      <DetailHeader
+        title={isEn ? "Deposit Payment (VietQR)" : "Thanh toán tiền cọc (VietQR)"}
+        subtitle={`#${payment.paymentCode}`}
+        onBack={handleBackToReservation}
+        rightElement={
+          <Badge
+            variant="outline"
+            className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1`}
           >
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <View className="flex-1">
-            <Text className="text-sm font-extrabold text-neutral-dark dark:text-neutral-100">
-              {isEn ? "Deposit Payment (VietQR)" : "Thanh toán tiền cọc (VietQR)"}
+            <Text className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
+              {statusMeta.label}
             </Text>
-            <Text variant="muted" className="text-[11px]">
-              #{payment.paymentCode}
-            </Text>
-          </View>
-        </View>
-
-        <Badge
-          variant="outline"
-          className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1`}
-        >
-          <Text className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
-            {statusMeta.label}
-          </Text>
-        </Badge>
-      </View>
+          </Badge>
+        }
+      />
 
       <ScrollView contentContainerClassName="p-4 pb-16 gap-4" showsVerticalScrollIndicator={false}>
         {/* ── Status Banner: PAID ── */}

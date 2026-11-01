@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { View, TextInput, Pressable } from "react-native";
+import { View, TextInput, Pressable, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Bell, Menu, Search, X } from "lucide-react-native";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Text } from "@/components/ui/text";
 import { SettingsModal } from "@/features/auth/components/SettingsModal";
+import { NotificationModal } from "@/features/notifications/components/NotificationModal";
+import { useUnreadCount } from "@/features/notifications/hooks/useNotifications";
 import { useAuthStore } from "@/features/auth/stores/auth.store";
 import { useTranslation } from "@/stores/language.store";
-import { useToast } from "@/stores/toast.store";
 import { useExploreSearchStore } from "../stores/exploreSearch.store";
 
 interface CustomerTabHeaderProps {
@@ -28,10 +29,12 @@ export function CustomerTabHeader({ isHome = false }: CustomerTabHeaderProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { t } = useTranslation();
-  const toast = useToast();
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { search, setSearch } = useExploreSearchStore();
   const [settingsVisible, setSettingsVisible] = useState(false);
+  const [notificationsVisible, setNotificationsVisible] = useState(false);
+
+  const { data: unreadCount = 0 } = useUnreadCount(isHome && isAuthenticated);
 
   const customerName = user?.name || t("settings.roleCustomer");
   const initials = getInitials(user?.name);
@@ -39,6 +42,22 @@ export function CustomerTabHeader({ isHome = false }: CustomerTabHeaderProps) {
   const handleSearchSubmit = () => {
     if (!isHome) {
       router.push("/(tabs)" as any);
+    }
+  };
+
+  const handleAvatarPress = () => {
+    if (isAuthenticated) {
+      router.push("/profile" as any);
+    } else {
+      router.push("/(auth)/login" as any);
+    }
+  };
+
+  const handleNotificationPress = () => {
+    if (isAuthenticated) {
+      setNotificationsVisible(true);
+    } else {
+      router.push("/(auth)/login" as any);
     }
   };
 
@@ -50,36 +69,50 @@ export function CustomerTabHeader({ isHome = false }: CustomerTabHeaderProps) {
       {/* Section 1 (Chỉ hiển thị ở trang Home): Avatar + Tên khách hàng (trái) | Thông báo + Icon 3 gạch (phải) */}
       {isHome && (
         <View className="mb-2.5 flex-row items-center justify-between">
-          {/* Tay trái: Avatar + Tên khách hàng */}
-          <View className="flex-1 flex-row items-center gap-2.5 pr-3">
+          {/* Tay trái: Avatar + Tên khách hàng (Bấm vào để mở trang Profile) */}
+          <TouchableOpacity
+            onPress={handleAvatarPress}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            className="flex-1 flex-row items-center gap-2.5 pr-3"
+            accessibilityLabel="Customer Profile"
+          >
             <Avatar size="sm" className="border border-white/40 bg-brand-light">
-              <AvatarFallback label={initials} size="sm" />
+              {user?.avatarUrl ? (
+                <AvatarImage src={user.avatarUrl} alt={customerName} />
+              ) : (
+                <AvatarFallback label={initials} size="sm" />
+              )}
             </Avatar>
             <Text numberOfLines={1} className="flex-1 text-sm font-bold text-white">
               {customerName}
             </Text>
-          </View>
+          </TouchableOpacity>
 
-          {/* Tay phải: Cụm icon thông báo và icon 3 gạch (thay thế cho toggle setting) */}
+          {/* Tay phải: Cụm icon thông báo thật và icon 3 gạch */}
           <View className="flex-row items-center gap-1.5">
-            <Pressable
-              onPress={() => toast.info(t("storageExplore.noNewNotifications"))}
-              hitSlop={8}
-              className="relative h-8 w-8 items-center justify-center rounded-full active:bg-white/15"
+            <TouchableOpacity
+              onPress={handleNotificationPress}
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              className="relative h-8 w-8 items-center justify-center rounded-full"
               accessibilityLabel="Notifications"
             >
               <Bell size={19} color="#FFFFFF" />
-              <View className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-cta" />
-            </Pressable>
+              {unreadCount > 0 && (
+                <View className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-cta border border-brand" />
+              )}
+            </TouchableOpacity>
 
-            <Pressable
+            <TouchableOpacity
               onPress={() => setSettingsVisible(true)}
-              hitSlop={8}
-              className="h-8 w-8 items-center justify-center rounded-full active:bg-white/15"
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              className="h-8 w-8 items-center justify-center rounded-full"
               accessibilityLabel="Open settings menu"
             >
               <Menu size={21} color="#FFFFFF" />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       )}
@@ -104,7 +137,13 @@ export function CustomerTabHeader({ isHome = false }: CustomerTabHeaderProps) {
       </View>
 
       {isHome && (
-        <SettingsModal visible={settingsVisible} onClose={() => setSettingsVisible(false)} />
+        <>
+          <SettingsModal visible={settingsVisible} onClose={() => setSettingsVisible(false)} />
+          <NotificationModal
+            visible={notificationsVisible}
+            onClose={() => setNotificationsVisible(false)}
+          />
+        </>
       )}
     </View>
   );
