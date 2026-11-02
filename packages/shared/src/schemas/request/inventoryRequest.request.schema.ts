@@ -14,8 +14,8 @@ export const transporterInfoSchema = z.object({
 export const outboundRequestItemSchema = z.object({
   skuId: z.string().regex(objectIdRegex, "Invalid SKU ID format"),
   quantity: z.number().int().positive("Quantity must be greater than 0"),
-  storageRackId: z.string().regex(objectIdRegex, "Invalid Storage Rack ID format"),
-  rackTierId: z.string().regex(objectIdRegex, "Invalid Rack Tier ID format"),
+  storageRackId: z.string().regex(objectIdRegex, "Invalid Storage Rack ID format").optional(),
+  rackTierId: z.string().regex(objectIdRegex, "Invalid Rack Tier ID format").optional(),
 });
 
 export const createOutboundRequestSchema = z.object({
@@ -92,14 +92,27 @@ export const disputeInboundRequestSchema = z.object({
 export const putawayItemSchema = z.object({
   skuId: z.string().regex(objectIdRegex, "Invalid SKU ID format"),
   quantity: z.number().int().positive("Putaway quantity must be greater than 0"),
-  storageRackId: z.string().regex(objectIdRegex, "Invalid Storage Rack ID format"),
-  rackTierId: z.string().regex(objectIdRegex, "Invalid Rack Tier ID format"),
+  storageRackId: z
+    .string()
+    .regex(objectIdRegex, "Invalid Storage Rack ID format")
+    .nullable()
+    .optional(),
+  rackTierId: z.string().regex(objectIdRegex, "Invalid Rack Tier ID format").nullable().optional(),
 });
 
 export const putawayInboundRequestSchema = z.object({
   placements: z
     .array(putawayItemSchema)
     .min(1, "Must specify at least one shelf tier placement for putaway"),
+  notes: z.string().max(500).optional(),
+});
+
+export const assignInventoryRequestSchema = z.object({
+  assignedStaffId: z.string().regex(objectIdRegex, "Invalid assigned staff ID format"),
+});
+
+export const confirmInboundRequestSchema = z.object({
+  customerNotes: z.string().max(500).optional(),
 });
 
 export const inventoryRequestIdParamSchema = z.object({
@@ -110,6 +123,7 @@ export const inventoryRequestQuerySchema = paginationQuerySchema.extend({
   customerId: z.string().regex(objectIdRegex).optional(),
   facilityId: z.string().regex(objectIdRegex).optional(),
   contractId: z.string().regex(objectIdRegex).optional(),
+  assignedStaffId: z.string().regex(objectIdRegex).optional(),
   type: z.nativeEnum(InventoryRequestTypeEnum).optional(),
   status: z.nativeEnum(InventoryRequestStatusEnum).optional(),
   startDate: z.string().datetime().optional(),
@@ -132,6 +146,8 @@ export type DisputeInboundRequest = z.infer<typeof disputeInboundRequestSchema>;
 export type PutawayItem = z.infer<typeof putawayItemSchema>;
 export type PutawayInboundRequest = z.infer<typeof putawayInboundRequestSchema>;
 export type InventoryRequestIdParam = z.infer<typeof inventoryRequestIdParamSchema>;
+export type AssignInventoryRequest = z.infer<typeof assignInventoryRequestSchema>;
+export type ConfirmInboundRequest = z.infer<typeof confirmInboundRequestSchema>;
 export interface InventoryRequestQuery {
   page?: number;
   limit?: number;
@@ -141,6 +157,7 @@ export interface InventoryRequestQuery {
   customerId?: string;
   facilityId?: string;
   contractId?: string;
+  assignedStaffId?: string;
   type?: InventoryRequestTypeEnum;
   status?: InventoryRequestStatusEnum;
   startDate?: string;

@@ -252,6 +252,8 @@ export {
   disputeInboundRequestSchema,
   putawayItemSchema,
   putawayInboundRequestSchema,
+  assignInventoryRequestSchema,
+  confirmInboundRequestSchema,
   inventoryRequestIdParamSchema,
   inventoryRequestQuerySchema,
   type TransporterInfo,
@@ -268,6 +270,8 @@ export {
   type DisputeInboundRequest,
   type PutawayItem,
   type PutawayInboundRequest,
+  type AssignInventoryRequest,
+  type ConfirmInboundRequest,
   type InventoryRequestIdParam,
   type InventoryRequestQuery,
 } from "./request/inventoryRequest.request.schema";

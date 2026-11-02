@@ -2,7 +2,17 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Box, Layers, Loader2, Lock, Plus, Sparkles, Wrench } from "lucide-react";
+import {
+  AlertTriangle,
+  Box,
+  Layers,
+  Loader2,
+  Lock,
+  Plus,
+  RotateCcw,
+  Sparkles,
+  Wrench,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   RackStatusEnum,
@@ -13,6 +23,13 @@ import {
   type StorageRackResponse,
 } from "@self-storage-system-fe/shared";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useApiErrorMessage } from "@/features/auth/error-message";
@@ -61,6 +78,7 @@ export function RackStructureView({
   const provisionMutation = useProvisionRacks(unitId);
   const [createOpen, setCreateOpen] = useState(false);
   const [openRackId, setOpenRackId] = useState<string | null>(null);
+  const [confirmProvisionOpen, setConfirmProvisionOpen] = useState(false);
 
   const racks = useMemo(() => racksQuery.data ?? [], [racksQuery.data]);
   const aisles = useMemo(() => groupRacksByAisle(racks), [racks]);
@@ -95,6 +113,8 @@ export function RackStructureView({
   const handleProvision = async () => {
     try {
       const created = await provisionMutation.mutateAsync();
+      setConfirmProvisionOpen(false);
+      await racksQuery.refetch();
       toast.success(t("provisioned", { count: created.length }));
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -107,14 +127,15 @@ export function RackStructureView({
         <div className="flex flex-wrap justify-end gap-2">
           <Button
             variant="outline"
-            onClick={() => void handleProvision()}
+            type="button"
+            onClick={() => setConfirmProvisionOpen(true)}
             disabled={provisionMutation.isPending}
-            className="border-teal-200 text-teal-700"
+            className="border-teal-200 text-teal-700 hover:bg-teal-50 cursor-pointer"
           >
             {provisionMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Sparkles className="h-4 w-4" />
+              <RotateCcw className="h-4 w-4 text-teal-600" />
             )}
             {t("provision")}
           </Button>
@@ -160,9 +181,39 @@ export function RackStructureView({
             {getErrorMessage(racksQuery.error)}
           </p>
         ) : racks.length === 0 ? (
-          <p className="py-10 text-center text-sm text-slate-500">
-            {canManage ? t("emptyManager") : t("empty")}
-          </p>
+          <div className="py-12 px-4 text-center space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200/60 flex items-center justify-center mx-auto shadow-xs">
+              <RotateCcw className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-bold text-slate-800">{t("empty")}</p>
+              <p className="text-xs text-slate-500 max-w-md mx-auto">
+                {canManage ? t("emptyManager") : t("empty")}
+              </p>
+            </div>
+            {canManage && (
+              <div className="pt-2 flex flex-wrap items-center justify-center gap-2">
+                <Button
+                  type="button"
+                  onClick={() => setConfirmProvisionOpen(true)}
+                  disabled={provisionMutation.isPending}
+                  className="bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs cursor-pointer"
+                >
+                  <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+                  {t("provision")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCreateOpen(true)}
+                  className="text-xs cursor-pointer"
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1" />
+                  {t("create.open")}
+                </Button>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="space-y-4">
             {aisles.map((aisle) => {
@@ -242,6 +293,68 @@ export function RackStructureView({
           onClose={() => setOpenRackId(null)}
         />
       ) : null}
+
+      {confirmProvisionOpen && (
+        <Dialog open={confirmProvisionOpen} onOpenChange={setConfirmProvisionOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 border border-amber-200/80 flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-5 h-5" />
+                </div>
+                <div>
+                  <DialogTitle className="text-base font-bold text-slate-900">
+                    {t("provisionConfirmTitle")}
+                  </DialogTitle>
+                  <p className="text-xs text-slate-500 font-mono mt-0.5">
+                    {t("mapTitle", { unit: unitNumber })}
+                  </p>
+                </div>
+              </div>
+            </DialogHeader>
+
+            <div className="space-y-3 py-2 text-xs text-slate-600 leading-relaxed">
+              <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-amber-900 space-y-1.5">
+                <p className="font-bold text-amber-950 flex items-center gap-1.5 text-xs">
+                  <RotateCcw className="w-3.5 h-3.5 text-amber-700" />
+                  {t("provisionConfirmHeading")}
+                </p>
+                <p className="text-[11px] leading-relaxed">{t("provisionConfirmWarning")}</p>
+              </div>
+
+              <div className="space-y-1 text-slate-500 text-[11px]">
+                <p>• {t("provisionConfirmNotice1")}</p>
+                <p>• {t("provisionConfirmNotice2")}</p>
+              </div>
+            </div>
+
+            <DialogFooter className="flex items-center justify-end gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setConfirmProvisionOpen(false)}
+                disabled={provisionMutation.isPending}
+                className="text-xs cursor-pointer"
+              >
+                {t("provisionCancel")}
+              </Button>
+              <Button
+                type="button"
+                onClick={() => void handleProvision()}
+                disabled={provisionMutation.isPending}
+                className="bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs cursor-pointer"
+              >
+                {provisionMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+                ) : (
+                  <RotateCcw className="h-4 w-4 mr-1.5" />
+                )}
+                {t("provisionConfirmAction")}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

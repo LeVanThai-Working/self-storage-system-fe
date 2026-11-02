@@ -2685,6 +2685,7 @@
     "requestStatus": {
       "pending": "Chờ lấy hàng",
       "pending_confirmation": "Chờ khách xác nhận",
+      "assigned": "Đã phân công",
       "processing": "Đang xử lý",
       "ready_to_putaway": "Sẵn sàng xếp kệ",
       "completed": "Hoàn tất",
@@ -3134,8 +3135,15 @@
       "structure": "Cấu trúc kệ",
       "goods": "Hàng hoá"
     },
-    "provision": "Tự sinh kệ theo cấu hình",
-    "provisioned": "Đã sinh {count} kệ mới",
+    "provision": "Khôi phục cấu trúc kệ",
+    "provisionConfirmTitle": "Xác nhận khôi phục cấu trúc kệ kho",
+    "provisionConfirmHeading": "Khôi phục theo cấu hình quy chuẩn",
+    "provisionConfirmWarning": "Hệ thống sẽ khôi phục và tái tạo lại toàn bộ các dãy kệ, vị trí và tầng kệ đã phân sẵn theo cấu hình chuẩn của loại kho warehouse này.",
+    "provisionConfirmNotice1": "Dùng tính năng này khi kệ kho bị xóa nhầm hoặc hư dữ liệu.",
+    "provisionConfirmNotice2": "Các kệ hiện đang có sẽ được giữ nguyên, hệ thống sẽ bù đắp tự động các kệ và tầng còn thiếu.",
+    "provisionConfirmAction": "Xác nhận khôi phục",
+    "provisionCancel": "Hủy bỏ",
+    "provisioned": "Đã khôi phục thành công {count} kệ kho",
     "kpi": {
       "total": "Tổng kệ",
       "rented": "Đang thuê",

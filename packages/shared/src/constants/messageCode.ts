@@ -262,6 +262,10 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_646: "MESSAGE_CODE_646",
   // Emergency Reason Or Incident Required For Evacuation
   MESSAGE_CODE_647: "MESSAGE_CODE_647",
+  // Request Already Assigned To Another Staff
+  MESSAGE_CODE_648: "MESSAGE_CODE_648",
+  // You Are Not The Assigned Staff For This Request
+  MESSAGE_CODE_649: "MESSAGE_CODE_649",
   // Incident Not Found
   MESSAGE_CODE_700: "MESSAGE_CODE_700",
   // Invalid Incident Status Transition
@@ -466,6 +470,8 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_645: "Inventory Item Status Does Not Allow This Operation",
   MESSAGE_CODE_646: "Invalid Inventory Item Status Transition",
   MESSAGE_CODE_647: "Emergency Reason Or Incident Required For Evacuation",
+  MESSAGE_CODE_648: "Request already assigned to another staff",
+  MESSAGE_CODE_649: "You are not the assigned staff for this request",
   MESSAGE_CODE_700: "Incident Not Found",
   MESSAGE_CODE_701: "Invalid Incident Status Transition",
   MESSAGE_CODE_702: "Storage Unit Not Owned By Contract",
@@ -653,6 +659,8 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_645: "Trạng thái hàng không cho phép thao tác này",
   MESSAGE_CODE_646: "Chuyển trạng thái hàng không hợp lệ",
   MESSAGE_CODE_647: "Cần lý do khẩn cấp hoặc sự cố để hạ hàng xuống khu lưu tạm",
+  MESSAGE_CODE_648: "Đơn này đã được giao cho nhân viên khác phụ trách",
+  MESSAGE_CODE_649: "Bạn không phải nhân viên phụ trách đơn này",
   MESSAGE_CODE_700: "Không tìm thấy sự cố",
   MESSAGE_CODE_701: "Trạng thái sự cố không cho phép thao tác này",
   MESSAGE_CODE_702: "Phòng kho không thuộc hợp đồng này",
