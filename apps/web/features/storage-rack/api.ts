@@ -44,3 +44,14 @@ export const updateRackTier = async (
   );
   return data.data;
 };
+
+/** DELETE /storage-racks/{id} */
+export const deleteRack = async (id: string): Promise<void> => {
+  await api.delete(`/storage-racks/${id}`);
+};
+
+/** POST /storage-racks/{id}/restore */
+export const restoreRack = async (id: string): Promise<StorageRackResponse> => {
+  const { data } = await api.post<Envelope<StorageRackResponse>>(`/storage-racks/${id}/restore`);
+  return data.data;
+};

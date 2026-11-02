@@ -5,7 +5,14 @@ import type {
   UpdateStorageRackRequest,
 } from "@self-storage-system-fe/shared";
 import { inventoryOpsKeys } from "@/features/inventory-operations/hooks";
-import { createRack, provisionRacks, updateRack, updateRackTier } from "./api";
+import {
+  createRack,
+  provisionRacks,
+  updateRack,
+  updateRackTier,
+  deleteRack,
+  restoreRack,
+} from "./api";
 
 /** Rack layout queries live under the inventory-operations keys (shared with the goods tab). */
 function useRackMutation<T, R>(fn: (payload: T) => Promise<R>) {
@@ -29,3 +36,7 @@ export const useUpdateRackTier = () =>
   useRackMutation(({ id, ...payload }: UpdateRackTierRequest & { id: string }) =>
     updateRackTier(id, payload)
   );
+
+export const useDeleteRack = () => useRackMutation((id: string) => deleteRack(id));
+
+export const useRestoreRack = () => useRackMutation((id: string) => restoreRack(id));

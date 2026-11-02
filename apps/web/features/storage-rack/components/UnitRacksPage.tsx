@@ -29,9 +29,14 @@ export function UnitRacksPage({
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<Tab>(searchParams.get("tab") === "goods" ? "goods" : "structure");
   const currentUser = useAuthStore((state) => state.currentUser);
+  const userRole = String(currentUser?.role ?? "").toLowerCase();
+  const isStaff = userRole === RoleEnum.FACILITY_STAFF || portalBase === "facility-staff";
   const canManage =
-    portalBase === "facility-manager" &&
-    String(currentUser?.role ?? "").toLowerCase() === RoleEnum.FACILITY_MANAGER;
+    !isStaff &&
+    (userRole === RoleEnum.FACILITY_MANAGER ||
+      userRole === RoleEnum.BUSINESS_OPS_MANAGER ||
+      userRole === RoleEnum.SYSTEM_ADMIN ||
+      portalBase === "facility-manager");
   const unitQuery = useQuery({
     queryKey: ["rack-unit", unitId],
     queryFn: () => fetchStorageUnitById(unitId),

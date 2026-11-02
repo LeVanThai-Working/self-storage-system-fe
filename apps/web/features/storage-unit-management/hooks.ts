@@ -6,6 +6,7 @@ import {
   createStorageRack,
   createStorageUnit,
   deleteStorageRack,
+  restoreStorageRack,
   deleteStorageUnit,
   fetchActiveOfferings,
   fetchAvailableStorageUnits,
@@ -290,6 +291,15 @@ export const useDeleteStorageRack = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteStorageRack(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: storageRackKeys.all });
+    },
+  });
+};
+export const useRestoreStorageRack = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => restoreStorageRack(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: storageRackKeys.all });
     },

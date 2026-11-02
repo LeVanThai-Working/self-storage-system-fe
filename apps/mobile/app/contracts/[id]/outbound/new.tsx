@@ -16,6 +16,8 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "@/stores/language.store";
 import { toast } from "@/stores/toast.store";
 import { useContractDetail } from "@/features/contracts/hooks/useContracts";
+import { isWarehouseRackContract } from "@/features/contracts/utils/contractFormat";
+import { SelfStorageGuardView } from "@/features/contracts/components/SelfStorageGuardView";
 import { useStorageUnitTree } from "@/features/customer-inventory/hooks/useCustomerInventory";
 import { SkuThumb } from "@/features/customer-inventory/components/SkuThumb";
 import { QuantityStepper } from "@/features/customer-inventory/components/QuantityStepper";
@@ -53,7 +55,9 @@ export default function CreateOutboundRequestScreen() {
 
   const contractQuery = useContractDetail(contractId);
   const contract = contractQuery.data;
-  const treeQuery = useStorageUnitTree(contract?.storageUnitId);
+  const isWarehouse =
+    typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
+  const treeQuery = useStorageUnitTree(isWarehouse ? contract?.storageUnitId : undefined);
   const positions = useMemo(() => listTreePositions(treeQuery.data), [treeQuery.data]);
   const rights = getContractRequestRights(contract?.status);
   const createMutation = useCreateOutboundRequest();
@@ -164,6 +168,16 @@ export default function CreateOutboundRequestScreen() {
   );
 
   const loading = contractQuery.isLoading || treeQuery.isLoading;
+
+  if (contract && !isWarehouse) {
+    return (
+      <SelfStorageGuardView
+        contract={contract}
+        title={t("inventoryRequest.outbound.title")}
+        reason="inventory_not_supported"
+      />
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">

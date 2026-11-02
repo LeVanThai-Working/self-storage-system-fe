@@ -200,6 +200,8 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_604: "MESSAGE_CODE_604",
   // Invalid Rack Zone Pricing Configuration
   MESSAGE_CODE_605: "MESSAGE_CODE_605",
+  // Cannot Delete Storage Rack With Active Contracts Or Tenants
+  MESSAGE_CODE_606: "MESSAGE_CODE_606",
   // Customer SKU Not Found
   MESSAGE_CODE_610: "MESSAGE_CODE_610",
   // Customer SKU Code Already Exists
@@ -266,6 +268,7 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_648: "MESSAGE_CODE_648",
   // You Are Not The Assigned Staff For This Request
   MESSAGE_CODE_649: "MESSAGE_CODE_649",
+  MESSAGE_CODE_650: "MESSAGE_CODE_650",
   // Incident Not Found
   MESSAGE_CODE_700: "MESSAGE_CODE_700",
   // Invalid Incident Status Transition
@@ -450,6 +453,7 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_603: "Storage Rack Code Already Exists",
   MESSAGE_CODE_604: "Storage Unit Does Not Support Rack Layout",
   MESSAGE_CODE_605: "Invalid Rack Zone Pricing Configuration",
+  MESSAGE_CODE_606: "Cannot Delete Storage Rack With Active Contracts Or Tenants",
   MESSAGE_CODE_610: "Customer SKU Not Found",
   MESSAGE_CODE_611: "Customer SKU Code Already Exists",
   MESSAGE_CODE_612: "Customer SKU Barcode Already Exists",
@@ -485,6 +489,7 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_647: "Emergency Reason Or Incident Required For Evacuation",
   MESSAGE_CODE_648: "Request already assigned to another staff",
   MESSAGE_CODE_649: "You are not the assigned staff for this request",
+  MESSAGE_CODE_650: "Self Storage Units Do Not Support Inventory And SKU Management",
   MESSAGE_CODE_700: "Incident Not Found",
   MESSAGE_CODE_701: "Invalid Incident Status Transition",
   MESSAGE_CODE_702: "Storage Unit Not Owned By Contract",
@@ -650,8 +655,9 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_601: "Không tìm thấy tầng kệ",
   MESSAGE_CODE_602: "Chuyển trạng thái kệ không hợp lệ",
   MESSAGE_CODE_603: "Mã kệ đã tồn tại trong phòng",
-  MESSAGE_CODE_604: "Phòng kho này không hỗ trợ bố trí kệ",
+  MESSAGE_CODE_604: "Phòng kho tự quản không hỗ trợ bố trí hệ thống kệ tầng.",
   MESSAGE_CODE_605: "Cấu hình giá theo zone kệ không hợp lệ",
+  MESSAGE_CODE_606: "Không thể xóa kệ đang có hợp đồng hoặc khách thuê!",
   MESSAGE_CODE_610: "Không tìm thấy mã hàng",
   MESSAGE_CODE_611: "Mã hàng đã tồn tại trong danh mục",
   MESSAGE_CODE_612: "Mã vạch đã tồn tại trong danh mục",
@@ -687,6 +693,7 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_647: "Cần lý do khẩn cấp hoặc sự cố để hạ hàng xuống khu lưu tạm",
   MESSAGE_CODE_648: "Đơn này đã được giao cho nhân viên khác phụ trách",
   MESSAGE_CODE_649: "Bạn không phải nhân viên phụ trách đơn này",
+  MESSAGE_CODE_650: "Kho tự quản không áp dụng tính năng quản lý hàng hóa và danh mục SKU.",
   MESSAGE_CODE_700: "Không tìm thấy sự cố",
   MESSAGE_CODE_701: "Trạng thái sự cố không cho phép thao tác này",
   MESSAGE_CODE_702: "Phòng kho không thuộc hợp đồng này",

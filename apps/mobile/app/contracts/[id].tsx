@@ -533,7 +533,8 @@ export default function ContractDetailScreen() {
 
   const isDraft = contract.status === ContractStatusEnum.DRAFT;
   const isActive = contract.status === ContractStatusEnum.ACTIVE;
-  const isWarehouseRack = isWarehouseRackContract(contract);
+  const isWarehouseRack =
+    typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
   const canReportIncident = isActive || contract.status === ContractStatusEnum.OVERDUE;
   const isFromReservation = contract.source === ContractSourceEnum.RESERVATION;
   const isDepositSatisfied = isFromReservation || Boolean(contract.depositPaidAt);
