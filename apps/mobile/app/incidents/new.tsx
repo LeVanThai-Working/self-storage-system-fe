@@ -19,6 +19,7 @@ import { useTranslation } from "@/stores/language.store";
 import { toast } from "@/stores/toast.store";
 import { ContractPicker } from "@/features/contracts/components/ContractPicker";
 import { useContractDetail } from "@/features/contracts/hooks/useContracts";
+import { isWarehouseRackContract } from "@/features/contracts/utils/contractFormat";
 import { useStorageUnitTree } from "@/features/customer-inventory/hooks/useCustomerInventory";
 import {
   formatTierShort,
@@ -57,7 +58,8 @@ export default function ReportIncidentScreen() {
 
   const contractQuery = useContractDetail(contractId || undefined);
   const contract = contractQuery.data;
-  const treeQuery = useStorageUnitTree(contract?.storageUnitId);
+  const isWarehouse = isWarehouseRackContract(contract);
+  const treeQuery = useStorageUnitTree(isWarehouse ? contract?.storageUnitId : undefined);
   const racks = treeQuery.data?.racks ?? [];
   const rack = racks.find((item) => item.id === rackId);
   const reportMutation = useReportIncident();
@@ -149,7 +151,7 @@ export default function ReportIncidentScreen() {
                   {t("incident.form.unit", { unit: contract.storageUnit?.unitNumber ?? "" })}
                 </Text>
               </View>
-              {racks.length > 0 ? (
+              {isWarehouse && racks.length > 0 ? (
                 <>
                   <ChevronRight size={14} color="#94A3B8" />
                   <ScrollView

@@ -454,6 +454,8 @@ export default function ContractDetailScreen() {
 
   const isDraft = contract.status === ContractStatusEnum.DRAFT;
   const isActive = contract.status === ContractStatusEnum.ACTIVE;
+  const isWarehouseRack = isWarehouseRackContract(contract);
+  const canReportIncident = isActive || contract.status === ContractStatusEnum.OVERDUE;
   const isFromReservation = contract.source === ContractSourceEnum.RESERVATION;
   const isDepositSatisfied = isFromReservation || Boolean(contract.depositPaidAt);
   const isFirstPeriodPaid = Boolean(contract.firstPeriodPaidAt || contract.firstCyclePaidAt);
@@ -892,19 +894,42 @@ export default function ContractDetailScreen() {
             </View>
           ) : null}
 
-          {isActive && isWarehouseRackContract(contract) ? (
-            <Pressable
-              onPress={() =>
-                router.push({
-                  pathname: "/contracts/[id]/rack-map" as any,
-                  params: { id: contract.id },
-                })
-              }
-              className="flex-row items-center justify-center gap-1.5 rounded-xl bg-brand py-2.5 px-3 active:opacity-90"
-            >
-              <LayoutGrid size={14} color="#FFFFFF" />
-              <Text className="text-xs font-bold text-white">{t("rackMap.openButton")}</Text>
-            </Pressable>
+          {canReportIncident ? (
+            <View className="flex-row items-center gap-2">
+              {isWarehouseRack && isActive ? (
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: "/contracts/[id]/rack-map" as any,
+                      params: { id: contract.id },
+                    })
+                  }
+                  className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl bg-brand py-2.5 px-3 active:opacity-90"
+                >
+                  <LayoutGrid size={14} color="#FFFFFF" />
+                  <Text className="text-xs font-bold text-white">{t("rackMap.openButton")}</Text>
+                </Pressable>
+              ) : null}
+
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: "/incidents/new",
+                    params: { contractId: contract.id },
+                  })
+                }
+                className={
+                  isWarehouseRack && isActive
+                    ? "flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 py-2.5 px-3 active:opacity-90"
+                    : "w-full flex-row items-center justify-center gap-2 rounded-xl border border-rose-300 dark:border-rose-900 bg-rose-50/80 dark:bg-rose-950/40 py-3 px-4 active:opacity-90 shadow-sm"
+                }
+              >
+                <ShieldAlert size={16} color="#E11D48" />
+                <Text className="text-xs font-bold text-rose-600 dark:text-rose-400">
+                  {isEn ? "Report Unit Incident" : "Báo cáo sự cố phòng kho này"}
+                </Text>
+              </Pressable>
+            </View>
           ) : null}
         </View>
 

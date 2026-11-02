@@ -39,6 +39,7 @@ import {
   type ContractSortOrder,
 } from "@/features/contracts/hooks/useContracts";
 import { ContractCard } from "@/features/contracts/components/ContractCard";
+import { isWarehouseRackContract } from "@/features/contracts/utils/contractFormat";
 
 export default function MyStoragesScreen() {
   const router = useRouter();
@@ -291,8 +292,20 @@ export default function MyStoragesScreen() {
               locale={currentLocale}
               onPress={handleOpenDetail}
               onUnlockPress={handleUnlockSmartLock}
-              onRackMapPress={(c) =>
-                router.push({ pathname: "/contracts/[id]/rack-map" as any, params: { id: c.id } })
+              onReportIncidentPress={(c: ContractResponse) =>
+                router.push({
+                  pathname: "/incidents/new",
+                  params: { contractId: c.id },
+                })
+              }
+              onRackMapPress={
+                isWarehouseRackContract(item)
+                  ? (c) =>
+                      router.push({
+                        pathname: "/contracts/[id]/rack-map" as any,
+                        params: { id: c.id },
+                      })
+                  : undefined
               }
               isUnlocking={openingContractId === item.id}
             />

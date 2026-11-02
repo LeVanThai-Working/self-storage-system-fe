@@ -13,6 +13,7 @@ export enum InventoryRequestTypeEnum {
 export enum InventoryRequestStatusEnum {
   PENDING = "pending",
   PENDING_CUSTOMER_CONFIRMATION = "pending_confirmation",
+  ASSIGNED = "assigned",
   PROCESSING = "processing",
   READY_TO_PUTAWAY = "ready_to_putaway",
   COMPLETED = "completed",

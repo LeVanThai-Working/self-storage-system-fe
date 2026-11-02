@@ -11,6 +11,7 @@ import { resolveReservationErrorMessage } from "@/features/reservations/utils/re
 export const REQUEST_STATUS_TONE: Record<InventoryRequestStatusEnum, StatusTone> = {
   [InventoryRequestStatusEnum.PENDING]: "yellow",
   [InventoryRequestStatusEnum.PENDING_CUSTOMER_CONFIRMATION]: "orange",
+  [InventoryRequestStatusEnum.ASSIGNED]: "blue",
   [InventoryRequestStatusEnum.PROCESSING]: "blue",
   [InventoryRequestStatusEnum.READY_TO_PUTAWAY]: "purple",
   [InventoryRequestStatusEnum.COMPLETED]: "green",

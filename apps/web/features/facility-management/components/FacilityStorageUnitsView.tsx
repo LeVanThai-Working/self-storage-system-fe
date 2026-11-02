@@ -30,11 +30,13 @@ import {
   Warehouse,
 } from "lucide-react";
 import {
+  RoleEnum,
   StorageUnitStatusEnum,
   UnitTypeCategoryEnum,
   formatCurrency,
   type UnitTypeSnapshot,
 } from "@self-storage-system-fe/shared";
+import { useAuthStore } from "@/features/auth/store";
 import { UnitStatusBadge } from "@/components/common/UnitStatusBadge";
 import { DimensionBadge } from "@/components/common/DimensionBadge";
 import { useFacility } from "../hooks";
@@ -44,6 +46,7 @@ import {
   useFacilityOfferings,
 } from "@/features/storage-unit-management/hooks";
 import { StorageUnitMapView } from "@/features/storage-unit-management/components/StorageUnitMapView";
+import { RackStructureView } from "@/features/storage-rack/components/RackStructureView";
 import type {
   FacilityUnitTypeOfferingResponse,
   StorageUnitResponse,
@@ -78,6 +81,9 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
 }) => {
   const locale = useLocale();
   const t = useTranslations("facilityManager.storageUnits");
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const isFacilityManager =
+    String(currentUser?.role ?? "").toLowerCase() === RoleEnum.FACILITY_MANAGER;
 
   // View mode: 'list' (grouped by unit type) or 'map' (interactive floor plan)
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
@@ -93,6 +99,18 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
 
   // Inspect detail modal state
   const [inspectUnit, setInspectUnit] = useState<StorageUnitResponse | null>(null);
+  // Warehouse rack map modal state
+  const [selectedRackUnit, setSelectedRackUnit] = useState<StorageUnitResponse | null>(null);
+
+  const isWarehouseRackUnit = (unit?: StorageUnitResponse | null) => {
+    if (!unit) return false;
+    const cat = String(unit.unitType?.category ?? "").toLowerCase();
+    return (
+      unit.unitType?.category === UnitTypeCategoryEnum.WAREHOUSE_RACK ||
+      cat === "warehouse_rack" ||
+      cat === "warehouse"
+    );
+  };
 
   const debouncedSearch = useDebouncedValue(searchInput.trim());
   const debouncedFloor = useDebouncedValue(floorInput.trim());
@@ -859,20 +877,42 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
 
                               {/* Actions */}
                               <td className="py-3.5 px-6 text-right">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setInspectUnit(unit);
-                                  }}
-                                  title={
-                                    locale === "vi" ? "Xem chi tiết ô kho" : "View unit details"
-                                  }
-                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-slate-500 hover:text-teal-700 hover:bg-teal-50 transition-colors text-xs font-semibold cursor-pointer"
-                                >
-                                  <Eye className="w-3.5 h-3.5" />
-                                  <span>{locale === "vi" ? "Chi tiết" : "View"}</span>
-                                </button>
+                                <div className="flex items-center justify-end gap-1.5">
+                                  {(isWarehouseRackUnit(unit) ||
+                                    group.unitType?.category ===
+                                      UnitTypeCategoryEnum.WAREHOUSE_RACK ||
+                                    String(group.unitType?.category ?? "").toLowerCase() ===
+                                      "warehouse_rack" ||
+                                    String(group.unitType?.category ?? "").toLowerCase() ===
+                                      "warehouse") && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedRackUnit(unit);
+                                      }}
+                                      title={locale === "vi" ? "Xem sơ đồ kệ kho" : "View rack map"}
+                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/60 transition-colors text-xs font-semibold cursor-pointer"
+                                    >
+                                      <Warehouse className="w-3.5 h-3.5" />
+                                      <span>{locale === "vi" ? "Sơ đồ kệ" : "Rack Map"}</span>
+                                    </button>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setInspectUnit(unit);
+                                    }}
+                                    title={
+                                      locale === "vi" ? "Xem chi tiết ô kho" : "View unit details"
+                                    }
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-slate-500 hover:text-teal-700 hover:bg-teal-50 transition-colors text-xs font-semibold cursor-pointer"
+                                  >
+                                    <Eye className="w-3.5 h-3.5" />
+                                    <span>{locale === "vi" ? "Chi tiết" : "View"}</span>
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))}
@@ -935,6 +975,41 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                 </div>
               </div>
 
+              {/* Warehouse Rack Banner & Action */}
+              {isWarehouseRackUnit(inspectUnit) && (
+                <div className="p-4 rounded-2xl bg-teal-50/80 border border-teal-200/80 flex items-center justify-between gap-3 shadow-xs">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <Warehouse className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-900 text-xs sm:text-sm">
+                        {locale === "vi"
+                          ? "Kho hàng kệ pallet (Warehouse)"
+                          : "Warehouse Rack Storage"}
+                      </p>
+                      <p className="text-[11px] text-teal-700 font-medium">
+                        {locale === "vi"
+                          ? "Bố trí theo các dãy kệ và từng tầng để hàng"
+                          : "Arranged in aisles, bays and rack tiers"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const u = inspectUnit;
+                      setInspectUnit(null);
+                      setSelectedRackUnit(u);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs transition-colors shadow-xs cursor-pointer shrink-0"
+                  >
+                    <Warehouse className="w-3.5 h-3.5" />
+                    <span>{locale === "vi" ? "Xem sơ đồ kệ" : "View Rack Map"}</span>
+                  </button>
+                </div>
+              )}
+
               {/* Specs & Location Details */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3.5 rounded-xl border border-slate-100 bg-white space-y-1">
@@ -986,6 +1061,76 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                 type="button"
                 onClick={() => setInspectUnit(null)}
                 className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+              >
+                {locale === "vi" ? "Đóng" : "Close"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Warehouse Rack Structure Modal */}
+      {selectedRackUnit && (
+        <div className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-5xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150 my-auto">
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-teal-50/80 via-white to-white shrink-0">
+              <div className="flex items-center gap-3.5">
+                <div className="w-11 h-11 rounded-2xl bg-teal-600 text-white flex items-center justify-center font-bold shadow-md shadow-teal-600/20">
+                  <Warehouse className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="text-lg font-extrabold text-slate-900 font-mono">
+                      {locale === "vi"
+                        ? `Sơ đồ kệ kho: ${selectedRackUnit.unitNumber}`
+                        : `Rack Map: ${selectedRackUnit.unitNumber}`}
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-teal-100 text-teal-800 uppercase">
+                      {selectedRackUnit.unitType?.name ?? "Warehouse Rack"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {facility.name} · {t("location.floor", { floor: selectedRackUnit.floor })}
+                    {selectedRackUnit.zone
+                      ? ` · ${t("location.zone", { zone: selectedRackUnit.zone })}`
+                      : ""}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedRackUnit(null)}
+                className="p-2.5 rounded-2xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Content */}
+            <div className="p-5 sm:p-6 overflow-y-auto flex-1 bg-slate-50/50">
+              <RackStructureView
+                unitId={selectedRackUnit.id}
+                unitNumber={selectedRackUnit.unitNumber}
+                canManage={isFacilityManager}
+              />
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 sm:p-5 border-t border-slate-100 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
+              <div className="text-xs text-slate-500 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-teal-500 shrink-0" />
+                <span>
+                  {locale === "vi"
+                    ? "Nhấp vào từng ô kệ để xem chi tiết tầng, tải trọng và giá thuê"
+                    : "Click on any rack tile to view tier details, max weight, and pricing"}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedRackUnit(null)}
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer self-end sm:self-auto"
               >
                 {locale === "vi" ? "Đóng" : "Close"}
               </button>

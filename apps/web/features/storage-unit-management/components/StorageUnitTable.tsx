@@ -55,6 +55,7 @@ import { StorageUnitMapView } from "./StorageUnitMapView";
 import { UnitMaintenanceDialog } from "./UnitMaintenanceDialog";
 import { StorageRackManagementModal } from "./StorageRackManagementModal";
 import { ReconcileStorageUnitsButton } from "./ReconcileStorageUnitsButton";
+import { ActionTooltip, TooltipProvider } from "@/components/ui/tooltip";
 
 const PAGE_SIZE = 10;
 
@@ -456,14 +457,15 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
             </button>
           )}
 
-          <button
-            type="button"
-            onClick={handleRefresh}
-            title={t("refresh")}
-            className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
-          >
-            <RotateCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-teal-600" : ""}`} />
-          </button>
+          <ActionTooltip content={t("refresh")}>
+            <button
+              type="button"
+              onClick={handleRefresh}
+              className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
+            >
+              <RotateCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-teal-600" : ""}`} />
+            </button>
+          </ActionTooltip>
         </div>
       </div>
 
@@ -624,61 +626,79 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                         <td className="py-4 px-6 text-right">
                           <div className="inline-flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                             {unit.unitType?.category === UnitTypeCategoryEnum.WAREHOUSE_RACK ? (
-                              <Link
-                                href={`/${locale}/${isManager ? "facility-manager" : "facility-staff"}/storage-units/${unit.id}/racks`}
-                                title={t("actions.rackMap")}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
-                              >
-                                <Warehouse className="w-4 h-4" />
-                              </Link>
+                              <ActionTooltip content={t("actions.rackMap")}>
+                                <Link
+                                  href={`/${locale}/${isManager ? "facility-manager" : "facility-staff"}/storage-units/${unit.id}/racks`}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+                                >
+                                  <Warehouse className="w-4 h-4" />
+                                </Link>
+                              </ActionTooltip>
                             ) : null}
-                            <button
-                              type="button"
-                              disabled={!canToggleMaintenance(unit.status)}
-                              onClick={() => setMaintenanceUnit(unit)}
-                              title={
+
+                            <ActionTooltip
+                              content={
                                 !canToggleMaintenance(unit.status)
                                   ? t("actions.maintenanceBlocked")
                                   : unit.status === StorageUnitStatusEnum.UNDER_MAINTENANCE
                                     ? t("actions.reopen")
                                     : t("actions.startMaintenance")
                               }
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                              disabled={!canToggleMaintenance(unit.status)}
                             >
-                              <Wrench className="w-4 h-4" />
-                            </button>
+                              <button
+                                type="button"
+                                disabled={!canToggleMaintenance(unit.status)}
+                                onClick={() => setMaintenanceUnit(unit)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                              >
+                                <Wrench className="w-4 h-4" />
+                              </button>
+                            </ActionTooltip>
 
-                            <button
-                              type="button"
-                              onClick={() => setRackUnit(unit)}
-                              title="Kệ kho & Tầng kệ (Racks & Tiers)"
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
-                            >
-                              <Archive className="w-4 h-4" />
-                            </button>
+                            {(unit.unitType?.category === UnitTypeCategoryEnum.WAREHOUSE_RACK ||
+                              String(unit.unitType?.category ?? "").toLowerCase() ===
+                                "warehouse_rack") && (
+                              <ActionTooltip content="Kệ kho & Tầng kệ (Racks & Tiers)">
+                                <button
+                                  type="button"
+                                  onClick={() => setRackUnit(unit)}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
+                                >
+                                  <Archive className="w-4 h-4" />
+                                </button>
+                              </ActionTooltip>
+                            )}
 
                             {isManager && (
                               <>
-                                <button
-                                  type="button"
-                                  onClick={() => setEditingUnit(unit)}
-                                  title={t("actions.edit")}
-                                  className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
-                                >
-                                  <Pencil className="w-4 h-4" />
-                                </button>
+                                <ActionTooltip content={t("actions.edit")}>
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingUnit(unit)}
+                                    className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                                  >
+                                    <Pencil className="w-4 h-4" />
+                                  </button>
+                                </ActionTooltip>
 
-                                <button
-                                  type="button"
-                                  disabled={locked}
-                                  onClick={() =>
-                                    setDeletingUnit({ id: unit.id, unitNumber: unit.unitNumber })
+                                <ActionTooltip
+                                  content={
+                                    locked ? t("actions.deleteBlocked") : t("actions.delete")
                                   }
-                                  title={locked ? t("actions.deleteBlocked") : t("actions.delete")}
-                                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                                  disabled={locked}
                                 >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                                  <button
+                                    type="button"
+                                    disabled={locked}
+                                    onClick={() =>
+                                      setDeletingUnit({ id: unit.id, unitNumber: unit.unitNumber })
+                                    }
+                                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </ActionTooltip>
                               </>
                             )}
                           </div>

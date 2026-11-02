@@ -114,26 +114,39 @@ export function getContractStatusMeta(
 }
 
 /**
- * Checks whether a contract belongs to a warehouse rack unit/offering.
+ * Determines whether a contract belongs to a Warehouse Rack model (managed by facility staff
+ * with pallets, racks, tiers, and SKU inventory) or a Self-Storage unit model (rented as a whole
+ * private room where customer manages their own belongings with a PIN, without rack maps or SKU handling).
  */
 export function isWarehouseRackContract(contract?: Partial<ContractResponse> | null): boolean {
   if (!contract) return false;
-  if (String(contract.rentalTargetType) === RentalTargetTypeEnum.STORAGE_RACK) {
+
+  // 1. Explicit check: If rentalTargetType is explicitly storage_unit, it is NOT a warehouse rack
+  if (String(contract.rentalTargetType).toLowerCase() === "storage_unit") {
+    return false;
+  }
+
+  // 2. Explicit check: If rentalTargetType is explicitly storage_rack, it IS a warehouse rack
+  if (String(contract.rentalTargetType).toLowerCase() === "storage_rack") {
     return true;
   }
-  if (contract.rentedRackIds && contract.rentedRackIds.length > 0) {
-    return true;
-  }
-  if (contract.rentedRacks && contract.rentedRacks.length > 0) {
-    return true;
-  }
+
+  // 3. Category inspection from offering / unitType / storageUnit
   const category =
     (contract as any).unitType?.category ||
     (contract as any).offering?.unitType?.category ||
     (contract as any).facilityUnitTypeOffering?.unitType?.category ||
     (contract as any).storageUnit?.unitType?.category;
 
-  return category === UnitTypeCategoryEnum.WAREHOUSE_RACK || category === "warehouse_rack";
+  if (category) {
+    return (
+      category === UnitTypeCategoryEnum.WAREHOUSE_RACK ||
+      String(category).toLowerCase() === "warehouse_rack"
+    );
+  }
+
+  // 4. Default: Whole-unit Self Storage (NOT warehouse rack)
+  return false;
 }
 
 export interface NormalizedSignedContractFile {

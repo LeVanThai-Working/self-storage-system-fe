@@ -182,7 +182,7 @@ export function RequestQueueView({ portalBase }: { portalBase: FacilityPortal })
           >
             <div>
               <p className="text-xs font-semibold text-slate-500">
-                {t(`requestStatus.${kpiStatus}`)}
+                {t.has(`requestStatus.${kpiStatus}`) ? t(`requestStatus.${kpiStatus}`) : kpiStatus}
               </p>
               <p className="mt-1 text-2xl font-extrabold text-slate-900">
                 {kpiQueries[index]?.data?.pagination.totalItems ?? "—"}
@@ -227,7 +227,7 @@ export function RequestQueueView({ portalBase }: { portalBase: FacilityPortal })
             <option value="all">{t("queue.allStatuses")}</option>
             {Object.values(InventoryRequestStatusEnum).map((value) => (
               <option key={value} value={value}>
-                {t(`requestStatus.${value}`)}
+                {t.has(`requestStatus.${value}`) ? t(`requestStatus.${value}`) : value}
               </option>
             ))}
           </select>
