@@ -294,6 +294,7 @@ export interface ReservationStatusStyle {
   badgeBorderClass: string;
   badgeTextClass: string;
   dotColor: string;
+  stepTextClass: string;
 }
 
 /**
@@ -310,100 +311,111 @@ export function getReservationStatusMeta(
       return {
         label: isEn ? "Pending Review" : "Chờ tiếp nhận",
         compactStepLabel: isEn ? "Step 1/6: Submitted" : "Bước 1/6: Đã gửi yêu cầu",
-        badgeBgClass: "bg-amber-50 dark:bg-amber-950/40",
-        badgeBorderClass: "border-amber-300 dark:border-amber-800",
-        badgeTextClass: "text-amber-700 dark:text-amber-400",
-        dotColor: "#D97706",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-amber-400 dark:border-amber-500",
+        badgeTextClass: "text-amber-600 dark:text-amber-400",
+        dotColor: "#F59E0B",
+        stepTextClass: "text-amber-600 dark:text-amber-400",
       };
     case ReservationStatusEnum.RECEIVED:
       return {
         label: isEn ? "Staff Received" : "Đã tiếp nhận",
         compactStepLabel: isEn ? "Step 2/6: Staff Received" : "Bước 2/6: Đã tiếp nhận",
-        badgeBgClass: "bg-sky-50 dark:bg-sky-950/40",
-        badgeBorderClass: "border-sky-300 dark:border-sky-800",
-        badgeTextClass: "text-sky-700 dark:text-sky-400",
-        dotColor: "#0284C7",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-sky-400 dark:border-sky-500",
+        badgeTextClass: "text-sky-600 dark:text-sky-400",
+        dotColor: "#F59E0B",
+        stepTextClass: "text-amber-600 dark:text-amber-400",
       };
     case ReservationStatusEnum.PENDING_PAYMENT:
       return {
         label: isEn ? "Awaiting Deposit" : "Chờ đặt cọc",
         compactStepLabel: isEn ? "Step 3/6: Awaiting Deposit" : "Bước 3/6: Chờ đặt cọc",
-        badgeBgClass: "bg-cta-light/40 dark:bg-cta/20",
-        badgeBorderClass: "border-cta/50",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-cta",
         badgeTextClass: "text-cta",
-        dotColor: "#FF702E",
+        dotColor: "#F59E0B",
+        stepTextClass: "text-amber-600 dark:text-amber-400",
       };
     case ReservationStatusEnum.PAYMENT_FAILED:
       return {
         label: isEn ? "Payment Failed" : "Lỗi thanh toán",
         compactStepLabel: isEn ? "Step 3/6: Payment Issue" : "Bước 3/6: Thanh toán lỗi",
-        badgeBgClass: "bg-red-50 dark:bg-red-950/40",
-        badgeBorderClass: "border-red-300 dark:border-red-800",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-red-400 dark:border-red-500",
         badgeTextClass: "text-red-600 dark:text-red-400",
-        dotColor: "#EF4444",
+        dotColor: "#F59E0B",
+        stepTextClass: "text-amber-600 dark:text-amber-400",
       };
     case ReservationStatusEnum.PAYMENT_SUCCESSFUL:
       return {
         label: isEn ? "Deposit Paid" : "Đã đặt cọc",
         compactStepLabel: isEn ? "Step 4/6: Deposit Paid" : "Bước 4/6: Đã đặt cọc",
-        badgeBgClass: "bg-brand-light/40 dark:bg-brand/20",
-        badgeBorderClass: "border-brand/50",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-brand",
         badgeTextClass: "text-brand",
-        dotColor: "#0B927E",
+        dotColor: "#F59E0B",
+        stepTextClass: "text-amber-600 dark:text-amber-400",
       };
     case ReservationStatusEnum.CONFIRMED:
       return {
         label: isEn ? "Confirmed" : "Đã xác nhận giữ kho",
         compactStepLabel: isEn ? "Step 5/6: Confirmed" : "Bước 5/6: Đã xác nhận giữ kho",
-        badgeBgClass: "bg-brand-light/50 dark:bg-brand/25",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
         badgeBorderClass: "border-brand",
         badgeTextClass: "text-brand",
-        dotColor: "#0B927E",
+        dotColor: "#F59E0B",
+        stepTextClass: "text-amber-600 dark:text-amber-400",
       };
     case ReservationStatusEnum.COMPLETED:
       return {
         label: isEn ? "Completed" : "Hoàn tất",
         compactStepLabel: isEn ? "Step 6/6: Completed" : "Bước 6/6: Hoàn tất",
-        badgeBgClass: "bg-emerald-50 dark:bg-emerald-950/40",
-        badgeBorderClass: "border-emerald-400 dark:border-emerald-700",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-emerald-500 dark:border-emerald-600",
         badgeTextClass: "text-emerald-700 dark:text-emerald-400",
         dotColor: "#10B981",
+        stepTextClass: "text-emerald-700 dark:text-emerald-400",
       };
     case ReservationStatusEnum.REJECTED:
       return {
         label: isEn ? "Rejected" : "Bị từ chối",
         compactStepLabel: isEn ? "Terminated: Rejected" : "Đã dừng: Bị từ chối",
-        badgeBgClass: "bg-red-50 dark:bg-red-950/40",
-        badgeBorderClass: "border-red-300 dark:border-red-800",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-red-400 dark:border-red-500",
         badgeTextClass: "text-red-600 dark:text-red-400",
         dotColor: "#EF4444",
+        stepTextClass: "text-red-600 dark:text-red-400",
       };
     case ReservationStatusEnum.CANCELLED:
       return {
         label: isEn ? "Cancelled" : "Đã hủy",
         compactStepLabel: isEn ? "Terminated: Cancelled" : "Đã dừng: Đã hủy",
-        badgeBgClass: "bg-neutral-100 dark:bg-neutral-800",
-        badgeBorderClass: "border-neutral-300 dark:border-neutral-700",
-        badgeTextClass: "text-neutral-600 dark:text-neutral-400",
-        dotColor: "#647B80",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-red-400 dark:border-red-500",
+        badgeTextClass: "text-red-600 dark:text-red-400",
+        dotColor: "#EF4444",
+        stepTextClass: "text-red-600 dark:text-red-400",
       };
     case ReservationStatusEnum.EXPIRED:
       return {
         label: isEn ? "Expired" : "Hết hạn giữ chỗ",
         compactStepLabel: isEn ? "Terminated: Expired" : "Đã dừng: Hết hạn giữ chỗ",
-        badgeBgClass: "bg-neutral-100 dark:bg-neutral-800",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
         badgeBorderClass: "border-neutral-300 dark:border-neutral-700",
         badgeTextClass: "text-neutral-500 dark:text-neutral-400",
         dotColor: "#94A3B8",
+        stepTextClass: "text-neutral-500 dark:text-neutral-400",
       };
     default:
       return {
         label: String(status),
         compactStepLabel: String(status),
-        badgeBgClass: "bg-neutral-100 dark:bg-neutral-800",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
         badgeBorderClass: "border-neutral-300 dark:border-neutral-700",
         badgeTextClass: "text-neutral-600 dark:text-neutral-300",
         dotColor: "#647B80",
+        stepTextClass: "text-neutral-600 dark:text-neutral-400",
       };
   }
 }

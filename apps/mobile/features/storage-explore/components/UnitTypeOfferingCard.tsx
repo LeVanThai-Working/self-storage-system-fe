@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Pressable, Image } from "react-native";
 import { useRouter } from "expo-router";
-import { Warehouse, Ruler, Maximize2, Box, ArrowRight, Eye } from "lucide-react-native";
+import { Warehouse, Ruler, Maximize2, Box, ArrowRight, ChevronRight } from "lucide-react-native";
 import type { PublicUnitTypeOfferingResponse } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
@@ -182,12 +182,12 @@ export function UnitTypeOfferingCard({
       <View className="mt-3 flex-row items-center gap-2 border-t border-neutral-border/60 dark:border-neutral-800 pt-2.5">
         <Pressable
           onPress={handleViewDetail}
-          className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 py-2 active:opacity-80"
+          className="flex-1 flex-row items-center justify-center gap-1 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 py-2 active:opacity-80"
         >
-          <Eye size={14} color="#0B927E" />
-          <Text className="text-xs font-bold text-brand">
+          <Text className="text-xs font-semibold text-brand">
             {t("storageExplore.viewUnitTypeDetailBtn")}
           </Text>
+          <ChevronRight size={14} color="#0B927E" />
         </Pressable>
 
         <Pressable

@@ -16,7 +16,6 @@ import {
   CheckCircle2,
   Clock,
   Droplets,
-  KeyRound,
   LayoutGrid,
   Sparkles,
   Thermometer,
@@ -30,6 +29,7 @@ import {
   getContractStatusMeta,
   getRemainingDays,
   getRentalUnitLabel,
+  isWarehouseRackContract,
 } from "../utils/contractFormat";
 
 interface ContractCardProps {
@@ -235,7 +235,7 @@ export function ContractCard({
       ) : null}
 
       {/* Smart Lock & PIN Controls for Active Contracts */}
-      {isActive && (onUnlockPress || onRackMapPress) ? (
+      {isActive && (onUnlockPress || (onRackMapPress && isWarehouseRackContract(contract))) ? (
         <View className="flex-row items-center gap-2 pt-0.5">
           {/* {onUnlockPress ? (
             <Pressable
@@ -259,7 +259,7 @@ export function ContractCard({
             </Pressable>
           ) : null} */}
 
-          {onRackMapPress ? (
+          {onRackMapPress && isWarehouseRackContract(contract) ? (
             <Pressable
               onPress={(e) => {
                 e.stopPropagation();

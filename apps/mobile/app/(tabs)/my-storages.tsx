@@ -144,23 +144,13 @@ export default function MyStoragesScreen() {
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
       {/* Top Filter & Search Bar */}
       <View className="bg-white dark:bg-neutral-900 px-4 pt-3 pb-2.5 border-b border-neutral-border dark:border-neutral-800 gap-2.5">
-        <View className="flex-row items-start justify-between gap-3">
-          <View className="flex-1">
-            <Text variant="heading2" className="text-neutral-dark dark:text-neutral-100 font-bold">
-              {t("customerTabs.myUnitsTitle")}
-            </Text>
-            <Text variant="muted" className="mt-0.5 text-xs">
-              {t("customerTabs.myUnitsDesc")}
-            </Text>
-          </View>
-          <Pressable
-            onPress={() => router.push("/skus")}
-            className="flex-row items-center gap-1.5 rounded-full border border-brand/40 bg-white px-3 py-1.5 active:opacity-70 dark:bg-neutral-900"
-          >
-            <Package size={14} color="#0B927E" />
-            <Text className="text-xs font-bold text-brand">{t("sku.catalogEntry")}</Text>
-          </Pressable>
-        </View>
+        <Pressable
+          onPress={() => router.push("/skus")}
+          className="w-full flex-row items-center justify-center gap-2 rounded-2xl border border-brand/40 bg-brand-light/30 dark:bg-brand/15 py-3 px-4 active:opacity-80"
+        >
+          <Package size={18} color="#0B927E" />
+          <Text className="text-sm font-bold text-brand">{t("sku.catalogEntry")}</Text>
+        </Pressable>
 
         {/* Search by contractCode + Sort Button */}
         <View className="flex-row items-center gap-2">

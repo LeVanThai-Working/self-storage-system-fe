@@ -47,6 +47,12 @@ export type ContractFacilitySnapshot = FacilitySnapshot;
 export type ContractOfferingSnapshot = OfferingSnapshot;
 export type ContractStorageUnitSnapshot = StorageUnitSnapshot;
 
+export interface SignedContractFileItem {
+  url: string;
+  fileHash?: string | null;
+  uploadedAt?: string | null;
+}
+
 export interface ContractAmenityItemResponse {
   facilityAmenityOfferingId: string;
   amenityId: string;
@@ -181,6 +187,7 @@ export interface ContractResponse {
   staffSigned: boolean;
   staffSignedAt?: string | null;
   signedAt?: string | null;
+  signedContractFiles?: SignedContractFileItem[] | string[];
   signedContractFileUrls?: string[];
   signatureHistory?: ContractSignatureHistoryResponse[];
   earlyCheckIn?: boolean | null;
@@ -218,3 +225,45 @@ export interface ContractResponse {
 
 export type ContractListResponse = ContractResponse[];
 export type { DisputeSettlementRequest } from "../schemas/request/contract.request.schema";
+
+/**
+ * Normalizes signed contract documents from either `signedContractFiles` or `signedContractFileUrls`.
+ */
+export function extractSignedContractFileUrls(
+  contract?: {
+    signedContractFiles?: Array<SignedContractFileItem | string> | null;
+    signedContractFileUrls?: string[] | null;
+  } | null
+): string[] {
+  if (!contract) return [];
+  const urls: string[] = [];
+  const seen = new Set<string>();
+
+  const addUrl = (u?: string | null) => {
+    if (typeof u === "string") {
+      const trimmed = u.trim();
+      if (trimmed && !seen.has(trimmed)) {
+        seen.add(trimmed);
+        urls.push(trimmed);
+      }
+    }
+  };
+
+  if (Array.isArray(contract.signedContractFiles)) {
+    for (const item of contract.signedContractFiles) {
+      if (typeof item === "string") {
+        addUrl(item);
+      } else if (item && typeof item === "object" && typeof item.url === "string") {
+        addUrl(item.url);
+      }
+    }
+  }
+
+  if (Array.isArray(contract.signedContractFileUrls)) {
+    for (const u of contract.signedContractFileUrls) {
+      addUrl(u);
+    }
+  }
+
+  return urls;
+}

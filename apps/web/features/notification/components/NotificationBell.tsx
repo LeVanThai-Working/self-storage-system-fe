@@ -153,7 +153,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ className })
                 className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1 cursor-pointer transition-colors disabled:opacity-50"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
-                <span>{locale === "vi" ? "Đã đọc tất cả" : "Mark all as read"}</span>
+                <span>{locale === "vi" ? "Đọc tất cả" : "Mark all as read"}</span>
               </button>
             )}
           </div>

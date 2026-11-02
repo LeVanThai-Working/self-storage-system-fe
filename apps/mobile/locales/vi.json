@@ -1051,7 +1051,7 @@
   },
   "notifications": {
     "title": "Thông báo",
-    "markAllRead": "Đã đọc tất cả",
+    "markAllRead": "Đọc tất cả",
     "noNotifications": "Chưa có thông báo nào",
     "noNotificationsDesc": "Các cập nhật về đơn đặt chỗ, hợp đồng và thanh toán sẽ hiển thị tại đây.",
     "unreadBadge": "%{count} mới",
