@@ -95,7 +95,7 @@ export function RackDetailSheet({
         messageCode?: string;
         message?: string;
       };
-      const code = err?.response?.data?.messageCode || err?.messageCode;
+      const code = errObj?.response?.data?.messageCode || errObj?.messageCode;
       if (
         code === "MESSAGE_CODE_606" ||
         code === MESSAGE_CODE.MESSAGE_CODE_606 ||
