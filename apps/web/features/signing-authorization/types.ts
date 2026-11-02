@@ -42,7 +42,7 @@ export interface FacilityManagerUserItem {
 export interface FacilitySimpleItem {
   id: string;
   name: string;
-  code?: string;
+  code?: string | null;
   address?: string;
   city?: string;
 }
