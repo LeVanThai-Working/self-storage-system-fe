@@ -2685,6 +2685,7 @@
     "requestStatus": {
       "pending": "Awaiting pickup",
       "pending_confirmation": "Awaiting customer",
+      "assigned": "Assigned",
       "processing": "Processing",
       "ready_to_putaway": "Ready to shelve",
       "completed": "Completed",
@@ -3134,8 +3135,15 @@
       "structure": "Rack structure",
       "goods": "Goods"
     },
-    "provision": "Generate racks from config",
-    "provisioned": "{count} new racks generated",
+    "provision": "Restore Rack Structure",
+    "provisionConfirmTitle": "Confirm Rack Structure Restoration",
+    "provisionConfirmHeading": "Restore Default Specifications",
+    "provisionConfirmWarning": "The system will restore and regenerate all default aisles, bays, and rack tiers based on this warehouse unit type's standard specification.",
+    "provisionConfirmNotice1": "Use this action when racks were accidentally deleted or corrupted.",
+    "provisionConfirmNotice2": "Existing racks will remain intact; only missing racks and tiers will be recreated.",
+    "provisionConfirmAction": "Confirm Restoration",
+    "provisionCancel": "Cancel",
+    "provisioned": "Successfully restored {count} racks",
     "kpi": {
       "total": "Racks",
       "rented": "Rented",

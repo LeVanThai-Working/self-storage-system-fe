@@ -3,7 +3,9 @@ import {
   ContractAddendumTypeEnum,
   ContractSourceEnum,
   ContractStatusEnum,
+  RentalTargetTypeEnum,
   RentalUnitEnum,
+  UnitTypeCategoryEnum,
   type ContractResponse,
   type MessageLocale,
 } from "@self-storage-system-fe/shared";
@@ -293,4 +295,44 @@ export function getRemainingDays(endDateIso: string, nowMs: number): number {
   if (Number.isNaN(endMs)) return 0;
   const diffDays = Math.ceil((endMs - nowMs) / (1000 * 60 * 60 * 24));
   return diffDays;
+}
+/**
+ * Determines whether a contract belongs to a Warehouse Rack model (managed by facility staff
+ * with pallets, racks, tiers, and SKU inventory) or a Self-Storage unit model (rented as a whole
+ * private room where customer manages their own belongings with a PIN, without rack maps or SKU handling).
+ */
+export function isWarehouseRackContract(contract: ContractResponse | null | undefined): boolean {
+  if (!contract) return false;
+
+  // 1. Explicit check: If rentalTargetType is explicitly storage_unit, it is NOT a warehouse rack
+  if (String(contract.rentalTargetType).toLowerCase() === "storage_unit") {
+    return false;
+  }
+
+  // 2. Explicit check: If rentalTargetType is explicitly storage_rack, it IS a warehouse rack
+  if (String(contract.rentalTargetType).toLowerCase() === "storage_rack") {
+    return true;
+  }
+
+  // 3. Category inspection from offering / unitType / storageUnit
+  const offeringCategory =
+    (contract.facilityUnitTypeOffering as any)?.unitType?.category ||
+    (contract.offering as any)?.unitType?.category;
+  if (offeringCategory) {
+    return (
+      offeringCategory === UnitTypeCategoryEnum.WAREHOUSE_RACK ||
+      String(offeringCategory).toLowerCase() === "warehouse_rack"
+    );
+  }
+
+  const unitCategory = (contract.storageUnit as any)?.unitType?.category;
+  if (unitCategory) {
+    return (
+      unitCategory === UnitTypeCategoryEnum.WAREHOUSE_RACK ||
+      String(unitCategory).toLowerCase() === "warehouse_rack"
+    );
+  }
+
+  // 4. Default: Whole-unit Self Storage (NOT warehouse rack)
+  return false;
 }

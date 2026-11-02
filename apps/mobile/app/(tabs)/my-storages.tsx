@@ -40,6 +40,7 @@ import {
   type ContractSortOrder,
 } from "@/features/contracts/hooks/useContracts";
 import { ContractCard } from "@/features/contracts/components/ContractCard";
+import { isWarehouseRackContract } from "@/features/contracts/utils/contractFormat";
 
 function derivePinFromContract(contract: ContractResponse): string {
   const digits = contract.id.replace(/\D/g, "");
@@ -312,8 +313,20 @@ export default function MyStoragesScreen() {
               onPress={handleOpenDetail}
               onUnlockPress={handleUnlockSmartLock}
               onViewPinPress={(c) => setPinModalContract(c)}
-              onRackMapPress={(c) =>
-                router.push({ pathname: "/contracts/[id]/rack-map" as any, params: { id: c.id } })
+              onReportIncidentPress={(c: ContractResponse) =>
+                router.push({
+                  pathname: "/incidents/new",
+                  params: { contractId: c.id },
+                })
+              }
+              onRackMapPress={
+                isWarehouseRackContract(item)
+                  ? (c) =>
+                      router.push({
+                        pathname: "/contracts/[id]/rack-map" as any,
+                        params: { id: c.id },
+                      })
+                  : undefined
               }
               isUnlocking={openingContractId === item.id}
             />

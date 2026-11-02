@@ -22,6 +22,7 @@ const TONE: Record<Tone, { badge: string; dot: string }> = {
 const REQUEST_TONE: Record<InventoryRequestStatusEnum, Tone> = {
   [InventoryRequestStatusEnum.PENDING]: "yellow",
   [InventoryRequestStatusEnum.PENDING_CUSTOMER_CONFIRMATION]: "orange",
+  [InventoryRequestStatusEnum.ASSIGNED]: "blue",
   [InventoryRequestStatusEnum.PROCESSING]: "blue",
   [InventoryRequestStatusEnum.READY_TO_PUTAWAY]: "purple",
   [InventoryRequestStatusEnum.COMPLETED]: "green",

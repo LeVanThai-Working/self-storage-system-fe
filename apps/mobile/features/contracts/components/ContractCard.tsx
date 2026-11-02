@@ -18,6 +18,7 @@ import {
   Droplets,
   KeyRound,
   LayoutGrid,
+  ShieldAlert,
   Sparkles,
   Thermometer,
   Video,
@@ -30,6 +31,7 @@ import {
   getContractStatusMeta,
   getRemainingDays,
   getRentalUnitLabel,
+  isWarehouseRackContract,
 } from "../utils/contractFormat";
 
 interface ContractCardProps {
@@ -41,6 +43,7 @@ interface ContractCardProps {
   onUnlockPress?: (contract: ContractResponse) => void;
   onViewPinPress?: (contract: ContractResponse) => void;
   onRackMapPress?: (contract: ContractResponse) => void;
+  onReportIncidentPress?: (contract: ContractResponse) => void;
   isUnlocking?: boolean;
 }
 
@@ -53,6 +56,7 @@ export function ContractCard({
   onUnlockPress,
   onViewPinPress,
   onRackMapPress,
+  onReportIncidentPress,
   isUnlocking = false,
 }: ContractCardProps) {
   const isEn = locale === "en";
@@ -66,6 +70,7 @@ export function ContractCard({
   const isDraft = contract.status === ContractStatusEnum.DRAFT;
   const isFromReservation = contract.source === ContractSourceEnum.RESERVATION;
   const isDepositSatisfied = isFromReservation || Boolean(contract.depositPaidAt);
+  const isWarehouse = isWarehouseRackContract(contract);
 
   const displayUnitLabel =
     contract.storageUnit?.unitNumber ||
@@ -236,57 +241,51 @@ export function ContractCard({
         </View>
       ) : null}
 
-      {/* Smart Lock & PIN Controls for Active Contracts */}
-      {isActive && (onUnlockPress || onViewPinPress || onRackMapPress) ? (
+      {/* Quick Action Controls for Active Contracts */}
+      {isActive ? (
         <View className="flex-row items-center gap-2 pt-0.5">
-          {/* {onUnlockPress ? (
-            <Pressable
-              onPress={(e) => {
-                e.stopPropagation();
-                onUnlockPress(contract);
-              }}
-              disabled={isUnlocking}
-              className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl bg-brand py-2.5 shadow-sm active:opacity-90"
-            >
-              {isUnlocking ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <>
-                  <Lock size={14} color="#FFFFFF" />
-                  <Text className="text-xs font-bold text-white">
-                    {isEn ? "Unlock Unit" : "Mở khóa kho"}
-                  </Text>
-                </>
-              )}
-            </Pressable>
-          ) : null} */}
-
-          {onViewPinPress ? (
+          {/* PIN button for Self-Storage */}
+          {!isWarehouse && onViewPinPress ? (
             <Pressable
               onPress={(e) => {
                 e.stopPropagation();
                 onViewPinPress(contract);
               }}
-              className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3.5 py-2.5"
+              className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3.5 py-2.5 active:opacity-80"
             >
-              <KeyRound size={14} color="#647B80" />
+              <KeyRound size={14} color="#0B927E" />
               <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200">
-                {isEn ? "PIN" : "Mã PIN"}
+                {isEn ? "Access PIN" : "Mã PIN"}
               </Text>
             </Pressable>
           ) : null}
 
-          {onRackMapPress ? (
+          {/* Rack Map button ONLY for Warehouse Rack contracts */}
+          {isWarehouse && onRackMapPress ? (
             <Pressable
               onPress={(e) => {
                 e.stopPropagation();
                 onRackMapPress(contract);
               }}
-              className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3.5 py-2.5"
+              className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-brand/40 bg-brand-light/20 dark:bg-brand/10 px-3.5 py-2.5 active:opacity-80"
             >
-              <LayoutGrid size={14} color="#647B80" />
-              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200">
-                {isEn ? "Rack map" : "Sơ đồ kệ"}
+              <LayoutGrid size={14} color="#0B927E" />
+              <Text className="text-xs font-bold text-brand">{isEn ? "Rack Map" : "Sơ đồ kệ"}</Text>
+            </Pressable>
+          ) : null}
+
+          {/* Report Incident button for all active units */}
+          {onReportIncidentPress ? (
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
+                onReportIncidentPress(contract);
+              }}
+              className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/70 dark:bg-rose-950/30 px-3.5 py-2.5 active:opacity-80"
+            >
+              <ShieldAlert size={14} color="#E11D48" />
+              <Text className="text-xs font-bold text-rose-600 dark:text-rose-400">
+                {isEn ? "Report Issue" : "Báo sự cố"}
               </Text>
             </Pressable>
           ) : null}
