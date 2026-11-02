@@ -14,6 +14,7 @@ import {
   RotateCcw,
   Receipt,
   ArrowLeftRight,
+  FileSignature,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -53,6 +54,12 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       exact: false,
       label: t("nav.facilities"),
       icon: Building2,
+    },
+    {
+      href: `/${locale}/business-ops/signing-authorizations`,
+      exact: false,
+      label: t("nav.signingAuthorizations"),
+      icon: FileSignature,
     },
     {
       href: `/${locale}/business-ops/unit-types`,
@@ -139,58 +146,45 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
               const Icon = item.icon;
               const isActive = item.exact
                 ? pathname === item.href
-                : pathname === item.href || pathname?.startsWith(item.href + "/");
+                : pathname?.startsWith(item.href);
 
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                     isActive
-                      ? "bg-emerald-50 text-emerald-700 font-semibold shadow-sm shadow-emerald-100"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium"
+                      ? "bg-emerald-50 text-emerald-700 shadow-xs"
+                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                   }`}
                 >
                   <Icon
-                    className={`w-5 h-5 transition-colors ${
-                      isActive ? "text-emerald-600" : "text-slate-400 group-hover:text-slate-600"
+                    className={`w-4 h-4 transition-transform ${
+                      isActive ? "text-emerald-600 scale-110" : "text-slate-400"
                     }`}
                   />
-                  <span>{item.label}</span>
+                  {item.label}
                 </Link>
               );
             })}
           </nav>
         </div>
-
-        {/* Bottom Banner */}
-        <div className="mt-auto p-4 m-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-orange-500/10 border border-emerald-100/60">
-          <div className="flex items-center gap-2 text-emerald-700 font-semibold text-xs mb-1">
-            <Layers className="w-4 h-4 text-emerald-600" />
-            <span>Mạng lưới toàn quốc</span>
-          </div>
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            Quản lý tập trung các chi nhánh kho và chỉ số vận hành real-time.
-          </p>
-        </div>
       </aside>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header */}
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm shadow-slate-100/50">
-          <div className="flex-1 max-w-xl">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder={t("searchPlaceholder")}
-                className="w-full bg-slate-100/80 border-none rounded-full py-2.5 pl-11 pr-4 text-sm text-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all shadow-inner"
-              />
-            </div>
+        {/* Top Navbar */}
+        <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-8 z-10 shadow-xs">
+          <div className="relative w-80">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder={t("searchPlaceholder")}
+              className="w-full bg-slate-50 border border-slate-200 rounded-full pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+            />
           </div>
 
-          <div className="flex items-center gap-4 ml-4">
+          <div className="flex items-center gap-5">
             <LocaleSwitcher />
             <NotificationBell />
 

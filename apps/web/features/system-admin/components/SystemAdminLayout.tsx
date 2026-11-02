@@ -12,6 +12,7 @@ import {
   RotateCcw,
   Receipt,
   ArrowLeftRight,
+  FileSignature,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -53,6 +54,12 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
       exact: false,
       label: t("nav.userManagement"),
       icon: Users,
+    },
+    {
+      href: `/${locale}/system-admin/signing-authorizations`,
+      exact: false,
+      label: t("nav.signingAuthorizations"),
+      icon: FileSignature,
     },
     {
       href: `/${locale}/system-admin/audit-logs`,
@@ -107,21 +114,19 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
         <nav className="flex-1 px-4 space-y-2 mt-4">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = item.exact
-              ? pathname === item.href
-              : pathname === item.href || pathname?.startsWith(item.href + "/");
+            const isActive = item.exact ? pathname === item.href : pathname?.startsWith(item.href);
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-emerald-50 text-emerald-600 font-semibold"
-                    : "text-slate-600 hover:bg-slate-50 font-medium"
+                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                 }`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className={`w-5 h-5 ${isActive ? "text-emerald-600" : "text-slate-400"}`} />
                 {item.label}
               </Link>
             );
@@ -131,42 +136,39 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header */}
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 flex items-center justify-between sticky top-0 z-20">
-          <div className="flex-1 max-w-xl">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder={t("search")}
-                className="w-full bg-slate-100 border-none rounded-full py-2.5 pl-12 pr-4 text-sm text-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none transition-shadow"
-              />
-            </div>
+        {/* Top Navbar */}
+        <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-8 z-10">
+          <div className="relative w-80">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder={t("search")}
+              className="w-full bg-slate-50 border border-slate-100 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+            />
           </div>
 
-          <div className="flex items-center gap-4 ml-4">
+          <div className="flex items-center gap-6">
             <LocaleSwitcher />
             <NotificationBell />
-            <div className="flex items-center gap-3 pl-6 border-l border-slate-200">
+
+            <div className="flex items-center gap-4 pl-6 border-l border-slate-100">
               <button
                 type="button"
                 onClick={() => setIsProfileModalOpen(true)}
-                className="flex items-center gap-3 hover:opacity-85 transition-opacity cursor-pointer text-left group"
-                title="Chỉnh sửa hồ sơ & Avatar"
+                className="flex items-center gap-3 text-left group hover:opacity-80 transition-opacity cursor-pointer"
               >
                 <div className="text-right hidden sm:block">
-                  <div className="text-sm font-bold text-slate-800 group-hover:text-emerald-700 transition-colors">
-                    {currentUser?.name ?? "Admin User"}
+                  <div className="text-sm font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
+                    {currentUser?.name ?? "Admin"}
                   </div>
-                  <div className="text-xs text-slate-500 font-medium">System Admin</div>
+                  <div className="text-xs text-slate-400">System Admin</div>
                 </div>
                 {currentUser?.avatarUrl ? (
-                  <div className="relative w-10 h-10 rounded-full overflow-hidden shadow-sm border-2 border-white ring-2 ring-emerald-50">
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white ring-2 ring-emerald-50 shadow-sm">
                     <Image
                       src={currentUser.avatarUrl}
-                      alt={currentUser.name || "Avatar"}
+                      alt={currentUser.name ?? "Avatar"}
                       fill
-                      sizes="40px"
                       unoptimized
                       className="object-cover"
                     />

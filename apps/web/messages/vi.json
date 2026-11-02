@@ -145,7 +145,8 @@
       "payments": "Quản lý thanh toán",
       "reconciliation": "Đối soát ngân hàng",
       "facilityManagement": "Quản lý Cơ sở",
-      "settings": "Cài đặt hệ thống"
+      "settings": "Cài đặt hệ thống",
+      "signingAuthorizations": "Văn bản ủy quyền ký"
     },
     "search": "Tìm kiếm...",
     "userTable": {
@@ -793,7 +794,8 @@
       "payments": "Quản lý thanh toán",
       "reconciliation": "Đối soát ngân hàng",
       "analytics": "Báo cáo & Phân tích",
-      "sectionOperations": "VẬN HÀNH CHI NHÁNH"
+      "sectionOperations": "VẬN HÀNH CHI NHÁNH",
+      "signingAuthorizations": "Văn bản ủy quyền ký"
     },
     "searchPlaceholder": "Tìm kiếm nhanh cơ sở, mã chi nhánh...",
     "facilities": {
@@ -1803,7 +1805,8 @@
       "incidents": "Sự cố",
       "supportTickets": "Hỗ trợ khách",
       "payments": "Quản lý thanh toán",
-      "reconciliation": "Đối soát ngân hàng"
+      "reconciliation": "Đối soát ngân hàng",
+      "signingAuthorizations": "Văn bản ủy quyền ký"
     },
     "sidebar": {
       "assignedFacility": "Cơ sở phụ trách",
@@ -3223,6 +3226,90 @@
       "save": "Lưu thay đổi",
       "saved": "Đã cập nhật kệ {code}",
       "tierSaved": "Đã cập nhật tầng {tier}"
+    }
+  },
+  "signingAuthorizations": {
+    "title": "Quản lý Văn bản ủy quyền ký",
+    "subtitle": "Quản lý văn bản ủy quyền ký hợp đồng pháp lý của Pháp nhân cho Quản lý cơ sở để thực hiện thủ tục Ký bàn giao nhận kho (check-in) và Ký phụ lục hợp đồng (staff-sign).",
+    "addNew": "Tạo văn bản ủy quyền",
+    "facilityScope": "Cơ sở của bạn",
+    "noFacilityAssigned": "Tài khoản Quản lý cơ sở chưa được gán cho cơ sở nào. Vui lòng liên hệ Quản trị viên hệ thống.",
+    "searchPlaceholder": "Tìm theo số quyết định, tên người được ủy quyền, tên pháp nhân...",
+    "filterStatus": "Trạng thái",
+    "allStatuses": "Tất cả trạng thái",
+    "columns": {
+      "authorizationNumber": "Số quyết định ủy quyền",
+      "legalEntity": "Pháp nhân ủy quyền",
+      "authorizedUser": "Quản lý cơ sở được ủy quyền",
+      "facilities": "Cơ sở áp dụng",
+      "validity": "Thời hạn hiệu lực",
+      "document": "Văn bản đính kèm",
+      "status": "Trạng thái",
+      "actions": "Thao tác",
+      "createdAt": "Ngày tạo"
+    },
+    "status": {
+      "active": "Đang hiệu lực",
+      "revoked": "Đã thu hồi",
+      "expired": "Hết hiệu lực"
+    },
+    "modals": {
+      "createTitle": "Tạo mới văn bản ủy quyền ký",
+      "createSubtitle": "Ủy quyền quyền ký hợp đồng pháp lý và bàn giao kho cho Quản lý cơ sở",
+      "editTitle": "Cập nhật văn bản ủy quyền",
+      "editSubtitle": "Gia hạn thời gian hiệu lực, đổi file văn bản scan hoặc ghi chú",
+      "revokeTitle": "Thu hồi quyền ký",
+      "revokeConfirm": "Bạn có chắc chắn muốn thu hồi văn bản ủy quyền này đối với {manager}? Quản lý cơ sở sẽ lập tức mất quyền ký hợp đồng và xác nhận check-in.",
+      "detailTitle": "Chi tiết văn bản ủy quyền ký",
+      "detailSubtitle": "Thông tin pháp nhân, quản lý cơ sở và phạm vi cơ sở được ủy quyền",
+      "legalEntitySelect": "Pháp nhân ủy quyền",
+      "chooseLegalEntity": "Chọn pháp nhân doanh nghiệp",
+      "managerSelect": "Quản lý cơ sở được ủy quyền",
+      "chooseManager": "Chọn Facility Manager",
+      "facilitiesSelect": "Cơ sở được ủy quyền áp dụng",
+      "selectAll": "Chọn tất cả",
+      "deselectAll": "Bỏ chọn tất cả",
+      "issuedDate": "Ngày ban hành",
+      "validFrom": "Hiệu lực từ ngày",
+      "validTo": "Hiệu lực đến ngày",
+      "documentFile": "Văn bản đính kèm (Scan)",
+      "uploadPrompt": "Tải lên file văn bản scan (PDF hoặc Ảnh)",
+      "uploadHint": "Chấp nhận định dạng PDF, JPG, PNG tối đa 10MB",
+      "viewDocument": "Xem tài liệu",
+      "viewCurrentFile": "Xem file hiện tại",
+      "notes": "Ghi chú",
+      "notesPlaceholder": "Nhập ghi chú hoặc căn cứ quyết định ủy quyền...",
+      "taxCode": "Mã số thuế",
+      "representative": "Đại diện pháp luật",
+      "role": "Vai trò",
+      "createdAt": "Ngày tạo",
+      "updatedAt": "Ngày cập nhật",
+      "cancel": "Hủy bỏ",
+      "close": "Đóng",
+      "create": "Tạo văn bản",
+      "save": "Lưu thay đổi",
+      "revoke": "Xác nhận thu hồi"
+    },
+    "pagination": {
+      "showing": "Đang hiển thị",
+      "records": "bản ghi",
+      "prev": "Trước",
+      "next": "Sau"
+    },
+    "messages": {
+      "createSuccess": "Tạo văn bản ủy quyền ký thành công!",
+      "updateSuccess": "Cập nhật văn bản ủy quyền thành công!",
+      "revokeSuccess": "Thu hồi quyền ký thành công!",
+      "error": "Đã có lỗi xảy ra, vui lòng thử lại.",
+      "empty": "Không tìm thấy văn bản ủy quyền nào.",
+      "legalEntityRequired": "Vui lòng chọn pháp nhân ủy quyền.",
+      "authorizedUserRequired": "Vui lòng chọn quản lý cơ sở được ủy quyền.",
+      "atLeastOneFacility": "Cần chọn ít nhất một cơ sở được ủy quyền.",
+      "authNumberRequired": "Vui lòng nhập số quyết định ủy quyền.",
+      "issuedDateRequired": "Vui lòng chọn ngày ban hành.",
+      "validityRequired": "Vui lòng chọn ngày bắt đầu và kết thúc hiệu lực.",
+      "dateValidation": "Hiệu lực đến ngày (validTo) phải lớn hơn hoặc bằng hiệu lực từ ngày (validFrom).",
+      "documentRequired": "Vui lòng tải lên file văn bản ủy quyền đã ký."
     }
   }
 }

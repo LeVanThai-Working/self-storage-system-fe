@@ -21,6 +21,8 @@ import {
   useCancelRefundRequest,
 } from "../hooks";
 import type { RefundRequestResponse } from "../types";
+import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
+import { CloudinaryFolderEnum } from "@self-storage-system-fe/shared";
 
 // Format currency
 const formatVND = (num: number) =>
@@ -286,13 +288,19 @@ export const ConfirmPaidRefundModal: React.FC<ConfirmPaidModalProps> = ({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="proof-url">Link ảnh chụp biên lai giao dịch (URL)</Label>
-            <Input
-              id="proof-url"
-              placeholder="https://..."
-              value={proofImageUrl}
-              onChange={(e) => setProofImageUrl(e.target.value)}
+            <Label>Ảnh chụp biên lai giao dịch / UNC ngân hàng</Label>
+            <CloudinaryUploader
+              value={proofImageUrl ? [proofImageUrl] : []}
+              onChange={(urls: string[]) => setProofImageUrl(urls[0] || "")}
+              folder={CloudinaryFolderEnum.GENERAL}
+              maxFiles={1}
+              multiple={false}
             />
+            {proofImageUrl && (
+              <p className="text-[11px] text-emerald-600 font-semibold mt-1">
+                ✓ Đã tải lên ảnh chứng từ hoàn tiền
+              </p>
+            )}
           </div>
 
           <div className="space-y-1.5">

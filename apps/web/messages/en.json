@@ -145,7 +145,8 @@
       "payments": "Payments",
       "reconciliation": "Bank Reconciliation",
       "facilityManagement": "Facility Management",
-      "settings": "System Settings"
+      "settings": "System Settings",
+      "signingAuthorizations": "Signing Authorizations"
     },
     "search": "Search...",
     "userTable": {
@@ -793,7 +794,8 @@
       "payments": "Payments",
       "reconciliation": "Bank Reconciliation",
       "analytics": "Analytics & Reports",
-      "sectionOperations": "BRANCH OPERATIONS"
+      "sectionOperations": "BRANCH OPERATIONS",
+      "signingAuthorizations": "Signing Authorizations"
     },
     "searchPlaceholder": "Search facilities, branch code...",
     "facilities": {
@@ -1803,7 +1805,8 @@
       "incidents": "Incidents",
       "supportTickets": "Customer support",
       "payments": "Payments",
-      "reconciliation": "Bank Reconciliation"
+      "reconciliation": "Bank Reconciliation",
+      "signingAuthorizations": "Signing Authorizations"
     },
     "sidebar": {
       "assignedFacility": "Assigned facility",
@@ -3223,6 +3226,90 @@
       "save": "Save changes",
       "saved": "Rack {code} updated",
       "tierSaved": "Tier {tier} updated"
+    }
+  },
+  "signingAuthorizations": {
+    "title": "Signing Authorization Management",
+    "subtitle": "Manage legal signing authorization documents issued by legal entities to facility managers for handover check-in and addendum signing procedures.",
+    "addNew": "Create Authorization",
+    "facilityScope": "Your Facility",
+    "noFacilityAssigned": "Your Facility Manager account is not assigned to any facility. Please contact a system administrator.",
+    "searchPlaceholder": "Search by decision number, manager name, legal entity...",
+    "filterStatus": "Status",
+    "allStatuses": "All Statuses",
+    "columns": {
+      "authorizationNumber": "Authorization Decision No.",
+      "legalEntity": "Legal Entity",
+      "authorizedUser": "Authorized Facility Manager",
+      "facilities": "Authorized Facilities",
+      "validity": "Validity Period",
+      "document": "Document",
+      "status": "Status",
+      "actions": "Actions",
+      "createdAt": "Created At"
+    },
+    "status": {
+      "active": "Active",
+      "revoked": "Revoked",
+      "expired": "Expired"
+    },
+    "modals": {
+      "createTitle": "Create Signing Authorization",
+      "createSubtitle": "Authorize legal signing and storage check-in rights for facility managers",
+      "editTitle": "Update Signing Authorization",
+      "editSubtitle": "Extend validity period, replace scanned document or notes",
+      "revokeTitle": "Revoke Signing Rights",
+      "revokeConfirm": "Are you sure you want to revoke this signing authorization for {manager}? The facility manager will immediately lose signing and check-in rights.",
+      "detailTitle": "Signing Authorization Details",
+      "detailSubtitle": "Legal entity, facility manager, and authorized facility scope",
+      "legalEntitySelect": "Legal Entity",
+      "chooseLegalEntity": "Select legal entity",
+      "managerSelect": "Authorized Facility Manager",
+      "chooseManager": "Select Facility Manager",
+      "facilitiesSelect": "Authorized Facilities",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
+      "issuedDate": "Issued Date",
+      "validFrom": "Valid From",
+      "validTo": "Valid To",
+      "documentFile": "Scanned Document",
+      "uploadPrompt": "Upload scanned document (PDF or Image)",
+      "uploadHint": "Accepts PDF, JPG, PNG up to 10MB",
+      "viewDocument": "View Document",
+      "viewCurrentFile": "View Current File",
+      "notes": "Notes",
+      "notesPlaceholder": "Enter notes or authorization decision basis...",
+      "taxCode": "Tax Code",
+      "representative": "Legal Representative",
+      "role": "Role",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "cancel": "Cancel",
+      "close": "Close",
+      "create": "Create Authorization",
+      "save": "Save Changes",
+      "revoke": "Confirm Revoke"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "records": "records",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "messages": {
+      "createSuccess": "Signing authorization created successfully!",
+      "updateSuccess": "Signing authorization updated successfully!",
+      "revokeSuccess": "Signing authorization revoked successfully!",
+      "error": "An error occurred, please try again.",
+      "empty": "No signing authorizations found.",
+      "legalEntityRequired": "Please select a legal entity.",
+      "authorizedUserRequired": "Please select an authorized facility manager.",
+      "atLeastOneFacility": "At least one facility must be selected.",
+      "authNumberRequired": "Please enter an authorization decision number.",
+      "issuedDateRequired": "Please select the issued date.",
+      "validityRequired": "Please select valid from and valid to dates.",
+      "dateValidation": "Valid to date must be greater than or equal to valid from date.",
+      "documentRequired": "Please upload the signed authorization document."
     }
   }
 }
