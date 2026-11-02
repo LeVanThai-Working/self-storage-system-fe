@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Image, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { Wrench, Headphones, Tag, Eye } from "lucide-react-native";
+import { Wrench, Headphones, Tag, ChevronRight } from "lucide-react-native";
 import {
   AmenityTypeEnum,
   type PublicAmenityOfferingResponse,
@@ -131,12 +131,12 @@ export function AmenityOfferingCard({
       <View className="mt-3 border-t border-neutral-border/60 dark:border-neutral-800 pt-2 flex-row justify-end">
         <Pressable
           onPress={handleViewDetail}
-          className="flex-row items-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3.5 py-1.5 active:opacity-80"
+          className="flex-row items-center gap-1 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-1.5 active:opacity-80"
         >
-          <Eye size={13} color="#0B927E" />
-          <Text className="text-xs font-bold text-brand">
+          <Text className="text-xs font-semibold text-brand">
             {locale === "en" ? "View Details" : "Xem chi tiết"}
           </Text>
+          <ChevronRight size={14} color="#0B927E" />
         </Pressable>
       </View>
     </View>

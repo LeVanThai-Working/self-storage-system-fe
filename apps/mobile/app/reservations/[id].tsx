@@ -413,7 +413,7 @@ export default function ReservationDetailScreen() {
 
               <Badge
                 variant="outline"
-                className={`${contractStatusMeta.badgeBorderClass} ${contractStatusMeta.badgeBgClass} px-2.5 py-1`}
+                className={`${contractStatusMeta.badgeBorderClass} bg-white dark:bg-neutral-900 px-2.5 py-1`}
               >
                 <Text className={`text-[11px] font-bold ${contractStatusMeta.badgeTextClass}`}>
                   {contractStatusMeta.label}
@@ -519,17 +519,12 @@ export default function ReservationDetailScreen() {
                 <View className="flex-row items-center gap-2">
                   <Boxes size={16} color="#0B927E" />
                   <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                    {isEn ? "Assigned Physical Unit" : "Phòng kho vật lý được gán"}
+                    {isEn ? "Assigned Physical Unit" : "Phòng kho được gán:"}
                   </Text>
                 </View>
-                <Badge
-                  variant="outline"
-                  className="border-brand bg-white dark:bg-neutral-900 px-2.5 py-0.5"
-                >
-                  <Text className="text-xs font-extrabold text-brand">
-                    #{reservation.storageUnit.unitNumber}
-                  </Text>
-                </Badge>
+                <Text className="text-sm font-extrabold text-brand">
+                  #{reservation.storageUnit.unitNumber}
+                </Text>
               </View>
 
               <View className="flex-row flex-wrap items-center gap-4 pt-1">

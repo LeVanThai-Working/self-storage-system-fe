@@ -90,6 +90,7 @@ import {
   ContractStatusBadge,
   ContractTerminationBadge,
 } from "./ContractStatusBadge";
+import { extractSignedContractFileUrls } from "@self-storage-system-fe/shared";
 
 interface ContractDetailViewProps {
   contractId: string;
@@ -217,6 +218,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
   const isFromReservation = contract.source === ContractSourceEnum.RESERVATION;
   const isDepositSatisfied = isContractDepositSatisfied(contract);
   const isFirstPeriodPaid = Boolean(contract.firstPeriodPaidAt || contract.firstCyclePaidAt);
+  const signedContractUrls = extractSignedContractFileUrls(contract);
 
   const canCollectWalkInDeposit =
     contract.status === ContractStatusEnum.DRAFT &&
@@ -1745,7 +1747,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
           )}
 
           {/* Digitized Paper Contract Scans */}
-          {contract.signedContractFileUrls && contract.signedContractFileUrls.length > 0 && (
+          {signedContractUrls.length > 0 && (
             <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -1755,7 +1757,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   </h3>
                 </div>
                 <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                  {contract.signedContractFileUrls.length} {isEn ? "files" : "trang scan"}
+                  {signedContractUrls.length} {isEn ? "files" : "trang scan"}
                 </span>
               </div>
               <p className="text-xs text-slate-500">
@@ -1764,7 +1766,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   : "Các trang hợp đồng giấy A4 có chữ ký sống của 2 bên đã được số hóa và băm SHA-256 lưu vết toàn vẹn."}
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {contract.signedContractFileUrls.map((url, idx) => (
+                {signedContractUrls.map((url, idx) => (
                   <a
                     key={`${url}-${idx}`}
                     href={url}
