@@ -49,7 +49,8 @@ export default function CreatePreAdvisedInboundScreen() {
 
   const contractQuery = useContractDetail(contractId);
   const contract = contractQuery.data;
-  const isWarehouse = isWarehouseRackContract(contract);
+  const isWarehouse =
+    typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
   const rights = getContractRequestRights(contract?.status);
   const createMutation = useCreatePreAdvisedInbound();
 

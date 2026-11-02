@@ -58,7 +58,8 @@ export default function ReportIncidentScreen() {
 
   const contractQuery = useContractDetail(contractId || undefined);
   const contract = contractQuery.data;
-  const isWarehouse = isWarehouseRackContract(contract);
+  const isWarehouse =
+    typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
   const treeQuery = useStorageUnitTree(isWarehouse ? contract?.storageUnitId : undefined);
   const racks = treeQuery.data?.racks ?? [];
   const rack = racks.find((item) => item.id === rackId);

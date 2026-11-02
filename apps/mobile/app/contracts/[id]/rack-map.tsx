@@ -70,7 +70,8 @@ export default function ContractRackMapScreen() {
 
   const contractQuery = useContractDetail(contractId);
   const contract = contractQuery.data;
-  const isWarehouse = isWarehouseRackContract(contract);
+  const isWarehouse =
+    typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
   const storageUnitId = isWarehouse ? contract?.storageUnitId : undefined;
   const treeQuery = useStorageUnitTree(storageUnitId);
   const tree = treeQuery.data;

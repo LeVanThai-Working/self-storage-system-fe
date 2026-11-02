@@ -51,7 +51,8 @@ export default function ContractRequestsScreen() {
 
   const contractQuery = useContractDetail(contractId);
   const contract = contractQuery.data;
-  const isWarehouse = isWarehouseRackContract(contract);
+  const isWarehouse =
+    typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
 
   const requestQuery = useInventoryRequests(
     {

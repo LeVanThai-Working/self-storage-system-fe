@@ -299,7 +299,7 @@ export default function MyStoragesScreen() {
                 })
               }
               onRackMapPress={
-                isWarehouseRackContract(item)
+                typeof isWarehouseRackContract === "function" && isWarehouseRackContract(item)
                   ? (c) =>
                       router.push({
                         pathname: "/contracts/[id]/rack-map" as any,

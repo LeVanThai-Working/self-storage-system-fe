@@ -84,7 +84,8 @@ export default function ContractAttentionScreen() {
   );
 
   const contract = contractQuery.data;
-  const isWarehouse = isWarehouseRackContract(contract);
+  const isWarehouse =
+    typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
 
   if (contract && !isWarehouse) {
     return (

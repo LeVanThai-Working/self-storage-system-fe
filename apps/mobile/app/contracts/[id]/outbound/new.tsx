@@ -55,7 +55,8 @@ export default function CreateOutboundRequestScreen() {
 
   const contractQuery = useContractDetail(contractId);
   const contract = contractQuery.data;
-  const isWarehouse = isWarehouseRackContract(contract);
+  const isWarehouse =
+    typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
   const treeQuery = useStorageUnitTree(isWarehouse ? contract?.storageUnitId : undefined);
   const positions = useMemo(() => listTreePositions(treeQuery.data), [treeQuery.data]);
   const rights = getContractRequestRights(contract?.status);
