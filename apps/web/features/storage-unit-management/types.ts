@@ -5,6 +5,7 @@ import {
   RackTierStatusEnum,
   RentalTargetTypeEnum,
   type StorageUnitResponse,
+  type RackCapacity,
   type StorageUnitQuery,
   type AvailableStorageUnitQuery,
   type CreateStorageUnitRequest,
@@ -33,6 +34,7 @@ export {
 
 export type {
   StorageUnitResponse,
+  RackCapacity,
   StorageUnitQuery,
   AvailableStorageUnitQuery,
   CreateStorageUnitRequest,

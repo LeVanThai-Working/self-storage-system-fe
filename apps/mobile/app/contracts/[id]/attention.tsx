@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/stores/language.store";
 import { useContractDetail } from "@/features/contracts/hooks/useContracts";
+import { isWarehouseRackContract } from "@/features/contracts/utils/contractFormat";
+import { SelfStorageGuardView } from "@/features/contracts/components/SelfStorageGuardView";
 import { useCustomerInventoryRecords } from "@/features/customer-inventory/hooks/useCustomerInventory";
 import { SkuThumb } from "@/features/customer-inventory/components/SkuThumb";
 import { ItemStatusBadge } from "@/features/customer-inventory/components/ItemStatusBadge";
@@ -80,6 +82,19 @@ export default function ContractAttentionScreen() {
       <ItemStatusBadge status={item.status} />
     </View>
   );
+
+  const contract = contractQuery.data;
+  const isWarehouse = isWarehouseRackContract(contract);
+
+  if (contract && !isWarehouse) {
+    return (
+      <SelfStorageGuardView
+        contract={contract}
+        title={t("rackMap.attention.title")}
+        reason="inventory_not_supported"
+      />
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">

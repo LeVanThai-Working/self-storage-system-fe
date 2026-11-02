@@ -861,7 +861,11 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
 
                               {/* Status Badge */}
                               <td className="py-3.5 px-6">
-                                <UnitStatusBadge status={unit.status} />
+                                <UnitStatusBadge
+                                  status={unit.status}
+                                  category={unit.unitType?.category}
+                                  rackCapacity={unit.rackCapacity}
+                                />
                               </td>
 
                               {/* Notes */}
@@ -963,7 +967,11 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                   <span className="text-[11px] text-slate-400 uppercase font-bold block mb-1">
                     {locale === "vi" ? "Trạng thái vận hành" : "Operational Status"}
                   </span>
-                  <UnitStatusBadge status={inspectUnit.status} />
+                  <UnitStatusBadge
+                    status={inspectUnit.status}
+                    category={inspectUnit.unitType?.category}
+                    rackCapacity={inspectUnit.rackCapacity}
+                  />
                 </div>
                 <div className="text-right">
                   <span className="text-[11px] text-slate-400 uppercase font-bold block mb-1">

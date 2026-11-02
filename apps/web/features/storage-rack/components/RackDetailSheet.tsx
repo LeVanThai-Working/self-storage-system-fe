@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Loader2, Pencil, X } from "lucide-react";
+import { Check, Loader2, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import {
   DEFAULT_RACK_ZONE_PRICING,
@@ -10,13 +10,16 @@ import {
   RackTierStatusEnum,
   RackZoneEnum,
   formatCurrency,
+  MESSAGE_CODE,
   type RackTierResponse,
   type StorageRackResponse,
 } from "@self-storage-system-fe/shared";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { ActionTooltip } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { useApiErrorMessage } from "@/features/auth/error-message";
-import { useUpdateRack, useUpdateRackTier } from "../hooks";
+import { useUpdateRack, useUpdateRackTier, useDeleteRack, useRestoreRack } from "../hooks";
 
 const LABEL = "mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700";
 const INPUT =
@@ -58,6 +61,52 @@ export function RackDetailSheet({
   );
   const [notes, setNotes] = useState(rack.notes ?? "");
   const [error, setError] = useState<string | null>(null);
+
+  const deleteRackMutation = useDeleteRack();
+  const restoreRackMutation = useRestoreRack();
+
+  const isRackLocked =
+    rack.status === RackStatusEnum.RENTED ||
+    rack.status === RackStatusEnum.RESERVED ||
+    String(rack.status).toLowerCase() === "rented" ||
+    String(rack.status).toLowerCase() === "reserved" ||
+    Boolean(rack.currentContractId);
+
+  const handleDeleteRack = async () => {
+    try {
+      await deleteRackMutation.mutateAsync(rack.id);
+      toast.success(`Đã xóa kệ ${rack.rackCode} thành công!`, {
+        action: {
+          label: "Khôi phục",
+          onClick: async () => {
+            try {
+              await restoreRackMutation.mutateAsync(rack.id);
+              toast.success("Đã khôi phục kệ kho thành công!");
+            } catch (err) {
+              toast.error(getErrorMessage(err));
+            }
+          },
+        },
+      });
+      onClose();
+    } catch (err: unknown) {
+      const errObj = err as {
+        response?: { data?: { messageCode?: string } };
+        messageCode?: string;
+        message?: string;
+      };
+      const code = err?.response?.data?.messageCode || err?.messageCode;
+      if (
+        code === "MESSAGE_CODE_606" ||
+        code === MESSAGE_CODE.MESSAGE_CODE_606 ||
+        String(errObj?.message || "").includes("606")
+      ) {
+        toast.error("Không thể xóa kệ đang có hợp đồng hoặc khách thuê!");
+      } else {
+        toast.error(getErrorMessage(err));
+      }
+    }
+  };
 
   const zonePrice = zone ? DEFAULT_RACK_ZONE_PRICING[zone] : null;
 
@@ -226,24 +275,54 @@ export function RackDetailSheet({
           ) : null}
         </div>
 
-        <div className="flex justify-end gap-2 border-t border-slate-100 px-6 py-4">
-          <Button variant="outline" onClick={onClose}>
-            {t("close")}
-          </Button>
-          {!readOnly ? (
-            <Button
-              onClick={() => void handleSave()}
-              disabled={updateRack.isPending}
-              className="bg-teal-600 text-white hover:bg-teal-700"
-            >
-              {updateRack.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Check className="h-4 w-4" />
-              )}
-              {t("save")}
+        <div className="flex items-center justify-between border-t border-slate-100 px-6 py-4">
+          <div>
+            {!readOnly ? (
+              <ActionTooltip
+                content={
+                  isRackLocked ? "Không thể xóa kệ đang có hợp đồng hoặc khách thuê!" : "Xóa kệ"
+                }
+              >
+                <Button
+                  variant="outline"
+                  type="button"
+                  disabled={isRackLocked || deleteRackMutation.isPending}
+                  onClick={() => void handleDeleteRack()}
+                  className={cn(
+                    "border-rose-200 text-rose-600 hover:bg-rose-50",
+                    isRackLocked && "cursor-not-allowed opacity-50"
+                  )}
+                >
+                  {deleteRackMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                  Xóa kệ
+                </Button>
+              </ActionTooltip>
+            ) : null}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={onClose}>
+              {t("close")}
             </Button>
-          ) : null}
+            {!readOnly ? (
+              <Button
+                onClick={() => void handleSave()}
+                disabled={updateRack.isPending}
+                className="bg-teal-600 text-white hover:bg-teal-700"
+              >
+                {updateRack.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Check className="h-4 w-4" />
+                )}
+                {t("save")}
+              </Button>
+            ) : null}
+          </div>
         </div>
       </SheetContent>
     </Sheet>

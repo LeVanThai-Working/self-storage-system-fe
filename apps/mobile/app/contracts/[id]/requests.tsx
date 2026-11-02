@@ -23,6 +23,8 @@ import { StatusPill } from "@/components/ui/status-pill";
 import { FilterChips } from "@/components/ui/filter-chips";
 import { useTranslation } from "@/stores/language.store";
 import { useContractDetail } from "@/features/contracts/hooks/useContracts";
+import { isWarehouseRackContract } from "@/features/contracts/utils/contractFormat";
+import { SelfStorageGuardView } from "@/features/contracts/components/SelfStorageGuardView";
 import { useContractMovements } from "@/features/customer-inventory/hooks/useCustomerInventory";
 import { MovementRow, formatTime } from "@/features/customer-inventory/components/MovementRow";
 import { useInventoryRequests } from "@/features/inventory-requests/hooks/useInventoryRequests";
@@ -48,6 +50,9 @@ export default function ContractRequestsScreen() {
   const [tab, setTab] = useState<Tab>("outbound");
 
   const contractQuery = useContractDetail(contractId);
+  const contract = contractQuery.data;
+  const isWarehouse = isWarehouseRackContract(contract);
+
   const requestQuery = useInventoryRequests(
     {
       contractId,
@@ -56,10 +61,12 @@ export default function ContractRequestsScreen() {
       sortBy: "createdAt",
       sortOrder: "desc",
     },
-    Boolean(contractId)
+    Boolean(contractId && isWarehouse)
   );
-  const ticketQuery = useSupportTicketList({ contractId }, tab === "move");
-  const movementQuery = useContractMovements(tab === "activity" ? contractId : undefined);
+  const ticketQuery = useSupportTicketList({ contractId }, Boolean(tab === "move" && isWarehouse));
+  const movementQuery = useContractMovements(
+    Boolean(tab === "activity" && isWarehouse) ? contractId : undefined
+  );
 
   const requests = requestQuery.data?.items ?? [];
   const pendingInbound = requests.filter(
@@ -196,6 +203,16 @@ export default function ContractRequestsScreen() {
       </Text>
     </View>
   );
+
+  if (contract && !isWarehouse) {
+    return (
+      <SelfStorageGuardView
+        contract={contract}
+        title={t("inventoryRequest.list.title")}
+        reason="inventory_not_supported"
+      />
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">

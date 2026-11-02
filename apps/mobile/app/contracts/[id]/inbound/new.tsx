@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "@/stores/language.store";
 import { toast } from "@/stores/toast.store";
 import { useContractDetail } from "@/features/contracts/hooks/useContracts";
+import { isWarehouseRackContract } from "@/features/contracts/utils/contractFormat";
+import { SelfStorageGuardView } from "@/features/contracts/components/SelfStorageGuardView";
 import { useCustomerSkuList } from "@/features/customer-sku/hooks/useCustomerSkus";
 import { SkuThumb } from "@/features/customer-inventory/components/SkuThumb";
 import { QuantityStepper } from "@/features/customer-inventory/components/QuantityStepper";
@@ -47,6 +49,7 @@ export default function CreatePreAdvisedInboundScreen() {
 
   const contractQuery = useContractDetail(contractId);
   const contract = contractQuery.data;
+  const isWarehouse = isWarehouseRackContract(contract);
   const rights = getContractRequestRights(contract?.status);
   const createMutation = useCreatePreAdvisedInbound();
 
@@ -149,6 +152,16 @@ export default function CreatePreAdvisedInboundScreen() {
   );
 
   const submitDisabled = createMutation.isPending || lines.size === 0 || !rights.canNotifyInbound;
+
+  if (contract && !isWarehouse) {
+    return (
+      <SelfStorageGuardView
+        contract={contract}
+        title={t("inventoryRequest.preAdvised.title")}
+        reason="inventory_not_supported"
+      />
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
