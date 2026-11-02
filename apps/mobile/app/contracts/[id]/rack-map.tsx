@@ -455,7 +455,7 @@ export default function ContractRackMapScreen() {
               >
                 <ShieldAlert size={16} color="#E11D48" />
                 <Text className="text-xs font-bold text-rose-600 dark:text-rose-400">
-                  {isEn ? "Report Issue on This Unit" : "Báo cáo sự cố phòng kho này"}
+                  {isEn ? "Report Issue on This Unit" : "Báo cáo sự cố"}
                 </Text>
               </Pressable>
 

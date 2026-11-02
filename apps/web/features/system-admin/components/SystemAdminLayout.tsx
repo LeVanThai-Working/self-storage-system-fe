@@ -11,8 +11,10 @@ import {
   Trash2,
   RotateCcw,
   Receipt,
+  ReceiptText,
   ArrowLeftRight,
   FileSignature,
+  Landmark,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -62,6 +64,18 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
       icon: FileSignature,
     },
     {
+      href: `/${locale}/system-admin/contracts`,
+      exact: false,
+      label: locale === "en" ? "Contracts" : "Hợp đồng",
+      icon: FileSignature,
+    },
+    {
+      href: `/${locale}/system-admin/legal-entities`,
+      exact: false,
+      label: locale === "en" ? "Legal Entities" : "Pháp nhân doanh nghiệp",
+      icon: Landmark,
+    },
+    {
       href: `/${locale}/system-admin/audit-logs`,
       exact: false,
       label: t("nav.auditLogs"),
@@ -78,6 +92,12 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
       exact: false,
       label: locale === "en" ? "Payments" : "Thanh toán",
       icon: Receipt,
+    },
+    {
+      href: `/${locale}/system-admin/invoices`,
+      exact: false,
+      label: locale === "en" ? "Invoices & Fees" : "Hóa đơn & Phụ phí",
+      icon: ReceiptText,
     },
     {
       href: `/${locale}/system-admin/reconciliation`,

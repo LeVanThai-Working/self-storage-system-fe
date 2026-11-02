@@ -13,8 +13,10 @@ import {
   FileCheck2,
   RotateCcw,
   Receipt,
+  ReceiptText,
   ArrowLeftRight,
   FileSignature,
+  Landmark,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -56,10 +58,22 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       icon: Building2,
     },
     {
+      href: `/${locale}/business-ops/contracts`,
+      exact: false,
+      label: locale === "en" ? "Contracts" : "Hợp đồng",
+      icon: FileSignature,
+    },
+    {
       href: `/${locale}/business-ops/signing-authorizations`,
       exact: false,
       label: t("nav.signingAuthorizations"),
       icon: FileSignature,
+    },
+    {
+      href: `/${locale}/business-ops/legal-entities`,
+      exact: false,
+      label: locale === "en" ? "Legal Entities" : "Pháp nhân doanh nghiệp",
+      icon: Landmark,
     },
     {
       href: `/${locale}/business-ops/unit-types`,
@@ -96,6 +110,12 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       exact: false,
       label: locale === "en" ? "Payments" : "Thanh toán",
       icon: Receipt,
+    },
+    {
+      href: `/${locale}/business-ops/invoices`,
+      exact: false,
+      label: locale === "en" ? "Invoices & Fees" : "Hóa đơn & Phụ phí",
+      icon: ReceiptText,
     },
     {
       href: `/${locale}/business-ops/reconciliation`,

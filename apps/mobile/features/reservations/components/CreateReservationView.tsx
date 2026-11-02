@@ -315,8 +315,6 @@ export function CreateReservationView({
     }, 0);
   }, [availableAmenities, amenityQuantities]);
 
-  const totalAmount = depositAmount + amenitiesTotal;
-
   const createMutation = useCreateReservation();
 
   const handleSubmit = async () => {
@@ -1314,20 +1312,29 @@ export function CreateReservationView({
             </Text>
           </View>
 
-          <View className="flex-row justify-between">
-            <Text variant="muted" className="text-xs">
-              {isEn ? "Add-on Amenities Total:" : "Tổng phí tiện ích đi kèm:"}
-            </Text>
-            <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
-              {formatVnd(amenitiesTotal)}
-            </Text>
+          <View className="gap-0.5">
+            <View className="flex-row justify-between">
+              <Text variant="muted" className="text-xs">
+                {isEn ? "Add-on Amenities Total:" : "Tiện ích đi kèm đã chọn:"}
+              </Text>
+              <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
+                {formatVnd(amenitiesTotal)}
+              </Text>
+            </View>
+            {amenitiesTotal > 0 ? (
+              <Text className="text-[10px] text-neutral-500 dark:text-neutral-400 italic">
+                {isEn
+                  ? "• Reserved — Pay with 1st period rent upon check-in"
+                  : "• Đã giữ chỗ — Thanh toán cùng tiền thuê kỳ đầu khi nhận kho"}
+              </Text>
+            ) : null}
           </View>
 
           <View className="flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 pt-2.5 mt-1">
             <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-              {isEn ? "Estimated Total Amount:" : "Tổng giá trị đơn dự kiến:"}
+              {isEn ? "Total Due Now for Booking:" : "Tổng thanh toán ngay khi đặt chỗ:"}
             </Text>
-            <Text className="text-base font-extrabold text-brand">{formatVnd(totalAmount)}</Text>
+            <Text className="text-base font-extrabold text-brand">{formatVnd(depositAmount)}</Text>
           </View>
         </View>
 

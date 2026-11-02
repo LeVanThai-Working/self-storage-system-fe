@@ -12,6 +12,7 @@ import {
   Headset,
   LayoutDashboard,
   Receipt,
+  ReceiptText,
   RotateCcw,
   TriangleAlert,
   ArrowLeftRight,
@@ -96,6 +97,11 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
       href: `/${locale}/facility-manager/payments`,
       label: locale === "en" ? "Payments" : "Thanh toán",
       icon: Receipt,
+    },
+    {
+      href: `/${locale}/facility-manager/invoices`,
+      label: locale === "en" ? "Invoices & Fees" : "Hóa đơn & Phụ phí",
+      icon: ReceiptText,
     },
     {
       href: `/${locale}/facility-manager/reconciliation`,

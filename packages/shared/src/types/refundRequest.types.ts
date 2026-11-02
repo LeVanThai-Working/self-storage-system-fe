@@ -1,12 +1,5 @@
-import type { PaginatedData } from "./common.types";
+import type { EntitySummary, PaginatedData } from "./common.types";
 import type { RefundRequestReasonEnum, RefundRequestStatusEnum } from "../enums/refundRequest.enum";
-
-export interface EntitySummary {
-  id: string;
-  name?: string;
-  email?: string;
-  role?: string;
-}
 
 export interface RefundRequestResponse {
   id: string;

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import {
@@ -52,7 +53,6 @@ import { formatDateOnly, formatDateTime, formatRentalScheduleLabel, formatVnd } 
 import {
   AssignReservationStaffModal,
   CancelReservationModal,
-  ConfirmRefundModal,
   ConfirmReservationModal,
   ExtendGracePeriodModal,
   ForceCancelReservationModal,
@@ -234,7 +234,6 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
   const [extendGraceTarget, setExtendGraceTarget] = useState<ReservationResponse | null>(null);
   const [reassignTarget, setReassignTarget] = useState<ReservationResponse | null>(null);
   const [forceCancelTarget, setForceCancelTarget] = useState<ReservationResponse | null>(null);
-  const [confirmRefundTarget, setConfirmRefundTarget] = useState<ReservationResponse | null>(null);
   const [cancelTarget, setCancelTarget] = useState<ReservationResponse | null>(null);
   const [manualPaymentTarget, setManualPaymentTarget] = useState<ReservationResponse | null>(null);
   const [assignStaffTarget, setAssignStaffTarget] = useState<ReservationResponse | null>(null);
@@ -760,24 +759,24 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
 
                       {/* 6. Status & Badges */}
                       <td className="py-4 px-4 whitespace-nowrap">
-                        <div className="space-y-1">
+                        <div className="flex flex-col items-start gap-1.5">
                           <ReservationStatusBadge
                             status={r.status}
                             expiresAt={r.expiresAt}
                             nowMs={nowMs}
                           />
                           {r.arrivedAt && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-teal-100 text-teal-800 block w-max">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200">
                               <UserCheck className="w-2.5 h-2.5" /> Đã có mặt
                             </span>
                           )}
                           {r.pendingUnitChange && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 block w-max">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
                               <AlertTriangle className="w-2.5 h-2.5" /> Chờ duyệt đổi kho
                             </span>
                           )}
                           {r.refundStatus === "pending" && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-800 block w-max">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200">
                               <Banknote className="w-2.5 h-2.5" /> Chờ hoàn cọc
                             </span>
                           )}
@@ -786,147 +785,66 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
 
                       {/* 7. Quick Contextual Actions */}
                       <td className="py-4 px-4 text-right whitespace-nowrap">
-                        <div className="inline-flex items-center justify-end gap-1.5 flex-wrap max-w-[280px]">
-                          {/* PENDING_PAYMENT actions */}
+                        <div className="flex flex-col items-end gap-1.5">
+                          {/* Row 1: Primary Action Buttons with Text */}
+                          {/* PENDING_PAYMENT */}
                           {st === ReservationStatusEnum.PENDING_PAYMENT && (
-                            <>
+                            <div className="flex items-center justify-end gap-1.5">
                               <button
                                 type="button"
                                 onClick={() => setManualPaymentTarget(r)}
-                                className="px-2.5 py-1 rounded-xl text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200"
+                                className="px-2.5 py-1 rounded-xl text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 shadow-sm transition-colors"
                               >
                                 Thu cọc quầy
                               </button>
                               <button
                                 type="button"
                                 onClick={() => setCancelTarget(r)}
-                                className="px-2 py-1 rounded-xl text-xs font-bold text-slate-500 hover:text-rose-600"
+                                className="px-2.5 py-1 rounded-xl text-xs font-bold text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-colors"
                               >
                                 Hủy
                               </button>
-                            </>
+                            </div>
                           )}
 
-                          {/* PAYMENT_SUCCESSFUL actions */}
+                          {/* PAYMENT_SUCCESSFUL */}
                           {st === ReservationStatusEnum.PAYMENT_SUCCESSFUL && (
-                            <>
+                            <div className="flex items-center justify-end gap-1.5">
                               <button
                                 type="button"
                                 onClick={() => setConfirmTarget(r)}
-                                className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+                                className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-colors"
                               >
                                 Xác nhận đơn
                               </button>
-                              {isManager && (
-                                <button
-                                  type="button"
-                                  onClick={() => setReassignTarget(r)}
-                                  className="px-2 py-1 rounded-xl text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 border border-sky-200"
-                                >
-                                  Đổi kho
-                                </button>
-                              )}
                               <button
                                 type="button"
                                 onClick={() => setCancelTarget(r)}
-                                className="px-2 py-1 rounded-xl text-xs font-bold text-slate-500 hover:text-rose-600"
+                                className="px-2.5 py-1 rounded-xl text-xs font-bold text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-colors"
                               >
                                 Hủy
                               </button>
-                            </>
+                            </div>
                           )}
 
-                          {/* CONFIRMED actions */}
+                          {/* CONFIRMED */}
                           {st === ReservationStatusEnum.CONFIRMED && (
-                            <>
-                              {!r.arrivedAt && (
+                            <div className="flex items-center justify-end gap-1.5">
+                              {!r.arrivedAt ? (
                                 <button
                                   type="button"
                                   onClick={() => setMarkArrivedTarget(r)}
-                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm flex items-center gap-1"
+                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm flex items-center gap-1 transition-colors"
                                 >
                                   <UserCheck className="w-3 h-3" />
                                   Đã đến
                                 </button>
-                              )}
-
-                              <button
-                                type="button"
-                                onClick={() => void handleCreateContractDirectly(r)}
-                                disabled={creatingContractId === r.id}
-                                className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 shadow-sm flex items-center gap-1"
-                              >
-                                {creatingContractId === r.id ? (
-                                  <RefreshCw className="w-3 h-3 animate-spin" />
-                                ) : (
-                                  <FileCheck2 className="w-3 h-3" />
-                                )}
-                                Lập HĐ
-                              </button>
-
-                              {isManager && (
-                                <button
-                                  type="button"
-                                  onClick={() => setAssignStaffTarget(r)}
-                                  className="p-1 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100"
-                                  title="Đổi nhân viên tiếp đón"
-                                >
-                                  <UserCheck className="w-3.5 h-3.5" />
-                                </button>
-                              )}
-
-                              {isManager && (
-                                <>
-                                  <button
-                                    type="button"
-                                    onClick={() => setExtendGraceTarget(r)}
-                                    className="p-1 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50"
-                                    title="Gia hạn ân hạn"
-                                  >
-                                    <Clock className="w-3.5 h-3.5" />
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    onClick={() => setReassignTarget(r)}
-                                    className="p-1 rounded-xl border border-sky-200 text-sky-700 hover:bg-sky-50"
-                                    title="Đổi kho sự cố"
-                                  >
-                                    <Boxes className="w-3.5 h-3.5" />
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    onClick={() => setForceCancelTarget(r)}
-                                    className="p-1 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50"
-                                    title="Hủy khẩn cấp sự cố"
-                                  >
-                                    <Flame className="w-3.5 h-3.5" />
-                                  </button>
-                                </>
-                              )}
-                            </>
-                          )}
-
-                          {/* OVERDUE actions */}
-                          {st === ReservationStatusEnum.OVERDUE && (
-                            <>
-                              {!r.arrivedAt && (
-                                <button
-                                  type="button"
-                                  onClick={() => setMarkArrivedTarget(r)}
-                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm"
-                                >
-                                  Đã đến
-                                </button>
-                              )}
-
-                              {r.arrivedAt && (
+                              ) : (
                                 <button
                                   type="button"
                                   onClick={() => void handleCreateContractDirectly(r)}
                                   disabled={creatingContractId === r.id}
-                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 shadow-sm flex items-center gap-1"
+                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 shadow-sm flex items-center gap-1 transition-colors"
                                 >
                                   {creatingContractId === r.id ? (
                                     <RefreshCw className="w-3 h-3 animate-spin" />
@@ -936,55 +854,147 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                                   Lập HĐ
                                 </button>
                               )}
+                            </div>
+                          )}
 
-                              {isManager && (
-                                <>
-                                  <button
-                                    type="button"
-                                    onClick={() => setExtendGraceTarget(r)}
-                                    className="p-1 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50"
-                                    title="Gia hạn ân hạn"
-                                  >
-                                    <Clock className="w-3.5 h-3.5" />
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    onClick={() => setForceCancelTarget(r)}
-                                    className="p-1 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50"
-                                    title="Hủy khẩn cấp"
-                                  >
-                                    <Flame className="w-3.5 h-3.5" />
-                                  </button>
-                                </>
+                          {/* OVERDUE */}
+                          {st === ReservationStatusEnum.OVERDUE && (
+                            <div className="flex items-center justify-end gap-1.5">
+                              {!r.arrivedAt ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setMarkArrivedTarget(r)}
+                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm flex items-center gap-1 transition-colors"
+                                >
+                                  <UserCheck className="w-3 h-3" />
+                                  Đã đến
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => void handleCreateContractDirectly(r)}
+                                  disabled={creatingContractId === r.id}
+                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 shadow-sm flex items-center gap-1 transition-colors"
+                                >
+                                  {creatingContractId === r.id ? (
+                                    <RefreshCw className="w-3 h-3 animate-spin" />
+                                  ) : (
+                                    <FileCheck2 className="w-3 h-3" />
+                                  )}
+                                  Lập HĐ
+                                </button>
                               )}
-                            </>
+                            </div>
                           )}
 
                           {/* CANCELLED / EXPIRED with pending refund */}
                           {(st === ReservationStatusEnum.CANCELLED ||
                             st === ReservationStatusEnum.EXPIRED) &&
-                            r.refundStatus === "pending" &&
-                            isManager && (
+                            r.refundStatus === "pending" && (
+                              <div className="flex items-center justify-end gap-1.5">
+                                <Link
+                                  href={`/${locale}/${portalBase}/refunds`}
+                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 shadow-sm flex items-center gap-1 transition-colors"
+                                  title={
+                                    locale === "en"
+                                      ? "Manage refund request in Refund Manager"
+                                      : "Chuyển sang Quản lý hoàn tiền để duyệt và chi trả"
+                                  }
+                                >
+                                  <Banknote className="w-3 h-3" />
+                                  {locale === "en" ? "Refunds" : "Hoàn cọc"}
+                                </Link>
+                              </div>
+                            )}
+
+                          {/* Row 2: Secondary Icon-only Action Buttons */}
+                          <div className="flex items-center justify-end gap-1">
+                            {/* PAYMENT_SUCCESSFUL: Manager reassign unit */}
+                            {st === ReservationStatusEnum.PAYMENT_SUCCESSFUL && isManager && (
                               <button
                                 type="button"
-                                onClick={() => setConfirmRefundTarget(r)}
-                                className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm flex items-center gap-1"
+                                onClick={() => setReassignTarget(r)}
+                                className="w-7 h-7 rounded-xl border border-sky-200 text-sky-700 hover:bg-sky-50 flex items-center justify-center transition-colors"
+                                title="Đổi phòng kho"
                               >
-                                <Banknote className="w-3 h-3" />
-                                Hoàn cọc
+                                <Boxes className="w-3.5 h-3.5" />
                               </button>
                             )}
 
-                          {/* Detail button */}
-                          <button
-                            type="button"
-                            onClick={() => setDetailTarget(r)}
-                            className="p-1 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100"
-                            title="Xem chi tiết"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
+                            {/* CONFIRMED: Manager icon actions */}
+                            {st === ReservationStatusEnum.CONFIRMED && isManager && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => setAssignStaffTarget(r)}
+                                  className="w-7 h-7 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
+                                  title="Đổi nhân viên tiếp đón"
+                                >
+                                  <UserCheck className="w-3.5 h-3.5" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setExtendGraceTarget(r)}
+                                  className="w-7 h-7 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 flex items-center justify-center transition-colors"
+                                  title="Gia hạn ân hạn"
+                                >
+                                  <Clock className="w-3.5 h-3.5" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setReassignTarget(r)}
+                                  className="w-7 h-7 rounded-xl border border-sky-200 text-sky-700 hover:bg-sky-50 flex items-center justify-center transition-colors"
+                                  title="Đổi kho sự cố"
+                                >
+                                  <Boxes className="w-3.5 h-3.5" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setForceCancelTarget(r)}
+                                  className="w-7 h-7 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 flex items-center justify-center transition-colors"
+                                  title="Hủy khẩn cấp sự cố"
+                                >
+                                  <Flame className="w-3.5 h-3.5" />
+                                </button>
+                              </>
+                            )}
+
+                            {/* OVERDUE: Manager icon actions */}
+                            {st === ReservationStatusEnum.OVERDUE && isManager && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => setExtendGraceTarget(r)}
+                                  className="w-7 h-7 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 flex items-center justify-center transition-colors"
+                                  title="Gia hạn ân hạn"
+                                >
+                                  <Clock className="w-3.5 h-3.5" />
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => setForceCancelTarget(r)}
+                                  className="w-7 h-7 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 flex items-center justify-center transition-colors"
+                                  title="Hủy khẩn cấp"
+                                >
+                                  <Flame className="w-3.5 h-3.5" />
+                                </button>
+                              </>
+                            )}
+
+                            {/* Detail button (always available) */}
+                            <button
+                              type="button"
+                              onClick={() => setDetailTarget(r)}
+                              className="w-7 h-7 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
+                              title="Xem chi tiết"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -1051,7 +1061,6 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
         onOpenExtendGrace={(r) => setExtendGraceTarget(r)}
         onOpenReassignUnit={(r) => setReassignTarget(r)}
         onOpenForceCancel={(r) => setForceCancelTarget(r)}
-        onOpenConfirmRefund={(r) => setConfirmRefundTarget(r)}
         onOpenCancel={(r) => setCancelTarget(r)}
         onOpenManualPayment={(r) => setManualPaymentTarget(r)}
         onOpenAssignStaff={isManager ? (r) => setAssignStaffTarget(r) : undefined}
@@ -1092,13 +1101,6 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
         isOpen={Boolean(forceCancelTarget)}
         onClose={() => setForceCancelTarget(null)}
         reservation={forceCancelTarget}
-      />
-
-      <ConfirmRefundModal
-        key={confirmRefundTarget?.id ?? "confirm-refund-modal"}
-        isOpen={Boolean(confirmRefundTarget)}
-        onClose={() => setConfirmRefundTarget(null)}
-        reservation={confirmRefundTarget}
       />
 
       <CancelReservationModal

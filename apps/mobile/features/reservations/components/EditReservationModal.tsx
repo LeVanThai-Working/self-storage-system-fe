@@ -182,8 +182,6 @@ export function EditReservationModal({
     }, 0);
   }, [selectableAmenities, amenityQuantities]);
 
-  const estimatedTotalAmount = (reservation.depositAmount ?? 0) + estimatedAmenitiesTotal;
-
   const handleSave = async () => {
     setDateError(null);
     setDurationError(null);
@@ -620,8 +618,8 @@ export function EditReservationModal({
             </View>
 
             {/* Updated Pricing Preview */}
-            <View className="rounded-2xl border border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/80 p-3.5">
-              <View className="flex-row justify-between mb-1">
+            <View className="rounded-2xl border border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/80 p-3.5 space-y-1.5">
+              <View className="flex-row justify-between">
                 <Text variant="muted" className="text-xs">
                   {isEn ? "Deposit Amount:" : "Tiền đặt cọc giữ kho:"}
                 </Text>
@@ -629,21 +627,30 @@ export function EditReservationModal({
                   {formatVnd(reservation.depositAmount)}
                 </Text>
               </View>
-              <View className="flex-row justify-between mb-1.5">
-                <Text variant="muted" className="text-xs">
-                  {isEn ? "Add-on Amenities:" : "Tổng phí tiện ích:"}
-                </Text>
-                <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200">
-                  {formatVnd(estimatedAmenitiesTotal)}
-                </Text>
+              <View className="gap-0.5">
+                <View className="flex-row justify-between">
+                  <Text variant="muted" className="text-xs">
+                    {isEn ? "Add-on Amenities:" : "Tổng phí tiện ích:"}
+                  </Text>
+                  <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200">
+                    {formatVnd(estimatedAmenitiesTotal)}
+                  </Text>
+                </View>
+                {estimatedAmenitiesTotal > 0 ? (
+                  <Text className="text-[10px] text-neutral-500 dark:text-neutral-400 italic">
+                    {isEn
+                      ? "• Reserved — Pay with 1st period rent upon check-in"
+                      : "• Đã giữ chỗ — Thanh toán cùng tiền thuê kỳ đầu khi nhận kho"}
+                  </Text>
+                ) : null}
               </View>
-              <View className="flex-row justify-between border-t border-neutral-200 dark:border-neutral-700 pt-2">
+              <View className="flex-row justify-between items-center border-t border-neutral-200 dark:border-neutral-700 pt-2">
                 <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                  {isEn ? "Estimated Total:" : "Tổng giá trị đơn dự kiến:"}
+                  {isEn ? "Deposit Due for Reservation:" : "Tiền cọc cần thanh toán:"}
                 </Text>
                 <Badge variant="outline" className="border-brand/40 bg-brand-light/40">
                   <Text className="text-xs font-extrabold text-brand">
-                    {formatVnd(estimatedTotalAmount)}
+                    {formatVnd(reservation.depositAmount)}
                   </Text>
                 </Badge>
               </View>

@@ -273,26 +273,17 @@ export async function cancelContract(
 /**
  * 2.6. POST /contracts/{id}/renew — Gia hạn hợp đồng (Được chuyển tiếp sang Phụ lục RENEW)
  * Lưu ý: BE đã vô hiệu hóa endpoint trực tiếp (trả 400 MESSAGE_CODE_416).
- * FE tự động chuyển sang gọi POST /contracts/{id}/addendums với type: 'renew'.
+ * FE chuyển hoàn toàn sang gọi POST /contracts/{id}/addendums với type: 'renew'.
  */
 export async function renewContract(
   id: string,
   payload: RenewContractRequest
 ): Promise<ContractResponse> {
-  try {
-    return await createContractAddendum(id, {
-      type: ContractAddendumTypeEnum.RENEW,
-      newEndDate: payload.newEndDate,
-      notes: payload.note,
-    });
-  } catch {
-    // Fallback directly if backend still accepts old endpoint
-    const { data } = await api.post<ApiResponse<ContractResponse>>(
-      `/contracts/${id}/renew`,
-      payload
-    );
-    return data.data;
-  }
+  return await createContractAddendum(id, {
+    type: ContractAddendumTypeEnum.RENEW,
+    newEndDate: payload.newEndDate,
+    notes: payload.note,
+  });
 }
 
 /**
