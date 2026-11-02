@@ -12,8 +12,8 @@ import {
   AlertCircle,
 } from "lucide-react-native";
 import { Text } from "@/components/ui/text";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DetailHeader } from "@/components/layout/DetailHeader";
 import { SettingsButton } from "@/features/auth/components/SettingsButton";
 import { useTranslation } from "@/stores/language.store";
 import { usePublicUnitTypeDetail } from "@/features/storage-explore/hooks/useStorageExplore";
@@ -21,7 +21,7 @@ import { DetailImageCarousel } from "@/features/storage-explore/components/Detai
 import { getUnitCategoryLabel } from "@/features/storage-explore/utils/storageFormat";
 
 export default function UnitTypePublicDetailScreen() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string }>();
   const unitTypeId = params.id;
@@ -42,27 +42,26 @@ export default function UnitTypePublicDetailScreen() {
     }
   };
 
+  const images = React.useMemo(() => {
+    if (!unitType) return [];
+    const list: string[] = [];
+    if (Array.isArray(unitType.images)) {
+      list.push(...unitType.images.filter(Boolean));
+    }
+    if (unitType.imageUrl && !list.includes(unitType.imageUrl)) {
+      list.unshift(unitType.imageUrl);
+    }
+    return list;
+  }, [unitType]);
+
   return (
-    <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
+    <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
       {/* Top Header */}
-      <View className="flex-row items-center justify-between border-b border-neutral-border dark:border-neutral-800 bg-neutral-bg dark:bg-neutral-900 px-4 py-3">
-        <View className="flex-row items-center gap-3 flex-1">
-          <Pressable
-            onPress={handleBack}
-            hitSlop={10}
-            className="items-center justify-center p-1 active:opacity-70"
-          >
-            <ArrowLeft size={20} color="#0B927E" />
-          </Pressable>
-          <Text
-            numberOfLines={1}
-            className="flex-1 text-base font-bold text-neutral-dark dark:text-neutral-100"
-          >
-            {unitType?.name || t("storageExplore.unitTypeDetailTitle")}
-          </Text>
-        </View>
-        <SettingsButton />
-      </View>
+      <DetailHeader
+        title={unitType?.name || t("storageExplore.unitTypeDetailTitle")}
+        onBack={handleBack}
+        rightElement={<SettingsButton variant="brand" />}
+      />
 
       {isLoading ? (
         <ScrollView contentContainerClassName="p-4 gap-4">
@@ -110,27 +109,28 @@ export default function UnitTypePublicDetailScreen() {
         >
           {/* 1. Carousel xem ảnh */}
           <DetailImageCarousel
-            images={unitType.images}
+            images={images}
             fallbackIcon="unitType"
             fallbackLabel={unitType.name}
             height={224}
           />
 
-          {/* 2. Thông tin loại kho (Name, Category, Dimensions, Area, Volume, Features) */}
+          {/* 2. Thông tin loại kho (Name, Loại: <Loại kho>, Dimensions, Area, Volume, Features) */}
           <View className="gap-3.5 px-1">
-            <View className="flex-row items-start justify-between gap-3">
-              <Text className="flex-1 text-xl font-extrabold text-neutral-dark dark:text-neutral-100">
+            {/* Title full line & Loại: <Loại kho> */}
+            <View className="gap-1">
+              <Text className="text-xl font-extrabold text-neutral-dark dark:text-neutral-100">
                 {unitType.name}
               </Text>
               {unitType.category ? (
-                <Badge
-                  variant="outline"
-                  className="border-brand/40 bg-brand-light/40 dark:bg-brand/20"
-                >
-                  <Text className="text-xs font-semibold text-brand">
+                <Text className="text-xs text-neutral-main dark:text-neutral-300">
+                  <Text className="text-neutral-muted dark:text-neutral-400">
+                    {locale === "en" ? "Type: " : "Loại: "}
+                  </Text>
+                  <Text className="font-semibold text-neutral-dark dark:text-neutral-100">
                     {getUnitCategoryLabel(unitType.category, t)}
                   </Text>
-                </Badge>
+                </Text>
               ) : null}
             </View>
 

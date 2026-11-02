@@ -9,13 +9,16 @@ import {
   ActivityIndicator,
   Image,
   KeyboardAvoidingView,
+  Linking,
   Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DetailHeader } from "@/components/layout/DetailHeader";
 import { useTranslation } from "@/stores/language.store";
 import { useToast } from "@/stores/toast.store";
 import { useFacilityPublicDetail } from "@/features/storage-explore/hooks/useStorageExplore";
@@ -34,7 +37,6 @@ import {
 } from "@self-storage-system-fe/shared";
 import {
   AlertCircle,
-  ArrowLeft,
   Boxes,
   Building2,
   Calendar,
@@ -42,17 +44,17 @@ import {
   CheckCircle2,
   ClipboardCheck,
   Clock,
+  ExternalLink,
+  FileCheck,
   FileSignature,
   FileText,
   LayoutGrid,
   Layers,
   MapPin,
   Minus,
-  MinusCircle,
   Plus,
   QrCode,
   Receipt,
-  RefreshCw,
   ShieldAlert,
   Sparkles,
   UserCheck,
@@ -80,6 +82,7 @@ import {
   getPendingRemoveAmenityQty,
   getRemainingDays,
   getRentalUnitLabel,
+  getSignedContractFiles,
   isWarehouseRackContract,
   resolveReservationErrorMessage,
 } from "@/features/contracts/utils/contractFormat";
@@ -111,7 +114,6 @@ export default function ContractDetailScreen() {
   // Payment QR Modal state
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [activePayment, setActivePayment] = useState<PaymentResponse | null>(null);
-  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
 
   // Create Addendum Modal state (ADD / REMOVE)
   const [addendumModalType, setAddendumModalType] = useState<ContractAddendumTypeEnum | null>(null);
@@ -130,6 +132,30 @@ export default function ContractDetailScreen() {
     null
   );
   const [cancelAddendumReason, setCancelAddendumReason] = useState("");
+
+  // Fullscreen preview image state for signed contract scan
+  const [previewImage, setPreviewImage] = useState<{ url: string; title: string } | null>(null);
+
+  const handleOpenFile = async (url: string, title?: string) => {
+    const isPdf = url.toLowerCase().includes(".pdf");
+    if (!isPdf) {
+      setPreviewImage({ url, title: title || (isEn ? "Contract Document" : "Tài liệu hợp đồng") });
+      return;
+    }
+
+    try {
+      if (Platform.OS === "web") {
+        window.open(url, "_blank");
+        return;
+      }
+      await WebBrowser.openBrowserAsync(url, {
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+        toolbarColor: "#0B927E",
+      });
+    } catch {
+      Linking.openURL(url);
+    }
+  };
 
   // Mutations
   const signContractMutation = useCustomerSignContract(contractId);
@@ -220,35 +246,6 @@ export default function ContractDetailScreen() {
     }
   };
 
-  const handleCheckPaymentStatus = async () => {
-    if (!activePayment?.id) return;
-    setIsCheckingPayment(true);
-    try {
-      const latest = await getPaymentByIdApi(activePayment.id);
-      setActivePayment(latest);
-      if (latest.status === PaymentStatusEnum.PAID) {
-        toast.success(
-          isEn
-            ? "Payment confirmed! Updating contract..."
-            : "Đã xác nhận thanh toán thành công! Đang cập nhật hợp đồng..."
-        );
-        await refetch();
-        setPaymentModalOpen(false);
-      } else {
-        toast.info(
-          isEn
-            ? "Waiting for bank transfer confirmation..."
-            : "Hệ thống đang chờ nhận giao dịch chuyển khoản..."
-        );
-      }
-    } catch (err) {
-      const resolved = resolveReservationErrorMessage(err, currentLocale, "payment");
-      toast.error(resolved.message);
-    } finally {
-      setIsCheckingPayment(false);
-    }
-  };
-
   const handleCustomerSignContract = async () => {
     if (!contractTermsAccepted) {
       toast.error(
@@ -278,6 +275,7 @@ export default function ContractDetailScreen() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const openAddendumModal = (type: ContractAddendumTypeEnum) => {
     setAddendumModalType(type);
     setAddendumQuantities({});
@@ -414,13 +412,11 @@ export default function ContractDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-        <View className="flex-row items-center gap-3 px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-          <Pressable onPress={handleBack} hitSlop={10} className="p-1">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <Skeleton className="h-6 w-48 rounded-lg" />
-        </View>
+      <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
+        <DetailHeader
+          title={<Skeleton className="h-6 w-48 rounded-lg bg-white/20" />}
+          onBack={handleBack}
+        />
         <View className="p-4 gap-4">
           <Skeleton className="h-32 w-full rounded-3xl" />
           <Skeleton className="h-56 w-full rounded-3xl" />
@@ -433,15 +429,11 @@ export default function ContractDetailScreen() {
   if (isError || !contract) {
     const resolvedErr = resolveReservationErrorMessage(error, currentLocale, "contract");
     return (
-      <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-        <View className="flex-row items-center gap-3 px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-          <Pressable onPress={handleBack} hitSlop={10} className="p-1">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <Text className="text-base font-extrabold text-neutral-dark dark:text-neutral-100">
-            {isEn ? "Contract Details" : "Chi tiết hợp đồng thuê kho"}
-          </Text>
-        </View>
+      <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
+        <DetailHeader
+          title={isEn ? "Contract Details" : "Chi tiết hợp đồng thuê kho"}
+          onBack={handleBack}
+        />
         <View className="flex-1 items-center justify-center p-6">
           <AlertCircle size={40} color="#EF4444" />
           <Text className="mt-3 text-base font-bold text-neutral-dark dark:text-neutral-100 text-center">
@@ -478,37 +470,26 @@ export default function ContractDetailScreen() {
     contract.refundAmount > 0 ||
     contract.additionalPaymentRequired > 0;
 
-  return (
-    <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-      {/* Top Bar */}
-      <View className="flex-row items-center justify-between px-4 py-3 bg-white dark:bg-neutral-900 border-b border-neutral-border dark:border-neutral-800">
-        <View className="flex-row items-center gap-3 flex-1">
-          <Pressable onPress={handleBack} hitSlop={10} className="p-1 active:opacity-70">
-            <ArrowLeft size={22} color="#0F172A" />
-          </Pressable>
-          <View className="flex-1">
-            <Text
-              className="text-sm font-extrabold text-neutral-dark dark:text-neutral-100"
-              numberOfLines={1}
-            >
-              #{contract.contractCode}
-            </Text>
-            <Text variant="muted" className="text-[11px]">
-              {getContractSourceLabel(contract.source, currentLocale)} •{" "}
-              {formatDateTime(contract.createdAt)}
-            </Text>
-          </View>
-        </View>
+  const signedContractFiles = getSignedContractFiles(contract);
 
-        <Badge
-          variant="outline"
-          className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1`}
-        >
-          <Text className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
-            {statusMeta.label}
-          </Text>
-        </Badge>
-      </View>
+  return (
+    <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
+      {/* Top Bar with Brand Detail Header */}
+      <DetailHeader
+        title={`#${contract.contractCode}`}
+        subtitle={`${getContractSourceLabel(contract.source, currentLocale)} • ${formatDateTime(contract.createdAt)}`}
+        onBack={handleBack}
+        rightElement={
+          <Badge
+            variant="outline"
+            className={`border ${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-3 py-1`}
+          >
+            <Text className={`text-xs font-bold ${statusMeta.badgeTextClass}`}>
+              {statusMeta.label}
+            </Text>
+          </Badge>
+        }
+      />
 
       <ScrollView
         contentContainerClassName="p-4 pb-16 gap-4"
@@ -1042,21 +1023,79 @@ export default function ContractDetailScreen() {
               </Text>
             </View>
           ) : null}
+        </View>
 
-          {contract.notes ? (
-            <View className="rounded-2xl border border-neutral-border dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-800/50 p-3 gap-1">
-              <View className="flex-row items-center gap-1.5">
-                <FileText size={13} color="#647B80" />
-                <Text className="text-[11px] font-bold text-neutral-700 dark:text-neutral-300">
-                  {isEn ? "Contract Notes:" : "Ghi chú hợp đồng:"}
+        {/* 3B. Digitized Signed Physical Contract Scans */}
+        {signedContractFiles.length > 0 ? (
+          <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center gap-2">
+                <FileCheck size={18} color="#0B927E" />
+                <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
+                  {isEn ? "Digitized Signed Contract Scans" : "Hồ sơ Hợp đồng Ký sống (Bản scan)"}
                 </Text>
               </View>
-              <Text className="text-xs text-neutral-600 dark:text-neutral-300">
-                {contract.notes}
-              </Text>
+              <Badge
+                variant="outline"
+                className="border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5"
+              >
+                <Text className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                  {signedContractFiles.length} {isEn ? "files" : "tài liệu"}
+                </Text>
+              </Badge>
             </View>
-          ) : null}
-        </View>
+
+            <Text variant="muted" className="text-xs leading-4">
+              {isEn
+                ? "Scanned pages of the paper contract with live signatures, stored securely for legal compliance."
+                : "Các trang hợp đồng giấy có chữ ký trực tiếp của 2 bên đã được số hóa và lưu trữ toàn vẹn."}
+            </Text>
+
+            <View className="flex-row flex-wrap gap-2.5 pt-1">
+              {signedContractFiles.map((file, idx) => {
+                const isPdf = file.url.toLowerCase().includes(".pdf");
+                return (
+                  <Pressable
+                    key={`${file.url}-${idx}`}
+                    onPress={() =>
+                      handleOpenFile(
+                        file.url,
+                        isEn ? `Contract scan ${idx + 1}` : `Bản scan hợp đồng ${idx + 1}`
+                      )
+                    }
+                    className="w-[48%] rounded-2xl border border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60 p-2.5 items-center justify-center gap-2 overflow-hidden active:opacity-80"
+                  >
+                    {isPdf ? (
+                      <View className="h-28 w-full items-center justify-center rounded-xl bg-red-50 dark:bg-red-950/30">
+                        <FileText size={32} color="#EF4444" />
+                        <Text className="mt-1 text-[11px] font-bold text-neutral-600 dark:text-neutral-400">
+                          PDF Document
+                        </Text>
+                      </View>
+                    ) : (
+                      <View className="h-28 w-full rounded-xl overflow-hidden bg-neutral-200 dark:bg-neutral-800">
+                        <Image
+                          source={{ uri: file.url }}
+                          className="h-full w-full"
+                          resizeMode="cover"
+                        />
+                      </View>
+                    )}
+                    <View className="flex-row items-center justify-between w-full px-1">
+                      <Text
+                        className="text-xs font-semibold text-neutral-dark dark:text-neutral-200 flex-1 mr-1"
+                        numberOfLines={1}
+                      >
+                        {isEn ? `File ${idx + 1}` : `Bản ký ${idx + 1}`}
+                      </Text>
+                      <ExternalLink size={13} color="#0B927E" />
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        ) : null}
 
         {/* 4. Amenities & Financial Breakdown */}
         <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3.5">
@@ -1068,33 +1107,6 @@ export default function ContractDetailScreen() {
               </Text>
             </View>
           </View>
-
-          {/* Action Buttons to Request ADD or REMOVE Amenity Addendums when ACTIVE */}
-          {isActive ? (
-            <View className="flex-row flex-wrap gap-2">
-              <Pressable
-                onPress={() => openAddendumModal(ContractAddendumTypeEnum.ADD)}
-                className="flex-1 min-w-[140px] flex-row items-center justify-center gap-1.5 rounded-xl bg-brand py-2.5 px-3 active:opacity-90"
-              >
-                <Plus size={14} color="#FFFFFF" />
-                <Text className="text-xs font-bold text-white">
-                  {isEn ? "Add Amenities" : "Thuê thêm tiện ích"}
-                </Text>
-              </Pressable>
-
-              {contract.amenities && contract.amenities.length > 0 ? (
-                <Pressable
-                  onPress={() => openAddendumModal(ContractAddendumTypeEnum.REMOVE)}
-                  className="flex-1 min-w-[140px] flex-row items-center justify-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/40 py-2.5 px-3 active:opacity-90"
-                >
-                  <MinusCircle size={14} color="#D97706" />
-                  <Text className="text-xs font-bold text-amber-800 dark:text-amber-300">
-                    {isEn ? "Remove / Return" : "Yêu cầu tháo dỡ / trả bớt"}
-                  </Text>
-                </Pressable>
-              ) : null}
-            </View>
-          ) : null}
 
           {/* Registered Active Amenities */}
           {contract.amenities && contract.amenities.length > 0 ? (
@@ -1944,6 +1956,54 @@ export default function ContractDetailScreen() {
             </Pressable>
           </View>
         </View>
+      </Modal>
+
+      {/* MODAL 5: Fullscreen Preview Image for Signed Contract Scans */}
+      <Modal
+        visible={Boolean(previewImage)}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPreviewImage(null)}
+      >
+        <SafeAreaView className="flex-1 bg-black/95 justify-between">
+          <View className="flex-row items-center justify-between p-4 bg-black/40">
+            <Text className="text-sm font-bold text-white flex-1 mr-3" numberOfLines={1}>
+              {previewImage?.title}
+            </Text>
+            <Pressable
+              onPress={() => setPreviewImage(null)}
+              className="h-9 w-9 items-center justify-center rounded-full bg-white/20 active:opacity-70"
+            >
+              <X size={18} color="#FFFFFF" />
+            </Pressable>
+          </View>
+
+          <View className="flex-1 items-center justify-center p-3">
+            {previewImage?.url ? (
+              <Image
+                source={{ uri: previewImage.url }}
+                className="h-full w-full"
+                resizeMode="contain"
+              />
+            ) : null}
+          </View>
+
+          <View className="p-4 items-center bg-black/40">
+            <Pressable
+              onPress={() => {
+                if (previewImage?.url) {
+                  Linking.openURL(previewImage.url);
+                }
+              }}
+              className="flex-row items-center gap-1.5 rounded-full bg-white/20 px-4 py-2 active:opacity-70"
+            >
+              <ExternalLink size={14} color="#FFFFFF" />
+              <Text className="text-xs font-semibold text-white">
+                {isEn ? "Open in External Browser" : "Mở trong trình duyệt ngoài"}
+              </Text>
+            </Pressable>
+          </View>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );

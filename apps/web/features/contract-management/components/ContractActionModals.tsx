@@ -29,7 +29,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
-import { CloudinaryFolderEnum } from "@self-storage-system-fe/shared";
+import {
+  CloudinaryFolderEnum,
+  extractSignedContractFileUrls,
+} from "@self-storage-system-fe/shared";
 import { useFacilityAmenityOfferings } from "@/features/request-center/hooks";
 import {
   useApproveContractAddendum,
@@ -490,12 +493,12 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
   const [verifiedUnitAndPin, setVerifiedUnitAndPin] = useState(true);
   const [verifiedContractPaperSigned, setVerifiedContractPaperSigned] = useState(true);
   const [signedContractFileUrls, setSignedContractFileUrls] = useState<string[]>(
-    contract?.signedContractFileUrls ?? []
+    extractSignedContractFileUrls(contract)
   );
   const [prevContractId, setPrevContractId] = useState(contract?.id);
   if (contract?.id !== prevContractId) {
     setPrevContractId(contract?.id);
-    setSignedContractFileUrls(contract?.signedContractFileUrls ?? []);
+    setSignedContractFileUrls(extractSignedContractFileUrls(contract));
   }
 
   const [termsAccepted, setTermsAccepted] = useState(true);

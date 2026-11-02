@@ -2,7 +2,6 @@ import React, { useMemo, useState } from "react";
 import { View, ScrollView, Pressable, ActivityIndicator } from "react-native";
 import { Layers, CheckCircle2, AlertCircle, Maximize2, Sparkles, Boxes } from "lucide-react-native";
 import { Text } from "@/components/ui/text";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/stores/language.store";
 import { StorageUnitStatusEnum, type StorageUnitResponse } from "@self-storage-system-fe/shared";
@@ -15,6 +14,60 @@ interface FacilityMapPreviewSectionProps {
   selectedUnitId?: string | null;
   onOpenFullMap: () => void;
 }
+
+const TILE_STYLES: Record<
+  StorageUnitStatusEnum,
+  { bg: string; border: string; text: string; dot: string; labelEn: string; labelVi: string }
+> = {
+  [StorageUnitStatusEnum.AVAILABLE]: {
+    bg: "bg-emerald-50 dark:bg-emerald-950/40",
+    border: "border-emerald-500",
+    text: "text-emerald-800 dark:text-emerald-300",
+    dot: "#10B981",
+    labelEn: "Available",
+    labelVi: "Còn trống",
+  },
+  [StorageUnitStatusEnum.RESERVED]: {
+    bg: "bg-amber-50 dark:bg-amber-950/40",
+    border: "border-amber-400",
+    text: "text-amber-800 dark:text-amber-300",
+    dot: "#F59E0B",
+    labelEn: "Reserved",
+    labelVi: "Đã giữ chỗ",
+  },
+  [StorageUnitStatusEnum.OCCUPIED]: {
+    bg: "bg-rose-50 dark:bg-rose-950/40",
+    border: "border-rose-400",
+    text: "text-rose-800 dark:text-rose-300",
+    dot: "#EF4444",
+    labelEn: "Occupied",
+    labelVi: "Đang thuê",
+  },
+  [StorageUnitStatusEnum.UNDER_MAINTENANCE]: {
+    bg: "bg-slate-100 dark:bg-slate-800",
+    border: "border-slate-300 dark:border-slate-700",
+    text: "text-slate-600 dark:text-slate-400",
+    dot: "#64748B",
+    labelEn: "Maintenance",
+    labelVi: "Bảo trì",
+  },
+  [StorageUnitStatusEnum.PENDING_CLEARANCE]: {
+    bg: "bg-red-900/10 dark:bg-red-950/60",
+    border: "border-red-800",
+    text: "text-red-900 dark:text-red-300",
+    dot: "#7F1D1D",
+    labelEn: "Clearance",
+    labelVi: "Chờ dọn kho",
+  },
+  [StorageUnitStatusEnum.INACTIVE]: {
+    bg: "bg-slate-50 dark:bg-neutral-900",
+    border: "border-slate-200 dark:border-neutral-800",
+    text: "text-slate-400 dark:text-slate-500",
+    dot: "#94A3B8",
+    labelEn: "Inactive",
+    labelVi: "Ngừng dùng",
+  },
+};
 
 const NO_ZONE = "__no_zone__";
 
@@ -82,22 +135,14 @@ export function FacilityMapPreviewSection({
   return (
     <View className="gap-3.5">
       {/* Header */}
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-2 flex-1">
-          <Layers size={18} color="#0B927E" />
-          <Text
-            numberOfLines={1}
-            className="flex-1 text-base font-bold text-neutral-dark dark:text-neutral-100"
-          >
-            {t("facilityDetail.mapSectionTitle")}
-          </Text>
-        </View>
-
-        <Badge variant="outline" className="border-brand/40 bg-brand-light/40 dark:bg-brand/20">
-          <Text className="text-xs font-semibold text-brand">
-            {t("facilityDetail.mapSectionBadge")}
-          </Text>
-        </Badge>
+      <View className="flex-row items-center gap-2">
+        <Layers size={18} color="#0B927E" />
+        <Text
+          numberOfLines={1}
+          className="flex-1 text-base font-bold text-neutral-dark dark:text-neutral-100"
+        >
+          {t("facilityDetail.mapSectionTitle")}
+        </Text>
       </View>
 
       {/* Main Preview Card */}
@@ -112,13 +157,18 @@ export function FacilityMapPreviewSection({
               {t("facilityDetail.mapSelectUnitPrompt")}
             </Text>
           </View>
-          <View className="items-end">
-            <View className="flex-row items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700">
+          <View className="items-end gap-1">
+            <View className="flex-row items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700">
               <View className="w-2 h-2 rounded-full bg-emerald-500" />
               <Text className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
                 {availableCount} {isEn ? "vacant" : "trống"}
               </Text>
             </View>
+            {units.length > availableCount && (
+              <Text variant="muted" className="text-[10px]">
+                {units.length - availableCount} {isEn ? "occupied/reserved" : "đã kín / đặt"}
+              </Text>
+            )}
           </View>
         </View>
 
@@ -192,7 +242,12 @@ export function FacilityMapPreviewSection({
                           isActive ? "text-white" : "text-neutral-600 dark:text-neutral-300"
                         }`}
                       >
-                        {isEn ? `Floor ${floor}` : `Tầng ${floor}`}
+                        {isEn ? `Floor ${floor}` : `Tầng ${floor}`} (
+                        {Array.from(floorMap.get(floor)?.values() || []).reduce(
+                          (sum, list) => sum + list.length,
+                          0
+                        )}
+                        )
                       </Text>
                     </Pressable>
                   );
@@ -234,6 +289,8 @@ export function FacilityMapPreviewSection({
                           {zoneUnits.map((u) => {
                             const isAvailable = u.status === StorageUnitStatusEnum.AVAILABLE;
                             const isSelected = selectedUnitId === u.id;
+                            const style =
+                              TILE_STYLES[u.status] ?? TILE_STYLES[StorageUnitStatusEnum.INACTIVE];
 
                             return (
                               <Pressable
@@ -247,31 +304,24 @@ export function FacilityMapPreviewSection({
                                 className={`rounded-2xl border p-2.5 w-[31%] min-h-[68px] justify-between ${
                                   isSelected
                                     ? "border-brand bg-brand-light/40 dark:bg-brand/20 shadow-sm ring-2 ring-brand"
-                                    : isAvailable
-                                      ? "border-emerald-500 bg-emerald-50/90 dark:bg-emerald-950/40 active:scale-95"
-                                      : u.status === StorageUnitStatusEnum.RESERVED
-                                        ? "border-amber-300 bg-amber-50/60 dark:bg-amber-950/20 opacity-60"
-                                        : "border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60 opacity-50"
-                                }`}
+                                    : style.border
+                                } ${style.bg} ${!isAvailable ? "opacity-80" : "active:scale-95"}`}
                               >
                                 <View className="flex-row items-center justify-between">
                                   <Text
                                     className={`font-mono font-extrabold text-xs ${
-                                      isSelected
-                                        ? "text-brand"
-                                        : isAvailable
-                                          ? "text-emerald-800 dark:text-emerald-300"
-                                          : "text-neutral-500 dark:text-neutral-400"
+                                      isSelected ? "text-brand" : style.text
                                     }`}
                                   >
                                     #{u.unitNumber}
                                   </Text>
                                   {isSelected ? (
                                     <CheckCircle2 size={13} color="#0B927E" />
-                                  ) : isAvailable ? (
-                                    <View className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                                   ) : (
-                                    <View className="w-1.5 h-1.5 rounded-full bg-neutral-400" />
+                                    <View
+                                      style={{ backgroundColor: style.dot }}
+                                      className="w-1.5 h-1.5 rounded-full"
+                                    />
                                   )}
                                 </View>
 
@@ -284,18 +334,10 @@ export function FacilityMapPreviewSection({
                                   </Text>
                                   <Text
                                     className={`text-[9px] font-bold ${
-                                      isAvailable
-                                        ? "text-emerald-700 dark:text-emerald-300"
-                                        : "text-neutral-400"
+                                      isSelected ? "text-brand" : style.text
                                     }`}
                                   >
-                                    {isAvailable
-                                      ? isEn
-                                        ? "Select"
-                                        : "Chọn kho"
-                                      : isEn
-                                        ? "Occupied"
-                                        : "Đã kín"}
+                                    {isEn ? style.labelEn : style.labelVi}
                                   </Text>
                                 </View>
                               </Pressable>

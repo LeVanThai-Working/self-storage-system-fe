@@ -26,8 +26,8 @@ import type {
   StorageUnitResponse,
 } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DetailHeader } from "@/components/layout/DetailHeader";
 import { SettingsButton } from "@/features/auth/components/SettingsButton";
 import { useAuthStore } from "@/features/auth/stores/auth.store";
 import { useTranslation } from "@/stores/language.store";
@@ -41,7 +41,6 @@ import { FacilityMapPreviewSection } from "@/features/storage-explore/components
 import { MobileMapLayoutModal } from "@/features/reservations/components/MobileMapLayoutModal";
 
 const MAX_PREVIEW_OFFERINGS = 5;
-const CARD_GAP = 8;
 
 export default function FacilityPublicDetailScreen() {
   const { t, locale } = useTranslation();
@@ -75,12 +74,6 @@ export default function FacilityPublicDetailScreen() {
   const previewOfferings = useMemo(
     () => rawUnitOfferings.slice(0, MAX_PREVIEW_OFFERINGS),
     [rawUnitOfferings]
-  );
-
-  // Calculate card width so at most 3 cards fit on the screen at once
-  const compactCardWidth = useMemo(
-    () => Math.max(Math.floor((sectionWidth - CARD_GAP * 2) / 3), 96),
-    [sectionWidth]
   );
 
   // Collect images for Facility Carousel
@@ -216,26 +209,13 @@ export default function FacilityPublicDetailScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
+    <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
       {/* Custom Top Header with Back Button & Settings */}
-      <View className="flex-row items-center justify-between border-b border-neutral-border dark:border-neutral-800 bg-neutral-bg dark:bg-neutral-900 px-4 py-3">
-        <View className="flex-row items-center gap-3 flex-1">
-          <Pressable
-            onPress={handleBack}
-            hitSlop={10}
-            className="items-center justify-center p-1 active:opacity-70"
-          >
-            <ArrowLeft size={20} color="#0B927E" />
-          </Pressable>
-          <Text
-            numberOfLines={1}
-            className="flex-1 text-base font-bold text-neutral-dark dark:text-neutral-100"
-          >
-            {facility?.name || t("facilityDetail.screenTitle")}
-          </Text>
-        </View>
-        <SettingsButton />
-      </View>
+      <DetailHeader
+        title={facility?.name || t("facilityDetail.screenTitle")}
+        onBack={handleBack}
+        rightElement={<SettingsButton variant="brand" />}
+      />
 
       {/* Loading Skeleton State */}
       {isLoading ? (
@@ -304,17 +284,9 @@ export default function FacilityPublicDetailScreen() {
 
             {/* 2. Thông tin cơ sở (Không nằm trong Card) */}
             <View className="gap-3 px-1">
-              <View className="flex-row items-start justify-between gap-3">
-                <Text className="flex-1 text-xl font-extrabold text-neutral-dark dark:text-neutral-100">
-                  {facility.name}
-                </Text>
-                <Badge
-                  variant="outline"
-                  className="border-brand/40 bg-brand-light/40 dark:bg-brand/20"
-                >
-                  <Text className="text-xs font-semibold text-brand">{facility.city}</Text>
-                </Badge>
-              </View>
+              <Text className="text-xl font-extrabold text-neutral-dark dark:text-neutral-100">
+                {facility.name}
+              </Text>
 
               {/* Địa chỉ */}
               <View className="flex-row items-start gap-2.5">
@@ -410,7 +382,7 @@ export default function FacilityPublicDetailScreen() {
               </Pressable>
             </View>
 
-            {/* Horizontal Scroll of up to 5 compact storage cards (max 3 visible per screen) */}
+            {/* Storage Packages */}
             {previewOfferings.length === 0 ? (
               <View className="items-center justify-center rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6">
                 <Warehouse size={28} color="#647B80" />
@@ -419,45 +391,27 @@ export default function FacilityPublicDetailScreen() {
                 </Text>
               </View>
             ) : (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                decelerationRate="fast"
-                snapToInterval={compactCardWidth + CARD_GAP}
-                contentContainerStyle={{ gap: CARD_GAP }}
-              >
+              <View className="gap-3">
                 {previewOfferings.map((offering) => (
                   <UnitTypeOfferingCard
                     key={offering.id}
                     offering={offering}
+                    facilityId={facility.id}
+                    facilityName={facility.name}
                     onSelectOffering={handleSelectOffering}
-                    compact
-                    cardWidth={compactCardWidth}
                   />
                 ))}
-              </ScrollView>
+              </View>
             )}
           </View>
 
           {/* ── Section 2.3: Facility Amenity Offerings ───────────────────── */}
           <View className="gap-3.5">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2 flex-1">
-                <Sparkles size={18} color="#0B927E" />
-                <Text className="text-base font-bold text-neutral-dark dark:text-neutral-100 flex-1">
-                  {t("facilityDetail.amenitiesSectionTitle")}
-                </Text>
-              </View>
-              <Badge
-                variant="outline"
-                className="border-brand/40 bg-brand-light/40 dark:bg-brand/20"
-              >
-                <Text className="text-xs font-bold text-brand">
-                  {t("facilityDetail.amenitiesCount", {
-                    count: amenityOfferings.length,
-                  })}
-                </Text>
-              </Badge>
+            <View className="flex-row items-center gap-2">
+              <Sparkles size={18} color="#0B927E" />
+              <Text className="text-base font-bold text-neutral-dark dark:text-neutral-100 flex-1">
+                {t("facilityDetail.amenitiesSectionTitle")}
+              </Text>
             </View>
 
             {amenityOfferings.length === 0 ? (
@@ -469,7 +423,12 @@ export default function FacilityPublicDetailScreen() {
             ) : (
               <View className="gap-3">
                 {amenityOfferings.map((amenityItem) => (
-                  <AmenityOfferingCard key={amenityItem.id} offering={amenityItem} />
+                  <AmenityOfferingCard
+                    key={amenityItem.id}
+                    offering={amenityItem}
+                    facilityId={facility.id}
+                    facilityName={facility.name}
+                  />
                 ))}
               </View>
             )}

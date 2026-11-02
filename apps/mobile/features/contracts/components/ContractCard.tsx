@@ -16,7 +16,6 @@ import {
   CheckCircle2,
   Clock,
   Droplets,
-  KeyRound,
   LayoutGrid,
   ShieldAlert,
   Sparkles,
@@ -41,7 +40,6 @@ interface ContractCardProps {
   unitNumber?: string;
   onPress: (contract: ContractResponse) => void;
   onUnlockPress?: (contract: ContractResponse) => void;
-  onViewPinPress?: (contract: ContractResponse) => void;
   onRackMapPress?: (contract: ContractResponse) => void;
   onReportIncidentPress?: (contract: ContractResponse) => void;
   isUnlocking?: boolean;
@@ -54,7 +52,6 @@ export function ContractCard({
   unitNumber,
   onPress,
   onUnlockPress,
-  onViewPinPress,
   onRackMapPress,
   onReportIncidentPress,
   isUnlocking = false,
@@ -242,24 +239,8 @@ export function ContractCard({
       ) : null}
 
       {/* Quick Action Controls for Active Contracts */}
-      {isActive ? (
+      {isActive && ((isWarehouse && onRackMapPress) || onReportIncidentPress) ? (
         <View className="flex-row items-center gap-2 pt-0.5">
-          {/* PIN button for Self-Storage */}
-          {!isWarehouse && onViewPinPress ? (
-            <Pressable
-              onPress={(e) => {
-                e.stopPropagation();
-                onViewPinPress(contract);
-              }}
-              className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3.5 py-2.5 active:opacity-80"
-            >
-              <KeyRound size={14} color="#0B927E" />
-              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200">
-                {isEn ? "Access PIN" : "Mã PIN"}
-              </Text>
-            </Pressable>
-          ) : null}
-
           {/* Rack Map button ONLY for Warehouse Rack contracts */}
           {isWarehouse && onRackMapPress ? (
             <Pressable

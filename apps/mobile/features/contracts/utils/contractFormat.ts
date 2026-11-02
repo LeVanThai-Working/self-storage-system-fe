@@ -41,9 +41,9 @@ export function getContractStatusMeta(
         description: isEn
           ? "Review and sign your lease contract. Once both you and facility staff have signed, your storage unit becomes active."
           : "Kiểm tra thông tin và ký xác nhận hợp đồng. Khi cả Khách hàng và phía cơ sở đã ký, hợp đồng sẽ tự động kích hoạt.",
-        badgeBgClass: "bg-amber-50 dark:bg-amber-950/40",
-        badgeBorderClass: "border-amber-300 dark:border-amber-800",
-        badgeTextClass: "text-amber-700 dark:text-amber-300",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-amber-400 dark:border-amber-500",
+        badgeTextClass: "text-amber-600 dark:text-amber-400",
         accentColor: "#D97706",
       };
     case ContractStatusEnum.ACTIVE:
@@ -52,8 +52,8 @@ export function getContractStatusMeta(
         description: isEn
           ? "Your storage unit is active and ready for 24/7 access."
           : "Kho lưu trữ đang trong thời hạn thuê và sẵn sàng ra vào 24/7.",
-        badgeBgClass: "bg-brand-light/40 dark:bg-brand/20",
-        badgeBorderClass: "border-brand/40",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-brand",
         badgeTextClass: "text-brand",
         accentColor: "#0B927E",
       };
@@ -63,8 +63,8 @@ export function getContractStatusMeta(
         description: isEn
           ? "Lease period has ended. Please contact the facility to renew or check-out."
           : "Hợp đồng đã quá ngày hết hạn. Vui lòng liên hệ cơ sở để gia hạn hoặc làm thủ tục trả kho.",
-        badgeBgClass: "bg-red-50 dark:bg-red-950/40",
-        badgeBorderClass: "border-red-300 dark:border-red-800",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-red-400 dark:border-red-500",
         badgeTextClass: "text-red-600 dark:text-red-400",
         accentColor: "#EF4444",
       };
@@ -74,10 +74,10 @@ export function getContractStatusMeta(
         description: isEn
           ? "Storage unit has been returned and deposit settlement is complete."
           : "Đã hoàn tất thủ tục trả kho và quyết toán tiền đặt cọc.",
-        badgeBgClass: "bg-indigo-50 dark:bg-indigo-950/40",
-        badgeBorderClass: "border-indigo-300 dark:border-indigo-800",
-        badgeTextClass: "text-indigo-700 dark:text-indigo-300",
-        accentColor: "#4F46E5",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-emerald-500 dark:border-emerald-600",
+        badgeTextClass: "text-emerald-700 dark:text-emerald-400",
+        accentColor: "#10B981",
       };
     case ContractStatusEnum.CANCELLED:
       return {
@@ -85,10 +85,10 @@ export function getContractStatusMeta(
         description: isEn
           ? "This draft contract was cancelled before check-in."
           : "Hợp đồng nháp đã được hủy trước khi bàn giao kho.",
-        badgeBgClass: "bg-neutral-100 dark:bg-neutral-800",
-        badgeBorderClass: "border-neutral-300 dark:border-neutral-700",
-        badgeTextClass: "text-neutral-600 dark:text-neutral-400",
-        accentColor: "#647B80",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-red-400 dark:border-red-500",
+        badgeTextClass: "text-red-600 dark:text-red-400",
+        accentColor: "#EF4444",
       };
     case ContractStatusEnum.TERMINATED:
       return {
@@ -96,21 +96,113 @@ export function getContractStatusMeta(
         description: isEn
           ? "This contract was terminated early by facility management."
           : "Hợp đồng đã được chấm dứt trước hạn bởi quản lý cơ sở.",
-        badgeBgClass: "bg-red-50 dark:bg-red-950/40",
-        badgeBorderClass: "border-red-300 dark:border-red-800",
-        badgeTextClass: "text-red-700 dark:text-red-400",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
+        badgeBorderClass: "border-red-400 dark:border-red-500",
+        badgeTextClass: "text-red-600 dark:text-red-400",
         accentColor: "#DC2626",
       };
     default:
       return {
         label: String(status),
         description: "",
-        badgeBgClass: "bg-neutral-100 dark:bg-neutral-800",
+        badgeBgClass: "bg-white dark:bg-neutral-900",
         badgeBorderClass: "border-neutral-300 dark:border-neutral-700",
         badgeTextClass: "text-neutral-600 dark:text-neutral-400",
         accentColor: "#647B80",
       };
   }
+}
+
+/**
+ * Determines whether a contract belongs to a Warehouse Rack model (managed by facility staff
+ * with pallets, racks, tiers, and SKU inventory) or a Self-Storage unit model (rented as a whole
+ * private room where customer manages their own belongings with a PIN, without rack maps or SKU handling).
+ */
+export function isWarehouseRackContract(contract?: Partial<ContractResponse> | null): boolean {
+  if (!contract) return false;
+
+  // 1. Explicit check: If rentalTargetType is explicitly storage_unit, it is NOT a warehouse rack
+  if (String(contract.rentalTargetType).toLowerCase() === "storage_unit") {
+    return false;
+  }
+
+  // 2. Explicit check: If rentalTargetType is explicitly storage_rack, it IS a warehouse rack
+  if (String(contract.rentalTargetType).toLowerCase() === "storage_rack") {
+    return true;
+  }
+
+  // 3. Category inspection from offering / unitType / storageUnit
+  const category =
+    (contract as any).unitType?.category ||
+    (contract as any).offering?.unitType?.category ||
+    (contract as any).facilityUnitTypeOffering?.unitType?.category ||
+    (contract as any).storageUnit?.unitType?.category;
+
+  if (category) {
+    return (
+      category === UnitTypeCategoryEnum.WAREHOUSE_RACK ||
+      String(category).toLowerCase() === "warehouse_rack"
+    );
+  }
+
+  // 4. Default: Whole-unit Self Storage (NOT warehouse rack)
+  return false;
+}
+
+export interface NormalizedSignedContractFile {
+  url: string;
+  fileHash?: string | null;
+  uploadedAt?: string | null;
+}
+
+/**
+ * Extracts and normalizes signed contract documents from either `signedContractFiles` or `signedContractFileUrls`.
+ */
+export function getSignedContractFiles(
+  contract?: Partial<ContractResponse> | null
+): NormalizedSignedContractFile[] {
+  if (!contract) return [];
+  const results: NormalizedSignedContractFile[] = [];
+  const seenUrls = new Set<string>();
+
+  const rawFiles = (contract as any)?.signedContractFiles;
+  if (Array.isArray(rawFiles)) {
+    for (const item of rawFiles) {
+      if (!item) continue;
+      if (typeof item === "string") {
+        const trimmed = item.trim();
+        if (trimmed && !seenUrls.has(trimmed)) {
+          seenUrls.add(trimmed);
+          results.push({ url: trimmed });
+        }
+      } else if (typeof item === "object" && typeof item.url === "string") {
+        const trimmed = item.url.trim();
+        if (trimmed && !seenUrls.has(trimmed)) {
+          seenUrls.add(trimmed);
+          results.push({
+            url: trimmed,
+            fileHash: item.fileHash ?? null,
+            uploadedAt: item.uploadedAt ?? null,
+          });
+        }
+      }
+    }
+  }
+
+  const rawUrls = (contract as any)?.signedContractFileUrls;
+  if (Array.isArray(rawUrls)) {
+    for (const u of rawUrls) {
+      if (typeof u === "string") {
+        const trimmed = u.trim();
+        if (trimmed && !seenUrls.has(trimmed)) {
+          seenUrls.add(trimmed);
+          results.push({ url: trimmed });
+        }
+      }
+    }
+  }
+
+  return results;
 }
 
 export function getContractAddendumStatusMeta(
@@ -295,44 +387,4 @@ export function getRemainingDays(endDateIso: string, nowMs: number): number {
   if (Number.isNaN(endMs)) return 0;
   const diffDays = Math.ceil((endMs - nowMs) / (1000 * 60 * 60 * 24));
   return diffDays;
-}
-/**
- * Determines whether a contract belongs to a Warehouse Rack model (managed by facility staff
- * with pallets, racks, tiers, and SKU inventory) or a Self-Storage unit model (rented as a whole
- * private room where customer manages their own belongings with a PIN, without rack maps or SKU handling).
- */
-export function isWarehouseRackContract(contract: ContractResponse | null | undefined): boolean {
-  if (!contract) return false;
-
-  // 1. Explicit check: If rentalTargetType is explicitly storage_unit, it is NOT a warehouse rack
-  if (String(contract.rentalTargetType).toLowerCase() === "storage_unit") {
-    return false;
-  }
-
-  // 2. Explicit check: If rentalTargetType is explicitly storage_rack, it IS a warehouse rack
-  if (String(contract.rentalTargetType).toLowerCase() === "storage_rack") {
-    return true;
-  }
-
-  // 3. Category inspection from offering / unitType / storageUnit
-  const offeringCategory =
-    (contract.facilityUnitTypeOffering as any)?.unitType?.category ||
-    (contract.offering as any)?.unitType?.category;
-  if (offeringCategory) {
-    return (
-      offeringCategory === UnitTypeCategoryEnum.WAREHOUSE_RACK ||
-      String(offeringCategory).toLowerCase() === "warehouse_rack"
-    );
-  }
-
-  const unitCategory = (contract.storageUnit as any)?.unitType?.category;
-  if (unitCategory) {
-    return (
-      unitCategory === UnitTypeCategoryEnum.WAREHOUSE_RACK ||
-      String(unitCategory).toLowerCase() === "warehouse_rack"
-    );
-  }
-
-  // 4. Default: Whole-unit Self Storage (NOT warehouse rack)
-  return false;
 }

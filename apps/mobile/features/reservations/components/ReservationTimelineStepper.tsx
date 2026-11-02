@@ -56,7 +56,7 @@ export function ReservationTimelineStepper({
         </View>
 
         {countdownFormatted && !isExpiredCountdown ? (
-          <Badge variant="outline" className="border-cta/50 bg-cta-light/30 px-2.5 py-1">
+          <Badge variant="outline" className="border-cta bg-white dark:bg-neutral-900 px-2.5 py-1">
             <View className="flex-row items-center gap-1">
               <Timer size={12} color="#FF702E" />
               <Text className="text-[11px] font-bold text-cta">
@@ -133,20 +133,20 @@ export function ReservationTimelineStepper({
                   <View className="flex-row items-center gap-1.5 flex-wrap">
                     <Badge
                       variant="outline"
-                      className={`px-2 py-0.5 ${
+                      className={`px-2 py-0.5 bg-white dark:bg-neutral-900 ${
                         isCompleted
-                          ? "border-brand/40 bg-brand-light/30"
+                          ? "border-emerald-500 dark:border-emerald-600"
                           : isWarning
-                            ? "border-red-300 bg-red-50 dark:bg-red-950/40"
+                            ? "border-red-400 dark:border-red-600"
                             : isCurrent
-                              ? "border-cta/50 bg-cta-light/30"
-                              : "border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800"
+                              ? "border-cta"
+                              : "border-neutral-300 dark:border-neutral-700"
                       }`}
                     >
                       <Text
                         className={`text-[10px] font-bold ${
                           isCompleted
-                            ? "text-brand"
+                            ? "text-emerald-700 dark:text-emerald-400"
                             : isWarning
                               ? "text-red-600 dark:text-red-400"
                               : isCurrent
@@ -157,7 +157,7 @@ export function ReservationTimelineStepper({
                         {isCompleted
                           ? isEn
                             ? "Completed"
-                            : "Đã hoàn thành"
+                            : "Hoàn thành"
                           : isWarning
                             ? isEn
                               ? "Payment issue"
@@ -175,7 +175,7 @@ export function ReservationTimelineStepper({
                     {step.extraBadge ? (
                       <Badge
                         variant="outline"
-                        className="border-brand/40 bg-brand-light/30 px-2 py-0.5"
+                        className="border-brand/40 bg-white dark:bg-neutral-900 px-2 py-0.5"
                       >
                         <Text className="text-[10px] font-bold text-brand">{step.extraBadge}</Text>
                       </Badge>
@@ -263,11 +263,9 @@ export function ReservationTimelineStepper({
             <View className="items-center mr-3.5" style={{ width: 28 }}>
               <View
                 className={`h-7 w-7 rounded-full items-center justify-center border-2 ${
-                  terminalNode.type === "rejected"
+                  terminalNode.type === "rejected" || terminalNode.type === "cancelled"
                     ? "bg-red-600 border-red-600"
-                    : terminalNode.type === "cancelled"
-                      ? "bg-amber-600 border-amber-600"
-                      : "bg-neutral-500 border-neutral-500"
+                    : "bg-neutral-500 border-neutral-500"
                 }`}
               >
                 {terminalNode.type === "rejected" ? (
@@ -283,20 +281,16 @@ export function ReservationTimelineStepper({
             <View className="flex-1 pb-1">
               <View
                 className={`rounded-2xl border p-3 ${
-                  terminalNode.type === "rejected"
+                  terminalNode.type === "rejected" || terminalNode.type === "cancelled"
                     ? "border-red-200 dark:border-red-900/70 bg-red-50/80 dark:bg-red-950/35"
-                    : terminalNode.type === "cancelled"
-                      ? "border-amber-200 dark:border-amber-900/70 bg-amber-50/80 dark:bg-amber-950/35"
-                      : "border-neutral-200 dark:border-neutral-800 bg-neutral-100/80 dark:bg-neutral-800/60"
+                    : "border-neutral-200 dark:border-neutral-800 bg-neutral-100/80 dark:bg-neutral-800/60"
                 }`}
               >
                 <Text
                   className={`text-xs font-bold ${
-                    terminalNode.type === "rejected"
+                    terminalNode.type === "rejected" || terminalNode.type === "cancelled"
                       ? "text-red-700 dark:text-red-300"
-                      : terminalNode.type === "cancelled"
-                        ? "text-amber-800 dark:text-amber-300"
-                        : "text-neutral-700 dark:text-neutral-200"
+                      : "text-neutral-700 dark:text-neutral-200"
                   }`}
                 >
                   {terminalNode.title}

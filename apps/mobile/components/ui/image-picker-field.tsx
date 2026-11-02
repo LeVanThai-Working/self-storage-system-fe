@@ -48,7 +48,11 @@ export function ImagePickerField({
     const remaining = max - value.length;
     const result =
       source === "camera"
-        ? await ImagePicker.launchCameraAsync({ mediaTypes: ["images"], quality: 0.7 })
+        ? await ImagePicker.launchCameraAsync({
+            mediaTypes: ["images"],
+            quality: 0.7,
+            base64: true,
+          })
         : await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ["images"],
             quality: 0.7,
@@ -60,14 +64,17 @@ export function ImagePickerField({
     setUploading(true);
     try {
       const urls = await Promise.all(
-        result.assets
-          .slice(0, remaining)
-          .map((asset) =>
-            uploadImageToCloudinary(
-              { uri: asset.uri, fileName: asset.fileName, mimeType: asset.mimeType },
-              folder
-            )
+        result.assets.slice(0, remaining).map((asset) =>
+          uploadImageToCloudinary(
+            {
+              uri: asset.uri,
+              fileName: asset.fileName,
+              mimeType: asset.mimeType,
+              base64: asset.base64,
+            },
+            folder
           )
+        )
       );
       onChange([...value, ...urls]);
     } catch (error) {

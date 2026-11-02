@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { View, ScrollView, Pressable, TextInput, Image } from "react-native";
+import { View, ScrollView, Pressable, Image } from "react-native";
 import { useRouter } from "expo-router";
-import { Boxes, Ruler, Maximize2, Box, ArrowRight, X } from "lucide-react-native";
+import { Boxes, Ruler, Maximize2, Box, ArrowRight } from "lucide-react-native";
 import { UnitTypeCategoryEnum, type UnitTypeResponse } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -23,37 +23,17 @@ const CATEGORIES: (UnitTypeCategoryEnum | "ALL")[] = [
 ];
 
 export function UnitTypeSizeGuideSection(_props: UnitTypeSizeGuideSectionProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const router = useRouter();
 
-  // Unit Type Filter State
+  // Category filter state (No area filter)
   const [selectedCategory, setSelectedCategory] = useState<UnitTypeCategoryEnum | "ALL">("ALL");
-  const [minAreaInput, setMinAreaInput] = useState("");
-  const [maxAreaInput, setMaxAreaInput] = useState("");
-  const [appliedArea, setAppliedArea] = useState<{ minArea?: number; maxArea?: number }>({});
 
   const unitTypesQuery = usePublicUnitTypes({
     category: selectedCategory === "ALL" ? undefined : selectedCategory,
-    minArea: appliedArea.minArea,
-    maxArea: appliedArea.maxArea,
   });
 
   const unitTypes = unitTypesQuery.data?.items ?? [];
-
-  const handleApplyArea = () => {
-    const min = minAreaInput.trim() !== "" ? Number(minAreaInput) : undefined;
-    const max = maxAreaInput.trim() !== "" ? Number(maxAreaInput) : undefined;
-    setAppliedArea({
-      minArea: min !== undefined && !Number.isNaN(min) ? min : undefined,
-      maxArea: max !== undefined && !Number.isNaN(max) ? max : undefined,
-    });
-  };
-
-  const handleClearArea = () => {
-    setMinAreaInput("");
-    setMaxAreaInput("");
-    setAppliedArea({});
-  };
 
   const handleViewUnitTypeDetail = (unitType: UnitTypeResponse) => {
     router.push({
@@ -64,7 +44,7 @@ export function UnitTypeSizeGuideSection(_props: UnitTypeSizeGuideSectionProps) 
 
   return (
     <View className="gap-4">
-      {/* 1. Unit Types Handbook Filter Header */}
+      {/* 1. Unit Types Handbook Header & Category Chips */}
       <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm">
         <View className="flex-row items-center gap-2.5 mb-1.5">
           <View className="h-9 w-9 items-center justify-center rounded-xl bg-brand-light dark:bg-brand/20">
@@ -80,12 +60,11 @@ export function UnitTypeSizeGuideSection(_props: UnitTypeSizeGuideSectionProps) 
           {t("storageExplore.sizeGuideSubtitle")}
         </Text>
 
-        {/* Category Filter Chips (LOCKER, SMALL, MEDIUM, LARGE, CLIMATE_CONTROLLED) */}
+        {/* Category Filter Chips (Tất cả, Tủ Locker, Kho Nhỏ, Kho Vừa, Kho Lớn, Kho Điều hòa) */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerClassName="gap-2 pb-1"
-          className="mb-3"
         >
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat;
@@ -112,51 +91,9 @@ export function UnitTypeSizeGuideSection(_props: UnitTypeSizeGuideSectionProps) 
             );
           })}
         </ScrollView>
-
-        {/* Min/Max Area Filter */}
-        <View className="rounded-2xl bg-neutral-50 dark:bg-neutral-800/70 p-3 border border-neutral-border/60 dark:border-neutral-800">
-          <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200 mb-2">
-            {t("storageExplore.areaFilterLabel")}
-          </Text>
-          <View className="flex-row items-center gap-2">
-            <TextInput
-              value={minAreaInput}
-              onChangeText={setMinAreaInput}
-              placeholder={t("storageExplore.minAreaPlaceholder")}
-              placeholderTextColor="#8C9E9E"
-              keyboardType="numeric"
-              className="flex-1 rounded-xl border border-neutral-border dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-xs text-neutral-dark dark:text-neutral-100"
-            />
-            <Text className="text-xs text-neutral-400">–</Text>
-            <TextInput
-              value={maxAreaInput}
-              onChangeText={setMaxAreaInput}
-              placeholder={t("storageExplore.maxAreaPlaceholder")}
-              placeholderTextColor="#8C9E9E"
-              keyboardType="numeric"
-              className="flex-1 rounded-xl border border-neutral-border dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-xs text-neutral-dark dark:text-neutral-100"
-            />
-            <Pressable
-              onPress={handleApplyArea}
-              className="rounded-xl bg-brand px-3 py-2.5 active:opacity-90"
-            >
-              <Text className="text-xs font-bold text-white">
-                {t("storageExplore.applyAreaFilter")}
-              </Text>
-            </Pressable>
-            {(appliedArea.minArea !== undefined || appliedArea.maxArea !== undefined) && (
-              <Pressable
-                onPress={handleClearArea}
-                className="rounded-xl border border-neutral-border dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2.5 py-2.5"
-              >
-                <X size={14} color="#647B80" />
-              </Pressable>
-            )}
-          </View>
-        </View>
       </View>
 
-      {/* 2. Concise Unit Type Cards (1 Thumbnail + Dimensions + View Detail CTA) */}
+      {/* 2. Unit Type Cards */}
       {unitTypesQuery.isLoading ? (
         <View key="unit-types-loading" className="gap-3">
           <Skeleton className="h-32 w-full rounded-3xl" />
@@ -176,7 +113,7 @@ export function UnitTypeSizeGuideSection(_props: UnitTypeSizeGuideSectionProps) 
         <View key="unit-types-list" className="gap-3">
           {unitTypes.map((ut) => {
             const dimText = `${ut.dimensions.length}m × ${ut.dimensions.width}m × ${ut.dimensions.height}m`;
-            const thumbnailUri = ut.images?.[0] || null;
+            const thumbnailUri = ut.imageUrl || ut.images?.[0] || null;
 
             return (
               <Pressable
@@ -185,7 +122,7 @@ export function UnitTypeSizeGuideSection(_props: UnitTypeSizeGuideSectionProps) 
                 className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3.5 shadow-sm active:opacity-95"
               >
                 <View className="flex-row items-center gap-3.5">
-                  {/* 1. Single Thumbnail Image */}
+                  {/* Thumbnail Image */}
                   <View className="h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-neutral-border/60 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800">
                     {thumbnailUri ? (
                       <Image
@@ -198,27 +135,30 @@ export function UnitTypeSizeGuideSection(_props: UnitTypeSizeGuideSectionProps) 
                     )}
                   </View>
 
-                  {/* 2. Name, Category, Dimensions & CTA */}
-                  <View className="flex-1 justify-between gap-2">
-                    <View className="flex-row items-start justify-between gap-2">
-                      <Text
-                        numberOfLines={1}
-                        className="flex-1 text-base font-bold text-neutral-dark dark:text-neutral-100"
-                      >
-                        {ut.name}
-                      </Text>
+                  {/* Info: Title full line -> "Loại: <Loại kho>" -> Specs -> CTA */}
+                  <View className="flex-1 justify-between gap-1.5">
+                    {/* Title full line */}
+                    <Text
+                      numberOfLines={1}
+                      className="text-base font-bold text-neutral-dark dark:text-neutral-100"
+                    >
+                      {ut.name}
+                    </Text>
 
-                      {ut.category ? (
-                        <View className="rounded-full border border-brand/40 bg-brand-light/60 dark:bg-brand/20 px-2.5 py-0.5">
-                          <Text className="text-[11px] font-semibold text-brand">
-                            {getUnitCategoryLabel(ut.category, t)}
-                          </Text>
-                        </View>
-                      ) : null}
-                    </View>
+                    {/* Dòng "Loại: <Loại kho>" */}
+                    {ut.category ? (
+                      <Text className="text-xs text-neutral-main dark:text-neutral-300">
+                        <Text className="text-neutral-muted dark:text-neutral-400">
+                          {locale === "en" ? "Type: " : "Loại: "}
+                        </Text>
+                        <Text className="font-semibold text-neutral-dark dark:text-neutral-100">
+                          {getUnitCategoryLabel(ut.category, t)}
+                        </Text>
+                      </Text>
+                    ) : null}
 
                     {/* Dimensions, Area & Volume */}
-                    <View className="gap-1">
+                    <View className="gap-1 pt-0.5">
                       <View className="flex-row items-center gap-1.5">
                         <Ruler size={13} color="#0B927E" />
                         <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200">
@@ -241,10 +181,10 @@ export function UnitTypeSizeGuideSection(_props: UnitTypeSizeGuideSectionProps) 
                       </View>
                     </View>
 
-                    {/* CTA Button: View Detail */}
+                    {/* CTA Button */}
                     <Pressable
                       onPress={() => handleViewUnitTypeDetail(ut)}
-                      className="mt-0.5 flex-row items-center justify-center gap-1.5 self-start rounded-xl bg-cta px-3.5 py-2 shadow-sm active:opacity-90"
+                      className="mt-1 flex-row items-center justify-center gap-1.5 self-start rounded-xl bg-cta px-3.5 py-1.5 shadow-sm active:opacity-90"
                     >
                       <Text className="text-xs font-bold text-white">
                         {t("storageExplore.viewUnitTypeDetailBtn")}

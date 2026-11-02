@@ -215,3 +215,23 @@ export async function getPublicOfferingsApi(
     pagination: payload?.pagination ?? createDefaultPagination(page, limit),
   };
 }
+
+/**
+ * 6b. GET /facility-unit-type-offerings/{id}
+ */
+export async function getPublicOfferingByIdApi(
+  id: string
+): Promise<FacilityUnitTypeOfferingResponse> {
+  const response = await api.get<ApiResponse<FacilityUnitTypeOfferingResponse>>(
+    `/facility-unit-type-offerings/${id}`
+  );
+  return response.data?.data;
+}
+
+/**
+ * 5b. GET /amenities/{id}
+ */
+export async function getPublicAmenityByIdApi(id: string): Promise<AmenityResponse> {
+  const response = await api.get<ApiResponse<AmenityResponse>>(`/amenities/${id}`);
+  return response.data?.data;
+}

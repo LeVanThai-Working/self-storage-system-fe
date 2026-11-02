@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { View, ScrollView, Pressable, TextInput, ActivityIndicator, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
@@ -47,6 +47,7 @@ import {
   ArrowRight,
   RefreshCw,
   LayoutGrid,
+  Info,
 } from "lucide-react-native";
 import { useCreateReservation } from "../hooks/useReservations";
 import {
@@ -57,6 +58,7 @@ import {
 } from "../hooks/useSeatMap";
 import { UnitSeatMap } from "./UnitSeatMap";
 import { RackSeatMap } from "./RackSeatMap";
+import { CalendarPickerModal } from "./CalendarPickerModal";
 import {
   formatRentalDurationDays,
   formatVnd,
@@ -169,8 +171,13 @@ export function CreateReservationView({
   const minRentalDays = Math.max(1, selectedOffering?.minRentalDays ?? 1);
   const selectedCategory = selectedOffering?.unitType?.category;
   const requiresAdvanceDay = requiresAdvanceDayForCategory(selectedCategory);
+  const isRackWarehouse = selectedCategory === UnitTypeCategoryEnum.WAREHOUSE_RACK;
+  const isLockerOrRack =
+    selectedCategory === UnitTypeCategoryEnum.LOCKER ||
+    selectedCategory === UnitTypeCategoryEnum.WAREHOUSE_RACK;
 
   // Form State (Sections 1.2 - 1.4)
+  const [calendarModalVisible, setCalendarModalVisible] = useState(false);
   const [customStartDateInput, setCustomStartDateInput] = useState<string | null>(null);
   const startDateInput = customStartDateInput ?? getTodayDateInput(requiresAdvanceDay ? 1 : 0);
 
@@ -182,6 +189,31 @@ export function CreateReservationView({
   const [durationError, setDurationError] = useState<string | null>(null);
 
   const rentalDuration = customRentalDuration === null ? minRentalDays : customRentalDuration;
+
+  const isSlotAtLeast3HoursAway = useCallback((slotStartTime?: string | null): boolean => {
+    if (!slotStartTime) return true;
+    const now = new Date();
+    const rawStart = slotStartTime.split("-")[0]?.trim() || slotStartTime.trim();
+    const [hh, mm] = rawStart.split(":").map(Number);
+    if (Number.isNaN(hh) || Number.isNaN(mm)) return true;
+    const slotDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0, 0);
+    const diffHours = (slotDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    return diffHours >= 3;
+  }, []);
+
+  const calendarNote = useMemo(() => {
+    if (requiresAdvanceDay) {
+      return isEn
+        ? "For Small, Medium, and Large storage units, the move-in date must be at least 1 day after today."
+        : "Đối với kho loại Nhỏ, Trung bình, Lớn, ngày nhận kho phải sau ngày hôm nay ít nhất 1 ngày (để chuẩn bị).";
+    }
+    if (isLockerOrRack) {
+      return isEn
+        ? "For Locker and Warehouse Rack, move-in can start today, but the check-in time must be at least 3 hours from now."
+        : "Đối với tủ Locker và Kệ kho, bạn có thể nhận phòng hôm nay nhưng giờ nhận phòng phải cách thời điểm hiện tại ít nhất 3 giờ.";
+    }
+    return undefined;
+  }, [requiresAdvanceDay, isLockerOrRack, isEn]);
 
   // Seat map: unit (and racks for WAREHOUSE_RACK) picked on the 2D map, plus the check-in slot.
   // Selections are keyed by what they depend on, so changing the package or unit resets them.
@@ -201,8 +233,6 @@ export function CreateReservationView({
   const [seatError, setSeatError] = useState<string | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState<string | null>(null);
-
-  const isRackWarehouse = selectedCategory === UnitTypeCategoryEnum.WAREHOUSE_RACK;
   const unitsQuery = useBookableUnits(activeFacilityId, selectedOffering?.unitTypeId);
   const selectedUnitId =
     unitSelection && unitSelection.offeringId === selectedOffering?.id
@@ -323,7 +353,7 @@ export function CreateReservationView({
       setDateError(
         isEn
           ? "For Small, Medium, and Large storage units, the expected move-in date must be at least 1 day after today (to allow time for order processing)."
-          : "Đối với kho loại Small, Medium, Large thì ngày dự kiến bắt đầu thuê sẽ phải là sau 1 ngày hiện tại (để chừa thời gian tiếp nhận đơn)."
+          : "Đối với kho loại Nhỏ, Trung bình, Lớn thì ngày dự kiến bắt đầu thuê sẽ phải là sau 1 ngày hiện tại (để chừa thời gian tiếp nhận đơn)."
       );
       return;
     }
@@ -360,6 +390,18 @@ export function CreateReservationView({
         isEn ? "Please choose a check-in time slot." : "Vui lòng chọn khung giờ nhận phòng."
       );
       return;
+    }
+    if (isLockerOrRack && checkInDateKey === getTodayDateInput(0)) {
+      const selectedSlot = slotsQuery.data?.find((s) => s.slotName === selectedSlotName);
+      const startTime = selectedSlot?.startTime || selectedSlotName.split("-")[0]?.trim();
+      if (!isSlotAtLeast3HoursAway(startTime)) {
+        setDateError(
+          isEn
+            ? "For Locker and Warehouse Rack units, check-in time must be at least 3 hours from now."
+            : "Đối với loại tủ Locker và Kệ kho, thời gian nhận phòng phải cách thời điểm hiện tại ít nhất 3 giờ."
+        );
+        return;
+      }
     }
     if (!termsAccepted) {
       setTermsError(
@@ -536,7 +578,7 @@ export function CreateReservationView({
             >
               <RefreshCw size={11} color="#647B80" />
               <Text className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-300">
-                {isEn ? "Change" : "Đổi gói khác"}
+                {isEn ? "Change" : "Thay đổi"}
               </Text>
             </Pressable>
           ) : null}
@@ -849,16 +891,24 @@ export function CreateReservationView({
             </Text>
           ) : null}
 
-          <TextInput
-            value={startDateInput}
-            onChangeText={(val) => {
-              setCustomStartDateInput(val);
-              setDateError(null);
-            }}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor="#94A3B8"
-            className="rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3.5 py-2.5 text-sm font-semibold text-neutral-dark dark:text-neutral-100"
-          />
+          <View className="flex-row items-center rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3.5 py-1">
+            <TextInput
+              value={startDateInput}
+              onChangeText={(val) => {
+                setCustomStartDateInput(val);
+                setDateError(null);
+              }}
+              placeholder="YYYY-MM-DD"
+              placeholderTextColor="#94A3B8"
+              className="flex-1 py-2 text-sm font-semibold text-neutral-dark dark:text-neutral-100"
+            />
+            <Pressable
+              onPress={() => setCalendarModalVisible(true)}
+              className="p-1.5 rounded-lg bg-brand-light/50 dark:bg-brand/20 active:opacity-70"
+            >
+              <Calendar size={18} color="#0B927E" />
+            </Pressable>
+          </View>
 
           <View className="mt-2 flex-row flex-wrap gap-2">
             {quickDateOptions.map((opt) => {
@@ -900,6 +950,18 @@ export function CreateReservationView({
           <Text className="text-xs font-bold text-neutral-600 dark:text-neutral-300 mb-1.5">
             {isEn ? "Check-in time slot" : "Khung giờ nhận phòng"}
           </Text>
+
+          {isLockerOrRack ? (
+            <View className="mb-2.5 flex-row items-start gap-2 rounded-2xl border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/30 p-2.5">
+              <Info size={14} color="#D97706" style={{ marginTop: 1 }} />
+              <Text className="text-[11px] leading-4 text-amber-800 dark:text-amber-300 flex-1">
+                {isEn
+                  ? "Note: For Locker and Warehouse Rack, the check-in time must be at least 3 hours from the current time to allow facility preparation."
+                  : "Lưu ý: Đối với loại tủ Locker và Kệ kho, thời gian nhận phòng phải cách thời điểm hiện tại ít nhất 3 giờ để cơ sở chuẩn bị tiếp nhận."}
+              </Text>
+            </View>
+          ) : null}
+
           {!checkInDateKey ? (
             <Text variant="muted" className="text-[11px]">
               {isEn ? "Enter a valid date first." : "Nhập ngày hợp lệ để xem khung giờ."}
@@ -916,10 +978,15 @@ export function CreateReservationView({
             <View className="flex-row flex-wrap gap-2">
               {(slotsQuery.data ?? []).map((slot) => {
                 const active = slot.slotName === selectedSlotName;
+                const isToday = checkInDateKey === getTodayDateInput(0);
+                const isTooClose3h =
+                  isLockerOrRack && isToday && !isSlotAtLeast3HoursAway(slot.startTime);
+                const isSlotAvailable = slot.isAvailable && !isTooClose3h;
+
                 return (
                   <Pressable
                     key={slot.id}
-                    disabled={!slot.isAvailable}
+                    disabled={!isSlotAvailable}
                     onPress={() => {
                       if (!checkInDateKey) return;
                       setSlotSelection({ date: checkInDateKey, slotName: slot.slotName });
@@ -929,7 +996,7 @@ export function CreateReservationView({
                       active
                         ? "border-brand bg-brand-light/40 dark:bg-brand/20"
                         : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800"
-                    } ${slot.isAvailable ? "" : "opacity-40"}`}
+                    } ${isSlotAvailable ? "" : "opacity-40"}`}
                   >
                     <Text
                       className={`text-xs font-semibold ${
@@ -940,9 +1007,13 @@ export function CreateReservationView({
                     </Text>
                     <Text variant="muted" className="text-[10px]">
                       {slot.startTime}–{slot.endTime} ·{" "}
-                      {isEn
-                        ? `${slot.availableCapacity} left`
-                        : `còn ${slot.availableCapacity} chỗ`}
+                      {isTooClose3h
+                        ? isEn
+                          ? "< 3h lead time"
+                          : "Cách dưới 3g"
+                        : isEn
+                          ? `${slot.availableCapacity} left`
+                          : `còn ${slot.availableCapacity} chỗ`}
                     </Text>
                   </Pressable>
                 );
@@ -1071,8 +1142,9 @@ export function CreateReservationView({
               const qty = amenityQuantities[item.id] ?? 0;
               const isSelected = qty > 0;
               const isService = item.amenity?.type === AmenityTypeEnum.SERVICE;
-              const maxQty = isService ? 99 : (item.availableQuantity ?? 0);
-              const itemTotalPrice = (item.pricePerUnit || 0) * qty;
+              const isAvailable = isService || (item.availableQuantity ?? 0) > 0;
+              const maxQty = isService ? 1 : (item.availableQuantity ?? 0);
+              const itemTotalPrice = (item.pricePerUnit || 0) * (isService ? 1 : qty);
 
               return (
                 <View
@@ -1081,10 +1153,11 @@ export function CreateReservationView({
                     isSelected
                       ? "border-brand bg-brand-light/30 dark:bg-brand/15"
                       : "border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60"
-                  }`}
+                  } ${!isAvailable ? "opacity-50" : ""}`}
                 >
                   <View className="flex-row items-center justify-between">
                     <Pressable
+                      disabled={!isAvailable}
                       onPress={() => toggleAmenity(item.id, maxQty)}
                       className="flex-row items-center gap-2.5 flex-1 pr-2"
                     >
@@ -1111,16 +1184,20 @@ export function CreateReservationView({
                           •{" "}
                           {isService
                             ? isEn
-                              ? "Service"
-                              : "Dịch vụ"
-                            : isEn
-                              ? `Stock: ${maxQty}`
-                              : `Còn lại: ${maxQty}`}
+                              ? "Service • Available"
+                              : "Dịch vụ • Khả dụng"
+                            : isAvailable
+                              ? isEn
+                                ? "Available"
+                                : "Khả dụng"
+                              : isEn
+                                ? "Unavailable"
+                                : "Không khả dụng"}
                         </Text>
                       </View>
                     </Pressable>
 
-                    {isSelected ? (
+                    {isSelected && !isService ? (
                       <View className="flex-row items-center gap-2">
                         <Pressable
                           onPress={() => updateAmenityQuantity(item.id, -1, maxQty)}
@@ -1147,9 +1224,13 @@ export function CreateReservationView({
                   {isSelected ? (
                     <View className="mt-2 flex-row items-center justify-between border-t border-brand/20 pt-2">
                       <Text variant="muted" className="text-[11px]">
-                        {isEn
-                          ? `Subtotal (${qty} × ${formatVnd(item.pricePerUnit)}):`
-                          : `Tạm tính (${qty} × ${formatVnd(item.pricePerUnit)}):`}
+                        {isService
+                          ? isEn
+                            ? "Subtotal:"
+                            : "Tạm tính:"
+                          : isEn
+                            ? `Subtotal (${qty} × ${formatVnd(item.pricePerUnit)}):`
+                            : `Tạm tính (${qty} × ${formatVnd(item.pricePerUnit)}):`}
                       </Text>
                       <Text className="text-xs font-extrabold text-brand">
                         {formatVnd(itemTotalPrice)}
@@ -1303,6 +1384,20 @@ export function CreateReservationView({
           )}
         </Pressable>
       </View>
+
+      <CalendarPickerModal
+        visible={calendarModalVisible}
+        onClose={() => setCalendarModalVisible(false)}
+        selectedDate={startDateInput}
+        minDate={getTodayDateInput(requiresAdvanceDay ? 1 : 0)}
+        maxDate={getTodayDateInput(MAX_ADVANCE_DAYS)}
+        note={calendarNote}
+        locale={currentLocale}
+        onSelectDate={(d) => {
+          setCustomStartDateInput(d);
+          setDateError(null);
+        }}
+      />
     </ScrollView>
   );
 }

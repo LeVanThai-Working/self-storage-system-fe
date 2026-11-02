@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef } from "react";
 import { View, FlatList, ScrollView, Pressable, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ArrowLeft, Warehouse, ArrowUpDown, AlertCircle } from "lucide-react-native";
+import { Warehouse, ArrowUpDown, AlertCircle } from "lucide-react-native";
 import {
   UnitTypeCategoryEnum,
   type PublicUnitTypeOfferingResponse,
@@ -10,6 +10,7 @@ import {
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DetailHeader } from "@/components/layout/DetailHeader";
 import { SettingsButton } from "@/features/auth/components/SettingsButton";
 import { useAuthStore } from "@/features/auth/stores/auth.store";
 import { useTranslation } from "@/stores/language.store";
@@ -295,31 +296,14 @@ export default function FacilityAvailableOfferingsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
+    <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
       {/* Top Header */}
-      <View className="flex-row items-center justify-between border-b border-neutral-border dark:border-neutral-800 bg-neutral-bg dark:bg-neutral-900 px-4 py-3">
-        <View className="flex-row items-center gap-3 flex-1">
-          <Pressable
-            onPress={handleBack}
-            hitSlop={10}
-            className="items-center justify-center p-1 active:opacity-70"
-          >
-            <ArrowLeft size={20} color="#0B927E" />
-          </Pressable>
-          <View className="flex-1">
-            <Text
-              numberOfLines={1}
-              className="text-base font-bold text-neutral-dark dark:text-neutral-100"
-            >
-              {displayFacilityName}
-            </Text>
-            <Text numberOfLines={1} variant="muted" className="text-[11px]">
-              {t("facilityDetail.availableOfferingsSubtitle")}
-            </Text>
-          </View>
-        </View>
-        <SettingsButton />
-      </View>
+      <DetailHeader
+        title={displayFacilityName}
+        subtitle={t("facilityDetail.availableOfferingsSubtitle")}
+        onBack={handleBack}
+        rightElement={<SettingsButton variant="brand" />}
+      />
 
       <FlatList
         ref={flatListRef}
@@ -327,7 +311,12 @@ export default function FacilityAvailableOfferingsScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View className="mb-4">
-            <UnitTypeOfferingCard offering={item} onSelectOffering={handleSelectOffering} />
+            <UnitTypeOfferingCard
+              offering={item}
+              facilityId={facilityId}
+              facilityName={displayFacilityName}
+              onSelectOffering={handleSelectOffering}
+            />
           </View>
         )}
         ListHeaderComponent={renderHeader()}
