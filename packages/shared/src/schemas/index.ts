@@ -308,3 +308,14 @@ export {
   type SupportTicketIdParam,
   type SupportTicketQuery,
 } from "./request/supportTicket.request.schema";
+
+export {
+  createSigningAuthorizationSchema,
+  updateSigningAuthorizationSchema,
+  signingAuthorizationQuerySchema,
+  signingAuthorizationIdParamSchema,
+  type CreateSigningAuthorizationRequest,
+  type UpdateSigningAuthorizationRequest,
+  type SigningAuthorizationQuery,
+  type SigningAuthorizationIdParam,
+} from "./request/signingAuthorization.request.schema";

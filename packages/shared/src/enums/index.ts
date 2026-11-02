@@ -19,3 +19,4 @@ export * from "./customerSku.enum";
 export * from "./incident.enum";
 export * from "./refundRequest.enum";
 export * from "./supportTicket.enum";
+export * from "./signingAuthorization.enum";

@@ -18,3 +18,4 @@ export * from "./customerSku.types";
 export * from "./inventoryRequest.types";
 export * from "./incident.types";
 export * from "./supportTicket.types";
+export * from "./signingAuthorization.types";

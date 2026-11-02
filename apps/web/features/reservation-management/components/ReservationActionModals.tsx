@@ -4,15 +4,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
-  AlertTriangle,
   Banknote,
   Boxes,
-  Calendar,
   CheckCircle2,
   Clock,
-  CreditCard,
   Flame,
-  QrCode,
   ShieldAlert,
   ShieldCheck,
   UserCheck,
@@ -51,7 +47,6 @@ import {
 import {
   MESSAGE_CODE,
   PaymentMethodEnum,
-  PaymentStatusEnum,
   ReservationStatusEnum,
   assignReservationStaffSchema,
   cancelReservationSchema,
@@ -64,7 +59,7 @@ import {
   type PaymentResponse,
   type ReservationResponse,
 } from "../types";
-import { formatDateOnly, formatDateTime, formatVnd, isCheckInDatePassed } from "../utils";
+import { formatDateOnly, formatVnd, isCheckInDatePassed } from "../utils";
 
 /* ============================================================================
  * 1. ConfirmReservationModal (POST /reservations/{id}/confirm)
@@ -776,7 +771,7 @@ export const ForceCancelReservationModal: React.FC<ForceCancelReservationModalPr
   const [reason, setReason] = useState("");
   const [incidentTitle, setIncidentTitle] = useState("");
   const [incidentCategory, setIncidentCategory] = useState<IncidentCategoryEnum>(
-    IncidentCategoryEnum.FACILITY_DAMAGE
+    IncidentCategoryEnum.STRUCTURAL
   );
   const [incidentDesc, setIncidentDesc] = useState("");
   const [evidenceImages, setEvidenceImages] = useState<string[]>([]);
@@ -886,12 +881,13 @@ export const ForceCancelReservationModal: React.FC<ForceCancelReservationModalPr
                   onChange={(e) => setIncidentCategory(e.target.value as IncidentCategoryEnum)}
                   className="w-full bg-white text-xs px-3 py-2 rounded-xl border border-slate-200 outline-none"
                 >
-                  <option value={IncidentCategoryEnum.FACILITY_DAMAGE}>
-                    Hư hỏng cơ sở vật chất
+                  <option value={IncidentCategoryEnum.STRUCTURAL}>
+                    Hư hỏng kết cấu / Cơ sở vật chất
                   </option>
-                  <option value={IncidentCategoryEnum.FIRE_WATER}>Ngập lụt / Cháy nổ</option>
-                  <option value={IncidentCategoryEnum.EQUIPMENT_FAILURE}>Lỗi trang thiết bị</option>
-                  <option value={IncidentCategoryEnum.NATURAL_DISASTER}>Thiên tai / Bão lũ</option>
+                  <option value={IncidentCategoryEnum.ELECTRICAL}>Sự cố điện / Chiếu sáng</option>
+                  <option value={IncidentCategoryEnum.WATER_LEAK}>Rò rỉ nước / Ngập lụt</option>
+                  <option value={IncidentCategoryEnum.SECURITY}>An ninh / Khóa / Camera</option>
+                  <option value={IncidentCategoryEnum.CLEANLINESS}>Vệ sinh / Môi trường</option>
                   <option value={IncidentCategoryEnum.OTHER}>Khác</option>
                 </select>
               </div>
