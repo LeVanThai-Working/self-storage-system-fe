@@ -257,3 +257,12 @@ export const deleteStorageRack = async (id: string): Promise<null> => {
   const { data } = await api.delete<Envelope<null>>(`/storage-racks/${id}`);
   return data.data;
 };
+
+/**
+ * Khôi phục kệ kho đã xóa.
+ * Endpoint: POST /storage-racks/:id/restore
+ */
+export const restoreStorageRack = async (id: string): Promise<StorageRackResponse> => {
+  const { data } = await api.post<Envelope<StorageRackResponse>>(`/storage-racks/${id}/restore`);
+  return data.data;
+};

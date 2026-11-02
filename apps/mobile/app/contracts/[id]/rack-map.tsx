@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   ArrowLeftRight,
   ArrowUpFromLine,
-  Boxes,
   CircleAlert,
   ClipboardList,
   Info,
@@ -28,6 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/stores/language.store";
 import { useContractDetail } from "@/features/contracts/hooks/useContracts";
 import { isWarehouseRackContract } from "@/features/contracts/utils/contractFormat";
+import { SelfStorageGuardView } from "@/features/contracts/components/SelfStorageGuardView";
 import {
   useCustomerInventoryRecords,
   useStorageUnitTree,
@@ -70,7 +70,8 @@ export default function ContractRackMapScreen() {
 
   const contractQuery = useContractDetail(contractId);
   const contract = contractQuery.data;
-  const isWarehouse = isWarehouseRackContract(contract);
+  const isWarehouse =
+    typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
   const storageUnitId = isWarehouse ? contract?.storageUnitId : undefined;
   const treeQuery = useStorageUnitTree(storageUnitId);
   const tree = treeQuery.data;
@@ -410,67 +411,12 @@ export default function ContractRackMapScreen() {
   };
 
   if (contract && !isWarehouse) {
-    const isEn = currentLocale === "en";
     return (
-      <SafeAreaView className="flex-1 bg-neutral-bg dark:bg-neutral-950">
-        <View className="flex-row items-center gap-2 border-b border-neutral-border bg-white px-4 pb-3 pt-2 dark:border-neutral-800 dark:bg-neutral-900">
-          <Pressable
-            onPress={handleBack}
-            hitSlop={10}
-            className="items-center justify-center p-1 active:opacity-70"
-          >
-            <ArrowLeft size={22} color="#0B927E" />
-          </Pressable>
-          <Text
-            numberOfLines={1}
-            className="flex-1 text-lg font-extrabold text-neutral-dark dark:text-neutral-100"
-          >
-            {isEn ? "Self-Storage Unit" : "Kho tự quản (Self-Storage)"}
-          </Text>
-        </View>
-
-        <View className="flex-1 items-center justify-center p-6">
-          <View className="w-full max-w-sm rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 items-center text-center shadow-sm">
-            <View className="h-16 w-16 items-center justify-center rounded-2xl bg-brand-light/50 dark:bg-brand/20 mb-4">
-              <Boxes size={32} color="#0B927E" />
-            </View>
-            <Text className="text-base font-extrabold text-neutral-dark dark:text-neutral-100 text-center">
-              {isEn ? "Self-Managed Storage Unit" : "Kho lưu trữ tự quản"}
-            </Text>
-            <Text className="mt-2 text-xs text-neutral-500 dark:text-neutral-400 text-center leading-5">
-              {isEn
-                ? `Contract #${contract.contractCode} is a whole-room Self-Storage unit. You have exclusive private access via your PIN code. Rack maps and SKU dispatch services only apply to warehouse rack bookings.`
-                : `Hợp đồng #${contract.contractCode} (Phòng ${contract.storageUnit?.unitNumber ?? ""}) thuộc gói thuê nguyên phòng tự quản. Quý khách toàn quyền sử dụng bằng mã PIN mở cửa. Sơ đồ kệ và dịch vụ bốc xếp hàng SKU chỉ áp dụng cho mô hình kho kệ Warehouse.`}
-            </Text>
-
-            <View className="mt-6 w-full gap-2.5">
-              <Pressable
-                onPress={() =>
-                  router.push({
-                    pathname: "/incidents/new",
-                    params: { contractId: contract.id },
-                  })
-                }
-                className="w-full flex-row items-center justify-center gap-2 rounded-xl border border-rose-300 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/40 py-3 px-4 active:opacity-80 shadow-xs"
-              >
-                <ShieldAlert size={16} color="#E11D48" />
-                <Text className="text-xs font-bold text-rose-600 dark:text-rose-400">
-                  {isEn ? "Report Issue on This Unit" : "Báo cáo sự cố phòng kho này"}
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={handleBack}
-                className="w-full flex-row items-center justify-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 py-3 px-4 active:opacity-80"
-              >
-                <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-200">
-                  {isEn ? "Back to Contract Details" : "Quay lại chi tiết hợp đồng"}
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </SafeAreaView>
+      <SelfStorageGuardView
+        contract={contract}
+        title={t("rackMap.title")}
+        reason="rack_not_supported"
+      />
     );
   }
 

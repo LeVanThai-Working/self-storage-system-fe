@@ -3,6 +3,13 @@ import { PaginationQuery } from "./common.types";
 import { FacilitySnapshot } from "./facility.types";
 import { UnitTypeSnapshot } from "./unitType.types";
 
+export interface RackCapacity {
+  total: number;
+  available: number;
+  occupied: number;
+  availablePercentage: number;
+}
+
 export interface StorageUnitResponse {
   id: string;
   facilityId: string;
@@ -15,6 +22,7 @@ export interface StorageUnitResponse {
   notes?: string | null;
   facility?: FacilitySnapshot | null;
   unitType?: UnitTypeSnapshot | null;
+  rackCapacity?: RackCapacity | null;
   createdAt: string;
   updatedAt: string;
 }

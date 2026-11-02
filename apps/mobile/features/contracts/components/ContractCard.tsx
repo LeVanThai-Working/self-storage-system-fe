@@ -67,7 +67,8 @@ export function ContractCard({
   const isDraft = contract.status === ContractStatusEnum.DRAFT;
   const isFromReservation = contract.source === ContractSourceEnum.RESERVATION;
   const isDepositSatisfied = isFromReservation || Boolean(contract.depositPaidAt);
-  const isWarehouse = isWarehouseRackContract(contract);
+  const isWarehouse =
+    typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
 
   const displayUnitLabel =
     contract.storageUnit?.unitNumber ||

@@ -55,7 +55,7 @@ import { StorageUnitMapView } from "./StorageUnitMapView";
 import { UnitMaintenanceDialog } from "./UnitMaintenanceDialog";
 import { StorageRackManagementModal } from "./StorageRackManagementModal";
 import { ReconcileStorageUnitsButton } from "./ReconcileStorageUnitsButton";
-import { ActionTooltip, TooltipProvider } from "@/components/ui/tooltip";
+import { ActionTooltip } from "@/components/ui/tooltip";
 
 const PAGE_SIZE = 10;
 
@@ -72,7 +72,10 @@ interface StorageUnitTableProps {
 export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) => {
   const t = useTranslations("facilityManager.storageUnits");
   const getErrorMessage = useApiErrorMessage();
-  const isManager = mode === "manager";
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const userRole = String(currentUser?.role ?? "").toLowerCase();
+  const isStaff = userRole === RoleEnum.FACILITY_STAFF || mode === "staff";
+  const isManager = mode === "manager" && !isStaff;
   const locale = useLocale();
   const [viewMode, setViewMode] = useState<StorageUnitViewMode>("table");
 
@@ -117,7 +120,6 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
   const [deletingUnit, setDeletingUnit] = useState<{ id: string; unitNumber: string } | null>(null);
   const [maintenanceUnit, setMaintenanceUnit] = useState<StorageUnitResponse | null>(null);
   const [rackUnit, setRackUnit] = useState<StorageUnitResponse | null>(null);
-  const currentUser = useAuthStore((s) => s.currentUser);
   const canReconcile =
     currentUser?.role === RoleEnum.BUSINESS_OPS_MANAGER ||
     currentUser?.role === RoleEnum.SYSTEM_ADMIN;
@@ -619,7 +621,11 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
 
                         {/* Status */}
                         <td className="py-4 px-6">
-                          <UnitStatusBadge status={unit.status} />
+                          <UnitStatusBadge
+                            status={unit.status}
+                            category={unit.unitType?.category}
+                            rackCapacity={unit.rackCapacity}
+                          />
                         </td>
 
                         {/* Actions */}

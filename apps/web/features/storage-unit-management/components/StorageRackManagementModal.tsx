@@ -22,12 +22,16 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { UnitTypeCategoryEnum } from "@self-storage-system-fe/shared";
+import { ActionTooltip } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/features/auth/store";
+import { UnitTypeCategoryEnum, RoleEnum, MESSAGE_CODE } from "@self-storage-system-fe/shared";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useProvisionRacks } from "@/features/storage-rack/hooks";
 import {
   useCreateStorageRack,
   useDeleteStorageRack,
+  useRestoreStorageRack,
   useUnitStorageRacks,
   useUpdateRackTier,
   useUpdateStorageRack,
@@ -76,7 +80,18 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
   const updateRackMutation = useUpdateStorageRack();
   const updateTierMutation = useUpdateRackTier();
   const deleteRackMutation = useDeleteStorageRack();
+  const restoreRackMutation = useRestoreStorageRack();
   const provisionMutation = useProvisionRacks(unit.id);
+
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const userRole = String(currentUser?.role ?? "").toLowerCase();
+  const isStaff = userRole === RoleEnum.FACILITY_STAFF || !isManager;
+  const canManageRacks =
+    !isStaff &&
+    (userRole === RoleEnum.FACILITY_MANAGER ||
+      userRole === RoleEnum.BUSINESS_OPS_MANAGER ||
+      userRole === RoleEnum.SYSTEM_ADMIN ||
+      isManager);
 
   const isWarehouseUnit =
     unit.unitType?.category === UnitTypeCategoryEnum.WAREHOUSE_RACK ||
@@ -162,11 +177,40 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
     }
   };
 
-  const handleDeleteRack = async (rackId: string) => {
+  const handleDeleteRack = async (rack: StorageRackResponse) => {
     try {
-      await deleteRackMutation.mutateAsync(rackId);
-      toast.success("Đã xóa kệ kho thành công!");
+      await deleteRackMutation.mutateAsync(rack.id);
+      toast.success(`Đã xóa kệ ${rack.rackCode} thành công!`, {
+        action: {
+          label: "Khôi phục",
+          onClick: () => handleRestoreRack(rack.id),
+        },
+      });
       setDeletingRackId(null);
+      refetch();
+    } catch (err: unknown) {
+      const errObj = err as {
+        response?: { data?: { messageCode?: string } };
+        messageCode?: string;
+        message?: string;
+      };
+      const code = errObj?.response?.data?.messageCode || errObj?.messageCode;
+      if (
+        code === "MESSAGE_CODE_606" ||
+        code === MESSAGE_CODE.MESSAGE_CODE_606 ||
+        String(errObj?.message || "").includes("606")
+      ) {
+        toast.error("Không thể xóa kệ đang có hợp đồng hoặc khách thuê!");
+      } else {
+        toast.error(getErrorMessage(err));
+      }
+    }
+  };
+
+  const handleRestoreRack = async (rackId: string) => {
+    try {
+      await restoreRackMutation.mutateAsync(rackId);
+      toast.success("Đã khôi phục kệ kho thành công!");
       refetch();
     } catch (err) {
       toast.error(getErrorMessage(err));
@@ -238,7 +282,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                 </div>
               </div>
 
-              {isManager && (
+              {canManageRacks && (
                 <div className="flex items-center gap-2">
                   {isWarehouseUnit && (
                     <button
@@ -485,7 +529,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                     ? "Nếu kệ kho bị xóa nhầm hoặc hư dữ liệu, bạn có thể khôi phục lại toàn bộ hệ thống kệ và tầng kệ theo cấu hình quy chuẩn ban đầu."
                     : "Phòng kho này thuộc loại cho thuê trọn gói (Self-Storage), không hỗ trợ bố trí hệ thống kệ pallet."}
                 </p>
-                {isWarehouseUnit && isManager && (
+                {isWarehouseUnit && canManageRacks && (
                   <div className="pt-2 flex items-center justify-center gap-2">
                     <button
                       type="button"
@@ -559,18 +603,54 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                         </div>
                       </button>
 
-                      {isManager && (
-                        <div className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteRack(rack.id)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
-                            title="Xóa kệ"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      )}
+                      {canManageRacks &&
+                        (() => {
+                          const isRackLocked =
+                            rack.status === RackStatusEnum.RENTED ||
+                            rack.status === RackStatusEnum.RESERVED ||
+                            String(rack.status).toLowerCase() === "rented" ||
+                            String(rack.status).toLowerCase() === "reserved" ||
+                            Boolean(rack.currentContractId);
+
+                          return (
+                            <div className="flex items-center gap-1">
+                              {rack.status === "inactive" && (
+                                <ActionTooltip content="Khôi phục kệ đã ngừng sử dụng">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRestoreRack(rack.id)}
+                                    disabled={restoreRackMutation.isPending}
+                                    className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition cursor-pointer"
+                                  >
+                                    <RotateCcw className="w-4 h-4 text-teal-600" />
+                                  </button>
+                                </ActionTooltip>
+                              )}
+
+                              <ActionTooltip
+                                content={
+                                  isRackLocked
+                                    ? "Không thể xóa kệ đang có hợp đồng hoặc khách thuê!"
+                                    : "Xóa kệ"
+                                }
+                              >
+                                <button
+                                  type="button"
+                                  disabled={isRackLocked || deleteRackMutation.isPending}
+                                  onClick={() => handleDeleteRack(rack)}
+                                  className={cn(
+                                    "p-1.5 rounded-lg transition",
+                                    isRackLocked
+                                      ? "text-slate-300 cursor-not-allowed hover:bg-transparent"
+                                      : "text-slate-400 hover:text-rose-600 hover:bg-rose-50 cursor-pointer"
+                                  )}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </ActionTooltip>
+                            </div>
+                          );
+                        })()}
                     </div>
 
                     {/* Rack Tiers Sub-list */}
@@ -617,7 +697,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                                 </p>
                               )}
 
-                              {isManager && (
+                              {canManageRacks && (
                                 <div className="pt-1 flex justify-end">
                                   <button
                                     type="button"
