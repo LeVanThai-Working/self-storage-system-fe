@@ -2,26 +2,19 @@
 
 import React, { useMemo, useState } from "react";
 import {
-  AlertTriangle,
   ArrowUpDown,
   Banknote,
   Calendar,
   CheckCircle2,
   Clock,
   Eye,
-  FilePlus,
   FileText,
-  Filter,
-  Layers,
   PlayCircle,
   Plus,
   Printer,
   QrCode,
   RefreshCw,
   Search,
-  ShieldAlert,
-  Wrench,
-  X,
   XCircle,
 } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store";
@@ -122,7 +115,6 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
   const [activeTab, setActiveTab] = useState<InvoiceQuickTab>("ALL");
   const [selectedType, setSelectedType] = useState<string>("ALL");
   const [searchInput, setSearchInput] = useState("");
-  const [dueBefore, setDueBefore] = useState("");
   const [dueAfter, setDueAfter] = useState("");
   const [sortBy, setSortBy] = useState<"createdAt" | "dueDate" | "totalAmount" | "status">(
     "createdAt"
@@ -150,6 +142,7 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
       limit,
       facilityId,
       sortBy,
+      sortOrder,
     };
 
     if (activeTab === "ISSUED") q.status = InvoiceStatusEnum.ISSUED;
@@ -158,16 +151,15 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
     if (activeTab === "CANCELLED") q.status = InvoiceStatusEnum.CANCELLED;
 
     if (selectedType !== "ALL") q.type = selectedType as InvoiceTypeEnum;
-    if (dueBefore) q.dueBefore = new Date(dueBefore).toISOString();
     if (dueAfter) q.dueAfter = new Date(dueAfter).toISOString();
     if (searchInput.trim()) {
       (q as Record<string, unknown>).search = searchInput.trim();
     }
 
     return q;
-  }, [page, limit, facilityId, activeTab, selectedType, dueBefore, dueAfter, searchInput, sortBy]);
+  }, [page, limit, facilityId, activeTab, selectedType, dueAfter, searchInput, sortBy, sortOrder]);
 
-  const { data: invoicesData, isLoading, isFetching, refetch } = useInvoices(queryParams);
+  const { data: invoicesData, isLoading } = useInvoices(queryParams);
 
   const items = invoicesData?.items ?? [];
   const pagination = invoicesData?.pagination ?? {

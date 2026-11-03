@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  AlertCircle,
-  Check,
-  Copy,
-  ExternalLink,
-  QrCode,
-  RefreshCw,
-  ShieldCheck,
-} from "lucide-react";
+import { AlertCircle, Check, Copy, QrCode, RefreshCw, ShieldCheck } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -53,6 +45,7 @@ export const InvoicePaymentQrModal: React.FC<InvoicePaymentQrModalProps> = ({
       setPaymentData(null);
       setErrorMsg(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, invoice?.id]);
 
   if (!invoice) return null;

@@ -25,6 +25,8 @@ import {
 import { ItemStatusBadge } from "./StatusBadges";
 import { RackIncidentDialog } from "./RackIncidentDialog";
 import { TierSelect, type TierSelectValue } from "./TierSelect";
+import { useContractDetail } from "@/features/contract-management/hooks";
+import { filterCustomerRacks } from "../utils";
 
 const LABEL = "mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700";
 const INPUT =
@@ -111,6 +113,16 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
   };
 
   const contractId = tree?.contract?.id;
+  const activeContractId = selected?.rack.currentContractId || tree?.contract?.id;
+  const contractQuery = useContractDetail(activeContractId);
+  const activeCustomerId = selected?.rack.currentCustomerId || tree?.contract?.customer?.id;
+
+  const contractData = contractQuery.data;
+  const moveTargetRacks = useMemo(() => {
+    if (!selected) return racks;
+    const effectiveContract = contractData ?? (activeContractId ? { id: activeContractId } : null);
+    return filterCustomerRacks(racks, effectiveContract, activeCustomerId);
+  }, [racks, selected, contractData, activeContractId, activeCustomerId]);
 
   const handleSubmit = async () => {
     if (!selected) return;
@@ -374,12 +386,19 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
                   <div>
                     <label className={LABEL}>{t("moveTo")} *</label>
                     <TierSelect
-                      racks={racks}
+                      racks={moveTargetRacks}
                       value={target}
                       onChange={setTarget}
                       excludeTierId={selected.tierId}
                       allowHolding
                     />
+                    {moveTargetRacks.length > 0 ? (
+                      <p className="mt-1 text-xs font-semibold text-teal-700">
+                        {t("rentedRacksOnly", {
+                          racks: moveTargetRacks.map((r) => r.rackCode).join(", "),
+                        })}
+                      </p>
+                    ) : null}
                   </div>
                   <div>
                     <label className={LABEL}>{t("quantity")}</label>

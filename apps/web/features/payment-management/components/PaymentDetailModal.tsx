@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePaymentDetail } from "../hooks";
-import { PaymentPurposeEnum, PaymentStatusEnum, type PaymentResponse } from "../types";
+import { PaymentStatusEnum } from "../types";
 import {
   calculateRemainingSeconds,
   formatCountdownTimer,

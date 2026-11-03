@@ -87,6 +87,11 @@ export function TierSelect({
       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm disabled:opacity-60"
     >
       <option value="">{t("placeholder")}</option>
+      {options.length === 0 ? (
+        <option value="" disabled>
+          {t("empty")}
+        </option>
+      ) : null}
       {allowHolding ? <option value={HOLDING}>{t("holding")}</option> : null}
       {options.map((option) => (
         <option key={option.key} value={option.key}>

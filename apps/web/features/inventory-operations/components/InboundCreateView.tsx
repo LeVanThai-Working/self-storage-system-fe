@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -24,6 +24,7 @@ import {
 import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
 import { SignaturePad } from "@/components/common/SignaturePad";
 import { useApiErrorMessage } from "@/features/auth/error-message";
+import { useAuthStore } from "@/features/auth/store";
 import { useMyFacility } from "@/features/storage-unit-management/hooks";
 import { fetchContracts } from "@/features/contract-management/api";
 import {
@@ -33,6 +34,7 @@ import {
   useUnitRacks,
 } from "../hooks";
 import { TierSelect, type TierChoice } from "./TierSelect";
+import { filterCustomerRacks } from "../utils";
 import type { FacilityPortal } from "./RequestQueueView";
 
 const LABEL = "mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700";
@@ -54,13 +56,22 @@ export function InboundCreateView({ portalBase }: { portalBase: FacilityPortal }
   const locale = useLocale();
   const router = useRouter();
   const getErrorMessage = useApiErrorMessage();
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const userRecord = currentUser as unknown as Record<string, unknown> | null;
   const { data: facility } = useMyFacility();
+  const facilityId =
+    facility?.id ||
+    (typeof userRecord?.facilityId === "string" ? userRecord.facilityId : undefined) ||
+    (typeof userRecord?.assignedFacilityId === "string"
+      ? userRecord.assignedFacilityId
+      : undefined) ||
+    ((userRecord?.facility as Record<string, unknown>)?.id as string | undefined);
 
   const contractsQuery = useQuery({
-    queryKey: ["inventory-ops", "active-contracts", facility?.id],
+    queryKey: ["inventory-ops", "active-contracts", facilityId],
     queryFn: () =>
-      fetchContracts({ facilityId: facility!.id, status: ContractStatusEnum.ACTIVE, limit: 100 }),
-    enabled: Boolean(facility?.id),
+      fetchContracts({ facilityId: facilityId!, status: ContractStatusEnum.ACTIVE, limit: 100 }),
+    enabled: Boolean(facilityId),
   });
   const contracts = contractsQuery.data?.items ?? [];
 
@@ -68,6 +79,11 @@ export function InboundCreateView({ portalBase }: { portalBase: FacilityPortal }
   const contract = contracts.find((item) => item.id === contractId);
   const skusQuery = useCustomerSkus(contract?.customerId);
   const racksQuery = useUnitRacks(contract?.storageUnitId);
+
+  const customerRacks = useMemo(
+    () => filterCustomerRacks(racksQuery.data ?? [], contract, contract?.customerId),
+    [racksQuery.data, contract]
+  );
   const createMutation = useCreateInboundRequest();
   const createSkuMutation = useCreateCustomerSku();
 
@@ -224,9 +240,9 @@ export function InboundCreateView({ portalBase }: { portalBase: FacilityPortal }
                     className={INPUT}
                   />
                   <TierSelect
-                    racks={racksQuery.data ?? []}
+                    racks={customerRacks}
                     value={row.tier}
-                    disabled={!contract}
+                    disabled={!contract || racksQuery.isLoading}
                     onChange={(choice) =>
                       updateRow(row.key, { tier: choice && choice !== "holding" ? choice : null })
                     }

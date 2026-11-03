@@ -2,17 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  AlertTriangle,
-  Box,
-  Layers,
-  Loader2,
-  Lock,
-  Plus,
-  RotateCcw,
-  Sparkles,
-  Wrench,
-} from "lucide-react";
+import { AlertTriangle, Box, Layers, Loader2, Lock, Plus, RotateCcw, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import {
   RackStatusEnum,

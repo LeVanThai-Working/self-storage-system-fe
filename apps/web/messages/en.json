@@ -2705,6 +2705,7 @@
     },
     "tierSelect": {
       "placeholder": "Choose rack · tier",
+      "empty": "No available customer racks",
       "holding": "Holding area (off the rack)"
     },
     "queue": {
@@ -2783,6 +2784,7 @@
       "title": "Shelve items",
       "tier": "Tier",
       "hint": "Only racks under the customer's contract are accepted (637 otherwise).",
+      "rentedRacksOnly": "Customer rented racks: {racks}",
       "missingTier": "{count} SKUs still need a tier",
       "submit": "Complete shelving",
       "done": "Items shelved, stock updated"
@@ -2850,6 +2852,7 @@
         "status": "Status"
       },
       "moveTo": "Move to",
+      "rentedRacksOnly": "Customer rented racks: {racks}",
       "quantity": "Quantity",
       "ticketCode": "For request (SUP code)",
       "countedQuantity": "Counted quantity",
@@ -2887,6 +2890,7 @@
       },
       "target": "Destination rack",
       "targetPlaceholder": "Choose an empty rack with the same tier count",
+      "noCustomerRacks": "No other racks under customer contract",
       "targetHint": "Only empty, available racks with the same tier count are valid.",
       "tiers": "{count} tiers",
       "notFree": "not free",

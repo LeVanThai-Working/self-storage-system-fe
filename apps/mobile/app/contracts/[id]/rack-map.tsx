@@ -10,6 +10,8 @@ import {
   ClipboardList,
   Info,
   LayoutGrid,
+  Package,
+  Plus,
   Search,
   ShieldAlert,
   Truck,
@@ -43,6 +45,7 @@ import type { RequestActionType } from "@/features/customer-inventory/types/rack
 import {
   INVENTORY_ERROR,
   buildFloorLabel,
+  filterRentedRacks,
   findTierInTree,
   getContractRequestRights,
   resolveInventoryError,
@@ -138,6 +141,54 @@ export default function ContractRackMapScreen() {
   );
   const highlightActive = highlightedTierIds.size > 0 || floorHighlighted;
 
+  const visibleRacks = useMemo(() => {
+    return filterRentedRacks(tree?.racks, contract);
+  }, [tree?.racks, contract]);
+
+  const customerSummary = useMemo(() => {
+    if (!tree) return null;
+    if (visibleRacks.length === 0) {
+      return tree.summary;
+    }
+
+    const totalRacks = visibleRacks.length;
+    let totalTiers = 0;
+    let occupiedTiers = 0;
+    let totalQuantity = 0;
+    const skuSet = new Set<string>();
+
+    visibleRacks.forEach((rack) => {
+      totalTiers += rack.tiers.length;
+      rack.tiers.forEach((tier) => {
+        if (tier.items.length > 0) {
+          occupiedTiers++;
+        }
+        tier.items.forEach((item) => {
+          totalQuantity += item.quantity;
+          if (item.sku?.id) {
+            skuSet.add(item.sku.id);
+          }
+        });
+      });
+    });
+
+    tree.unrackedItems.forEach((item) => {
+      totalQuantity += item.quantity;
+      if (item.sku?.id) {
+        skuSet.add(item.sku.id);
+      }
+    });
+
+    return {
+      totalRacks,
+      totalTiers,
+      occupiedTiers,
+      availableTiers: Math.max(0, totalTiers - occupiedTiers),
+      totalSkus: skuSet.size,
+      totalQuantity,
+    };
+  }, [tree, visibleRacks]);
+
   const handleBack = () => {
     if (router.canGoBack()) {
       router.back();
@@ -180,7 +231,7 @@ export default function ContractRackMapScreen() {
         .map((location) => location.rackTier?.id)
         .filter((id): id is string => Boolean(id))
     );
-    const targetRacks = tree.racks.filter((rack) =>
+    const targetRacks = visibleRacks.filter((rack) =>
       rack.tiers.some((tier) => unitTierIds.has(tier.id))
     );
 
@@ -204,7 +255,7 @@ export default function ContractRackMapScreen() {
         scrollRef.current?.scrollToEnd({ animated: true });
         return;
       }
-      const rack = tree.racks.find((item) => item.tiers.some((tier) => tier.id === scrollTierId));
+      const rack = visibleRacks.find((item) => item.tiers.some((tier) => tier.id === scrollTierId));
       const rackOffset = rack ? rackOffsetsRef.current.get(rack.id) : undefined;
       if (!rack || rackOffset === undefined) return;
       const tierIndex = sortTiersTopDown(rack.tiers).findIndex((tier) => tier.id === scrollTierId);
@@ -260,6 +311,15 @@ export default function ContractRackMapScreen() {
           className="h-8 w-8 items-center justify-center rounded-full border border-brand/40 active:opacity-70"
         >
           <ClipboardList size={15} color="#0B927E" />
+        </Pressable>
+        <Pressable
+          onPress={() => router.push("/skus")}
+          hitSlop={6}
+          accessibilityLabel={t("rackMap.skuButton")}
+          className="h-8 flex-row items-center gap-1.5 rounded-full border border-brand/40 bg-white px-2.5 active:opacity-70 dark:bg-neutral-900"
+        >
+          <Package size={14} color="#0B927E" />
+          <Text className="text-xs font-bold text-brand">{t("rackMap.skuButton")}</Text>
         </Pressable>
         {tree ? (
           <Pressable
@@ -328,7 +388,7 @@ export default function ContractRackMapScreen() {
       );
     }
 
-    const hasRacks = tree.racks.length > 0;
+    const hasRacks = visibleRacks.length > 0;
 
     return (
       <ScrollView
@@ -373,10 +433,47 @@ export default function ContractRackMapScreen() {
           </Pressable>
         ) : null}
 
-        <RackMapSummaryBar summary={tree.summary} showTiers={hasRacks} />
+        <RackMapSummaryBar
+          summary={customerSummary ?? tree.summary}
+          showTiers={hasRacks}
+          onPressSkus={() => router.push("/skus")}
+        />
+
+        {customerSummary && customerSummary.totalSkus === 0 && !readOnly ? (
+          <View className="rounded-3xl border border-brand/30 bg-brand-light/25 p-4 dark:bg-brand/10">
+            <View className="flex-row items-start gap-3">
+              <View className="h-10 w-10 items-center justify-center rounded-2xl bg-brand/15">
+                <Package size={22} color="#0B927E" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
+                  {t("rackMap.preCreateSkuTitle")}
+                </Text>
+                <Text variant="muted" className="mt-0.5 text-xs leading-4">
+                  {t("rackMap.preCreateSkuHint")}
+                </Text>
+              </View>
+            </View>
+            <View className="mt-3 flex-row gap-2">
+              <Pressable
+                onPress={() => router.push("/skus/new")}
+                className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl bg-brand py-2.5 active:opacity-80"
+              >
+                <Plus size={15} color="#FFFFFF" />
+                <Text className="text-xs font-bold text-white">{t("rackMap.createSkuButton")}</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/skus")}
+                className="flex-row items-center justify-center rounded-xl border border-brand/40 bg-white px-3.5 py-2.5 active:opacity-80 dark:bg-neutral-900"
+              >
+                <Text className="text-xs font-bold text-brand">{t("rackMap.viewSkuList")}</Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : null}
 
         {hasRacks ? (
-          tree.racks.map((rack) => (
+          visibleRacks.map((rack) => (
             <RackCard
               key={rack.id}
               rack={rack}
@@ -385,6 +482,7 @@ export default function ContractRackMapScreen() {
               highlightedTierIds={highlightedTierIds}
               highlightActive={highlightActive}
               onTierPress={handleTierPress}
+              isRented={true}
               onLayout={(event) => {
                 rackOffsetsRef.current.set(rack.id, event.nativeEvent.layout.y);
               }}
@@ -394,7 +492,7 @@ export default function ContractRackMapScreen() {
           <View className="items-center rounded-3xl border border-neutral-border bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900">
             <LayoutGrid size={28} color="#647B80" />
             <Text variant="muted" className="mt-2 text-center text-xs">
-              {t("rackMap.noRacks")}
+              {t("rackMap.noRentedRacks")}
             </Text>
           </View>
         )}

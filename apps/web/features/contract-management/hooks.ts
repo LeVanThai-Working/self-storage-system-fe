@@ -19,7 +19,6 @@ import {
   fetchFacilityStaffs,
   fetchPaymentsByContract,
   fetchStorageUnitById,
-  getDraftContractPdfUrl,
   processOverdueContracts,
   rejectContractAddendum,
   renewContract,

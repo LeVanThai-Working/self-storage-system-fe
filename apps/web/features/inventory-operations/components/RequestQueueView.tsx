@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useApiErrorMessage } from "@/features/auth/error-message";
+import { useAuthStore } from "@/features/auth/store";
 import { useMyFacility } from "@/features/storage-unit-management/hooks";
 import { fetchInventoryRequests } from "../api";
 import { inventoryOpsKeys, useInventoryRequests, useVerifyPickupCode } from "../hooks";
@@ -71,8 +72,16 @@ export function RequestQueueView({ portalBase }: { portalBase: FacilityPortal })
   const locale = useLocale();
   const router = useRouter();
   const getErrorMessage = useApiErrorMessage();
+  const currentUser = useAuthStore((s) => s.currentUser);
+  const userRecord = currentUser as unknown as Record<string, unknown> | null;
   const { data: facility } = useMyFacility();
-  const facilityId = facility?.id;
+  const facilityId =
+    facility?.id ||
+    (typeof userRecord?.facilityId === "string" ? userRecord.facilityId : undefined) ||
+    (typeof userRecord?.assignedFacilityId === "string"
+      ? userRecord.assignedFacilityId
+      : undefined) ||
+    ((userRecord?.facility as Record<string, unknown>)?.id as string | undefined);
 
   const [type, setType] = useState<InventoryRequestTypeEnum | "all">("all");
   const [status, setStatus] = useState<InventoryRequestStatusEnum | "all">("all");
@@ -83,7 +92,7 @@ export function RequestQueueView({ portalBase }: { portalBase: FacilityPortal })
   const verifyMutation = useVerifyPickupCode();
 
   const query = {
-    facilityId,
+    facilityId: facilityId || undefined,
     type: type === "all" ? undefined : type,
     status: status === "all" ? undefined : status,
     search: search.trim() || undefined,
@@ -92,15 +101,20 @@ export function RequestQueueView({ portalBase }: { portalBase: FacilityPortal })
     sortBy: "createdAt",
     sortOrder: "desc" as const,
   };
-  const listQuery = useInventoryRequests(query, Boolean(facilityId));
+  const listQuery = useInventoryRequests(query, true);
 
   const kpiQueries = useQueries({
     queries: KPI_STATUSES.map(({ status: kpiStatus }) => {
-      const kpiQuery = { facilityId, status: kpiStatus, page: 1, limit: 1 };
+      const kpiQuery = {
+        facilityId: facilityId || undefined,
+        status: kpiStatus,
+        page: 1,
+        limit: 1,
+      };
       return {
         queryKey: inventoryOpsKeys.requests(kpiQuery),
         queryFn: () => fetchInventoryRequests(kpiQuery),
-        enabled: Boolean(facilityId),
+        enabled: true,
       };
     }),
   });
@@ -264,7 +278,7 @@ export function RequestQueueView({ portalBase }: { portalBase: FacilityPortal })
             </tr>
           </thead>
           <tbody>
-            {listQuery.isLoading || !facilityId ? (
+            {listQuery.isLoading ? (
               Array.from({ length: 5 }).map((_, index) => (
                 <tr key={index}>
                   <td colSpan={8} className="px-4 py-2">

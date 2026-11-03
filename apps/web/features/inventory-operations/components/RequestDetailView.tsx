@@ -21,6 +21,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
 import { SignaturePad } from "@/components/common/SignaturePad";
 import { useApiErrorMessage } from "@/features/auth/error-message";
+import { useContractDetail } from "@/features/contract-management/hooks";
+import { filterCustomerRacks } from "../utils";
 import {
   useCompleteOutbound,
   useInventoryRequest,
@@ -340,8 +342,15 @@ function PutawayForm({ request }: { request: InventoryRequestResponse }) {
   const t = useTranslations("inventoryOps.putaway");
   const getErrorMessage = useApiErrorMessage();
   const racksQuery = useUnitRacks(request.storageUnitId);
+  const contractQuery = useContractDetail(request.contractId);
   const putawayMutation = usePutawayInbound(request.id);
   const [error, setError] = useState<string | null>(null);
+
+  const contract = contractQuery.data;
+  const customerRacks = useMemo(
+    () => filterCustomerRacks(racksQuery.data ?? [], contract, request.customerId),
+    [racksQuery.data, contract, request.customerId]
+  );
 
   const [placements, setPlacements] = useState<Record<string, TierChoice | null>>(() =>
     Object.fromEntries(
@@ -387,9 +396,9 @@ function PutawayForm({ request }: { request: InventoryRequestResponse }) {
           extraHeader={t("tier")}
           renderExtra={(item) => (
             <TierSelect
-              racks={racksQuery.data ?? []}
+              racks={customerRacks}
               value={placements[itemKey(item)]}
-              disabled={racksQuery.isLoading}
+              disabled={racksQuery.isLoading || contractQuery.isLoading}
               onChange={(choice) =>
                 setPlacements((prev) => ({
                   ...prev,
@@ -399,7 +408,14 @@ function PutawayForm({ request }: { request: InventoryRequestResponse }) {
             />
           )}
         />
-        <p className="mt-3 text-xs text-slate-500">{t("hint")}</p>
+        {customerRacks.length > 0 ? (
+          <p className="mt-2 text-xs font-semibold text-teal-700">
+            {t("rentedRacksOnly", {
+              racks: customerRacks.map((r) => r.rackCode).join(", "),
+            })}
+          </p>
+        ) : null}
+        <p className="mt-1 text-xs text-slate-500">{t("hint")}</p>
       </div>
       <div className="space-y-5">
         <TransporterCard request={request} />

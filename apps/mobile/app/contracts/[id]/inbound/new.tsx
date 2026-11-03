@@ -363,6 +363,19 @@ export default function CreatePreAdvisedInboundScreen() {
             className="flex-1 py-2.5 text-sm text-neutral-dark dark:text-neutral-100"
           />
         </View>
+        <Pressable
+          onPress={() => {
+            setPickerOpen(false);
+            router.push("/skus/new");
+          }}
+          className="flex-row items-center justify-center gap-1.5 rounded-xl border border-dashed border-brand/50 bg-brand-light/30 py-2.5 active:opacity-70 dark:bg-brand/10"
+        >
+          <Plus size={14} color="#0B927E" />
+          <Text className="text-xs font-bold text-brand">
+            {t("inventoryRequest.preAdvised.createSkuMore")}
+          </Text>
+        </Pressable>
+
         {skuQuery.isLoading ? (
           <ActivityIndicator color="#0B927E" className="py-4" />
         ) : skus.length === 0 ? (

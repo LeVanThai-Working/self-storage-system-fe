@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useLocale } from "next-intl";
-import { AlertCircle, Ban, X } from "lucide-react";
+import { AlertCircle, Ban } from "lucide-react";
 import { toast } from "sonner";
 import { cancelPaymentSchema } from "@self-storage-system-fe/shared";
 import {

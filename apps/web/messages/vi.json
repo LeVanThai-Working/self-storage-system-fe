@@ -2705,6 +2705,7 @@
     },
     "tierSelect": {
       "placeholder": "Chọn kệ · tầng",
+      "empty": "Không có kệ khả dụng của khách",
       "holding": "Khu lưu tạm (hạ khỏi kệ)"
     },
     "queue": {
@@ -2783,6 +2784,7 @@
       "title": "Xếp hàng lên kệ",
       "tier": "Tầng xếp",
       "hint": "Chỉ chọn kệ thuộc hợp đồng của khách. Kệ khách khác sẽ bị từ chối (637).",
+      "rentedRacksOnly": "Kệ khách đã thuê: {racks}",
       "missingTier": "Còn {count} mã hàng chưa chọn tầng",
       "submit": "Hoàn tất xếp kệ",
       "done": "Đã xếp hàng lên kệ, tồn kho đã cập nhật"
@@ -2850,6 +2852,7 @@
         "status": "Trạng thái"
       },
       "moveTo": "Chuyển đến",
+      "rentedRacksOnly": "Kệ thuộc hợp đồng của khách: {racks}",
       "quantity": "Số lượng",
       "ticketCode": "Theo yêu cầu (mã SUP)",
       "countedQuantity": "Số lượng thực tế",
@@ -2887,6 +2890,7 @@
       },
       "target": "Kệ đích",
       "targetPlaceholder": "Chọn kệ trống cùng số tầng",
+      "noCustomerRacks": "Không có kệ nào khác thuộc hợp đồng của khách",
       "targetHint": "Chỉ kệ trống, sẵn sàng và có cùng số tầng mới hợp lệ.",
       "tiers": "{count} tầng",
       "notFree": "không trống",

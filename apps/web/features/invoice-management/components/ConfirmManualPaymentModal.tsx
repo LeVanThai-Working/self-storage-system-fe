@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  AlertCircle,
-  AlertTriangle,
-  Banknote,
-  CheckCircle2,
-  ShieldAlert,
-  UploadCloud,
-} from "lucide-react";
+import { AlertCircle, Banknote, CheckCircle2, ShieldAlert } from "lucide-react";
 import {
   Dialog,
   DialogContent,

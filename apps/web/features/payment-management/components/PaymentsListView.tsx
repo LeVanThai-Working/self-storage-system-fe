@@ -3,23 +3,15 @@
 import React, { useState } from "react";
 import { useLocale } from "next-intl";
 import {
-  AlertCircle,
-  Building2,
-  Calendar,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Clock,
   Eye,
-  Filter,
-  Layers,
-  Loader2,
   Receipt,
   RefreshCw,
   RotateCcw,
   Search,
-  SlidersHorizontal,
-  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";

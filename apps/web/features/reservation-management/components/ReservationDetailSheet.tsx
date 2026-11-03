@@ -7,20 +7,12 @@ import {
   AlertTriangle,
   Banknote,
   Boxes,
-  Calendar,
   Check,
   Clock,
   CreditCard,
   FileCheck2,
   Flame,
-  Layers,
-  Mail,
-  MapPin,
-  Package,
-  Phone,
   RefreshCw,
-  ShieldAlert,
-  ShieldCheck,
   User,
   UserCheck,
   X,
@@ -31,7 +23,6 @@ import { useAuthStore } from "@/features/auth/store";
 import { RoleEnum } from "@self-storage-system-fe/shared";
 import { useReservationDetail } from "../hooks";
 import {
-  BillingUnitEnum,
   ReservationStatusEnum,
   type FacilityUnitTypeOfferingResponse,
   type ReservationResponse,
@@ -75,7 +66,6 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   isOpen,
   onClose,
   reservation: initialReservation,
-  offerings,
   nowMs,
   portalBase = "facility-manager",
   isCreatingContract = false,
@@ -90,8 +80,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   onOpenCreateContract,
 }) => {
   const t = useTranslations("facilityManager.reservations.detailSheet");
-  const tActions = useTranslations("facilityManager.reservations.actions");
-  const tBilling = useTranslations("facilityManager.reservations.billingUnit");
+
   const locale = useLocale() === "en" ? "en" : "vi";
 
   const currentUser = useAuthStore((s) => s.currentUser);
@@ -144,15 +133,6 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
     status === ReservationStatusEnum.PENDING_PAYMENT ||
     (status === ReservationStatusEnum.PAYMENT_SUCCESSFUL && isManager);
 
-  // Subtotal
-  const durationMultiplier =
-    reservation.billingUnit === BillingUnitEnum.MONTH
-      ? Math.max(1, reservation.rentalDuration / 30)
-      : reservation.billingUnit === BillingUnitEnum.DAY
-        ? reservation.rentalDuration
-        : 1;
-  const baseStorageTotal = Math.round(reservation.basePrice * durationMultiplier);
-
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
@@ -163,9 +143,9 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
         <SheetHeader className="p-6 border-b border-slate-100 bg-slate-50/60 flex flex-row items-center justify-between space-y-0">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-base font-extrabold text-slate-900">
+              <SheetTitle className="font-mono text-base font-extrabold text-slate-900">
                 {reservation.reservationCode}
-              </span>
+              </SheetTitle>
               <ReservationStatusBadge
                 status={reservation.status}
                 expiresAt={reservation.expiresAt}
