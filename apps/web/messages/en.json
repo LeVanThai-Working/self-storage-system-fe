@@ -795,7 +795,8 @@
       "reconciliation": "Bank Reconciliation",
       "analytics": "Analytics & Reports",
       "sectionOperations": "BRANCH OPERATIONS",
-      "signingAuthorizations": "Signing Authorizations"
+      "signingAuthorizations": "Signing Authorizations",
+      "timeSlots": "Time Slots"
     },
     "searchPlaceholder": "Search facilities, branch code...",
     "facilities": {
