@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/dialog";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useBatchMigrateRack, useEvacuateRack } from "../hooks";
+import { useContractDetail } from "@/features/contract-management/hooks";
+import { filterCustomerRacks } from "../utils";
 
 type Mode = "migrate" | "evacuate";
 type Basis = "incident" | "addendum" | "emergency";
@@ -64,10 +66,25 @@ export function RackIncidentDialog({
   const [emergencyReason, setEmergencyReason] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const candidates = useMemo(
-    () => racks.filter((rack) => rack.id !== fromRack.id && rack.tierCount === fromRack.tierCount),
-    [racks, fromRack]
-  );
+  const contractQuery = useContractDetail(fromRack?.currentContractId);
+  const contract = contractQuery.data;
+
+  const candidates = useMemo(() => {
+    const sameTierRacks = racks.filter(
+      (rack) => rack.id !== fromRack.id && rack.tierCount === fromRack.tierCount
+    );
+
+    if (fromRack.currentContractId || fromRack.currentCustomerId || contract) {
+      const customerRacks = filterCustomerRacks(
+        sameTierRacks,
+        contract ?? (fromRack.currentContractId ? { id: fromRack.currentContractId } : null),
+        fromRack.currentCustomerId
+      );
+      return customerRacks;
+    }
+
+    return sameTierRacks;
+  }, [racks, fromRack, contract]);
   const pending = migrateMutation.isPending || evacuateMutation.isPending;
 
   const handleSubmit = async () => {
@@ -152,6 +169,11 @@ export function RackIncidentDialog({
                 className={INPUT}
               >
                 <option value="">{t("targetPlaceholder")}</option>
+                {candidates.length === 0 ? (
+                  <option value="" disabled>
+                    {t("noCustomerRacks")}
+                  </option>
+                ) : null}
                 {candidates.map((rack) => (
                   <option key={rack.id} value={rack.id} disabled={!isFreeRack(rack)}>
                     {rack.rackCode} · {rack.zone ?? "—"} · {t("tiers", { count: rack.tierCount })}

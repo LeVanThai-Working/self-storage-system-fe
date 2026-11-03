@@ -3,6 +3,7 @@ import {
   InventoryItemStatusEnum,
   MESSAGE_CODE,
   RackTierStatusEnum,
+  type ContractResponse,
   type MessageLocale,
   type StorageUnitInventoryTreeResponse,
   type TreeRack,
@@ -275,4 +276,73 @@ export function listTreePositions(
         tier.items.map((item) => ({ rack, tier, item, key: positionKey(tier.id, item.sku.id) }))
       )
     );
+}
+
+/**
+ * Determines whether a given rack belongs to the customer under this contract.
+ */
+export function isRackRentedByContract(
+  rack: TreeRack,
+  contract?: Partial<ContractResponse> | null,
+  allRacks?: TreeRack[]
+): boolean {
+  if (!contract) return false;
+
+  // 1. BE G6 masking: explicitly marks customer's rack with isMine === true
+  if (rack.isMine === true) return true;
+
+  // 2. BE currentContractId matches this contract id
+  if (rack.currentContractId && contract.id && rack.currentContractId === contract.id) {
+    return true;
+  }
+
+  // 3. Contract rentedRackIds list
+  if (Array.isArray(contract.rentedRackIds) && contract.rentedRackIds.length > 0) {
+    const ids = contract.rentedRackIds.map(String);
+    if (ids.includes(rack.id) || ids.includes(rack.rackCode)) {
+      return true;
+    }
+  }
+
+  // 4. Contract rentedRacks list
+  if (Array.isArray(contract.rentedRacks) && contract.rentedRacks.length > 0) {
+    if (contract.rentedRacks.some((r) => r.id === rack.id || r.rackCode === rack.rackCode)) {
+      return true;
+    }
+  }
+
+  // 5. If any other rack in allRacks is explicitly marked isMine=true or has matching contractId,
+  // then any rack without it is definitely NOT rented by this customer!
+  if (
+    allRacks &&
+    allRacks.some(
+      (r) => r.isMine === true || (r.currentContractId && r.currentContractId === contract.id)
+    )
+  ) {
+    return false;
+  }
+
+  // 6. Whole storage unit rental (rentalTargetType === "storage_unit")
+  if (contract.rentalTargetType === "storage_unit") {
+    return true;
+  }
+
+  // 7. Check if rack tiers hold items belonging to customer
+  if (rack.tiers.some((t) => t.items.length > 0)) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Returns only the racks that are rented by the customer under the active contract.
+ * Other racks (outside the contract or belonging to other customers) are omitted.
+ */
+export function filterRentedRacks(
+  racks: TreeRack[] | undefined,
+  contract?: Partial<ContractResponse> | null
+): TreeRack[] {
+  if (!racks || racks.length === 0) return [];
+  return racks.filter((rack) => isRackRentedByContract(rack, contract, racks));
 }

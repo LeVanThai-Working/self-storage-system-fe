@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { View, Pressable } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
@@ -78,6 +78,19 @@ export function ContractCard({
   const displayFacilityName =
     contract.facility?.name || facilityName || (isEn ? "StorageHub Facility" : "Cơ sở StorageHub");
 
+  const rentedRacksLabel = useMemo(() => {
+    if (!isWarehouse) return null;
+    if (contract.rentedRacks && contract.rentedRacks.length > 0) {
+      return contract.rentedRacks.map((r) => r.rackCode).join(", ");
+    }
+    if (contract.rentedRackIds && contract.rentedRackIds.length > 0) {
+      return isEn
+        ? `${contract.rentedRackIds.length} rack(s)`
+        : `${contract.rentedRackIds.length} kệ thuê`;
+    }
+    return null;
+  }, [isWarehouse, contract.rentedRacks, contract.rentedRackIds, isEn]);
+
   return (
     <Pressable
       onPress={() => onPress(contract)}
@@ -100,6 +113,7 @@ export function ContractCard({
               <Building2 size={11} color="#647B80" />
               <Text variant="muted" className="text-xs flex-1" numberOfLines={1}>
                 {displayFacilityName} • #{displayUnitLabel}
+                {rentedRacksLabel ? ` • Kệ: ${rentedRacksLabel}` : ""}
               </Text>
             </View>
           </View>

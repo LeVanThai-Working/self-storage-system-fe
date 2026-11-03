@@ -63,11 +63,32 @@ interface TierCellProps {
   /** Another tier is highlighted, so this one fades out. */
   dimmed?: boolean;
   onPress: (tier: TreeTier) => void;
+  disabled?: boolean;
 }
 
 /** One shelf of the 2D rack: a colored bar showing the main item and the tier state. */
-export function TierCell({ tier, highlighted = false, dimmed = false, onPress }: TierCellProps) {
+export function TierCell({
+  tier,
+  highlighted = false,
+  dimmed = false,
+  onPress,
+  disabled = false,
+}: TierCellProps) {
   const { t } = useTranslation();
+
+  if (disabled) {
+    return (
+      <View className="h-11 flex-row items-center gap-2 rounded-xl px-3 bg-neutral-100/90 dark:bg-neutral-800/60 border border-neutral-200/80 dark:border-neutral-700/60 opacity-60">
+        <Lock size={13} color="#94A3B8" />
+        <Text
+          numberOfLines={1}
+          className="flex-shrink text-xs font-semibold text-neutral-400 dark:text-neutral-500"
+        >
+          {t("rackMap.tierDisabled")}
+        </Text>
+      </View>
+    );
+  }
   const variant = getTierBarVariant(tier);
   const style = BAR_STYLE[variant];
   const firstItem = tier.items[0];
