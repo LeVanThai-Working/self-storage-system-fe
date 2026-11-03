@@ -106,7 +106,7 @@ export const FacilityTable = () => {
       case FacilityStatusEnum.ACTIVE:
       case "active":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             {t("statuses.active")}
           </span>
@@ -327,7 +327,7 @@ export const FacilityTable = () => {
       {/* Main Facilities Table */}
       <div className="rounded-2xl bg-white border border-slate-100 shadow-sm shadow-slate-200/40 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/75 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                 <th className="py-4 px-6">{t("columns.facility")}</th>
@@ -488,7 +488,9 @@ export const FacilityTable = () => {
                       </td>
 
                       {/* Status */}
-                      <td className="py-4 px-6">{renderStatusBadge(facility.status)}</td>
+                      <td className="py-4 px-6 whitespace-nowrap">
+                        {renderStatusBadge(facility.status)}
+                      </td>
 
                       {/* Actions */}
                       <td className="py-4 px-6 text-right">

@@ -123,7 +123,7 @@ export const ApprovalTable = () => {
     switch (st) {
       case ApprovalRequestStatusEnum.PENDING:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
             <Clock className="w-3 h-3 text-amber-600" />
             {t(`status.${st}`)}
@@ -452,7 +452,7 @@ export const ApprovalTable = () => {
       {/* Table */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                 <th className="py-4 px-6">{t("table.facilityAndRequester")}</th>
@@ -527,7 +527,7 @@ export const ApprovalTable = () => {
                     </td>
 
                     {/* Status */}
-                    <td className="py-4 px-6">{renderStatusBadge(req.status)}</td>
+                    <td className="py-4 px-6 whitespace-nowrap">{renderStatusBadge(req.status)}</td>
 
                     {/* Created At */}
                     <td className="py-4 px-6 text-xs text-slate-500 whitespace-nowrap">

@@ -517,7 +517,7 @@ export const FacilityAmenityTable = () => {
       {/* Offerings Table */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                 <th className="py-4 px-6">{t("table.facility")}</th>
@@ -606,7 +606,7 @@ export const FacilityAmenityTable = () => {
                       </td>
 
                       {/* Price Column */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-6 whitespace-nowrap">
                         <div className="font-black text-slate-900">
                           {formatPrice(offering.pricePerUnit)}
                         </div>
@@ -696,7 +696,7 @@ export const FacilityAmenityTable = () => {
                       </td>
 
                       {/* Actions Column */}
-                      <td className="py-4 px-6 text-right">
+                      <td className="py-4 px-6 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1">
                           <button
                             type="button"
