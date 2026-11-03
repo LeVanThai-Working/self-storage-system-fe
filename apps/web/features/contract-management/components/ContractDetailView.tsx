@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState } from "react";
@@ -22,8 +23,6 @@ import {
   History,
   ImageIcon,
   LogOut,
-  MinusCircle,
-  Plus,
   RefreshCw,
   ShieldAlert,
   ShieldCheck,
@@ -35,7 +34,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/features/auth/store";
-import { getDraftContractPdfContent, getDraftContractPdfUrl } from "../api";
 import { buildProfessionalContractHtml } from "../utils/printContract";
 import {
   useContractDetail,
@@ -86,7 +84,6 @@ import {
   ContractAddendumStatusBadge,
   ContractAddendumTypeBadge,
   ContractDepositBadge,
-  ContractDepositStatusBadge,
   ContractSourceBadge,
   ContractStatusBadge,
   ContractTerminationBadge,

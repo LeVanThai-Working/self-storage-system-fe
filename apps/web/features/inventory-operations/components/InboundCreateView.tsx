@@ -80,10 +80,9 @@ export function InboundCreateView({ portalBase }: { portalBase: FacilityPortal }
   const skusQuery = useCustomerSkus(contract?.customerId);
   const racksQuery = useUnitRacks(contract?.storageUnitId);
 
-  const allRacks = racksQuery.data ?? [];
   const customerRacks = useMemo(
-    () => filterCustomerRacks(allRacks, contract, contract?.customerId),
-    [allRacks, contract]
+    () => filterCustomerRacks(racksQuery.data ?? [], contract, contract?.customerId),
+    [racksQuery.data, contract]
   );
   const createMutation = useCreateInboundRequest();
   const createSkuMutation = useCreateCustomerSku();

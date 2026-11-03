@@ -99,7 +99,7 @@ export const ConfirmReservationModal: React.FC<ConfirmReservationModalProps> = (
   if (reservation?.id !== prevResId || isOpen !== prevIsOpen) {
     setPrevResId(reservation?.id);
     setPrevIsOpen(isOpen);
-    if (isOpen && reservation) {
+    if (isOpen && reservation?.id) {
       const fallbackStaffId = isManager ? staffList[0]?.id || "" : currentUser?.id || "";
       setAssignedStaffId(reservation.assignedStaffId || fallbackStaffId);
       setNotes(reservation.notes || "");
@@ -1157,7 +1157,7 @@ export const AssignReservationStaffModal: React.FC<AssignReservationStaffModalPr
   if (reservation?.id !== prevId || isOpen !== prevIsOpen) {
     setPrevId(reservation?.id);
     setPrevIsOpen(isOpen);
-    if (isOpen && reservation) {
+    if (isOpen && reservation?.id) {
       setStaffId(reservation.assignedStaffId || "");
       setErrorMsg(null);
       setSuccessMsg(null);
@@ -1503,7 +1503,7 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
 
   useEffect(() => {
     let active = true;
-    if (isOpen && reservation) {
+    if (isOpen && reservation?.id) {
       getDepositPaymentMutation
         .mutateAsync(reservation.id)
         .then((res) => {

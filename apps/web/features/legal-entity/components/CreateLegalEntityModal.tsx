@@ -2,18 +2,7 @@
 
 import React, { useState } from "react";
 import { useLocale } from "next-intl";
-import {
-  Building2,
-  CreditCard,
-  Mail,
-  MapPin,
-  Phone,
-  User,
-  X,
-  Plus,
-  Loader2,
-  AlertCircle,
-} from "lucide-react";
+import { Building2, CreditCard, User, X, Plus, Loader2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateLegalEntity } from "../hooks";
 import { createLegalEntitySchema, type CreateLegalEntityRequest } from "../types";

@@ -76,11 +76,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ className })
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { data: unreadCount = 0 } = useUnreadCount();
-  const {
-    data: notificationData,
-    isLoading,
-    isFetching,
-  } = useNotifications({ page: 1, limit: 15 }, isOpen);
+  const { data: notificationData, isLoading } = useNotifications({ page: 1, limit: 15 }, isOpen);
 
   const markAsReadMutation = useMarkAsRead();
   const markAllAsReadMutation = useMarkAllAsRead();

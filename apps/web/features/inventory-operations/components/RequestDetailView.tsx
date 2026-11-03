@@ -347,10 +347,9 @@ function PutawayForm({ request }: { request: InventoryRequestResponse }) {
   const [error, setError] = useState<string | null>(null);
 
   const contract = contractQuery.data;
-  const allRacks = racksQuery.data ?? [];
   const customerRacks = useMemo(
-    () => filterCustomerRacks(allRacks, contract, request.customerId),
-    [allRacks, contract, request.customerId]
+    () => filterCustomerRacks(racksQuery.data ?? [], contract, request.customerId),
+    [racksQuery.data, contract, request.customerId]
   );
 
   const [placements, setPlacements] = useState<Record<string, TierChoice | null>>(() =>

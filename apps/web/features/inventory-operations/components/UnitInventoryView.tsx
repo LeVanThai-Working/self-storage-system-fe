@@ -115,13 +115,14 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
   const contractId = tree?.contract?.id;
   const activeContractId = selected?.rack.currentContractId || tree?.contract?.id;
   const contractQuery = useContractDetail(activeContractId);
-  const contract = contractQuery.data ?? (activeContractId ? { id: activeContractId } : null);
   const activeCustomerId = selected?.rack.currentCustomerId || tree?.contract?.customer?.id;
 
+  const contractData = contractQuery.data;
   const moveTargetRacks = useMemo(() => {
     if (!selected) return racks;
-    return filterCustomerRacks(racks, contract, activeCustomerId);
-  }, [racks, selected, contract, activeCustomerId]);
+    const effectiveContract = contractData ?? (activeContractId ? { id: activeContractId } : null);
+    return filterCustomerRacks(racks, effectiveContract, activeCustomerId);
+  }, [racks, selected, contractData, activeContractId, activeCustomerId]);
 
   const handleSubmit = async () => {
     if (!selected) return;

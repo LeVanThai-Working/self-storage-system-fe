@@ -2,20 +2,7 @@
 
 import React, { useState } from "react";
 import { useLocale } from "next-intl";
-import {
-  AlertCircle,
-  Building2,
-  Calendar,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Filter,
-  Link2,
-  Loader2,
-  Receipt,
-  RefreshCw,
-  Search,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Link2, Receipt, RefreshCw, Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnmatchedTransactions } from "../hooks";
 import {

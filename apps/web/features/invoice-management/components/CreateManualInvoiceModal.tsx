@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { AlertCircle, CheckCircle2, FilePlus, Plus, Trash2, Wrench, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, Plus, Trash2, Wrench } from "lucide-react";
 import {
   Dialog,
   DialogContent,

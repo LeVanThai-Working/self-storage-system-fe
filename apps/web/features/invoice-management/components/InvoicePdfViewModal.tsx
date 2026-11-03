@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef } from "react";
-import { Download, Printer, RefreshCw, X } from "lucide-react";
+import { Printer, RefreshCw } from "lucide-react";
 import {
   Dialog,
   DialogContent,
