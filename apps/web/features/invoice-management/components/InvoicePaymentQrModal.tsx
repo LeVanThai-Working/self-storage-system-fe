@@ -50,7 +50,6 @@ export const InvoicePaymentQrModal: React.FC<InvoicePaymentQrModalProps> = ({
         .then((data) => setPaymentData(data))
         .catch((err) => setErrorMsg(getErrorMessage(err)));
     } else {
-       
       setPaymentData(null);
       setErrorMsg(null);
     }
