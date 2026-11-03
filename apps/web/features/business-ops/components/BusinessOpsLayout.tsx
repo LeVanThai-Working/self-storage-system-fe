@@ -17,6 +17,7 @@ import {
   ArrowLeftRight,
   FileSignature,
   Landmark,
+  Clock,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -98,6 +99,12 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       exact: false,
       label: t("nav.facilityAmenities"),
       icon: Package,
+    },
+    {
+      href: `/${locale}/business-ops/time-slots`,
+      exact: false,
+      label: t("nav.timeSlots"),
+      icon: Clock,
     },
     {
       href: `/${locale}/business-ops/approvals`,

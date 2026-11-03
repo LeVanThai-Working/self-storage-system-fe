@@ -31,7 +31,24 @@ export const fetchFacilityTimeSlots = async (facilityId: string): Promise<Facili
 export const createFacilityTimeSlot = async (
   payload: CreateFacilityTimeSlotRequest
 ): Promise<FacilityTimeSlot> => {
-  const { data } = await api.post<ApiResponse<FacilityTimeSlot>>("/facility-time-slots", payload);
+  const maxCapacity = payload.maxCapacity ?? payload.slotCapacity ?? 5;
+  const slotName =
+    payload.slotName && payload.slotName.trim().length > 0
+      ? payload.slotName.trim()
+      : `${payload.startTime} - ${payload.endTime}`;
+
+  const body = {
+    facilityId: payload.facilityId,
+    slotName,
+    startTime: payload.startTime,
+    endTime: payload.endTime,
+    maxCapacity,
+    isActive: payload.isActive ?? true,
+    ...(payload.notes ? { notes: payload.notes } : {}),
+    ...(payload.dayOfWeek ? { dayOfWeek: payload.dayOfWeek } : {}),
+  };
+
+  const { data } = await api.post<ApiResponse<FacilityTimeSlot>>("/facility-time-slots", body);
   return data.data;
 };
 
@@ -40,9 +57,18 @@ export const updateFacilityTimeSlot = async (
   id: string,
   payload: UpdateFacilityTimeSlotRequest
 ): Promise<FacilityTimeSlot> => {
+  const body: Record<string, unknown> = { ...payload };
+
+  if (payload.slotCapacity !== undefined && payload.maxCapacity === undefined) {
+    body.maxCapacity = payload.slotCapacity;
+  }
+  if (payload.slotName !== undefined) {
+    body.slotName = payload.slotName.trim();
+  }
+
   const { data } = await api.patch<ApiResponse<FacilityTimeSlot>>(
     `/facility-time-slots/${id}`,
-    payload
+    body
   );
   return data.data;
 };

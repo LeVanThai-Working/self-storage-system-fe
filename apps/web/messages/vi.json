@@ -795,7 +795,8 @@
       "reconciliation": "Đối soát ngân hàng",
       "analytics": "Báo cáo & Phân tích",
       "sectionOperations": "VẬN HÀNH CHI NHÁNH",
-      "signingAuthorizations": "Văn bản ủy quyền ký"
+      "signingAuthorizations": "Văn bản ủy quyền ký",
+      "timeSlots": "Khung giờ tiếp đón"
     },
     "searchPlaceholder": "Tìm kiếm nhanh cơ sở, mã chi nhánh...",
     "facilities": {
