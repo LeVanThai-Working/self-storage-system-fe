@@ -45,7 +45,7 @@ interface CreateWalkInContractModalProps {
   isOpen: boolean;
   onClose: () => void;
   facilityId: string | undefined;
-  portalBase: "facility-manager" | "facility-staff";
+  portalBase: "facility-manager" | "facility-staff" | "business-ops" | "system-admin";
 }
 
 export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps> = ({

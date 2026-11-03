@@ -67,6 +67,14 @@ export interface OfferingSnapshot {
   status?: string | null;
 }
 
+export interface EntitySummary {
+  id: string;
+  name?: string;
+  email?: string;
+  code?: string;
+  role?: string;
+}
+
 export interface StorageUnitSnapshot {
   id: string;
   unitNumber: string;

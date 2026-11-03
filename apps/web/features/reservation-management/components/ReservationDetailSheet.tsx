@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import {
   AlertTriangle,
@@ -22,6 +23,7 @@ import {
   ShieldCheck,
   User,
   UserCheck,
+  X,
   XCircle,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -55,7 +57,6 @@ interface ReservationDetailSheetProps {
   onOpenExtendGrace?: (reservation: ReservationResponse) => void;
   onOpenReassignUnit?: (reservation: ReservationResponse) => void;
   onOpenForceCancel?: (reservation: ReservationResponse) => void;
-  onOpenConfirmRefund?: (reservation: ReservationResponse) => void;
   onOpenCancel?: (reservation: ReservationResponse) => void;
   onOpenManualPayment?: (reservation: ReservationResponse) => void;
   onOpenAssignStaff?: (reservation: ReservationResponse) => void;
@@ -83,7 +84,6 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   onOpenExtendGrace,
   onOpenReassignUnit,
   onOpenForceCancel,
-  onOpenConfirmRefund,
   onOpenCancel,
   onOpenManualPayment,
   onOpenAssignStaff,
@@ -105,6 +105,10 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
 
   const timelineSteps = buildReservationTimelineSteps(reservation, locale);
   const status = reservation.status;
+  const isTerminalNegative =
+    status === ReservationStatusEnum.CANCELLED ||
+    status === ReservationStatusEnum.EXPIRED ||
+    status === ReservationStatusEnum.REJECTED;
 
   const canManualPayment = status === ReservationStatusEnum.PENDING_PAYMENT;
   const canConfirm = status === ReservationStatusEnum.PAYMENT_SUCCESSFUL;
@@ -113,7 +117,8 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
     !reservation.arrivedAt;
   const canCreateContract =
     (status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE) &&
-    Boolean(reservation.storageUnitId);
+    Boolean(reservation.storageUnitId) &&
+    Boolean(reservation.arrivedAt);
   const canAssignStaff =
     isManager &&
     (status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE) &&
@@ -222,6 +227,31 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             </div>
           )}
 
+          {/* Terminal Negative Alert (Cancelled / Expired) */}
+          {isTerminalNegative && (
+            <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-4 space-y-1.5 text-xs text-rose-900">
+              <div className="flex items-center gap-2 font-bold text-rose-800">
+                <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>
+                  {status === ReservationStatusEnum.EXPIRED
+                    ? "Đơn đặt chỗ đã hết hạn giữ chỗ"
+                    : "Đơn đặt chỗ đã bị hủy"}
+                </span>
+              </div>
+              {reservation.cancellationReason && (
+                <p className="text-rose-700 pl-6">
+                  <span className="font-semibold">Lý do:</span> {reservation.cancellationReason}
+                </p>
+              )}
+              {reservation.cancelledAt && (
+                <p className="text-[11px] text-rose-500 pl-6">
+                  Thời gian: {formatDateTime(reservation.cancelledAt, locale)}
+                  {reservation.cancelledBy ? ` • Người hủy: ${reservation.cancelledBy.name}` : ""}
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Timeline */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -231,40 +261,74 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
               {timelineSteps.map((step) => {
                 const isCompleted = step.state === "completed";
                 const isCurrent = step.state === "current";
+                const isCancelled = step.state === "cancelled";
                 return (
                   <div
                     key={step.key}
                     className={`flex items-start gap-3 p-3 rounded-2xl border transition-all ${
-                      isCurrent
-                        ? "bg-teal-50/40 border-teal-200"
-                        : isCompleted
-                          ? "bg-slate-50/50 border-slate-100"
-                          : "bg-white border-dashed border-slate-200 opacity-60"
+                      isCancelled
+                        ? "bg-rose-50/40 border-rose-200/90 text-rose-950"
+                        : isCurrent
+                          ? "bg-teal-50/40 border-teal-200"
+                          : isCompleted
+                            ? "bg-slate-50/50 border-slate-100"
+                            : "bg-white border-dashed border-slate-200 opacity-60"
                     }`}
                   >
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold ${
-                        isCompleted
-                          ? "bg-emerald-600 text-white"
-                          : isCurrent
-                            ? "bg-teal-600 text-white animate-pulse"
-                            : "bg-slate-200 text-slate-500"
+                        isCancelled
+                          ? "bg-rose-500 text-white"
+                          : isCompleted
+                            ? "bg-emerald-600 text-white"
+                            : isCurrent
+                              ? "bg-teal-600 text-white animate-pulse"
+                              : "bg-slate-200 text-slate-500"
                       }`}
                     >
-                      {isCompleted ? <Check className="w-3.5 h-3.5" /> : step.stepNumber}
+                      {isCancelled ? (
+                        <X className="w-3.5 h-3.5" />
+                      ) : isCompleted ? (
+                        <Check className="w-3.5 h-3.5" />
+                      ) : (
+                        step.stepNumber
+                      )}
                     </div>
                     <div className="flex-1 text-xs">
-                      <p className="font-bold text-slate-800">
-                        {step.key === "pending_payment"
-                          ? "1. Đặt giữ chỗ 15 phút & Khóa kho"
-                          : step.key === "payment_successful"
-                            ? "2. Thanh toán tiền cọc thành công"
-                            : step.key === "confirmed"
-                              ? "3. Xác nhận đơn & Phân công đón tiếp"
-                              : step.key === "arrived"
-                                ? "4. Khách có mặt tại cơ sở"
-                                : "5. Ký hợp đồng check-in & Bàn giao kho"}
-                      </p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p
+                          className={`font-bold ${
+                            isCancelled
+                              ? "text-rose-900 line-through decoration-rose-300"
+                              : "text-slate-800"
+                          }`}
+                        >
+                          {step.key === "pending_payment"
+                            ? "1. Đặt giữ chỗ 15 phút & Khóa kho"
+                            : step.key === "payment_successful"
+                              ? "2. Thanh toán tiền cọc thành công"
+                              : step.key === "confirmed"
+                                ? "3. Xác nhận đơn & Phân công đón tiếp"
+                                : step.key === "arrived"
+                                  ? "4. Khách có mặt tại cơ sở"
+                                  : "5. Ký hợp đồng check-in & Bàn giao kho"}
+                        </p>
+                        {isCancelled && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-rose-100 text-rose-700 shrink-0">
+                            <XCircle className="w-2.5 h-2.5" />
+                            {status === ReservationStatusEnum.EXPIRED ? "Hết hạn" : "Đã hủy"}
+                          </span>
+                        )}
+                      </div>
+                      {step.metaText && (
+                        <p
+                          className={`text-[11px] mt-0.5 ${
+                            isCancelled ? "text-rose-600 font-medium" : "text-slate-500"
+                          }`}
+                        >
+                          {step.metaText}
+                        </p>
+                      )}
                       {step.timestamp && (
                         <p className="text-[11px] text-slate-400 mt-0.5">
                           {formatDateTime(step.timestamp, locale)}{" "}
@@ -490,15 +554,14 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             </button>
           )}
 
-          {canConfirmRefund && onOpenConfirmRefund && (
-            <button
-              type="button"
-              onClick={() => onOpenConfirmRefund(reservation)}
+          {canConfirmRefund && (
+            <Link
+              href={`/${locale}/facility-manager/refunds`}
               className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm flex items-center gap-1.5"
             >
               <Banknote className="w-3.5 h-3.5" />
-              Xác nhận hoàn cọc
-            </button>
+              {locale === "en" ? "Go to Refund Management" : "Đến Quản lý hoàn tiền"}
+            </Link>
           )}
 
           {canCancel && onOpenCancel && (

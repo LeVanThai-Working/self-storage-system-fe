@@ -19,3 +19,5 @@ export * from "./inventoryRequest.types";
 export * from "./incident.types";
 export * from "./supportTicket.types";
 export * from "./signingAuthorization.types";
+export * from "./invoice.types";
+export * from "./legalEntity.types";

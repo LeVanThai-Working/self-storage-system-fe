@@ -226,6 +226,7 @@ export const signContractAddendumSchema = z.object({
   termsAccepted: z.boolean().default(true),
   damageFee: z.number().min(0).optional(),
   notes: z.string().max(1000).optional(),
+  signedAddendumFileUrls: z.array(z.string()).optional(),
 });
 
 export const cancelContractAddendumSchema = z.object({

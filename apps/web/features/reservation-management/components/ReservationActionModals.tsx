@@ -301,7 +301,6 @@ export const MarkCustomerArrivedModal: React.FC<MarkCustomerArrivedModalProps> =
 }) => {
   const markArrivedMutation = useMarkCustomerArrived();
   const getErrorMessage = useApiErrorMessage();
-  const [notes, setNotes] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -313,7 +312,7 @@ export const MarkCustomerArrivedModal: React.FC<MarkCustomerArrivedModalProps> =
     try {
       await markArrivedMutation.mutateAsync({
         id: reservation.id,
-        payload: { notes: notes.trim() || undefined },
+        payload: {},
       });
       setSuccessMsg("Ghi nhận khách đã đến thành công!");
       setTimeout(onClose, 800);
@@ -355,19 +354,6 @@ export const MarkCustomerArrivedModal: React.FC<MarkCustomerArrivedModalProps> =
               <strong>không bao giờ bị hệ thống tự động hủy No-show</strong>, giúp khách và nhân
               viên an tâm làm thủ tục bàn giao.
             </p>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              Ghi chú tiếp đón (không bắt buộc)
-            </label>
-            <textarea
-              rows={3}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="VD: Khách đã đến mang theo 4 kiện hàng, xe đỗ tại cổng B..."
-              className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 placeholder:text-slate-400 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none resize-none"
-            />
           </div>
 
           {errorMsg && (
@@ -1163,7 +1149,6 @@ export const AssignReservationStaffModal: React.FC<AssignReservationStaffModalPr
   const staffList = useMemo(() => staffsQuery.data?.items ?? [], [staffsQuery.data?.items]);
 
   const [staffId, setStaffId] = useState("");
-  const [notes, setNotes] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -1174,7 +1159,6 @@ export const AssignReservationStaffModal: React.FC<AssignReservationStaffModalPr
     setPrevIsOpen(isOpen);
     if (isOpen && reservation) {
       setStaffId(reservation.assignedStaffId || "");
-      setNotes("");
       setErrorMsg(null);
       setSuccessMsg(null);
     }
@@ -1188,7 +1172,6 @@ export const AssignReservationStaffModal: React.FC<AssignReservationStaffModalPr
 
     const parsed = assignReservationStaffSchema.safeParse({
       staffId: staffId.trim(),
-      notes: notes.trim() ? notes.trim() : undefined,
     });
     if (!parsed.success) {
       setErrorMsg(t("validationStaffRequired"));
@@ -1245,20 +1228,6 @@ export const AssignReservationStaffModal: React.FC<AssignReservationStaffModalPr
                 </option>
               ))}
             </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              {t("notesLabel")}
-            </label>
-            <textarea
-              rows={3}
-              maxLength={1000}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={t("notesPlaceholder")}
-              className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-sky-500 outline-none resize-none"
-            />
           </div>
 
           {errorMsg && (

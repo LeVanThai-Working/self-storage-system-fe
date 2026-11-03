@@ -44,6 +44,7 @@ import {
   useToggleStorageUnitMaintenance,
 } from "../hooks";
 import {
+  BillingUnitEnum,
   ContractAddendumStatusEnum,
   ContractAddendumTypeEnum,
   ContractSourceEnum,
@@ -94,7 +95,7 @@ import { extractSignedContractFileUrls } from "@self-storage-system-fe/shared";
 
 interface ContractDetailViewProps {
   contractId: string;
-  portalBase: "facility-manager" | "facility-staff";
+  portalBase: "facility-manager" | "facility-staff" | "business-ops" | "system-admin";
 }
 
 export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
@@ -107,8 +108,17 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
   const isAuthLoading = useAuthStore((s) => s.isLoading);
   const currentUserId = getCurrentUserId(currentUser);
   const userRole = String(currentUser?.role ?? "").toLowerCase();
-  const isStaff = userRole === RoleEnum.FACILITY_STAFF || portalBase === "facility-staff";
-  const isManager = userRole === RoleEnum.FACILITY_MANAGER && !isStaff;
+
+  const isOpsOrAdmin =
+    portalBase === "business-ops" ||
+    portalBase === "system-admin" ||
+    userRole === RoleEnum.BUSINESS_OPS_MANAGER ||
+    userRole === RoleEnum.SYSTEM_ADMIN;
+
+  const isStaff =
+    !isOpsOrAdmin && (userRole === RoleEnum.FACILITY_STAFF || portalBase === "facility-staff");
+  const isManager =
+    !isOpsOrAdmin && (userRole === RoleEnum.FACILITY_MANAGER || portalBase === "facility-manager");
 
   const contractQuery = useContractDetail(contractId);
   const contract = contractQuery.data;
@@ -234,6 +244,24 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
 
   const durationDays = getContractDurationDays(contract.startDate, contract.endDate);
 
+  const recurringAmenitiesTotal = (contract.amenities || [])
+    .filter((a) => a.billingUnit !== BillingUnitEnum.ONE_TIME)
+    .reduce((sum, a) => sum + (a.totalPrice ?? a.pricePerUnit * a.quantity), 0);
+
+  const oneTimeAmenitiesTotal = (contract.amenities || [])
+    .filter((a) => a.billingUnit === BillingUnitEnum.ONE_TIME)
+    .reduce((sum, a) => sum + (a.totalPrice ?? a.pricePerUnit * a.quantity), 0);
+
+  const totalAmenitiesPrice = recurringAmenitiesTotal + oneTimeAmenitiesTotal;
+
+  const displayPeriodicPrice =
+    contract.status === ContractStatusEnum.ACTIVE
+      ? contract.totalPeriodicPrice
+      : contract.rentalPrice + recurringAmenitiesTotal;
+
+  const firstPeriodTotalAmount =
+    contract.rentalPrice + recurringAmenitiesTotal + oneTimeAmenitiesTotal;
+
   const assignedStaffName =
     contract.assignedStaff?.name ||
     (contract.assignedStaffId
@@ -316,16 +344,12 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
             {isEn ? "Back to Contracts List" : "Quay lại Danh sách Hợp đồng"}
           </Link>
 
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="font-mono text-base font-extrabold px-3.5 py-1 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="font-mono text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
               {contract.contractCode}
-            </span>
+            </h1>
             <ContractStatusBadge status={contract.status} />
             <ContractSourceBadge source={contract.source} />
-            <ContractDepositBadge source={contract.source} depositPaidAt={contract.depositPaidAt} />
-            {contract.depositStatus && (
-              <ContractDepositStatusBadge status={contract.depositStatus} />
-            )}
             {contract.status === ContractStatusEnum.TERMINATED && contract.terminationType && (
               <ContractTerminationBadge
                 terminationType={contract.terminationType}
@@ -584,7 +608,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   <Clock className="w-4 h-4 text-amber-600" />
                 )}
               </div>
-              <p className="font-bold">{formatVnd(contract.totalPeriodicPrice)}</p>
+              <p className="font-bold">{formatVnd(firstPeriodTotalAmount)}</p>
               <div className="flex items-center justify-between gap-1 pt-0.5">
                 <p className="text-[11px] opacity-85">
                   {isFirstPeriodPaid
@@ -1308,30 +1332,6 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   {contract.amenities?.length ?? 0})
                 </h3>
               </div>
-
-              {isActive && (
-                <div className="flex items-center gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => setCreateAddendumType(ContractAddendumTypeEnum.ADD)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-colors"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    {isEn ? "+ Addendum: Add Amenity" : "+ Phụ lục Thuê thêm"}
-                  </button>
-
-                  {contract.amenities && contract.amenities.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setCreateAddendumType(ContractAddendumTypeEnum.REMOVE)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-orange-200 bg-orange-50 hover:bg-orange-100 text-orange-800 text-xs font-bold transition-colors"
-                    >
-                      <MinusCircle className="w-3.5 h-3.5 text-orange-600" />
-                      {isEn ? "- Addendum: Remove Amenity" : "- Phụ lục Tháo dỡ / Trả bớt"}
-                    </button>
-                  )}
-                </div>
-              )}
             </div>
 
             {!contract.amenities || contract.amenities.length === 0 ? (
@@ -1404,7 +1404,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 <div className="flex items-center gap-2 flex-wrap">
                   <button
                     type="button"
-                    onClick={() => setCreateAddendumType(ContractAddendumTypeEnum.RENEW)}
+                    onClick={() => setIsRenewOpen(true)}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition-colors"
                   >
                     <Calendar className="w-3.5 h-3.5" />
@@ -1433,6 +1433,8 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               <div className="space-y-3.5">
                 {contract.addendums.map((addendum) => {
                   const isRemove = addendum.type === ContractAddendumTypeEnum.REMOVE;
+                  const isRenew = addendum.type === ContractAddendumTypeEnum.RENEW;
+                  const isUnitChange = addendum.type === ContractAddendumTypeEnum.UNIT_CHANGE;
                   const isPendingApproval =
                     addendum.status === ContractAddendumStatusEnum.PENDING_APPROVAL;
                   const isAddendumDraft = addendum.status === ContractAddendumStatusEnum.DRAFT;
@@ -1457,14 +1459,33 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                         </div>
 
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span
-                            className={`text-sm font-extrabold ${
-                              isRemove ? "text-orange-700" : "text-emerald-700"
-                            }`}
-                          >
-                            {isRemove ? "-" : "+"}
-                            {formatVnd(addendum.totalPeriodicPrice)} / {isEn ? "cycle" : "kỳ"}
-                          </span>
+                          {isRenew ? (
+                            addendum.newEndDate ? (
+                              <span className="text-xs font-bold text-teal-800 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-lg">
+                                {isEn ? "New End Date: " : "Hạn thuê mới: "}
+                                {formatDateOnly(addendum.newEndDate, locale)}
+                              </span>
+                            ) : null
+                          ) : isUnitChange ? (
+                            <span className="text-xs font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded-lg">
+                              {isEn ? "Unit Transfer" : "Điều chuyển phòng kho"}
+                            </span>
+                          ) : (addendum.totalPeriodicPrice ?? 0) > 0 ? (
+                            <span
+                              className={`text-sm font-extrabold ${
+                                isRemove ? "text-orange-700" : "text-emerald-700"
+                              }`}
+                            >
+                              {isRemove ? "-" : "+"}
+                              {formatVnd(addendum.totalPeriodicPrice)} / {isEn ? "cycle" : "kỳ"}
+                            </span>
+                          ) : (
+                            <span className="text-xs font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">
+                              {isEn
+                                ? "One-time Amenities (No Periodic Change)"
+                                : "Tiện ích 1 lần (Không đổi giá kỳ)"}
+                            </span>
+                          )}
                           {isRemove && (addendum.damageFee ?? 0) > 0 && (
                             <span className="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 font-bold text-[11px] border border-rose-200">
                               {isEn ? "Damage Fee:" : "Phí đền bù hư hại:"}{" "}
@@ -1580,14 +1601,16 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                           >
                             <div>
                               <p className="font-extrabold text-[11px]">
-                                {isEn ? "Staff Handover Signature" : "Chữ ký Nhân viên"}
+                                {isEn
+                                  ? "Facility Manager Handover Signature"
+                                  : "Chữ ký Quản lý cơ sở"}
                               </p>
                               <p className="text-[11px]">
                                 {addendum.staffSigned
                                   ? `${isEn ? "Signed:" : "Đã ký:"} ${formatDateTime(addendum.staffSignedAt, locale)}`
                                   : isEn
-                                    ? "Waiting for staff handover sign"
-                                    : "Chờ nhân viên ký nghiệm thu"}
+                                    ? "Waiting for manager sign & activation"
+                                    : "Chờ Quản lý ký & kích hoạt"}
                               </p>
                             </div>
                             {addendum.staffSigned ? (
@@ -1598,6 +1621,34 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                           </div>
                         </div>
                       )}
+
+                      {/* Signed Addendum Documents */}
+                      {addendum.signedAddendumFileUrls &&
+                        addendum.signedAddendumFileUrls.length > 0 && (
+                          <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-2.5 space-y-2">
+                            <p className="font-extrabold text-[11px] text-slate-700 flex items-center gap-1.5">
+                              <FileCheck className="w-3.5 h-3.5 text-emerald-600" />
+                              {isEn ? "Signed Addendum Documents:" : "Tài liệu phụ lục đã ký sống:"}
+                              <span className="font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded-full text-[10px]">
+                                {addendum.signedAddendumFileUrls.length} {isEn ? "files" : "file"}
+                              </span>
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {addendum.signedAddendumFileUrls.map((url, fIdx) => (
+                                <a
+                                  key={`${url}-${fIdx}`}
+                                  href={url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 text-[11px] font-semibold transition-colors shadow-xs"
+                                >
+                                  <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                                  {isEn ? `Scan ${fIdx + 1}` : `Bản scan ${fIdx + 1}`}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
                       {/* Metadata & Reasons */}
                       <div className="flex items-center justify-between gap-2 flex-wrap text-[11px] text-slate-500">
@@ -1676,14 +1727,22 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                               {!addendum.customerSigned
                                 ? isEn
                                   ? "Sign (Waiting for Customer)"
-                                  : "Ký phụ lục (Chờ khách ký trên app)"
+                                  : "Ký kích hoạt (Chờ khách ký trên app)"
                                 : isRemove
                                   ? isEn
                                     ? "Confirm Removal & Sign"
-                                    : "Xác nhận tháo dỡ thu hồi & Ký nghiệm thu"
-                                  : isEn
-                                    ? "Confirm & Sign Addendum"
-                                    : "Xác nhận & Ký phụ lục"}
+                                    : "Quản lý nghiệm thu tháo dỡ & Ký"
+                                  : isRenew
+                                    ? isEn
+                                      ? "Confirm & Activate Renewal"
+                                      : "Quản lý ký kích hoạt gia hạn"
+                                    : isUnitChange
+                                      ? isEn
+                                        ? "Confirm & Activate Transfer"
+                                        : "Quản lý ký kích hoạt đổi kho"
+                                      : isEn
+                                        ? "Confirm & Sign Addendum"
+                                        : "Quản lý ký xác nhận & Kích hoạt"}
                             </button>
                           )}
 
@@ -1809,6 +1868,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
           </h3>
 
           <div className="space-y-3 text-xs">
+            {/* Base Rental Price */}
             <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
               <span className="text-slate-600">
                 {isEn ? "Base Rental Price:" : "Giá thuê kho cơ bản:"}
@@ -1819,19 +1879,56 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               </strong>
             </div>
 
-            <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
-              <span className="text-slate-600">
-                {isEn ? "Amenities Total:" : "Tổng phí tiện ích:"}
-              </span>
-              <strong className="text-slate-900">{formatVnd(contract.amenitiesTotalPrice)}</strong>
-            </div>
+            {/* Recurring Amenities */}
+            {recurringAmenitiesTotal > 0 && (
+              <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <span className="text-slate-600">
+                  {isEn ? "Recurring Amenities:" : "Tiện ích thuê định kỳ:"}
+                </span>
+                <strong className="text-slate-900">
+                  +{formatVnd(recurringAmenitiesTotal)} /{" "}
+                  {getBillingUnitLabel(contract.billingUnit, locale)}
+                </strong>
+              </div>
+            )}
 
+            {/* One-time Purchased Amenities */}
+            {oneTimeAmenitiesTotal > 0 && (
+              <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <div className="flex flex-col">
+                  <span className="text-slate-600 font-medium">
+                    {isEn ? "One-time Amenities (Period 1):" : "Tiện ích mua 1 lần (thu kỳ 1):"}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    {isEn ? "Not billed in future cycles" : "Không tính vào chu kỳ các tháng sau"}
+                  </span>
+                </div>
+                <strong className="text-amber-700">+{formatVnd(oneTimeAmenitiesTotal)}</strong>
+              </div>
+            )}
+
+            {/* Zero Amenities fallback */}
+            {totalAmenitiesPrice === 0 && (
+              <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
+                <span className="text-slate-600">
+                  {isEn ? "Amenities Total:" : "Tổng phí tiện ích:"}
+                </span>
+                <strong className="text-slate-900">{formatVnd(0)}</strong>
+              </div>
+            )}
+
+            {/* Total Periodic Price */}
             <div className="flex items-center justify-between py-2 border-b border-slate-200">
-              <span className="font-bold text-slate-800 text-sm">
-                {isEn ? "Total Periodic Price:" : "Tổng giá thuê định kỳ:"}
-              </span>
+              <div className="flex flex-col">
+                <span className="font-bold text-slate-800 text-sm">
+                  {isEn ? "Total Periodic Price:" : "Tổng giá thuê định kỳ:"}
+                </span>
+                <span className="text-[10px] text-slate-400">
+                  {isEn ? "Base rent + recurring amenities" : "Giá kho cơ bản + tiện ích định kỳ"}
+                </span>
+              </div>
               <strong className="text-emerald-700 text-base font-extrabold">
-                {formatVnd(contract.totalPeriodicPrice)} /{" "}
+                {formatVnd(displayPeriodicPrice)} /{" "}
                 {getBillingUnitLabel(contract.billingUnit, locale)}
               </strong>
             </div>
@@ -1882,19 +1979,26 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               }`}
             >
               <div className="flex items-center justify-between">
-                <span
-                  className={`font-extrabold ${
-                    isFirstPeriodPaid ? "text-emerald-900" : "text-amber-900"
-                  }`}
-                >
-                  {isEn ? "First Period Rent:" : "Tiền thuê kỳ đầu:"}
-                </span>
+                <div className="flex flex-col">
+                  <span
+                    className={`font-extrabold ${
+                      isFirstPeriodPaid ? "text-emerald-900" : "text-amber-900"
+                    }`}
+                  >
+                    {isEn ? "First Period Rent:" : "Tiền thuê kỳ đầu:"}
+                  </span>
+                  {oneTimeAmenitiesTotal > 0 && (
+                    <span className="text-[10px] text-slate-500 font-normal">
+                      {isEn ? "(Includes one-time amenities)" : "(Bao gồm tiện ích mua 1 lần)"}
+                    </span>
+                  )}
+                </div>
                 <span
                   className={`text-base font-extrabold ${
                     isFirstPeriodPaid ? "text-emerald-700" : "text-amber-700"
                   }`}
                 >
-                  {formatVnd(contract.totalPeriodicPrice)}
+                  {formatVnd(firstPeriodTotalAmount)}
                 </span>
               </div>
               <div className="flex items-center justify-between pt-1 gap-2 flex-wrap">

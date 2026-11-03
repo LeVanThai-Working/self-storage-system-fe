@@ -7,6 +7,7 @@ import {
   AlertCircle,
   ArrowUpDown,
   Boxes,
+  Building2,
   Calendar,
   ClipboardCheck,
   Clock,
@@ -21,6 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/features/auth/store";
+import { useFacilities } from "@/features/facility-management/hooks";
 import { useMyFacility, useStorageUnits } from "@/features/storage-unit-management/hooks";
 import {
   useContractStats,
@@ -29,6 +31,7 @@ import {
   useProcessOverdueContracts,
 } from "../hooks";
 import {
+  BillingUnitEnum,
   ContractSourceEnum,
   ContractStatusEnum,
   RoleEnum,
@@ -66,7 +69,7 @@ const FILTER_CONTROL =
   "bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-700 text-xs font-medium py-2.5 px-3.5 rounded-xl border border-slate-200/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all";
 
 interface ContractsListViewProps {
-  portalBase: "facility-manager" | "facility-staff";
+  portalBase: "facility-manager" | "facility-staff" | "business-ops" | "system-admin";
 }
 
 export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase }) => {
@@ -76,17 +79,33 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
   const isAuthLoading = useAuthStore((s) => s.isLoading);
   const currentUserId = getCurrentUserId(currentUser);
   const userRole = String(currentUser?.role ?? "").toLowerCase();
-  const isStaff = userRole === RoleEnum.FACILITY_STAFF || portalBase === "facility-staff";
-  const isManager = userRole === RoleEnum.FACILITY_MANAGER && !isStaff;
+
+  const isOpsOrAdmin =
+    portalBase === "business-ops" ||
+    portalBase === "system-admin" ||
+    userRole === RoleEnum.BUSINESS_OPS_MANAGER ||
+    userRole === RoleEnum.SYSTEM_ADMIN;
+
+  const isStaff =
+    !isOpsOrAdmin && (userRole === RoleEnum.FACILITY_STAFF || portalBase === "facility-staff");
+  const isManager =
+    !isOpsOrAdmin && (userRole === RoleEnum.FACILITY_MANAGER || portalBase === "facility-manager");
+
+  const [selectedFacilityId, setSelectedFacilityId] = useState<string>("");
+  const { data: facilitiesData } = useFacilities(isOpsOrAdmin ? { limit: 100 } : undefined);
 
   const { data: facility, isLoading: isLoadingFacility } = useMyFacility();
-  const facilityId = facility?.id;
+  const facilityId = isOpsOrAdmin ? selectedFacilityId || undefined : facility?.id;
 
-  // Scope toggle: Staff is strictly locked to "ASSIGNED_TO_ME", Manager defaults to "ALL"
+  // Scope toggle: Staff is strictly locked to "ASSIGNED_TO_ME", Manager defaults to "ALL", Ops/Admin sees ALL
   const [scopeTab, setScopeTab] = useState<ContractScopeTab>(() =>
     isStaff ? "ASSIGNED_TO_ME" : "ALL"
   );
-  const effectiveScope: ContractScopeTab = isStaff ? "ASSIGNED_TO_ME" : scopeTab;
+  const effectiveScope: ContractScopeTab = isOpsOrAdmin
+    ? "ALL"
+    : isStaff
+      ? "ASSIGNED_TO_ME"
+      : scopeTab;
 
   const [statusFilter, setStatusFilter] = useState<ContractStatusEnum | "">("");
   const [sourceFilter, setSourceFilter] = useState<ContractSourceEnum | "">("");
@@ -233,7 +252,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
     setPage(1);
   };
 
-  if (isLoadingFacility || (isStaff && isAuthLoading && !currentUserId)) {
+  if ((!isOpsOrAdmin && isLoadingFacility) || (isStaff && isAuthLoading && !currentUserId)) {
     return (
       <div className="p-12 flex items-center justify-center text-sm text-slate-500 gap-2">
         <RefreshCw className="w-4 h-4 animate-spin text-emerald-600" />
@@ -254,8 +273,12 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             {isEn
-              ? `Manage contract lifecycle, walk-in deposits, check-in handover, renewals, and check-out settlement at ${facility?.name ?? "your facility"}.`
-              : `Quản lý vòng đời hợp đồng, thu cọc tại quầy, bàn giao Check-in, gia hạn và thanh lý Check-out tại ${facility?.name ?? "cơ sở"}.`}
+              ? isOpsOrAdmin
+                ? "Oversee and audit all storage lease contracts, revenue cycles, and handovers across all facilities."
+                : `Manage contract lifecycle, walk-in deposits, check-in handover, renewals, and check-out settlement at ${facility?.name ?? "your facility"}.`
+              : isOpsOrAdmin
+                ? "Giám sát, kiểm toán toàn bộ hợp đồng thuê kho, kỳ thu phí và bàn giao trên toàn hệ thống cơ sở."
+                : `Quản lý vòng đời hợp đồng, thu cọc tại quầy, bàn giao Check-in, gia hạn và thanh lý Check-out tại ${facility?.name ?? "cơ sở"}.`}
           </p>
         </div>
 
@@ -272,7 +295,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             {isEn ? "Refresh" : "Làm mới"}
           </button>
 
-          {isManager && (
+          {isOpsOrAdmin && (
             <button
               type="button"
               onClick={handleProcessOverdue}
@@ -286,65 +309,69 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             </button>
           )}
 
-          <button
-            type="button"
-            onClick={() => setIsWalkInModalOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all"
-          >
-            <UserPlus className="w-4 h-4" />
-            {isEn ? "+ Create Walk-in Contract" : "+ Tạo hợp đồng Walk-in"}
-          </button>
+          {!isOpsOrAdmin && (
+            <button
+              type="button"
+              onClick={() => setIsWalkInModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all"
+            >
+              <UserPlus className="w-4 h-4" />
+              {isEn ? "+ Create Walk-in Contract" : "+ Tạo hợp đồng Walk-in"}
+            </button>
+          )}
         </div>
       </div>
 
       {/* Scope Segmented Toggle: Staff only sees "Được giao cho tôi", Manager can switch */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
-        <div className="inline-flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl">
-          <button
-            type="button"
-            onClick={() => {
-              setScopeTab("ASSIGNED_TO_ME");
-              setPage(1);
-            }}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-              effectiveScope === "ASSIGNED_TO_ME"
-                ? "bg-white text-emerald-700 shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <UserCheck className="w-4 h-4 text-emerald-600" />
-            {isEn ? "Assigned to Me" : "Được giao cho tôi"}
-          </button>
-
-          {!isStaff && (
+      {!isOpsOrAdmin && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
+          <div className="inline-flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl">
             <button
               type="button"
               onClick={() => {
-                setScopeTab("ALL");
+                setScopeTab("ASSIGNED_TO_ME");
                 setPage(1);
               }}
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                effectiveScope === "ALL"
+                effectiveScope === "ASSIGNED_TO_ME"
                   ? "bg-white text-emerald-700 shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              <FileSignature className="w-4 h-4 text-teal-600" />
-              {isEn ? "All Facility Contracts" : "Tất cả hợp đồng cơ sở"}
+              <UserCheck className="w-4 h-4 text-emerald-600" />
+              {isEn ? "Assigned to Me" : "Được giao cho tôi"}
             </button>
-          )}
-        </div>
 
-        <p className="text-xs text-slate-500 px-2">
-          {effectiveScope === "ASSIGNED_TO_ME"
-            ? isEn
-              ? "Showing only contracts assigned to you (DRAFT contracts awaiting check-in are prioritized)."
-              : "Chỉ hiển thị các hợp đồng được phân công cho bạn phụ trách (ưu tiên hợp đồng DRAFT chờ đón khách Check-in)."
-            : isEn
-              ? "Showing all contracts across the facility."
-              : "Hiển thị toàn bộ hợp đồng thuê kho tại cơ sở."}
-        </p>
-      </div>
+            {!isStaff && (
+              <button
+                type="button"
+                onClick={() => {
+                  setScopeTab("ALL");
+                  setPage(1);
+                }}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                  effectiveScope === "ALL"
+                    ? "bg-white text-emerald-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <FileSignature className="w-4 h-4 text-teal-600" />
+                {isEn ? "All Facility Contracts" : "Tất cả hợp đồng cơ sở"}
+              </button>
+            )}
+          </div>
+
+          <p className="text-xs text-slate-500 px-2">
+            {effectiveScope === "ASSIGNED_TO_ME"
+              ? isEn
+                ? "Showing only contracts assigned to you (DRAFT contracts awaiting check-in are prioritized)."
+                : "Chỉ hiển thị các hợp đồng được phân công cho bạn phụ trách (ưu tiên hợp đồng DRAFT chờ đón khách Check-in)."
+              : isEn
+                ? "Showing all contracts across the facility."
+                : "Hiển thị toàn bộ hợp đồng thuê kho tại cơ sở."}
+          </p>
+        </div>
+      )}
 
       {/* Static Statistical Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -402,6 +429,26 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
       {/* Filter & Search Toolbar */}
       <div className="bg-white rounded-3xl border border-slate-100 p-4 shadow-sm space-y-3">
         <div className="flex flex-wrap items-center gap-3">
+          {/* Facility Filter (Ops & Admin) */}
+          {isOpsOrAdmin && (
+            <select
+              value={selectedFacilityId}
+              onChange={(e) => {
+                setSelectedFacilityId(e.target.value);
+                setStorageUnitFilter("");
+                setPage(1);
+              }}
+              className={`${FILTER_CONTROL} min-w-[200px]`}
+            >
+              <option value="">{isEn ? "All Facilities" : "Tất cả cơ sở"}</option>
+              {(facilitiesData?.items || []).map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.name} ({f.city})
+                </option>
+              ))}
+            </select>
+          )}
+
           {/* Search Contract Code */}
           <div className="relative flex-1 min-w-[220px]">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -626,6 +673,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                   <th className="py-3.5 px-4">{isEn ? "Contract Code" : "Mã hợp đồng"}</th>
+                  {isOpsOrAdmin && <th className="py-3.5 px-4">{isEn ? "Facility" : "Cơ sở"}</th>}
                   <th className="py-3.5 px-4">{isEn ? "Customer" : "Khách hàng"}</th>
                   <th className="py-3.5 px-4">{isEn ? "Source" : "Nguồn"}</th>
                   <th className="py-3.5 px-4">{isEn ? "Storage Unit" : "Kho vật lý"}</th>
@@ -665,6 +713,15 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                     contract.endDate
                   );
 
+                  const recurringAmenitiesTotal = (contract.amenities || [])
+                    .filter((a) => a.billingUnit !== BillingUnitEnum.ONE_TIME)
+                    .reduce((sum, a) => sum + (a.totalPrice ?? a.pricePerUnit * a.quantity), 0);
+
+                  const displayPeriodicPrice =
+                    contract.status === ContractStatusEnum.ACTIVE
+                      ? contract.totalPeriodicPrice
+                      : contract.rentalPrice + recurringAmenitiesTotal;
+
                   return (
                     <tr key={contract.id} className="hover:bg-slate-50/80 transition-colors group">
                       {/* 1. Contract Code */}
@@ -679,6 +736,21 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                           {formatDateTime(contract.createdAt, locale)}
                         </span>
                       </td>
+
+                      {/* Facility (Ops & Admin) */}
+                      {isOpsOrAdmin && (
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+                            <Building2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>{contract.facility?.name || "-"}</span>
+                          </div>
+                          {contract.facility?.city && (
+                            <span className="text-[11px] text-slate-500 block">
+                              {contract.facility.city}
+                            </span>
+                          )}
+                        </td>
+                      )}
 
                       {/* 2. Customer Snapshot */}
                       <td className="py-3.5 px-4">
@@ -730,25 +802,16 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                         </span>
                       </td>
 
-                      {/* 6. Total Periodic Price & Deposit Status */}
-                      <td className="py-3.5 px-4 space-y-1">
+                      {/* 6. Total Periodic Price & Deposit */}
+                      <td className="py-3.5 px-4 whitespace-nowrap">
                         <div className="font-extrabold text-slate-900">
-                          {formatVnd(contract.totalPeriodicPrice)}{" "}
+                          {formatVnd(displayPeriodicPrice)}{" "}
                           <span className="text-[11px] font-medium text-slate-500">
                             / {getBillingUnitLabel(contract.billingUnit, locale)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-[11px] text-slate-500">
-                            {isEn ? "Deposit:" : "Cọc:"} {formatVnd(contract.depositAmount)}
-                          </span>
-                          <ContractDepositBadge
-                            source={contract.source}
-                            depositPaidAt={contract.depositPaidAt}
-                          />
-                          {contract.depositStatus && (
-                            <ContractDepositStatusBadge status={contract.depositStatus} />
-                          )}
+                        <div className="text-[11px] text-emerald-700 font-semibold mt-0.5">
+                          {isEn ? "Deposit:" : "Cọc:"} {formatVnd(contract.depositAmount)}
                         </div>
                       </td>
 
@@ -761,21 +824,40 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                       </td>
 
                       {/* 8. Status */}
-                      <td className="py-3.5 px-4 space-y-1">
-                        <ContractStatusBadge status={contract.status} />
-                        {contract.status === ContractStatusEnum.TERMINATED &&
-                          contract.terminationType && (
-                            <div className="pt-0.5">
-                              <ContractTerminationBadge
-                                terminationType={contract.terminationType}
-                                violationCategory={contract.violationCategory}
-                              />
-                            </div>
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <div className="space-y-1">
+                          <ContractStatusBadge status={contract.status} />
+
+                          {contract.status === ContractStatusEnum.DRAFT && (
+                            <>
+                              {!contract.customerSigned ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 block w-max">
+                                  <Clock className="w-2.5 h-2.5 text-slate-400" />
+                                  {isEn ? "Awaiting Customer Sign" : "Chờ khách ký"}
+                                </span>
+                              ) : !contract.staffSigned ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 block w-max">
+                                  <Clock className="w-2.5 h-2.5 text-amber-600" />
+                                  {isEn ? "Awaiting Manager Check-in" : "Chờ Quản lý ký bàn giao"}
+                                </span>
+                              ) : null}
+                            </>
                           )}
+
+                          {contract.status === ContractStatusEnum.TERMINATED &&
+                            contract.terminationType && (
+                              <div className="pt-0.5">
+                                <ContractTerminationBadge
+                                  terminationType={contract.terminationType}
+                                  violationCategory={contract.violationCategory}
+                                />
+                              </div>
+                            )}
+                        </div>
                       </td>
 
                       {/* 9. Quick Actions */}
-                      <td className="py-3.5 px-4 text-right">
+                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         <div className="inline-flex items-center justify-end gap-1.5">
                           {canQuickCollectDeposit && (
                             <button
@@ -788,32 +870,6 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                             </button>
                           )}
 
-                          {isStaff &&
-                            contract.status === ContractStatusEnum.DRAFT &&
-                            !contract.staffSigned && (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                                <Clock className="w-3 h-3 text-amber-500" />
-                                {isEn ? "Awaiting Manager Check-in" : "Chờ Quản lý ký bàn giao"}
-                              </span>
-                            )}
-
-                          {!isStaff &&
-                            contract.status === ContractStatusEnum.DRAFT &&
-                            !contract.staffSigned &&
-                            !contract.customerSigned && (
-                              <span
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200"
-                                title={
-                                  isEn
-                                    ? "Waiting for customer to sign terms on mobile app"
-                                    : "Chờ khách hàng ký điều khoản trên ứng dụng"
-                                }
-                              >
-                                <Clock className="w-3 h-3 text-slate-400" />
-                                {isEn ? "Awaiting Customer Signature" : "Chờ khách ký trên app"}
-                              </span>
-                            )}
-
                           {canQuickCheckIn && (
                             <button
                               type="button"
@@ -821,13 +877,13 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                               className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
                             >
                               <ClipboardCheck className="w-3.5 h-3.5" />
-                              {isEn ? "Handover & Sign (Manager)" : "Bàn giao & Ký (Quản lý)"}
+                              {isEn ? "Handover & Sign" : "Bàn giao & Ký"}
                             </button>
                           )}
 
                           <Link
                             href={`/${locale}/${portalBase}/contracts/${contract.id}`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-700"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-sm transition-colors"
                           >
                             <Eye className="w-3.5 h-3.5 text-emerald-600" />
                             {isEn ? "Detail" : "Chi tiết"}

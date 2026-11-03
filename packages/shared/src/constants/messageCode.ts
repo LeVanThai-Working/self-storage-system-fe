@@ -303,6 +303,19 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_725: "MESSAGE_CODE_725",
   // Assigned Staff Does Not Belong To Facility
   MESSAGE_CODE_726: "MESSAGE_CODE_726",
+
+  // Billing / Invoice Message Codes
+  MESSAGE_CODE_800: "MESSAGE_CODE_800",
+  MESSAGE_CODE_801: "MESSAGE_CODE_801",
+  MESSAGE_CODE_802: "MESSAGE_CODE_802",
+  MESSAGE_CODE_803: "MESSAGE_CODE_803",
+  MESSAGE_CODE_804: "MESSAGE_CODE_804",
+  MESSAGE_CODE_805: "MESSAGE_CODE_805",
+  MESSAGE_CODE_806: "MESSAGE_CODE_806",
+  MESSAGE_CODE_807: "MESSAGE_CODE_807",
+  MESSAGE_CODE_808: "MESSAGE_CODE_808",
+  MESSAGE_CODE_809: "MESSAGE_CODE_809",
+  MESSAGE_CODE_810: "MESSAGE_CODE_810",
 } as const;
 
 export type MessageCode = (typeof MESSAGE_CODE)[keyof typeof MESSAGE_CODE];
@@ -494,6 +507,19 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_724: "Contract Does Not Belong To Customer",
   MESSAGE_CODE_725: "Support Ticket Facility Mismatch",
   MESSAGE_CODE_726: "Assigned Staff Does Not Belong To Facility",
+
+  // Billing / Invoice
+  MESSAGE_CODE_800: "{0} Not Found",
+  MESSAGE_CODE_801: "Invalid Invoice Status Transition",
+  MESSAGE_CODE_802: "Invoice Has Already Been Paid",
+  MESSAGE_CODE_803: "Invoice Cannot Be Cancelled In Current Status",
+  MESSAGE_CODE_804: "Invoice Due Date Must Be After Issue Date",
+  MESSAGE_CODE_805: "Invoice Amount Must Match Payment Exactly",
+  MESSAGE_CODE_806: "Proof Image URL Is Required For Manual Payment",
+  MESSAGE_CODE_807: "Invoice Facility Mismatch",
+  MESSAGE_CODE_808: "Invoice Items Cannot Be Empty",
+  MESSAGE_CODE_809: "Cannot Void Already Paid Invoice",
+  MESSAGE_CODE_810: "Invoice Code Already Exists",
 };
 
 /**
@@ -685,6 +711,19 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_724: "Hợp đồng không thuộc về khách hàng",
   MESSAGE_CODE_725: "Yêu cầu không thuộc cơ sở của bạn",
   MESSAGE_CODE_726: "Nhân viên được giao không thuộc cơ sở",
+
+  // Billing / Invoice
+  MESSAGE_CODE_800: "Không tìm thấy {0}",
+  MESSAGE_CODE_801: "Chuyển đổi trạng thái hóa đơn không hợp lệ",
+  MESSAGE_CODE_802: "Hóa đơn đã được thanh toán",
+  MESSAGE_CODE_803: "Không thể hủy hóa đơn ở trạng thái hiện tại",
+  MESSAGE_CODE_804: "Hạn thanh toán phải sau ngày phát hành hóa đơn",
+  MESSAGE_CODE_805: "Số tiền hóa đơn phải khớp chính xác với thanh toán",
+  MESSAGE_CODE_806: "Xác nhận thu tiền thủ công bắt buộc phải có ảnh chứng từ thanh toán",
+  MESSAGE_CODE_807: "Cơ sở của hóa đơn không khớp",
+  MESSAGE_CODE_808: "Danh mục khoản mục hóa đơn không được để trống",
+  MESSAGE_CODE_809: "Không thể vô hiệu hóa hóa đơn đã được thanh toán",
+  MESSAGE_CODE_810: "Mã hóa đơn đã tồn tại",
 };
 
 export const MESSAGE_DICTIONARY = MESSAGE_DICTIONARY_EN;

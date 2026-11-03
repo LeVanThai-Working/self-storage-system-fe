@@ -132,6 +132,7 @@ export interface ContractAddendumResponse {
   customerSignedAt?: string | null;
   staffSigned: boolean;
   staffSignedAt?: string | null;
+  signedAddendumFileUrls?: string[] | null;
   completedAt?: string | null;
   rejectionReason?: string | null;
   rejectedBy?: UserSnapshot | null;
@@ -186,6 +187,7 @@ export interface ContractResponse {
   customerSignedAt?: string | null;
   staffSigned: boolean;
   staffSignedAt?: string | null;
+  signedAddendumFileUrls?: string[] | null;
   signedAt?: string | null;
   signedContractFiles?: SignedContractFileItem[] | string[];
   signedContractFileUrls?: string[];

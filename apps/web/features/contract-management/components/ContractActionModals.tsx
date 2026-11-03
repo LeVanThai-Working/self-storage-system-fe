@@ -994,7 +994,7 @@ export const RenewContractModal: React.FC<RenewContractModalProps> = ({
 }) => {
   const locale = useLocale() === "en" ? "en" : "vi";
   const isEn = locale === "en";
-  const renewMutation = useRenewContract();
+  const createAddendumMutation = useCreateContractAddendum();
 
   const minNextDateInput = contract
     ? getDateInputWithOffset(1, contract.endDate)
@@ -1022,20 +1022,14 @@ export const RenewContractModal: React.FC<RenewContractModalProps> = ({
       return;
     }
 
-    const parsed = renewContractSchema.safeParse({
-      newEndDate: newEndIso,
-      note: note.trim() ? note.trim() : undefined,
-    });
-
-    if (!parsed.success) {
-      setErrorMsg(parsed.error.issues[0]?.message ?? "Invalid renewal input.");
-      return;
-    }
-
     try {
-      await renewMutation.mutateAsync({
+      await createAddendumMutation.mutateAsync({
         id: contract.id,
-        payload: parsed.data,
+        payload: {
+          type: ContractAddendumTypeEnum.RENEW,
+          newEndDate: newEndIso,
+          notes: note.trim() ? note.trim() : undefined,
+        },
       });
       onSuccess?.();
       onClose();
@@ -1045,7 +1039,10 @@ export const RenewContractModal: React.FC<RenewContractModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && !renewMutation.isPending && onClose()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => !open && !createAddendumMutation.isPending && onClose()}
+    >
       <DialogContent className="sm:max-w-lg p-0 rounded-3xl border-slate-100 shadow-2xl overflow-hidden">
         <DialogHeader className="p-6 pb-4 border-b border-slate-100 bg-teal-50/60">
           <div className="flex items-center gap-3">
@@ -1055,13 +1052,13 @@ export const RenewContractModal: React.FC<RenewContractModalProps> = ({
             <div>
               <DialogTitle className="text-lg font-extrabold text-slate-900">
                 {isEn
-                  ? `Renew Contract • ${contract.contractCode}`
-                  : `Gia hạn Hợp đồng • ${contract.contractCode}`}
+                  ? `Create Renewal Addendum • ${contract.contractCode}`
+                  : `Tạo Phụ lục Gia hạn (RENEW) • ${contract.contractCode}`}
               </DialogTitle>
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
-                  ? "Extend contract end date and transition OVERDUE back to ACTIVE."
-                  : "Kéo dài thời hạn thuê kho (chuyển hợp đồng quá hạn về lại Đang thuê ACTIVE)."}
+                  ? "Create official lease renewal addendum to extend contract end date."
+                  : "Tạo phụ lục hợp đồng kéo dài thời hạn thuê kho chính thức."}
               </p>
             </div>
           </div>
@@ -1144,23 +1141,23 @@ export const RenewContractModal: React.FC<RenewContractModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              disabled={renewMutation.isPending}
+              disabled={createAddendumMutation.isPending}
               className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Đóng"}
             </button>
             <button
               type="submit"
-              disabled={renewMutation.isPending}
+              disabled={createAddendumMutation.isPending}
               className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm disabled:opacity-50"
             >
-              {renewMutation.isPending
+              {createAddendumMutation.isPending
                 ? isEn
-                  ? "Renewing..."
-                  : "Đang gia hạn..."
+                  ? "Creating..."
+                  : "Đang tạo..."
                 : isEn
-                  ? "Confirm Renewal"
-                  : "Xác nhận Gia hạn"}
+                  ? "Create Renewal Addendum"
+                  : "Tạo phụ lục gia hạn"}
             </button>
           </DialogFooter>
         </form>
@@ -1879,7 +1876,7 @@ export const RejectContractAddendumModal: React.FC<RejectContractAddendumModalPr
 };
 
 /* ============================================================================
- * 5D. StaffSignContractAddendumModal — Nhân viên/Quản lý Ký Phụ lục (POST /contracts/{id}/addendums/{addendumId}/staff-sign)
+ * 5D. StaffSignContractAddendumModal — Quản lý cơ sở Ký & Kích hoạt Phụ lục (POST /contracts/{id}/addendums/{addendumId}/staff-sign)
  * ========================================================================== */
 interface StaffSignContractAddendumModalProps {
   isOpen: boolean;
@@ -1902,16 +1899,46 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
 
   const [termsAccepted, setTermsAccepted] = useState(true);
   const [damageFeeInput, setDamageFeeInput] = useState("0");
+  const [signedAddendumFileUrls, setSignedAddendumFileUrls] = useState<string[]>(
+    addendum?.signedAddendumFileUrls ?? []
+  );
+  const [prevAddendumId, setPrevAddendumId] = useState(addendum?.id);
+  if (addendum?.id !== prevAddendumId) {
+    setPrevAddendumId(addendum?.id);
+    setSignedAddendumFileUrls(addendum?.signedAddendumFileUrls ?? []);
+  }
+
   const [notes, setNotes] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   if (!contract || !addendum) return null;
 
   const isRemove = addendum.type === ContractAddendumTypeEnum.REMOVE;
+  const isRenew = addendum.type === ContractAddendumTypeEnum.RENEW;
+  const isUnitChange = addendum.type === ContractAddendumTypeEnum.UNIT_CHANGE;
+  const isCustomerSigned = addendum.customerSigned === true;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+
+    if (!isCustomerSigned) {
+      setErrorMsg(
+        isEn
+          ? "Customer must sign the addendum on Mobile App before manager can sign and activate (Code 415)."
+          : "Khách hàng phải hoàn tất ký phụ lục trên ứng dụng Mobile trước khi Quản lý ký kích hoạt (Mã 415)."
+      );
+      return;
+    }
+
+    if (signedAddendumFileUrls.length === 0) {
+      setErrorMsg(
+        isEn
+          ? "Signed addendum document required for activation (at least 1 photo/scan file, Code 433)."
+          : "Bắt buộc phải tải lên tối thiểu 1 ảnh chụp hoặc bản scan phụ lục hợp đồng đã ký sống (Mã 433)."
+      );
+      return;
+    }
 
     if (!termsAccepted) {
       setErrorMsg(
@@ -1924,6 +1951,7 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
 
     const rawPayload: Record<string, unknown> = {
       termsAccepted,
+      signedAddendumFileUrls,
       notes: notes.trim() ? notes.trim() : undefined,
     };
 
@@ -1945,6 +1973,7 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
       });
       setTermsAccepted(true);
       setDamageFeeInput("0");
+      setSignedAddendumFileUrls([]);
       setNotes("");
       setErrorMsg(null);
       onSuccess?.();
@@ -1959,9 +1988,9 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
       open={isOpen}
       onOpenChange={(open) => !open && !staffSignMutation.isPending && onClose()}
     >
-      <DialogContent className="sm:max-w-lg p-0 rounded-3xl border-slate-100 shadow-2xl overflow-hidden">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] flex flex-col p-0 rounded-3xl border-slate-100 shadow-2xl overflow-hidden">
         <DialogHeader
-          className={`p-6 pb-4 border-b border-slate-100 ${
+          className={`p-6 pb-4 border-b border-slate-100 shrink-0 ${
             isRemove ? "bg-orange-50/70" : "bg-emerald-50/60"
           }`}
         >
@@ -1977,107 +2006,248 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
             </div>
             <div>
               <DialogTitle className="text-lg font-extrabold text-slate-900">
-                {isRemove
+                {isRenew
                   ? isEn
-                    ? `Confirm Removal & Sign Addendum • ${addendum.addendumCode}`
-                    : `Xác nhận tháo dỡ thu hồi & Ký nghiệm thu • ${addendum.addendumCode}`
-                  : isEn
-                    ? `Confirm Installation & Sign Addendum • ${addendum.addendumCode}`
-                    : `Xác nhận bàn giao lắp đặt & Ký phụ lục • ${addendum.addendumCode}`}
+                    ? `Manager Confirm & Sign Renewal • ${addendum.addendumCode}`
+                    : `Quản lý Ký xác nhận & Kích hoạt gia hạn • ${addendum.addendumCode}`
+                  : isUnitChange
+                    ? isEn
+                      ? `Manager Confirm & Sign Unit Transfer • ${addendum.addendumCode}`
+                      : `Quản lý Ký xác nhận & Kích hoạt đổi kho • ${addendum.addendumCode}`
+                    : isRemove
+                      ? isEn
+                        ? `Manager Confirm Removal & Sign • ${addendum.addendumCode}`
+                        : `Quản lý Nghiệm thu tháo dỡ & Ký phụ lục • ${addendum.addendumCode}`
+                      : isEn
+                        ? `Manager Confirm Installation & Sign • ${addendum.addendumCode}`
+                        : `Quản lý Bàn giao lắp đặt & Ký phụ lục • ${addendum.addendumCode}`}
               </DialogTitle>
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
-                  ? "Once both Customer and Staff have signed, the addendum becomes ACTIVE."
-                  : "Khi cả Khách hàng và Nhân viên hoàn tất ký, phụ lục sẽ tự động chuyển sang ACTIVE."}
+                  ? "When both Customer and Facility Manager have signed with paper scans attached, the addendum becomes ACTIVE."
+                  : "Sau khi Khách hàng và Quản lý cơ sở đã ký kèm bản scan tài liệu, phụ lục sẽ tự động kích hoạt sang ACTIVE."}
               </p>
             </div>
           </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* ONLY show damageFee input when addendum.type === 'remove' */}
-          {isRemove && (
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            {/* Dual-party Signature Progress */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div
+                className={`rounded-2xl border p-3 ${
+                  isCustomerSigned
+                    ? "bg-emerald-50/70 border-emerald-200 text-emerald-900"
+                    : "bg-amber-50/70 border-amber-200 text-amber-900"
+                }`}
+              >
+                <p className="font-extrabold flex items-center gap-1.5">
+                  <CheckCircle2
+                    className={`w-3.5 h-3.5 ${isCustomerSigned ? "text-emerald-600" : "text-amber-600"}`}
+                  />
+                  {isEn ? "Customer Signature (Mobile):" : "Chữ ký Khách hàng (Mobile):"}
+                </p>
+                <p className="mt-1 text-[11px] font-semibold">
+                  {isCustomerSigned
+                    ? `${isEn ? "Signed" : "Đã ký"} (${formatDateTime(
+                        addendum.customerSignedAt,
+                        locale
+                      )})`
+                    : isEn
+                      ? "Pending customer signature on Mobile App"
+                      : "Chờ khách ký trên ứng dụng Mobile"}
+                </p>
+              </div>
+
+              <div
+                className={`rounded-2xl border p-3 ${
+                  addendum.staffSigned
+                    ? "bg-emerald-50/70 border-emerald-200 text-emerald-900"
+                    : "bg-teal-50/70 border-teal-200 text-teal-900"
+                }`}
+              >
+                <p className="font-extrabold flex items-center gap-1.5">
+                  <UserCheck className="w-3.5 h-3.5 text-teal-600" />
+                  {isEn ? "Manager Signature (Web):" : "Chữ ký Quản lý (Web):"}
+                </p>
+                <p className="mt-1 text-[11px] font-semibold">
+                  {addendum.staffSigned
+                    ? `${isEn ? "Signed" : "Đã ký"} (${formatDateTime(
+                        addendum.staffSignedAt,
+                        locale
+                      )})`
+                    : isEn
+                      ? "Signing & activating now"
+                      : "Sẽ ký & kích hoạt ở bước này"}
+                </p>
+              </div>
+            </div>
+
+            {!isCustomerSigned && (
+              <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
+                <p className="font-bold flex items-center gap-1.5 text-amber-950">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                  {isEn
+                    ? "Customer Must Sign First on Mobile App"
+                    : "Khách hàng phải ký trước trên ứng dụng Mobile"}
+                </p>
+                <p className="text-[11px] text-amber-800">
+                  {isEn
+                    ? "The customer must open their mobile app and confirm their signature on this addendum before the facility manager can complete verification and activation."
+                    : "Khách hàng phải mở ứng dụng di động để ký xác nhận phụ lục này trước khi Quản lý cơ sở thực hiện ký nghiệm thu và kích hoạt (Mã 415)."}
+                </p>
+              </div>
+            )}
+
+            {/* Signed Addendum Scans/Photos Upload (Required) */}
+            <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                  <FileText className="w-4 h-4 text-emerald-600" />
+                  {isEn
+                    ? "Signed Addendum Photos / Scans (Required) *"
+                    : "Ảnh chụp / Scan phụ lục hợp đồng đã ký (Bắt buộc) *"}
+                </label>
+                {signedAddendumFileUrls.length > 0 && (
+                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                    {signedAddendumFileUrls.length} {isEn ? "uploaded" : "file đã chọn"}
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500">
+                {isEn
+                  ? "Attach clear photos or PDF scans of the physical addendum with signatures from both customer and manager (minimum 1 file, Code 433)."
+                  : "Chụp ảnh hoặc scan phụ lục hợp đồng có chữ ký sống của 2 bên để lưu hồ sơ pháp lý và kích hoạt (tối thiểu 1 file, Mã 433)."}
+              </p>
+              <CloudinaryUploader
+                folder={CloudinaryFolderEnum.CONTRACTS}
+                value={signedAddendumFileUrls}
+                onChange={(urls) => {
+                  setSignedAddendumFileUrls(urls);
+                  if (urls.length > 0) setErrorMsg(null);
+                }}
+                multiple={true}
+                maxFiles={10}
+                accept="image/*,application/pdf"
+                label={isEn ? "Upload Addendum Document" : "Tải lên tài liệu phụ lục"}
+                description={
+                  isEn
+                    ? "Attach photos or PDF scans of the signed addendum agreement."
+                    : "Đính kèm ảnh chụp hoặc file PDF scan của phụ lục hợp đồng đã ký."
+                }
+                disabled={staffSignMutation.isPending}
+              />
+            </div>
+
+            {/* ONLY show damageFee input when addendum.type === 'remove' */}
+            {isRemove && (
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  {isEn
+                    ? "Equipment Damage Compensation Fee (VND, >= 0)"
+                    : "Phí đền bù hư hại thiết bị thu hồi (VND, >= 0)"}
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  value={damageFeeInput}
+                  onChange={(e) => {
+                    setDamageFeeInput(e.target.value);
+                    setErrorMsg(null);
+                  }}
+                  className="w-full bg-slate-50 focus:bg-white text-sm font-extrabold text-slate-900 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 outline-none"
+                />
+                <p className="text-[11px] text-slate-500 mt-1">
+                  {isEn
+                    ? "Default 0 VND if returned equipment is in good working condition."
+                    : "Mặc định 0đ nếu thiết bị thu hồi nguyên vẹn, không hư hỏng."}
+                </p>
+              </div>
+            )}
+
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                {isEn
-                  ? "Equipment Damage Compensation Fee (VND, >= 0)"
-                  : "Phí đền bù hư hại thiết bị thu hồi (VND, >= 0)"}
+                {isRenew
+                  ? isEn
+                    ? "Renewal Handover Notes"
+                    : "Ghi chú gia hạn hợp đồng"
+                  : isUnitChange
+                    ? isEn
+                      ? "Unit Transfer Handover Notes"
+                      : "Ghi chú điều chuyển kho"
+                    : isRemove
+                      ? isEn
+                        ? "Equipment Removal & Condition Notes"
+                        : "Ghi chú tình trạng thiết bị khi tháo dỡ / thu hồi"
+                      : isEn
+                        ? "Equipment Installation & Handover Notes"
+                        : "Ghi chú tình trạng thiết bị khi lắp đặt / bàn giao"}
               </label>
+              <textarea
+                rows={3}
+                maxLength={1000}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder={
+                  isRenew
+                    ? isEn
+                      ? "Record renewal agreement details..."
+                      : "Ghi nhận điều khoản và thời hạn gia hạn đã thống nhất..."
+                    : isUnitChange
+                      ? isEn
+                        ? "Record unit transfer and clearance notes..."
+                        : "Ghi nhận điều chuyển kho và hiện trạng ô kho..."
+                      : isRemove
+                        ? isEn
+                          ? "Record equipment condition upon removal..."
+                          : "Ghi nhận tình trạng thiết bị khi tháo dỡ thu hồi..."
+                        : isEn
+                          ? "Record installation details and handover confirmation..."
+                          : "Ghi nhận chi tiết lắp đặt thiết bị vào kho cho khách..."
+                }
+                className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none resize-none"
+              />
+            </div>
+
+            <label className="flex items-start gap-2.5 cursor-pointer rounded-2xl bg-slate-50 border border-slate-200 p-3.5 text-xs">
               <input
-                type="number"
-                min={0}
-                value={damageFeeInput}
+                type="checkbox"
+                checked={termsAccepted}
                 onChange={(e) => {
-                  setDamageFeeInput(e.target.value);
+                  setTermsAccepted(e.target.checked);
                   setErrorMsg(null);
                 }}
-                className="w-full bg-slate-50 focus:bg-white text-sm font-extrabold text-slate-900 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 outline-none"
+                className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
               />
-              <p className="text-[11px] text-slate-500 mt-1">
-                {isEn
-                  ? "Default 0 VND if returned equipment is in good working condition."
-                  : "Mặc định 0đ nếu thiết bị thu hồi nguyên vẹn, không hư hỏng."}
-              </p>
-            </div>
-          )}
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              {isRemove
-                ? isEn
-                  ? "Equipment Removal & Condition Notes"
-                  : "Ghi chú tình trạng thiết bị khi tháo dỡ / thu hồi"
-                : isEn
-                  ? "Equipment Installation & Handover Notes"
-                  : "Ghi chú tình trạng thiết bị khi lắp đặt / bàn giao"}
-            </label>
-            <textarea
-              rows={3}
-              maxLength={1000}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={
-                isRemove
+              <span className="font-bold text-slate-800">
+                {isRemove
                   ? isEn
-                    ? "Record equipment condition upon removal..."
-                    : "Ghi nhận tình trạng thiết bị khi tháo dỡ thu hồi..."
-                  : isEn
-                    ? "Record installation details and handover confirmation..."
-                    : "Ghi nhận chi tiết lắp đặt thiết bị vào kho cho khách..."
-              }
-              className="w-full bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 outline-none resize-none"
-            />
+                    ? "I confirm that the amenities have been physically removed, inspected, and returned to stock (Required) *"
+                    : "Tôi xác nhận đã tháo dỡ, kiểm tra thiết bị thu hồi và đồng ý ký nghiệm thu phụ lục (Bắt buộc) *"
+                  : isRenew
+                    ? isEn
+                      ? "I confirm the renewal terms, rental period, and pricing as agreed with the customer (Required) *"
+                      : "Tôi xác nhận các điều khoản gia hạn, thời hạn và giá thuê đã thống nhất với khách hàng (Bắt buộc) *"
+                    : isUnitChange
+                      ? isEn
+                        ? "I confirm the unit transfer inspection and handover conditions (Required) *"
+                        : "Tôi xác nhận hiện trạng điều chuyển kho và điều kiện bàn giao (Bắt buộc) *"
+                      : isEn
+                        ? "I confirm that the amenities have been physically installed and handed over to the customer (Required) *"
+                        : "Tôi xác nhận đã lắp đặt, bàn giao tiện ích cho khách và đồng ý ký phụ lục (Bắt buộc) *"}
+              </span>
+            </label>
+
+            {errorMsg && (
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
           </div>
 
-          <label className="flex items-start gap-2.5 cursor-pointer rounded-2xl bg-slate-50 border border-slate-200 p-3.5 text-xs">
-            <input
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={(e) => {
-                setTermsAccepted(e.target.checked);
-                setErrorMsg(null);
-              }}
-              className="mt-0.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-            />
-            <span className="font-bold text-slate-800">
-              {isRemove
-                ? isEn
-                  ? "I confirm that the amenities have been physically removed, inspected, and returned to stock (Required) *"
-                  : "Tôi xác nhận đã tháo dỡ, kiểm tra thiết bị thu hồi và đồng ý ký nghiệm thu phụ lục (Bắt buộc) *"
-                : isEn
-                  ? "I confirm that the amenities have been physically installed and handed over to the customer (Required) *"
-                  : "Tôi xác nhận đã lắp đặt, bàn giao tiện ích cho khách và đồng ý ký phụ lục (Bắt buộc) *"}
-            </span>
-          </label>
-
-          {errorMsg && (
-            <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>{errorMsg}</span>
-            </div>
-          )}
-
-          <DialogFooter className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+          <DialogFooter className="p-4 border-t border-slate-100 flex items-center justify-end gap-2 bg-slate-50/50 shrink-0">
             <button
               type="button"
               onClick={onClose}
@@ -2088,7 +2258,12 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
             </button>
             <button
               type="submit"
-              disabled={staffSignMutation.isPending || !termsAccepted}
+              disabled={
+                staffSignMutation.isPending ||
+                !termsAccepted ||
+                !isCustomerSigned ||
+                signedAddendumFileUrls.length === 0
+              }
               className={`px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-sm disabled:opacity-50 ${
                 isRemove
                   ? "bg-orange-600 hover:bg-orange-700"
@@ -2097,15 +2272,23 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
             >
               {staffSignMutation.isPending
                 ? isEn
-                  ? "Signing..."
-                  : "Đang ký xác nhận..."
+                  ? "Signing & Activating..."
+                  : "Đang ký & kích hoạt..."
                 : isRemove
                   ? isEn
                     ? "Confirm Removal & Sign"
-                    : "Xác nhận tháo dỡ thu hồi & Ký nghiệm thu"
-                  : isEn
-                    ? "Confirm Installation & Sign"
-                    : "Xác nhận bàn giao lắp đặt & Ký phụ lục"}
+                    : "Quản lý nghiệm thu tháo dỡ & Ký"
+                  : isRenew
+                    ? isEn
+                      ? "Confirm & Activate Renewal"
+                      : "Quản lý ký kích hoạt gia hạn"
+                    : isUnitChange
+                      ? isEn
+                        ? "Confirm & Activate Transfer"
+                        : "Quản lý ký kích hoạt đổi kho"
+                      : isEn
+                        ? "Confirm Installation & Sign"
+                        : "Quản lý bàn giao lắp đặt & Ký"}
             </button>
           </DialogFooter>
         </form>

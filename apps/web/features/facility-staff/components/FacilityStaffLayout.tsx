@@ -10,6 +10,7 @@ import {
   FileSignature,
   Headset,
   Receipt,
+  ReceiptText,
   RotateCcw,
   TriangleAlert,
 } from "lucide-react";
@@ -94,6 +95,11 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
       href: `/${locale}/facility-staff/payments`,
       label: locale === "en" ? "Payments" : "Thanh toán",
       icon: Receipt,
+    },
+    {
+      href: `/${locale}/facility-staff/invoices`,
+      label: locale === "en" ? "Invoices & Fees" : "Hóa đơn & Phụ phí",
+      icon: ReceiptText,
     },
     {
       href: `/${locale}/facility-staff/refunds`,

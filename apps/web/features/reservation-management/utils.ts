@@ -188,10 +188,12 @@ export function getReservationStatusTone(status: ReservationStatusEnum | string)
   }
 }
 
+export type TimelineStepState = "completed" | "current" | "upcoming" | "error" | "cancelled";
+
 export interface TimelineStepItem {
   key: string;
   stepNumber: number;
-  state: "completed" | "current" | "upcoming" | "error";
+  state: TimelineStepState;
   timestamp?: string | null;
   actorName?: string | null;
   metaText?: string | null;
@@ -228,7 +230,7 @@ export function buildReservationTimelineSteps(
   const hasArrived = Boolean(reservation.arrivedAt);
 
   // Step 1: Hold & Pending Payment
-  const step1State =
+  const step1State: TimelineStepState =
     status === ReservationStatusEnum.PENDING_PAYMENT
       ? "current"
       : reservation.createdAt
@@ -236,7 +238,7 @@ export function buildReservationTimelineSteps(
         : "upcoming";
 
   // Step 2: Payment
-  let step2State: "completed" | "current" | "upcoming" | "error" = "upcoming";
+  let step2State: TimelineStepState = "upcoming";
   if (
     reservation.paidAt ||
     status === ReservationStatusEnum.PAYMENT_SUCCESSFUL ||
@@ -251,7 +253,7 @@ export function buildReservationTimelineSteps(
   }
 
   // Step 3: Confirmed & Staff Assigned
-  let step3State: "completed" | "current" | "upcoming" | "error" = "upcoming";
+  let step3State: TimelineStepState = "upcoming";
   if (
     reservation.confirmedAt ||
     status === ReservationStatusEnum.CONFIRMED ||
@@ -265,7 +267,7 @@ export function buildReservationTimelineSteps(
   }
 
   // Step 4: Arrived
-  let step4State: "completed" | "current" | "upcoming" | "error" = "upcoming";
+  let step4State: TimelineStepState = "upcoming";
   if (hasArrived) {
     step4State = "completed";
   } else if (
@@ -278,7 +280,7 @@ export function buildReservationTimelineSteps(
   }
 
   // Step 5: Completed
-  let step5State: "completed" | "current" | "upcoming" | "error" = "upcoming";
+  let step5State: TimelineStepState = "upcoming";
   if (status === ReservationStatusEnum.COMPLETED) {
     step5State = "completed";
   } else if (
@@ -287,6 +289,33 @@ export function buildReservationTimelineSteps(
   ) {
     step5State = "current";
   }
+
+  // When reservation is cancelled/expired/rejected, mark all subsequent uncompleted steps as cancelled
+  if (isTerminalNegative) {
+    if (step2State !== "completed") step2State = "cancelled";
+    if (step3State !== "completed") step3State = "cancelled";
+    if (step4State !== "completed") step4State = "cancelled";
+    if (step5State !== "completed") step5State = "cancelled";
+  }
+
+  const cancelReason =
+    reservation.cancellationReason ||
+    (status === ReservationStatusEnum.EXPIRED
+      ? locale === "en"
+        ? "Hold expired"
+        : "Đã hết hạn giữ chỗ"
+      : locale === "en"
+        ? "Cancelled"
+        : "Đã hủy đơn");
+
+  const cancelTimestamp = reservation.cancelledAt || reservation.updatedAt;
+  const cancelActor =
+    reservation.cancelledBy?.name ??
+    (reservation.cancellationSource === "system"
+      ? locale === "en"
+        ? "System"
+        : "Hệ thống"
+      : null);
 
   return [
     {
@@ -301,30 +330,73 @@ export function buildReservationTimelineSteps(
       key: "payment_successful",
       stepNumber: 2,
       state: step2State,
-      timestamp: reservation.paidAt,
-      actorName: reservation.customer?.name ?? null,
-      metaText: paidLabel,
+      timestamp:
+        step2State === "completed"
+          ? reservation.paidAt
+          : step2State === "cancelled" && !reservation.paidAt
+            ? cancelTimestamp
+            : null,
+      actorName:
+        step2State === "completed"
+          ? (reservation.customer?.name ?? null)
+          : step2State === "cancelled" && !reservation.paidAt
+            ? cancelActor
+            : null,
+      metaText:
+        step2State === "completed"
+          ? paidLabel
+          : step2State === "cancelled" && !reservation.paidAt
+            ? cancelReason
+            : null,
     },
     {
       key: "confirmed",
       stepNumber: 3,
       state: step3State,
-      timestamp: reservation.confirmedAt,
-      actorName: reservation.assignedStaff?.name ?? reservation.confirmedBy?.name ?? null,
+      timestamp:
+        step3State === "completed"
+          ? reservation.confirmedAt
+          : step3State === "cancelled" && step2State === "completed"
+            ? cancelTimestamp
+            : null,
+      actorName:
+        step3State === "completed"
+          ? (reservation.assignedStaff?.name ?? reservation.confirmedBy?.name ?? null)
+          : step3State === "cancelled" && step2State === "completed"
+            ? cancelActor
+            : null,
+      metaText: step3State === "cancelled" && step2State === "completed" ? cancelReason : null,
     },
     {
       key: "arrived",
       stepNumber: 4,
       state: step4State,
-      timestamp: reservation.arrivedAt,
-      actorName: reservation.arrivedBy?.name ?? null,
+      timestamp:
+        step4State === "completed"
+          ? reservation.arrivedAt
+          : step4State === "cancelled" && step3State === "completed"
+            ? cancelTimestamp
+            : null,
+      actorName:
+        step4State === "completed"
+          ? (reservation.arrivedBy?.name ?? null)
+          : step4State === "cancelled" && step3State === "completed"
+            ? cancelActor
+            : null,
+      metaText: step4State === "cancelled" && step3State === "completed" ? cancelReason : null,
     },
     {
       key: "completed",
       stepNumber: 5,
       state: step5State,
-      timestamp: status === ReservationStatusEnum.COMPLETED ? reservation.updatedAt : null,
+      timestamp:
+        step5State === "completed"
+          ? reservation.updatedAt
+          : step5State === "cancelled" && step4State === "completed"
+            ? cancelTimestamp
+            : null,
       actorName: null,
+      metaText: step5State === "cancelled" && step4State === "completed" ? cancelReason : null,
     },
   ];
 }

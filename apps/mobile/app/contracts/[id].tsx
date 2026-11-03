@@ -24,6 +24,7 @@ import { useToast } from "@/stores/toast.store";
 import { useFacilityPublicDetail } from "@/features/storage-explore/hooks/useStorageExplore";
 import { getPaymentByIdApi } from "@/features/reservations/api/payments.api";
 import {
+  BillingUnitEnum,
   ContractAddendumStatusEnum,
   ContractAddendumTypeEnum,
   ContractSourceEnum,
@@ -87,6 +88,15 @@ import {
   resolveReservationErrorMessage,
 } from "@/features/contracts/utils/contractFormat";
 
+function getOffsetDateString(isoString: string | undefined, days: number): string {
+  const d = isoString ? new Date(isoString) : new Date();
+  d.setDate(d.getDate() + days);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export default function ContractDetailScreen() {
   const router = useRouter();
   const toast = useToast();
@@ -132,6 +142,12 @@ export default function ContractDetailScreen() {
     null
   );
   const [cancelAddendumReason, setCancelAddendumReason] = useState("");
+
+  // Request Renewal Modal state
+  const [renewalModalOpen, setRenewalModalOpen] = useState(false);
+  const [renewalNewEndDate, setRenewalNewEndDate] = useState("");
+  const [renewalNotes, setRenewalNotes] = useState("");
+  const [renewalError, setRenewalError] = useState<string | null>(null);
 
   // Fullscreen preview image state for signed contract scan
   const [previewImage, setPreviewImage] = useState<{ url: string; title: string } | null>(null);
@@ -410,6 +426,69 @@ export default function ContractDetailScreen() {
     }
   };
 
+  const hasPendingAddendum = useMemo(() => {
+    return (contract?.addendums ?? []).some(
+      (a) =>
+        a.status === ContractAddendumStatusEnum.PENDING_APPROVAL ||
+        a.status === ContractAddendumStatusEnum.DRAFT
+    );
+  }, [contract?.addendums]);
+
+  const pendingRenewalAddendum = useMemo(() => {
+    return (contract?.addendums ?? []).find(
+      (a) =>
+        a.type === ContractAddendumTypeEnum.RENEW &&
+        a.status === ContractAddendumStatusEnum.PENDING_APPROVAL
+    );
+  }, [contract?.addendums]);
+
+  const draftRenewalAddendum = useMemo(() => {
+    return (contract?.addendums ?? []).find(
+      (a) =>
+        a.type === ContractAddendumTypeEnum.RENEW &&
+        a.status === ContractAddendumStatusEnum.DRAFT &&
+        !a.customerSigned
+    );
+  }, [contract?.addendums]);
+
+  const handleRequestRenewal = async () => {
+    setRenewalError(null);
+    if (!renewalNewEndDate || !/^\d{4}-\d{2}-\d{2}$/.test(renewalNewEndDate)) {
+      setRenewalError(
+        isEn
+          ? "Please enter a valid date (YYYY-MM-DD)."
+          : "Vui lòng nhập định dạng ngày YYYY-MM-DD."
+      );
+      return;
+    }
+    const isoDate = `${renewalNewEndDate}T23:59:59.999Z`;
+    if (contract?.endDate && new Date(isoDate).getTime() <= new Date(contract.endDate).getTime()) {
+      setRenewalError(
+        isEn
+          ? "New end date must be strictly after the current lease end date."
+          : "Ngày kết thúc mới phải lớn hơn ngày kết thúc hiện tại của hợp đồng."
+      );
+      return;
+    }
+    try {
+      await createAddendumMutation.mutateAsync({
+        type: ContractAddendumTypeEnum.RENEW,
+        newEndDate: isoDate,
+        notes: renewalNotes.trim() || undefined,
+      });
+      setRenewalModalOpen(false);
+      toast.success(
+        isEn
+          ? "Renewal request submitted! Waiting for Facility Manager approval."
+          : "Đã gửi yêu cầu gia hạn! Đang chờ Quản lý cơ sở phê duyệt."
+      );
+      void refetch();
+    } catch (err: unknown) {
+      const resolved = resolveReservationErrorMessage(err, currentLocale, "renewal");
+      setRenewalError(resolved.message);
+    }
+  };
+
   if (isLoading) {
     return (
       <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
@@ -472,6 +551,24 @@ export default function ContractDetailScreen() {
     contract.additionalPaymentRequired > 0;
 
   const signedContractFiles = getSignedContractFiles(contract);
+
+  const recurringAmenitiesTotal = (contract.amenities || [])
+    .filter((a) => a.billingUnit !== BillingUnitEnum.ONE_TIME)
+    .reduce((sum, a) => sum + (a.totalPrice ?? a.pricePerUnit * a.quantity), 0);
+
+  const oneTimeAmenitiesTotal = (contract.amenities || [])
+    .filter((a) => a.billingUnit === BillingUnitEnum.ONE_TIME)
+    .reduce((sum, a) => sum + (a.totalPrice ?? a.pricePerUnit * a.quantity), 0);
+
+  const totalAmenitiesPrice = recurringAmenitiesTotal + oneTimeAmenitiesTotal;
+
+  const displayPeriodicPrice =
+    contract.status === ContractStatusEnum.ACTIVE
+      ? contract.totalPeriodicPrice
+      : contract.rentalPrice + recurringAmenitiesTotal;
+
+  const firstPeriodTotalAmount =
+    contract.rentalPrice + recurringAmenitiesTotal + oneTimeAmenitiesTotal;
 
   return (
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
@@ -537,6 +634,68 @@ export default function ContractDetailScreen() {
             </View>
           ) : null}
         </View>
+
+        {/* Renewal Status Alerts */}
+        {pendingRenewalAddendum ? (
+          <View className="rounded-3xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 shadow-sm gap-2">
+            <View className="flex-row items-center gap-2.5">
+              <View className="h-8 w-8 rounded-xl bg-amber-100 dark:bg-amber-900/50 items-center justify-center">
+                <Clock size={18} color="#D97706" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-xs font-extrabold text-amber-900 dark:text-amber-200">
+                  {isEn ? "Renewal Request Pending Approval" : "Yêu cầu gia hạn đang chờ xét duyệt"}
+                </Text>
+                <Text className="text-[11px] font-semibold text-amber-700 dark:text-amber-300 mt-0.5">
+                  {isEn
+                    ? `Renewal request to ${formatDateShort(pendingRenewalAddendum.newEndDate)} is awaiting Facility Manager approval.`
+                    : `Yêu cầu gia hạn đến ngày ${formatDateShort(pendingRenewalAddendum.newEndDate)} đang chờ Quản lý cơ sở xét duyệt.`}
+                </Text>
+              </View>
+            </View>
+            {pendingRenewalAddendum.notes ? (
+              <Text variant="muted" className="text-[10px] pl-10">
+                {isEn ? "Notes:" : "Ghi chú:"} {pendingRenewalAddendum.notes}
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
+
+        {draftRenewalAddendum ? (
+          <View className="rounded-3xl border border-brand/50 bg-brand-light/20 dark:bg-brand/10 p-4 shadow-sm gap-3">
+            <View className="flex-row items-center gap-2.5">
+              <View className="h-9 w-9 rounded-xl bg-brand/15 items-center justify-center">
+                <FileSignature size={18} color="#0B927E" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-xs font-extrabold text-brand dark:text-brand-light">
+                  {isEn
+                    ? "Renewal Approved - Action Required"
+                    : "Yêu cầu gia hạn đã được phê duyệt"}
+                </Text>
+                <Text className="text-[11px] font-medium text-neutral-700 dark:text-neutral-300 mt-0.5 leading-4">
+                  {isEn
+                    ? `Facility Manager approved renewal to ${formatDateShort(draftRenewalAddendum.newEndDate)}. Please sign to complete the extension.`
+                    : `Quản lý cơ sở đã duyệt yêu cầu gia hạn đến ngày ${formatDateShort(draftRenewalAddendum.newEndDate)}. Vui lòng ký xác nhận phụ lục gia hạn để hoàn tất.`}
+                </Text>
+              </View>
+            </View>
+
+            <Pressable
+              onPress={() => {
+                setSignAddendumTarget(draftRenewalAddendum);
+                setAddendumTermsAccepted(true);
+                setAddendumSignNotes("");
+              }}
+              className="flex-row items-center justify-center gap-2 rounded-xl bg-brand py-3 px-4 active:opacity-90 shadow-sm"
+            >
+              <FileSignature size={15} color="#FFFFFF" />
+              <Text className="text-xs font-extrabold text-white">
+                {isEn ? "Sign Renewal Addendum" : "Ký phụ lục gia hạn"}
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
 
         {/* 1B. DRAFT Contract Action Card: Deposit & Dual-Party Signing */}
         {isDraft ? (
@@ -627,7 +786,7 @@ export default function ContractDetailScreen() {
                   </Text>
                 </View>
                 <Text className="text-xs font-extrabold text-brand">
-                  {formatVnd(contract.totalPeriodicPrice)}
+                  {formatVnd(firstPeriodTotalAmount)}
                 </Text>
               </View>
 
@@ -927,7 +1086,7 @@ export default function ContractDetailScreen() {
               >
                 <ShieldAlert size={16} color="#E11D48" />
                 <Text className="text-xs font-bold text-rose-600 dark:text-rose-400">
-                  {isEn ? "Report Unit Incident" : "Báo cáo sự cố phòng kho này"}
+                  {isEn ? "Report Unit Incident" : "Báo cáo sự cố"}
                 </Text>
               </Pressable>
             </View>
@@ -1152,21 +1311,58 @@ export default function ContractDetailScreen() {
               </Text>
             </View>
 
-            <View className="flex-row justify-between">
-              <Text variant="muted" className="text-xs">
-                {isEn ? "Amenities Total:" : "Tổng phí tiện ích:"}
-              </Text>
-              <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
-                {formatVnd(contract.amenitiesTotalPrice)}
-              </Text>
-            </View>
+            {/* Recurring Amenities */}
+            {recurringAmenitiesTotal > 0 && (
+              <View className="flex-row justify-between">
+                <Text variant="muted" className="text-xs">
+                  {isEn ? "Recurring Amenities:" : "Tiện ích thuê định kỳ:"}
+                </Text>
+                <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
+                  +{formatVnd(recurringAmenitiesTotal)} / {billingLabel}
+                </Text>
+              </View>
+            )}
+
+            {/* One-time Purchased Amenities */}
+            {oneTimeAmenitiesTotal > 0 && (
+              <View className="flex-row justify-between items-center">
+                <View>
+                  <Text variant="muted" className="text-xs font-medium">
+                    {isEn ? "One-time Amenities (Period 1):" : "Tiện ích mua 1 lần (thu kỳ 1):"}
+                  </Text>
+                  <Text variant="muted" className="text-[10px]">
+                    {isEn ? "Not billed in future cycles" : "Không tính vào chu kỳ tháng sau"}
+                  </Text>
+                </View>
+                <Text className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                  +{formatVnd(oneTimeAmenitiesTotal)}
+                </Text>
+              </View>
+            )}
+
+            {/* Zero Amenities fallback */}
+            {totalAmenitiesPrice === 0 && (
+              <View className="flex-row justify-between">
+                <Text variant="muted" className="text-xs">
+                  {isEn ? "Amenities Total:" : "Tổng phí tiện ích:"}
+                </Text>
+                <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
+                  {formatVnd(0)}
+                </Text>
+              </View>
+            )}
 
             <View className="flex-row justify-between border-t border-neutral-200 dark:border-neutral-700 pt-2 mt-0.5">
-              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                {isEn ? "Total Periodic Price:" : "Tổng giá thuê định kỳ:"}
-              </Text>
+              <View>
+                <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                  {isEn ? "Total Periodic Price:" : "Tổng giá thuê định kỳ:"}
+                </Text>
+                <Text variant="muted" className="text-[10px]">
+                  {isEn ? "(Rent + recurring amenities)" : "(Kho cơ bản + tiện ích định kỳ)"}
+                </Text>
+              </View>
               <Text className="text-sm font-extrabold text-brand">
-                {formatVnd(contract.totalPeriodicPrice)} / {billingLabel}
+                {formatVnd(displayPeriodicPrice)} / {billingLabel}
               </Text>
             </View>
 
@@ -1222,7 +1418,7 @@ export default function ContractDetailScreen() {
                   </Text>
                 </View>
                 <Text className="text-xs font-extrabold text-brand">
-                  {formatVnd(contract.totalPeriodicPrice)}
+                  {formatVnd(firstPeriodTotalAmount)}
                 </Text>
               </View>
 
@@ -1268,10 +1464,30 @@ export default function ContractDetailScreen() {
             <View className="flex-row items-center gap-2">
               <FileSignature size={18} color="#0B927E" />
               <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
-                {isEn ? "Contract Addendums" : "Danh sách Phụ lục Hợp đồng"} (
+                {isEn ? "Contract Addendums" : "Phụ lục Hợp đồng"} (
                 {contract.addendums?.length ?? 0})
               </Text>
             </View>
+            {(contract.status === ContractStatusEnum.ACTIVE ||
+              contract.status === ContractStatusEnum.OVERDUE) && (
+              <Pressable
+                onPress={() => {
+                  setRenewalNewEndDate(getOffsetDateString(contract.endDate, 30));
+                  setRenewalNotes("");
+                  setRenewalError(null);
+                  setRenewalModalOpen(true);
+                }}
+                disabled={hasPendingAddendum}
+                className={`flex-row items-center gap-1 rounded-xl bg-brand px-3 py-1.5 active:opacity-90 ${
+                  hasPendingAddendum ? "opacity-50" : ""
+                }`}
+              >
+                <Calendar size={13} color="#FFFFFF" />
+                <Text className="text-xs font-bold text-white">
+                  {isEn ? "Request Renewal" : "Yêu cầu gia hạn thuê kho"}
+                </Text>
+              </Pressable>
+            )}
           </View>
 
           {!contract.addendums || contract.addendums.length === 0 ? (
@@ -1323,55 +1539,82 @@ export default function ContractDetailScreen() {
                       </View>
                     </View>
 
-                    {/* Amenities inside Addendum */}
-                    <View className="rounded-xl bg-white dark:bg-neutral-900 border border-neutral-border dark:border-neutral-800 p-2.5 gap-1.5">
-                      {addendum.amenities.map((am) => (
-                        <View
-                          key={am.facilityAmenityOfferingId}
-                          className="flex-row items-center justify-between"
-                        >
-                          <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200 flex-1 pr-2">
-                            {am.name} × {am.quantity}
+                    {/* Addendum Content (RENEW vs Amenities) */}
+                    {addendum.type === ContractAddendumTypeEnum.RENEW ? (
+                      <View className="rounded-xl bg-teal-50 dark:bg-teal-950/30 border border-teal-200 dark:border-teal-800 p-3 gap-1.5">
+                        <View className="flex-row items-center justify-between">
+                          <Text className="text-xs font-bold text-teal-900 dark:text-teal-200">
+                            {isEn ? "New Contract End Date:" : "Thời hạn gia hạn mới:"}
                           </Text>
-                          <Text
-                            className={`text-xs font-bold ${
-                              typeMeta.isRemove
-                                ? "text-amber-700 dark:text-amber-300"
-                                : "text-brand"
-                            }`}
-                          >
-                            {typeMeta.isRemove ? "-" : "+"}
-                            {formatVnd(am.totalPrice)} /{" "}
-                            {getRentalUnitLabel(am.billingUnit, currentLocale)}
+                          <Text className="text-xs font-extrabold text-teal-800 dark:text-teal-300">
+                            {formatDateShort(addendum.newEndDate)}
                           </Text>
                         </View>
-                      ))}
-
-                      <View className="flex-row items-center justify-between border-t border-neutral-100 dark:border-neutral-800 pt-1.5 mt-0.5">
-                        <Text variant="muted" className="text-[11px] font-bold">
-                          {isEn ? "Periodic Adjustment:" : "Chênh lệch mỗi kỳ:"}
-                        </Text>
-                        <Text
-                          className={`text-xs font-extrabold ${
-                            typeMeta.isRemove ? "text-amber-700 dark:text-amber-300" : "text-brand"
-                          }`}
-                        >
-                          {typeMeta.isRemove ? "-" : "+"}
-                          {formatVnd(addendum.totalPeriodicPrice)} / {isEn ? "cycle" : "kỳ"}
-                        </Text>
+                        {isPendingApproval ? (
+                          <View className="rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-2 mt-1">
+                            <Text className="text-[11px] font-semibold text-amber-800 dark:text-amber-300 leading-4">
+                              {isEn
+                                ? `• Awaiting Facility Manager approval for extension until ${formatDateShort(addendum.newEndDate)}`
+                                : `• Đang chờ Quản lý cơ sở phê duyệt gia hạn đến ngày ${formatDateShort(addendum.newEndDate)}`}
+                            </Text>
+                          </View>
+                        ) : null}
                       </View>
+                    ) : (
+                      /* Amenities inside Addendum */
+                      <View className="rounded-xl bg-white dark:bg-neutral-900 border border-neutral-border dark:border-neutral-800 p-2.5 gap-1.5">
+                        {(addendum.amenities ?? []).map((am) => (
+                          <View
+                            key={am.facilityAmenityOfferingId}
+                            className="flex-row items-center justify-between"
+                          >
+                            <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200 flex-1 pr-2">
+                              {am.name} × {am.quantity}
+                            </Text>
+                            <Text
+                              className={`text-xs font-bold ${
+                                typeMeta.isRemove
+                                  ? "text-amber-700 dark:text-amber-300"
+                                  : "text-brand"
+                              }`}
+                            >
+                              {typeMeta.isRemove ? "-" : "+"}
+                              {formatVnd(am.totalPrice)} /{" "}
+                              {getRentalUnitLabel(am.billingUnit, currentLocale)}
+                            </Text>
+                          </View>
+                        ))}
 
-                      {typeMeta.isRemove && (addendum.damageFee ?? 0) > 0 ? (
-                        <View className="flex-row items-center justify-between pt-1">
-                          <Text className="text-[11px] font-bold text-red-600 dark:text-red-400">
-                            {isEn ? "Removal Damage Fee:" : "Phí đền bù hư hại khi tháo dỡ:"}
-                          </Text>
-                          <Text className="text-xs font-extrabold text-red-600 dark:text-red-400">
-                            {formatVnd(addendum.damageFee)}
-                          </Text>
-                        </View>
-                      ) : null}
-                    </View>
+                        {(addendum.totalPeriodicPrice ?? 0) > 0 ? (
+                          <View className="flex-row items-center justify-between border-t border-neutral-100 dark:border-neutral-800 pt-1.5 mt-0.5">
+                            <Text variant="muted" className="text-[11px] font-bold">
+                              {isEn ? "Periodic Adjustment:" : "Chênh lệch mỗi kỳ:"}
+                            </Text>
+                            <Text
+                              className={`text-xs font-extrabold ${
+                                typeMeta.isRemove
+                                  ? "text-amber-700 dark:text-amber-300"
+                                  : "text-brand"
+                              }`}
+                            >
+                              {typeMeta.isRemove ? "-" : "+"}
+                              {formatVnd(addendum.totalPeriodicPrice)} / {isEn ? "cycle" : "kỳ"}
+                            </Text>
+                          </View>
+                        ) : null}
+
+                        {typeMeta.isRemove && (addendum.damageFee ?? 0) > 0 ? (
+                          <View className="flex-row items-center justify-between pt-1">
+                            <Text className="text-[11px] font-bold text-red-600 dark:text-red-400">
+                              {isEn ? "Removal Damage Fee:" : "Phí đền bù hư hại khi tháo dỡ:"}
+                            </Text>
+                            <Text className="text-xs font-extrabold text-red-600 dark:text-red-400">
+                              {formatVnd(addendum.damageFee)}
+                            </Text>
+                          </View>
+                        ) : null}
+                      </View>
+                    )}
 
                     {/* Dual Signature Status for DRAFT / ACTIVE Addendums */}
                     {isAddendumDraft || addendum.status === ContractAddendumStatusEnum.ACTIVE ? (
@@ -1463,7 +1706,13 @@ export default function ContractDetailScreen() {
                           >
                             <FileSignature size={13} color="#FFFFFF" />
                             <Text className="text-xs font-bold text-white">
-                              {isEn ? "Sign Addendum" : "Ký xác nhận phụ lục"}
+                              {addendum.type === ContractAddendumTypeEnum.RENEW
+                                ? isEn
+                                  ? "Sign Renewal"
+                                  : "Ký phụ lục gia hạn"
+                                : isEn
+                                  ? "Sign Addendum"
+                                  : "Ký xác nhận phụ lục"}
                             </Text>
                           </Pressable>
                         ) : null}
@@ -1847,10 +2096,15 @@ export default function ContractDetailScreen() {
               <>
                 <Text variant="muted" className="text-xs">
                   #{signAddendumTarget.addendumCode} •{" "}
-                  {signAddendumTarget.type === ContractAddendumTypeEnum.REMOVE
-                    ? `-${formatVnd(signAddendumTarget.totalPeriodicPrice)}`
-                    : `+${formatVnd(signAddendumTarget.totalPeriodicPrice)}`}{" "}
-                  / {billingLabel}
+                  {signAddendumTarget.type === ContractAddendumTypeEnum.RENEW
+                    ? `${isEn ? "Extend lease to:" : "Gia hạn đến ngày:"} ${formatDateShort(signAddendumTarget.newEndDate)}`
+                    : signAddendumTarget.type === ContractAddendumTypeEnum.REMOVE
+                      ? `-${formatVnd(signAddendumTarget.totalPeriodicPrice)} / ${billingLabel}`
+                      : (signAddendumTarget.totalPeriodicPrice ?? 0) > 0
+                        ? `+${formatVnd(signAddendumTarget.totalPeriodicPrice)} / ${billingLabel}`
+                        : isEn
+                          ? "One-time Amenities"
+                          : "Tiện ích mua 1 lần"}
                 </Text>
 
                 <Pressable
@@ -1867,9 +2121,13 @@ export default function ContractDetailScreen() {
                     {addendumTermsAccepted ? <Check size={13} color="#FFFFFF" /> : null}
                   </View>
                   <Text className="flex-1 text-xs font-semibold text-neutral-dark dark:text-neutral-200 leading-4">
-                    {isEn
-                      ? "I confirm the amenity change details and agree to the terms of this contract addendum."
-                      : "Tôi xác nhận chi tiết thay đổi tiện ích và đồng ý với các điều khoản của phụ lục hợp đồng này."}
+                    {signAddendumTarget.type === ContractAddendumTypeEnum.RENEW
+                      ? isEn
+                        ? "I confirm and agree to extend the contract lease period as specified in this addendum."
+                        : "Tôi xác nhận và đồng ý gia hạn thời gian thuê kho theo các điều khoản của phụ lục này."
+                      : isEn
+                        ? "I confirm the amenity change details and agree to the terms of this contract addendum."
+                        : "Tôi xác nhận chi tiết thay đổi tiện ích và đồng ý với các điều khoản của phụ lục hợp đồng này."}
                   </Text>
                 </Pressable>
 
@@ -2005,6 +2263,128 @@ export default function ContractDetailScreen() {
             </Pressable>
           </View>
         </SafeAreaView>
+      </Modal>
+
+      {/* MODAL 6: Request Lease Renewal Modal (POST /contracts/{id}/addendums type: 'renew') */}
+      <Modal
+        visible={renewalModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setRenewalModalOpen(false)}
+      >
+        <View className="flex-1 justify-center bg-black/50 p-5">
+          <View className="rounded-3xl bg-white dark:bg-neutral-900 p-5 gap-3.5">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center gap-2">
+                <Calendar size={18} color="#0B927E" />
+                <Text className="text-base font-extrabold text-neutral-dark dark:text-neutral-100">
+                  {isEn ? "Request Lease Extension" : "Yêu cầu gia hạn hợp đồng"}
+                </Text>
+              </View>
+              <Pressable onPress={() => setRenewalModalOpen(false)} hitSlop={10}>
+                <X size={20} color="#647B80" />
+              </Pressable>
+            </View>
+
+            <View className="rounded-2xl bg-neutral-50 dark:bg-neutral-800 p-3 gap-1">
+              <Text variant="muted" className="text-xs">
+                {isEn ? "Current Lease End Date:" : "Ngày hết hạn thuê hiện tại:"}
+              </Text>
+              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                {formatDateShort(contract?.endDate)}
+              </Text>
+            </View>
+
+            <View className="gap-1.5">
+              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                {isEn ? "New End Date (YYYY-MM-DD) *" : "Ngày kết thúc gia hạn mới (YYYY-MM-DD) *"}
+              </Text>
+              <TextInput
+                value={renewalNewEndDate}
+                onChangeText={(val) => {
+                  setRenewalNewEndDate(val);
+                  setRenewalError(null);
+                }}
+                placeholder="YYYY-MM-DD"
+                placeholderTextColor="#94A3B8"
+                className="rounded-xl border border-neutral-border dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3.5 py-2.5 text-xs font-bold text-neutral-dark dark:text-neutral-100"
+              />
+              <View className="flex-row flex-wrap gap-1.5 mt-1">
+                {[30, 60, 90, 180].map((days) => {
+                  const targetDate = getOffsetDateString(contract?.endDate, days);
+                  const isSelected = renewalNewEndDate === targetDate;
+                  return (
+                    <Pressable
+                      key={days}
+                      onPress={() => {
+                        setRenewalNewEndDate(targetDate);
+                        setRenewalError(null);
+                      }}
+                      className={`rounded-lg px-2.5 py-1 border ${
+                        isSelected
+                          ? "bg-brand/10 border-brand"
+                          : "bg-neutral-100 dark:bg-neutral-800 border-neutral-border dark:border-neutral-700"
+                      }`}
+                    >
+                      <Text
+                        className={`text-[11px] font-bold ${
+                          isSelected ? "text-brand" : "text-neutral-600 dark:text-neutral-300"
+                        }`}
+                      >
+                        +{days} {isEn ? "days" : "ngày"}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            <View className="gap-1.5">
+              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                {isEn ? "Reason for Extension (Optional)" : "Lý do gia hạn (Không bắt buộc)"}
+              </Text>
+              <TextInput
+                value={renewalNotes}
+                onChangeText={setRenewalNotes}
+                placeholder={
+                  isEn
+                    ? "e.g. Need more time to store household goods..."
+                    : "VD: Cần lưu trữ đồ đạc gia đình thêm thời gian..."
+                }
+                placeholderTextColor="#94A3B8"
+                multiline
+                className="rounded-xl border border-neutral-border dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-xs text-neutral-dark dark:text-neutral-100 min-h-[64px]"
+              />
+            </View>
+
+            {renewalError ? (
+              <Text className="text-xs font-semibold text-red-600 dark:text-red-400">
+                {renewalError}
+              </Text>
+            ) : null}
+
+            <Pressable
+              onPress={handleRequestRenewal}
+              disabled={createAddendumMutation.isPending}
+              className={`flex-row items-center justify-center gap-2 rounded-xl py-3 px-4 ${
+                createAddendumMutation.isPending
+                  ? "bg-neutral-300 dark:bg-neutral-700"
+                  : "bg-brand active:opacity-90"
+              }`}
+            >
+              {createAddendumMutation.isPending ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <>
+                  <Calendar size={14} color="#FFFFFF" />
+                  <Text className="text-xs font-extrabold text-white">
+                    {isEn ? "Submit Renewal Request" : "Gửi yêu cầu gia hạn"}
+                  </Text>
+                </>
+              )}
+            </Pressable>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
