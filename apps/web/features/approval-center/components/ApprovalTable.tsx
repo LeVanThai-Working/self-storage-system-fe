@@ -123,7 +123,7 @@ export const ApprovalTable = () => {
     switch (st) {
       case ApprovalRequestStatusEnum.PENDING:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
             <Clock className="w-3 h-3 text-amber-600" />
             {t(`status.${st}`)}
@@ -131,25 +131,25 @@ export const ApprovalTable = () => {
         );
       case ApprovalRequestStatusEnum.APPROVED:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+            <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
             {t(`status.${st}`)}
           </span>
         );
       case ApprovalRequestStatusEnum.REJECTED:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-            <XCircle className="w-3 h-3 text-rose-600" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+            <XCircle className="w-3 h-3 text-rose-600 shrink-0" />
             {t(`status.${st}`)}
           </span>
         );
       case ApprovalRequestStatusEnum.CANCELLED:
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
-            <Ban className="w-3 h-3 text-slate-400" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-600 border border-slate-200">
+            <Ban className="w-3 h-3 text-slate-400 shrink-0" />
             {t(`status.${st}`)}
           </span>
         );
@@ -157,23 +157,23 @@ export const ApprovalTable = () => {
   };
 
   const renderTargetBadge = (type: ApprovalRequestTargetTypeEnum) => {
-    let icon = <FileCheck2 className="w-3 h-3" />;
+    let icon = <FileCheck2 className="w-3 h-3 shrink-0" />;
     let colorClass = "bg-slate-100 text-slate-700 border-slate-200";
 
     if (type === ApprovalRequestTargetTypeEnum.FACILITY_UNIT_TYPE_OFFERING) {
-      icon = <Tag className="w-3 h-3 text-emerald-600" />;
+      icon = <Tag className="w-3 h-3 text-emerald-600 shrink-0" />;
       colorClass = "bg-emerald-50 text-emerald-700 border-emerald-200/80";
     } else if (type === ApprovalRequestTargetTypeEnum.FACILITY_AMENITY_OFFERING) {
-      icon = <Sparkles className="w-3 h-3 text-teal-600" />;
+      icon = <Sparkles className="w-3 h-3 text-teal-600 shrink-0" />;
       colorClass = "bg-teal-50 text-teal-700 border-teal-200/80";
     } else if (type === ApprovalRequestTargetTypeEnum.UNIT_TYPE) {
-      icon = <Layers className="w-3 h-3 text-emerald-600" />;
+      icon = <Layers className="w-3 h-3 text-emerald-600 shrink-0" />;
       colorClass = "bg-emerald-50 text-emerald-700 border-emerald-200/80";
     }
 
     return (
       <span
-        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold border ${colorClass}`}
+        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold whitespace-nowrap shrink-0 border ${colorClass}`}
       >
         {icon}
         {t(`targetType.${type}`)}
@@ -291,11 +291,11 @@ export const ApprovalTable = () => {
 
       {/* Filters Bar */}
       <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-sm space-y-3">
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Search Input */}
           <form
             onSubmit={handleSearchSubmit}
-            className="flex-1 relative flex items-center min-w-[260px] max-w-md"
+            className="flex-1 relative flex items-center min-w-[300px] sm:min-w-[360px]"
           >
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
@@ -303,7 +303,9 @@ export const ApprovalTable = () => {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder={t("searchPlaceholder")}
-              className="w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-sm text-slate-800 placeholder:text-slate-400 pl-10 pr-24 py-2.5 rounded-xl border border-slate-200/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all duration-200"
+              className={`w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-sm text-slate-800 placeholder:text-slate-400 pl-10 ${
+                searchInput ? "pr-24" : "pr-16"
+              } py-2.5 rounded-xl border border-slate-200/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all duration-200`}
             />
             <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
               {searchInput && (
@@ -318,7 +320,7 @@ export const ApprovalTable = () => {
               )}
               <button
                 type="submit"
-                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1"
+                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0"
               >
                 <span>{t("searchButton")}</span>
               </button>
@@ -452,15 +454,15 @@ export const ApprovalTable = () => {
       {/* Table */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                <th className="py-4 px-6">{t("table.facilityAndRequester")}</th>
-                <th className="py-4 px-6">{t("table.targetAndAction")}</th>
-                <th className="py-4 px-6">{t("table.reason")}</th>
-                <th className="py-4 px-6">{t("table.status")}</th>
-                <th className="py-4 px-6">{t("table.createdAt")}</th>
-                <th className="py-4 px-6 text-right">{t("table.actions")}</th>
+              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.facilityAndRequester")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.targetAndAction")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.reason")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.status")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.createdAt")}</th>
+                <th className="py-4 px-6 text-right whitespace-nowrap">{t("table.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-sm">
@@ -492,18 +494,18 @@ export const ApprovalTable = () => {
                       <div className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
                         {req.facility?.name || "Toàn hệ thống"}
                       </div>
-                      <div className="text-xs text-slate-400 mt-0.5">
+                      <div className="text-xs text-slate-400 mt-0.5 whitespace-nowrap">
                         {req.requester?.name || req.requesterId}
                         {req.requester?.role && ` • ${req.requester.role}`}
                       </div>
                     </td>
 
                     {/* Target & Action */}
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-6 whitespace-nowrap">
                       <div className="flex flex-col items-start gap-1">
                         {renderTargetBadge(req.targetType)}
                         <span
-                          className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded-md ${
+                          className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0 ${
                             req.action === ApprovalRequestActionEnum.CREATE
                               ? "bg-teal-50 text-teal-700"
                               : "bg-amber-50 text-amber-700"
@@ -527,7 +529,7 @@ export const ApprovalTable = () => {
                     </td>
 
                     {/* Status */}
-                    <td className="py-4 px-6">{renderStatusBadge(req.status)}</td>
+                    <td className="py-4 px-6 whitespace-nowrap">{renderStatusBadge(req.status)}</td>
 
                     {/* Created At */}
                     <td className="py-4 px-6 text-xs text-slate-500 whitespace-nowrap">

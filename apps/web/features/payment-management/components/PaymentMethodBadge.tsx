@@ -32,7 +32,7 @@ export const PaymentMethodBadge: React.FC<PaymentMethodBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[11px] font-medium border ${config.badgeClass} ${className}`}
+      className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2 py-0.5 rounded-lg text-[11px] font-medium border ${config.badgeClass} ${className}`}
     >
       {getIcon()}
       <span>{config.label}</span>

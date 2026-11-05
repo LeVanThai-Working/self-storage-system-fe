@@ -252,17 +252,19 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
       {/* Table Card */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
+          <table className="w-full text-left border-collapse text-xs min-w-[1050px]">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50/70 text-slate-400 font-bold uppercase tracking-wider text-[11px]">
-                <th className="py-3.5 px-4">{t("columns.authorizationNumber")}</th>
-                <th className="py-3.5 px-4">{t("columns.legalEntity")}</th>
-                <th className="py-3.5 px-4">{t("columns.authorizedUser")}</th>
-                <th className="py-3.5 px-4">{t("columns.facilities")}</th>
-                <th className="py-3.5 px-4">{t("columns.validity")}</th>
-                <th className="py-3.5 px-4">{t("columns.document")}</th>
-                <th className="py-3.5 px-4">{t("columns.status")}</th>
-                <th className="py-3.5 px-4 text-right">{t("columns.actions")}</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">
+                  {t("columns.authorizationNumber")}
+                </th>
+                <th className="py-3.5 px-4 whitespace-nowrap">{t("columns.legalEntity")}</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">{t("columns.authorizedUser")}</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">{t("columns.facilities")}</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">{t("columns.validity")}</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">{t("columns.document")}</th>
+                <th className="py-3.5 px-4 whitespace-nowrap">{t("columns.status")}</th>
+                <th className="py-3.5 px-4 text-right whitespace-nowrap">{t("columns.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

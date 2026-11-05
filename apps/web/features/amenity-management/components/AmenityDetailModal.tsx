@@ -48,12 +48,12 @@ export const AmenityDetailModal = ({ amenity, isOpen, onClose }: AmenityDetailMo
                 <div className="flex flex-wrap items-center gap-2 mb-1.5">
                   {/* Badge Phân loại */}
                   {isPhysical ? (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-100 border border-blue-400/30">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-100 border border-blue-400/30 whitespace-nowrap shrink-0">
                       <Wrench className="w-3.5 h-3.5" />
                       {t("type.physical")}
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-100 border border-purple-400/30">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-100 border border-purple-400/30 whitespace-nowrap shrink-0">
                       <ShieldCheck className="w-3.5 h-3.5" />
                       {t("type.service")}
                     </span>
@@ -61,7 +61,7 @@ export const AmenityDetailModal = ({ amenity, isOpen, onClose }: AmenityDetailMo
 
                   {/* Badge Trạng thái */}
                   <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                    className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
                       isActive
                         ? "bg-emerald-500/20 text-emerald-100 border border-emerald-400/30"
                         : "bg-slate-500/20 text-slate-200 border border-slate-400/30"

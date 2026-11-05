@@ -264,17 +264,17 @@ export function RequestQueueView({ portalBase }: { portalBase: FacilityPortal })
       </div>
 
       <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm min-w-[980px]">
           <thead className="bg-slate-50 text-left text-xs font-bold text-slate-500">
             <tr>
-              <th className="px-4 py-3">{t("queue.col.code")}</th>
-              <th className="px-4 py-3">{t("queue.col.type")}</th>
-              <th className="px-4 py-3">{t("queue.col.unit")}</th>
-              <th className="px-4 py-3 text-center">{t("queue.col.items")}</th>
-              <th className="px-4 py-3">{t("queue.col.transporter")}</th>
-              <th className="px-4 py-3">{t("queue.col.createdAt")}</th>
-              <th className="px-4 py-3">{t("queue.col.status")}</th>
-              <th className="px-4 py-3" />
+              <th className="px-4 py-3 whitespace-nowrap">{t("queue.col.code")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("queue.col.type")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("queue.col.unit")}</th>
+              <th className="px-4 py-3 text-center whitespace-nowrap">{t("queue.col.items")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("queue.col.transporter")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("queue.col.createdAt")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("queue.col.status")}</th>
+              <th className="px-4 py-3 whitespace-nowrap" />
             </tr>
           </thead>
           <tbody>

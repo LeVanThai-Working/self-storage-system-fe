@@ -45,13 +45,13 @@ function TrashTab({ tabId }: { tabId: TrashTabId }) {
 
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white">
-      <table className="w-full text-left text-sm">
+      <table className="w-full text-left text-sm min-w-[780px]">
         <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
           <tr>
-            <th className="px-5 py-3">{t("columns.name")}</th>
-            <th className="px-5 py-3">{t("columns.deletedAt")}</th>
-            <th className="px-5 py-3">{t("columns.deletedBy")}</th>
-            <th className="px-5 py-3 text-right">{t("columns.actions")}</th>
+            <th className="px-5 py-3 whitespace-nowrap">{t("columns.name")}</th>
+            <th className="px-5 py-3 whitespace-nowrap">{t("columns.deletedAt")}</th>
+            <th className="px-5 py-3 whitespace-nowrap">{t("columns.deletedBy")}</th>
+            <th className="px-5 py-3 text-right whitespace-nowrap">{t("columns.actions")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">

@@ -402,16 +402,16 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse text-xs min-w-[1020px]">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/70 text-slate-400 font-bold uppercase tracking-wider text-[11px]">
-                  <th className="py-3.5 px-4">Mã HĐ & Ngày lập</th>
-                  <th className="py-3.5 px-4">Hợp đồng & Khách hàng</th>
-                  <th className="py-3.5 px-4">Loại & Kỳ</th>
-                  <th className="py-3.5 px-4">Hạn thanh toán</th>
-                  <th className="py-3.5 px-4">Tổng tiền & Đã thu</th>
-                  <th className="py-3.5 px-4">Trạng thái</th>
-                  <th className="py-3.5 px-4 text-right">Thao tác</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">Mã HĐ & Ngày lập</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">Hợp đồng & Khách hàng</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">Loại & Kỳ</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">Hạn thanh toán</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">Tổng tiền & Đã thu</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">Trạng thái</th>
+                  <th className="py-3.5 px-4 text-right whitespace-nowrap">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

@@ -208,7 +208,7 @@ export function IncidentListView({ portalBase }: { portalBase: FacilityPortal })
           </select>
         </div>
 
-        <table className="w-full text-sm">
+        <table className="w-full text-sm min-w-[960px]">
           <thead className="bg-slate-50 text-left text-xs font-bold text-slate-500">
             <tr>
               {(
@@ -224,11 +224,11 @@ export function IncidentListView({ portalBase }: { portalBase: FacilityPortal })
                   "status",
                 ] as const
               ).map((col) => (
-                <th key={col} className="px-4 py-3">
+                <th key={col} className="px-4 py-3 whitespace-nowrap">
                   {t(`col.${col}`)}
                 </th>
               ))}
-              <th className="px-4 py-3" />
+              <th className="px-4 py-3 whitespace-nowrap" />
             </tr>
           </thead>
           <tbody>

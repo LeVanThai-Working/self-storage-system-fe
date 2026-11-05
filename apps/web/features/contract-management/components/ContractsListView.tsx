@@ -330,7 +330,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                 setScopeTab("ASSIGNED_TO_ME");
                 setPage(1);
               }}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+              className={`inline-flex items-center whitespace-nowrap shrink-0 gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                 effectiveScope === "ASSIGNED_TO_ME"
                   ? "bg-white text-emerald-700 shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
@@ -347,7 +347,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                   setScopeTab("ALL");
                   setPage(1);
                 }}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                className={`inline-flex items-center whitespace-nowrap shrink-0 gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                   effectiveScope === "ALL"
                     ? "bg-white text-emerald-700 shadow-sm"
                     : "text-slate-600 hover:text-slate-900"
@@ -667,19 +667,35 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[1150px]">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                  <th className="py-3.5 px-4">{isEn ? "Contract Code" : "Mã hợp đồng"}</th>
-                  {isOpsOrAdmin && <th className="py-3.5 px-4">{isEn ? "Facility" : "Cơ sở"}</th>}
-                  <th className="py-3.5 px-4">{isEn ? "Customer" : "Khách hàng"}</th>
-                  <th className="py-3.5 px-4">{isEn ? "Source" : "Nguồn"}</th>
-                  <th className="py-3.5 px-4">{isEn ? "Storage Unit" : "Kho vật lý"}</th>
-                  <th className="py-3.5 px-4">{isEn ? "Lease Period" : "Thời hạn thuê"}</th>
-                  <th className="py-3.5 px-4">{isEn ? "Total & Deposit" : "Giá thuê & Cọc"}</th>
-                  <th className="py-3.5 px-4">{isEn ? "Assigned Staff" : "NV phụ trách"}</th>
-                  <th className="py-3.5 px-4">{isEn ? "Status" : "Trạng thái"}</th>
-                  <th className="py-3.5 px-4 text-right">
+                  <th className="py-3.5 px-4 whitespace-nowrap">
+                    {isEn ? "Contract Code" : "Mã hợp đồng"}
+                  </th>
+                  {isOpsOrAdmin && (
+                    <th className="py-3.5 px-4 whitespace-nowrap">{isEn ? "Facility" : "Cơ sở"}</th>
+                  )}
+                  <th className="py-3.5 px-4 whitespace-nowrap">
+                    {isEn ? "Customer" : "Khách hàng"}
+                  </th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">{isEn ? "Source" : "Nguồn"}</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">
+                    {isEn ? "Storage Unit" : "Kho vật lý"}
+                  </th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">
+                    {isEn ? "Lease Period" : "Thời hạn thuê"}
+                  </th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">
+                    {isEn ? "Total & Deposit" : "Giá thuê & Cọc"}
+                  </th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">
+                    {isEn ? "Assigned Staff" : "NV phụ trách"}
+                  </th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">
+                    {isEn ? "Status" : "Trạng thái"}
+                  </th>
+                  <th className="py-3.5 px-4 text-right whitespace-nowrap">
                     {isEn ? "Quick Actions" : "Hành động nhanh"}
                   </th>
                 </tr>
@@ -815,7 +831,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
 
                       {/* 7. Assigned Staff */}
                       <td className="py-3.5 px-4">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-[11px]">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-[11px] whitespace-nowrap shrink-0">
                           <UserCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                           <span className="truncate max-w-[140px]">{resolvedStaffName}</span>
                         </div>
@@ -829,12 +845,12 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                           {contract.status === ContractStatusEnum.DRAFT && (
                             <>
                               {!contract.customerSigned ? (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 block w-max">
+                                <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 block w-max">
                                   <Clock className="w-2.5 h-2.5 text-slate-400" />
                                   {isEn ? "Awaiting Customer Sign" : "Chờ khách ký"}
                                 </span>
                               ) : !contract.staffSigned ? (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 block w-max">
+                                <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 block w-max">
                                   <Clock className="w-2.5 h-2.5 text-amber-600" />
                                   {isEn ? "Awaiting Manager Check-in" : "Chờ Quản lý ký bàn giao"}
                                 </span>

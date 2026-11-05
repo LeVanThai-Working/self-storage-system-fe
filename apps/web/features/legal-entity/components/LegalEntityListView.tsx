@@ -254,21 +254,27 @@ export const LegalEntityListView: React.FC = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse text-xs min-w-[980px]">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                  <th className="py-3.5 px-4">
+                  <th className="py-3.5 px-4 whitespace-nowrap">
                     {isEn ? "Company & Tax Code" : "Doanh nghiệp & MST"}
                   </th>
-                  <th className="py-3.5 px-4">
+                  <th className="py-3.5 px-4 whitespace-nowrap">
                     {isEn ? "Registered Address" : "Trụ sở chính & Liên hệ"}
                   </th>
-                  <th className="py-3.5 px-4">
+                  <th className="py-3.5 px-4 whitespace-nowrap">
                     {isEn ? "Legal Representative" : "Người đại diện pháp luật"}
                   </th>
-                  <th className="py-3.5 px-4">{isEn ? "Bank Account" : "Tài khoản ngân hàng"}</th>
-                  <th className="py-3.5 px-4">{isEn ? "Status" : "Trạng thái"}</th>
-                  <th className="py-3.5 px-4 text-right">{isEn ? "Actions" : "Thao tác"}</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">
+                    {isEn ? "Bank Account" : "Tài khoản ngân hàng"}
+                  </th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">
+                    {isEn ? "Status" : "Trạng thái"}
+                  </th>
+                  <th className="py-3.5 px-4 text-right whitespace-nowrap">
+                    {isEn ? "Actions" : "Thao tác"}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -345,12 +351,12 @@ export const LegalEntityListView: React.FC = () => {
                     {/* Status */}
                     <td className="py-4 px-4 whitespace-nowrap">
                       {item.status === "active" ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           <CheckCircle2 className="w-3 h-3" />
                           {isEn ? "Active" : "Hoạt động"}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                        <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
                           <XCircle className="w-3 h-3" />
                           {isEn ? "Inactive" : "Tạm ngưng"}
                         </span>

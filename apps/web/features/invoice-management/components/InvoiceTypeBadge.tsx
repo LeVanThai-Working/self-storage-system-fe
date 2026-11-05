@@ -62,7 +62,7 @@ export const InvoiceTypeBadge: React.FC<InvoiceTypeBadgeProps> = ({ type, classN
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold border ${toneClass} ${className}`}
+      className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold border ${toneClass} ${className}`}
     >
       {icon}
       {label}

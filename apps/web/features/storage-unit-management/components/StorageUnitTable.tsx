@@ -488,15 +488,15 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
       {viewMode === "table" && (
         <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[980px]">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                  <th className="py-4 px-6">{t("table.unit")}</th>
-                  <th className="py-4 px-6">{t("table.location")}</th>
-                  <th className="py-4 px-6">{t("table.unitType")}</th>
-                  <th className="py-4 px-6">{t("table.size")}</th>
-                  <th className="py-4 px-6">{t("table.status")}</th>
-                  <th className="py-4 px-6 text-right">{t("table.actions")}</th>
+                  <th className="py-4 px-6 whitespace-nowrap">{t("table.unit")}</th>
+                  <th className="py-4 px-6 whitespace-nowrap">{t("table.location")}</th>
+                  <th className="py-4 px-6 whitespace-nowrap">{t("table.unitType")}</th>
+                  <th className="py-4 px-6 whitespace-nowrap">{t("table.size")}</th>
+                  <th className="py-4 px-6 whitespace-nowrap">{t("table.status")}</th>
+                  <th className="py-4 px-6 text-right whitespace-nowrap">{t("table.actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 text-sm">

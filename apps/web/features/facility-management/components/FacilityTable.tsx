@@ -106,7 +106,7 @@ export const FacilityTable = () => {
       case FacilityStatusEnum.ACTIVE:
       case "active":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-xs">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             {t("statuses.active")}
           </span>
@@ -114,22 +114,22 @@ export const FacilityTable = () => {
       case FacilityStatusEnum.INACTIVE:
       case "inactive":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/80 shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200/80 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
             {t("statuses.inactive")}
           </span>
         );
       case FacilityStatusEnum.CLOSED:
       case "closed":
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200/80 shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border border-rose-200/80 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
             {t("statuses.closed")}
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-700">
             {status}
           </span>
         );
@@ -327,15 +327,15 @@ export const FacilityTable = () => {
       {/* Main Facilities Table */}
       <div className="rounded-2xl bg-white border border-slate-100 shadow-sm shadow-slate-200/40 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/75 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                <th className="py-4 px-6">{t("columns.facility")}</th>
-                <th className="py-4 px-6">{t("columns.city")}</th>
-                <th className="py-4 px-6">{t("columns.contact")}</th>
-                <th className="py-4 px-6">{t("columns.operatingHours")}</th>
-                <th className="py-4 px-6">{t("columns.status")}</th>
-                <th className="py-4 px-6 text-right">{t("columns.actions")}</th>
+              <tr className="border-b border-slate-100 bg-slate-50/75 text-[11px] font-bold uppercase tracking-wider text-slate-500 whitespace-nowrap">
+                <th className="py-4 px-6 whitespace-nowrap">{t("columns.facility")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("columns.city")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("columns.contact")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("columns.operatingHours")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("columns.status")}</th>
+                <th className="py-4 px-6 text-right whitespace-nowrap">{t("columns.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm">
@@ -453,8 +453,8 @@ export const FacilityTable = () => {
                       </td>
 
                       {/* City Badge */}
-                      <td className="py-4 px-6">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700">
+                      <td className="py-4 px-6 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-700">
                           {facility.city}
                         </span>
                       </td>
@@ -463,16 +463,16 @@ export const FacilityTable = () => {
                       <td className="py-4 px-6">
                         <div className="space-y-1 text-xs">
                           {facility.phone ? (
-                            <div className="flex items-center gap-1.5 text-slate-700 font-medium">
-                              <Phone className="w-3.5 h-3.5 text-teal-600" />
+                            <div className="flex items-center gap-1.5 text-slate-700 font-medium whitespace-nowrap">
+                              <Phone className="w-3.5 h-3.5 text-teal-600 shrink-0" />
                               <span>{facility.phone}</span>
                             </div>
                           ) : (
-                            <span className="text-slate-400">Chưa có SĐT</span>
+                            <span className="text-slate-400 whitespace-nowrap">Chưa có SĐT</span>
                           )}
                           {facility.email && (
                             <div className="flex items-center gap-1.5 text-slate-500">
-                              <Mail className="w-3.5 h-3.5 text-orange-500" />
+                              <Mail className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                               <span className="truncate max-w-[180px]">{facility.email}</span>
                             </div>
                           )}
@@ -480,15 +480,17 @@ export const FacilityTable = () => {
                       </td>
 
                       {/* Operating Hours */}
-                      <td className="py-4 px-6">
-                        <div className="inline-flex items-center gap-1.5 text-xs text-slate-600 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
-                          <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <td className="py-4 px-6 whitespace-nowrap">
+                        <div className="inline-flex items-center gap-1.5 text-xs text-slate-600 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100 whitespace-nowrap shrink-0">
+                          <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           <span className="font-medium">{operatingHoursText}</span>
                         </div>
                       </td>
 
                       {/* Status */}
-                      <td className="py-4 px-6">{renderStatusBadge(facility.status)}</td>
+                      <td className="py-4 px-6 whitespace-nowrap">
+                        {renderStatusBadge(facility.status)}
+                      </td>
 
                       {/* Actions */}
                       <td className="py-4 px-6 text-right">

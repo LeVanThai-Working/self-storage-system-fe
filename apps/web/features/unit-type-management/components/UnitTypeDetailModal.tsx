@@ -46,42 +46,42 @@ export const UnitTypeDetailModal = ({ unitTypeId, isOpen, onClose }: UnitTypeDet
     switch (category) {
       case UnitTypeCategoryEnum.CLIMATE_CONTROLLED:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200/80">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200/80 whitespace-nowrap shrink-0">
             <Snowflake className="w-3.5 h-3.5 text-cyan-600" />
             {t("categoryFilter.climate_controlled")}
           </span>
         );
       case UnitTypeCategoryEnum.LOCKER:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80 whitespace-nowrap shrink-0">
             <Lock className="w-3.5 h-3.5 text-indigo-600" />
             {t("categoryFilter.locker")}
           </span>
         );
       case UnitTypeCategoryEnum.SMALL:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 whitespace-nowrap shrink-0">
             <Box className="w-3.5 h-3.5 text-emerald-600" />
             {t("categoryFilter.small")}
           </span>
         );
       case UnitTypeCategoryEnum.MEDIUM:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/80">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/80 whitespace-nowrap shrink-0">
             <Package className="w-3.5 h-3.5 text-amber-600" />
             {t("categoryFilter.medium")}
           </span>
         );
       case UnitTypeCategoryEnum.LARGE:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200/80">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200/80 whitespace-nowrap shrink-0">
             <Boxes className="w-3.5 h-3.5 text-purple-600" />
             {t("categoryFilter.large")}
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap shrink-0">
             {category || "N/A"}
           </span>
         );
@@ -92,7 +92,7 @@ export const UnitTypeDetailModal = ({ unitTypeId, isOpen, onClose }: UnitTypeDet
     const isActive = status === UnitTypeStatusEnum.ACTIVE;
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+        className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
           isActive
             ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
             : "bg-slate-100 text-slate-600 border border-slate-200"

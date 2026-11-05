@@ -625,7 +625,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setCollectPaymentPurpose(PaymentPurposeEnum.RENT_FIRST_PERIOD)}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold"
+                    className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2 py-0.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold"
                   >
                     {isEn ? "Collect" : "Thu ngay"}
                   </button>
@@ -1125,7 +1125,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                     {isEn ? "Current Unit Status:" : "Trạng thái kho hiện tại:"}
                   </span>{" "}
                   <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-md font-bold ${
+                    className={`inline-flex items-center whitespace-nowrap shrink-0 px-2 py-0.5 rounded-md font-bold ${
                       isUnitUnderMaintenance
                         ? "bg-amber-100 text-amber-800"
                         : "bg-emerald-100 text-emerald-800"
@@ -1339,13 +1339,21 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs">
+                <table className="w-full text-left border-collapse text-xs min-w-[680px]">
                   <thead>
                     <tr className="border-b border-slate-100 text-[11px] font-bold uppercase text-slate-400">
-                      <th className="py-2.5 px-3">{isEn ? "Amenity Name" : "Tên tiện ích"}</th>
-                      <th className="py-2.5 px-3 text-center">{isEn ? "Quantity" : "Số lượng"}</th>
-                      <th className="py-2.5 px-3 text-right">{isEn ? "Unit Price" : "Đơn giá"}</th>
-                      <th className="py-2.5 px-3 text-right">{isEn ? "Subtotal" : "Thành tiền"}</th>
+                      <th className="py-2.5 px-3 whitespace-nowrap">
+                        {isEn ? "Amenity Name" : "Tên tiện ích"}
+                      </th>
+                      <th className="py-2.5 px-3 text-center whitespace-nowrap">
+                        {isEn ? "Quantity" : "Số lượng"}
+                      </th>
+                      <th className="py-2.5 px-3 text-right whitespace-nowrap">
+                        {isEn ? "Unit Price" : "Đơn giá"}
+                      </th>
+                      <th className="py-2.5 px-3 text-right whitespace-nowrap">
+                        {isEn ? "Subtotal" : "Thành tiền"}
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -1637,7 +1645,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                                   href={url}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 text-[11px] font-semibold transition-colors shadow-xs"
+                                  className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 text-[11px] font-semibold transition-colors shadow-xs"
                                 >
                                   <FileText className="w-3.5 h-3.5 text-emerald-600" />
                                   {isEn ? `Scan ${fIdx + 1}` : `Bản scan ${fIdx + 1}`}
@@ -2000,7 +2008,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               </div>
               <div className="flex items-center justify-between pt-1 gap-2 flex-wrap">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                     isFirstPeriodPaid
                       ? "bg-emerald-100 text-emerald-800"
                       : "bg-amber-100 text-amber-800"
@@ -2025,7 +2033,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setCollectPaymentPurpose(PaymentPurposeEnum.RENT_FIRST_PERIOD)}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-colors"
+                    className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-3 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-colors"
                   >
                     <CreditCard className="w-3.5 h-3.5" />
                     {isEn ? "Collect at Counter" : "Thu tại quầy"}
