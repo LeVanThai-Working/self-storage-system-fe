@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { CheckCircle2, RefreshCw, ShieldAlert, Sparkles, X } from "lucide-react";
+import { CheckCircle2, RefreshCw, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,

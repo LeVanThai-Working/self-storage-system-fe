@@ -9,7 +9,16 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { ArrowLeft, Barcode, CircleAlert, PackageOpen, Plus, Search, X } from "lucide-react-native";
+import {
+  ArrowLeft,
+  Barcode,
+  CircleAlert,
+  PackageOpen,
+  Plus,
+  Search,
+  ShieldCheck,
+  X,
+} from "lucide-react-native";
 import { CustomerSkuStatusEnum } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,7 +39,7 @@ import { SKU_CATEGORY_PRESETS } from "@/features/customer-sku/utils/skuFormat";
 const FILTER_ALL = "all";
 const FILTER_INACTIVE = "inactive";
 
-/** C10 — the customer's personal SKU catalog. */
+/** C10 — the customer's personal SKU catalog. Shows only the customer's own SKUs with easy create buttons. */
 export default function SkuCatalogScreen() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -96,14 +105,23 @@ export default function SkuCatalogScreen() {
     }
     return (
       <View className="items-center rounded-3xl border border-neutral-border bg-white p-8 dark:border-neutral-800 dark:bg-neutral-900">
-        <PackageOpen size={32} color="#647B80" />
-        <Text className="mt-3 text-center text-sm font-bold text-neutral-dark dark:text-neutral-100">
+        <PackageOpen size={38} color="#0B927E" />
+        <Text className="mt-3 text-center text-base font-bold text-neutral-dark dark:text-neutral-100">
           {debouncedSearch ? t("sku.emptySearch") : t("sku.empty")}
         </Text>
         {!debouncedSearch ? (
-          <Text variant="muted" className="mt-1 text-center text-xs">
-            {t("sku.emptyHint")}
-          </Text>
+          <>
+            <Text variant="muted" className="mt-1.5 text-center text-xs px-2">
+              {t("sku.emptyHint")}
+            </Text>
+            <Pressable
+              onPress={() => router.push("/skus/new")}
+              className="mt-5 flex-row items-center gap-2 rounded-xl bg-brand px-5 py-2.5 shadow-sm active:opacity-80"
+            >
+              <Plus size={16} color="#FFFFFF" />
+              <Text className="text-xs font-bold text-white">{t("sku.createButton")}</Text>
+            </Pressable>
+          </>
         ) : null}
       </View>
     );
@@ -127,6 +145,14 @@ export default function SkuCatalogScreen() {
               })}
             </Text>
           </View>
+          <Pressable
+            onPress={() => router.push("/skus/new")}
+            accessibilityLabel={t("sku.createButton")}
+            className="flex-row items-center gap-1.5 rounded-xl bg-brand px-3 py-2 active:opacity-80"
+          >
+            <Plus size={15} color="#FFFFFF" />
+            <Text className="text-xs font-bold text-white">{t("sku.createButton")}</Text>
+          </Pressable>
         </View>
 
         <View className="flex-row items-center gap-2">
@@ -154,6 +180,13 @@ export default function SkuCatalogScreen() {
           </Pressable>
         </View>
 
+        <View className="flex-row items-center gap-1.5 px-0.5">
+          <ShieldCheck size={13} color="#0B927E" />
+          <Text variant="muted" className="text-[11px]">
+            {t("sku.mySkusOnly")}
+          </Text>
+        </View>
+
         <FilterChips options={filterOptions} value={filter} onChange={setFilter} />
       </View>
 
@@ -176,7 +209,19 @@ export default function SkuCatalogScreen() {
           }
         }}
         ListFooterComponent={
-          listQuery.isFetchingNextPage ? <ActivityIndicator color="#0B927E" /> : null
+          listQuery.isFetchingNextPage ? (
+            <ActivityIndicator color="#0B927E" className="py-3" />
+          ) : skus.length > 0 ? (
+            <View className="pt-2 pb-4">
+              <Pressable
+                onPress={() => router.push("/skus/new")}
+                className="flex-row items-center justify-center gap-2 rounded-2xl border border-dashed border-brand/50 bg-brand-light/30 py-3.5 active:opacity-70 dark:bg-brand/10"
+              >
+                <Plus size={16} color="#0B927E" />
+                <Text className="text-xs font-bold text-brand">{t("sku.createMore")}</Text>
+              </Pressable>
+            </View>
+          ) : null
         }
         refreshControl={
           <RefreshControl

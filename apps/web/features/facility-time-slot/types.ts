@@ -2,6 +2,10 @@
  * Check-in time slots of a facility (BE module `facility-time-slots`).
  * Declared here because `@self-storage-system-fe/shared` has no time-slot types yet.
  */
+
+export type DayOfWeek =
+  "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY" | "ALL";
+
 export interface FacilityTimeSlot {
   id: string;
   facilityId: string;
@@ -11,8 +15,10 @@ export interface FacilityTimeSlot {
   /** HH:mm */
   endTime: string;
   maxCapacity: number;
+  slotCapacity?: number;
   isActive: boolean;
   notes: string | null;
+  dayOfWeek?: DayOfWeek | string;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,12 +38,14 @@ export interface AvailableTimeSlot {
 
 export interface CreateFacilityTimeSlotRequest {
   facilityId: string;
-  slotName: string;
+  slotName?: string;
   startTime: string;
   endTime: string;
   maxCapacity?: number;
+  slotCapacity?: number;
   isActive?: boolean;
-  notes?: string;
+  notes?: string | null;
+  dayOfWeek?: DayOfWeek | string;
 }
 
 export type UpdateFacilityTimeSlotRequest = Partial<

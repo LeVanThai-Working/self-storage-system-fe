@@ -404,6 +404,11 @@
   "rackMap": {
     "title": "Sơ đồ kệ hàng",
     "openButton": "Sơ đồ kệ hàng",
+    "skuButton": "Mã hàng",
+    "preCreateSkuTitle": "Tạo trước mã hàng (SKU)",
+    "preCreateSkuHint": "Bạn chưa có mã hàng nào lưu kho. Tạo mã hàng trước để thuận tiện khi báo gửi hàng và sắp xếp lên kệ.",
+    "createSkuButton": "+ Tạo mã hàng mới",
+    "viewSkuList": "Xem danh mục",
     "unitSubtitle": "%{facility} · Phòng %{unit}",
     "contractLabel": "HĐ #%{code}",
     "summary": {
@@ -412,6 +417,13 @@
       "tiersUsed": "Tầng đã dùng / tổng tầng"
     },
     "rackUsage": "%{used}/%{total} tầng có hàng",
+    "noRentedRacks": "Không có kệ nào thuộc hợp đồng thuê trong phòng này",
+    "rentedBadge": "Kệ đang thuê",
+    "notRentedBadge": "Không thuê",
+    "notRentedHint": "Không thuộc hợp đồng thuê của bạn",
+    "tierDisabled": "(Không thuê)",
+    "filterRentedOnly": "Kệ đang thuê",
+    "filterAllRacks": "Tất cả kệ",
     "tierTitle": "Tầng %{number}",
     "empty": "(Trống)",
     "moreItems": "+%{count}",
@@ -586,6 +598,9 @@
     "empty": "Chưa có mã hàng nào",
     "emptyHint": "Tạo mã hàng để nhân viên kho nhận và xếp hàng của bạn lên kệ",
     "emptySearch": "Không tìm thấy mã hàng phù hợp",
+    "createButton": "Tạo mã hàng mới",
+    "createMore": "Tạo thêm mã hàng mới",
+    "mySkusOnly": "Danh mục chỉ gồm các mã hàng của bạn",
     "locationCount": "%{count} vị trí",
     "filter": {
       "all": "Tất cả"
@@ -796,6 +811,8 @@
       "searchPlaceholder": "Tìm theo mã hoặc tên hàng",
       "noSkus": "Bạn chưa có mã hàng nào đang dùng. Tạo mã hàng trước khi báo gửi.",
       "createSku": "Tạo mã hàng",
+      "createSkuMore": "+ Tạo thêm mã hàng mới",
+      "selectSkuTitle": "Chọn mã hàng",
       "delivererTitle": "Người giao hàng (không bắt buộc)",
       "delivererInvalid": "Người giao cần có họ tên và số điện thoại (tối thiểu 8 số)",
       "deadline": "Hạn giao hàng tới kho",

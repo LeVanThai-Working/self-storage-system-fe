@@ -55,8 +55,6 @@ import {
 } from "../utils";
 import { CheckInContractModal, CollectWalkInDepositModal } from "./ContractActionModals";
 import {
-  ContractDepositBadge,
-  ContractDepositStatusBadge,
   ContractSourceBadge,
   ContractStatusBadge,
   ContractTerminationBadge,

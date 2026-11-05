@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+
 import {
   Select,
   SelectContent,
@@ -20,12 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  AlertCircle,
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
   Eye,
-  Filter,
   Plus,
   RefreshCw,
   RotateCcw,
@@ -93,7 +91,7 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
 
   // Filters & Pagination State
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const limit = 10;
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [selectedReason, setSelectedReason] = useState<string>("ALL");
   const [search, setSearch] = useState("");

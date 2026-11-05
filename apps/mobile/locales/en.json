@@ -404,6 +404,11 @@
   "rackMap": {
     "title": "Rack map",
     "openButton": "Rack map",
+    "skuButton": "SKUs",
+    "preCreateSkuTitle": "Pre-create Item SKUs",
+    "preCreateSkuHint": "You have no SKUs in storage yet. Create SKUs beforehand to easily notify inbound and place items on racks.",
+    "createSkuButton": "+ Create New SKU",
+    "viewSkuList": "View catalog",
     "unitSubtitle": "%{facility} · Unit %{unit}",
     "contractLabel": "Contract #%{code}",
     "summary": {
@@ -412,6 +417,13 @@
       "tiersUsed": "Tiers used / total"
     },
     "rackUsage": "%{used}/%{total} tiers occupied",
+    "noRentedRacks": "No rented racks found under your contract in this room",
+    "rentedBadge": "Rented",
+    "notRentedBadge": "Not Rented",
+    "notRentedHint": "Not part of your lease contract",
+    "tierDisabled": "(Not rented)",
+    "filterRentedOnly": "My Rented Racks",
+    "filterAllRacks": "All Racks",
     "tierTitle": "Tier %{number}",
     "empty": "(Empty)",
     "moreItems": "+%{count}",
@@ -586,6 +598,9 @@
     "empty": "No SKUs yet",
     "emptyHint": "Create SKUs so warehouse staff can receive and shelve your items",
     "emptySearch": "No matching SKUs",
+    "createButton": "Create New SKU",
+    "createMore": "Create More SKUs",
+    "mySkusOnly": "Only showing your created SKUs",
     "locationCount": "%{count} locations",
     "filter": {
       "all": "All"
@@ -796,6 +811,8 @@
       "searchPlaceholder": "Search by code or name",
       "noSkus": "You have no active SKUs. Create one before announcing a delivery.",
       "createSku": "Create SKU",
+      "createSkuMore": "+ Create another SKU",
+      "selectSkuTitle": "Select SKUs",
       "delivererTitle": "Deliverer (optional)",
       "delivererInvalid": "The deliverer needs a name and a phone number (at least 8 digits)",
       "deadline": "Delivery deadline",

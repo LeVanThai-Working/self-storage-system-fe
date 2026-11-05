@@ -31,6 +31,7 @@ import {
   Search,
   X,
   Package,
+  Plus,
 } from "lucide-react-native";
 import {
   useMyContractsInfinite,
@@ -48,7 +49,7 @@ export default function MyStoragesScreen() {
   const currentLocale: MessageLocale = locale === "en" ? "en" : "vi";
   const isEn = currentLocale === "en";
 
-  const [filterTab, setFilterTab] = useState<ContractFilterTabKey>("ALL");
+  const [filterTab, setFilterTab] = useState<ContractFilterTabKey>("ACTIVE");
   const [searchCode, setSearchCode] = useState<string>("");
   const debouncedSearchCode = useDebounce(searchCode, 350);
 
@@ -76,9 +77,11 @@ export default function MyStoragesScreen() {
   );
 
   const filterTabs: { key: ContractFilterTabKey; label: string }[] = [
+    { key: "ACTIVE", label: isEn ? "Active Lease" : "Đang thuê" },
+
     { key: "ALL", label: isEn ? "All Contracts" : "Tất cả" },
     { key: "DRAFT", label: isEn ? "Pending Check-in" : "Chờ Check-in" },
-    { key: "ACTIVE", label: isEn ? "Active Lease" : "Đang thuê" },
+
     { key: "OVERDUE", label: isEn ? "Overdue" : "Quá hạn" },
     { key: "COMPLETED", label: isEn ? "Completed" : "Đã trả kho" },
     { key: "CLOSED", label: isEn ? "Cancelled / Terminated" : "Đã hủy / Chấm dứt" },
@@ -145,13 +148,22 @@ export default function MyStoragesScreen() {
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
       {/* Top Filter & Search Bar */}
       <View className="bg-white dark:bg-neutral-900 px-4 pt-3 pb-2.5 border-b border-neutral-border dark:border-neutral-800 gap-2.5">
-        <Pressable
-          onPress={() => router.push("/skus")}
-          className="w-full flex-row items-center justify-center gap-2 rounded-2xl border border-brand/40 bg-brand-light/30 dark:bg-brand/15 py-3 px-4 active:opacity-80"
-        >
-          <Package size={18} color="#0B927E" />
-          <Text className="text-sm font-bold text-brand">{t("sku.catalogEntry")}</Text>
-        </Pressable>
+        <View className="flex-row items-center gap-2">
+          <Pressable
+            onPress={() => router.push("/skus")}
+            className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-brand/40 bg-brand-light/30 dark:bg-brand/15 py-2.5 px-3 active:opacity-80"
+          >
+            <Package size={16} color="#0B927E" />
+            <Text className="text-xs font-bold text-brand">{t("sku.catalogTitle")}</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/skus/new")}
+            className="flex-row items-center justify-center gap-1.5 rounded-2xl bg-brand py-2.5 px-3.5 active:opacity-80"
+          >
+            <Plus size={15} color="#FFFFFF" />
+            <Text className="text-xs font-bold text-white">{t("sku.createButton")}</Text>
+          </Pressable>
+        </View>
 
         {/* Search by contractCode + Sort Button */}
         <View className="flex-row items-center gap-2">

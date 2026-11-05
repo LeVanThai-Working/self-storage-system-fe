@@ -45,7 +45,6 @@ import {
   useCreateContractAddendum,
   useCreateContractDepositPayment,
   useRejectContractAddendum,
-  useRenewContract,
   useStaffSignContractAddendum,
   useTerminateContract,
 } from "../hooks";
@@ -62,7 +61,6 @@ import {
   confirmManualPaymentSchema,
   createContractAddendumSchema,
   rejectContractAddendumSchema,
-  renewContractSchema,
   signContractAddendumSchema,
   terminateContractSchema,
   type ContractAddendumResponse,

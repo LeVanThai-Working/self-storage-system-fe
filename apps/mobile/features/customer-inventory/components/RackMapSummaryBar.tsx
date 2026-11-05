@@ -1,6 +1,6 @@
 import React from "react";
-import { View } from "react-native";
-import { Layers, Package, Tag } from "lucide-react-native";
+import { Pressable, View } from "react-native";
+import { ChevronRight, Layers, Package, Tag } from "lucide-react-native";
 import type { StorageUnitInventoryTreeSummary } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
@@ -9,9 +9,10 @@ import { RackStatusLegend } from "./RackStatusLegend";
 interface RackMapSummaryBarProps {
   summary: StorageUnitInventoryTreeSummary;
   showTiers: boolean;
+  onPressSkus?: () => void;
 }
 
-export function RackMapSummaryBar({ summary, showTiers }: RackMapSummaryBarProps) {
+export function RackMapSummaryBar({ summary, showTiers, onPressSkus }: RackMapSummaryBarProps) {
   const { t } = useTranslation();
   const fillPercent =
     summary.totalTiers > 0 ? Math.round((summary.occupiedTiers / summary.totalTiers) * 100) : 0;
@@ -28,6 +29,7 @@ export function RackMapSummaryBar({ summary, showTiers }: RackMapSummaryBarProps
       Icon: Tag,
       value: String(summary.totalSkus),
       label: t("rackMap.summary.totalSkus"),
+      onPress: onPressSkus,
     },
     ...(showTiers
       ? [
@@ -44,24 +46,48 @@ export function RackMapSummaryBar({ summary, showTiers }: RackMapSummaryBarProps
   return (
     <View className="gap-3.5 rounded-3xl border border-neutral-border bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
       <View className="flex-row">
-        {stats.map((stat, index) => (
-          <View
-            key={stat.key}
-            className={`flex-1 gap-1 ${
-              index > 0 ? "border-l border-neutral-border pl-3 dark:border-neutral-800" : ""
-            }`}
-          >
-            <View className="flex-row items-center gap-1.5">
-              <stat.Icon size={16} color="#0B927E" />
-              <Text className="text-xl font-extrabold text-neutral-dark dark:text-neutral-100">
-                {stat.value}
+        {stats.map((stat, index) => {
+          const content = (
+            <View
+              className={`flex-1 gap-1 ${
+                index > 0 ? "border-l border-neutral-border pl-3 dark:border-neutral-800" : ""
+              }`}
+            >
+              <View className="flex-row items-center gap-1.5">
+                <stat.Icon size={16} color="#0B927E" />
+                <Text className="text-xl font-extrabold text-neutral-dark dark:text-neutral-100">
+                  {stat.value}
+                </Text>
+                {"onPress" in stat && stat.onPress ? (
+                  <ChevronRight size={13} color="#0B927E" />
+                ) : null}
+              </View>
+              <Text variant="muted" className="text-[11px] leading-4">
+                {stat.label}
               </Text>
             </View>
-            <Text variant="muted" className="text-[11px] leading-4">
-              {stat.label}
-            </Text>
-          </View>
-        ))}
+          );
+
+          if ("onPress" in stat && stat.onPress) {
+            return (
+              <Pressable
+                key={stat.key}
+                onPress={stat.onPress}
+                className="flex-1 active:opacity-70"
+                accessibilityRole="button"
+                accessibilityLabel={stat.label}
+              >
+                {content}
+              </Pressable>
+            );
+          }
+
+          return (
+            <View key={stat.key} className="flex-1">
+              {content}
+            </View>
+          );
+        })}
       </View>
 
       {showTiers ? (

@@ -19,21 +19,15 @@ import {
   FileCheck2,
   Flame,
   Inbox,
-  Layers,
-  MapPin,
   PackageCheck,
   RefreshCw,
   Search,
-  ShieldAlert,
   ShieldCheck,
-  Sparkles,
-  User,
   UserCheck,
   X,
   XCircle,
 } from "lucide-react";
-import { AppApiError } from "@/lib/api/axios";
-import { useApiErrorMessage } from "@/features/auth/error-message";
+
 import { useAuthStore } from "@/features/auth/store";
 import { ContractSourceEnum, RoleEnum } from "@self-storage-system-fe/shared";
 import { useFacilityOfferings, useMyFacility } from "@/features/storage-unit-management/hooks";
@@ -42,14 +36,13 @@ import { useCreateContract } from "@/features/contract-management/hooks";
 import { resolveContractErrorMessage } from "@/features/contract-management/utils";
 import { useManagerReservationStats, useManagerReservations } from "../hooks";
 import {
-  MESSAGE_CODE,
   ReservationStatusEnum,
   type ManagerReservationFilterParams,
   type ManagerReservationQuickTab,
   type ReservationResponse,
   type ReservationSortBy,
 } from "../types";
-import { formatDateOnly, formatDateTime, formatRentalScheduleLabel, formatVnd } from "../utils";
+import { formatDateOnly, formatDateTime, formatVnd } from "../utils";
 import {
   AssignReservationStaffModal,
   CancelReservationModal,
@@ -86,12 +79,10 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
   portalBase = "facility-manager",
 }) => {
   const t = useTranslations("facilityManager.reservations");
-  const tActions = useTranslations("facilityManager.reservations.actions");
+
   const tStatuses = useTranslations("facilityManager.reservations.statuses");
-  const tBilling = useTranslations("facilityManager.reservations.billingUnit");
-  const tErrors = useTranslations("facilityManager.reservations.errors");
+
   const locale = useLocale() === "en" ? "en" : "vi";
-  const getErrorMessage = useApiErrorMessage();
 
   const currentUser = useAuthStore((s) => s.currentUser);
   const isStaff = portalBase === "facility-staff" || currentUser?.role === RoleEnum.FACILITY_STAFF;

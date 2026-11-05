@@ -1,4 +1,4 @@
-import type { ApiResponse, PaginatedData, PaginationMeta } from "@self-storage-system-fe/shared";
+import type { ApiResponse, PaginationMeta } from "@self-storage-system-fe/shared";
 import api from "@/lib/api/axios";
 import type {
   ApproveRefundRequest,

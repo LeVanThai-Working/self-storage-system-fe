@@ -20,7 +20,6 @@ import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { EditProfileModal } from "@/features/auth/components/EditProfileModal";
 import { useAuthStore } from "@/features/auth/store";
-import { useMyFacility } from "@/features/storage-unit-management/hooks";
 import { useFacility } from "@/features/facility-management/hooks";
 import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
 import { NotificationBell } from "@/features/notification/components/NotificationBell";

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RoleEnum } from "@self-storage-system-fe/shared";
 import { useAuthStore } from "@/features/auth/store";
+import { fetchFacilityById } from "@/features/facility-management/api";
 import {
   createStorageRack,
   createStorageUnit,
@@ -28,6 +29,7 @@ import {
 import {
   StorageUnitStatusEnum,
   type AvailableStorageUnitQuery,
+  type FacilityResponse,
   type CreateStorageRackRequest,
   type CreateStorageUnitRequest,
   type StorageRackQuery,
@@ -72,12 +74,32 @@ export const useDebouncedValue = <T>(value: T, delay = 400): T => {
 
 export const useMyFacility = (options?: { enabled?: boolean }) => {
   const currentUser = useAuthStore((s) => s.currentUser);
-  const isFacilityManager = currentUser?.role === RoleEnum.FACILITY_MANAGER;
-  const isEnabled = options?.enabled !== undefined ? options.enabled : isFacilityManager;
+  const userRecord = currentUser as unknown as Record<string, unknown> | null;
+  const userRole = String(currentUser?.role ?? "").toLowerCase();
+  const isFacilityRole =
+    userRole === RoleEnum.FACILITY_MANAGER || userRole === RoleEnum.FACILITY_STAFF;
+  const isEnabled = options?.enabled !== undefined ? options.enabled : isFacilityRole;
+
+  const staffFacilityId =
+    (typeof userRecord?.facilityId === "string" && userRecord.facilityId) ||
+    (typeof userRecord?.assignedFacilityId === "string" && userRecord.assignedFacilityId) ||
+    ((userRecord?.facility as Record<string, unknown>)?.id as string | undefined);
 
   return useQuery({
     queryKey: storageUnitKeys.myFacility,
-    queryFn: fetchMyFacility,
+    queryFn: async () => {
+      try {
+        return await fetchMyFacility();
+      } catch (err) {
+        if (staffFacilityId) {
+          return await fetchFacilityById(staffFacilityId);
+        }
+        if (userRecord?.facility && typeof userRecord.facility === "object") {
+          return userRecord.facility as unknown as FacilityResponse;
+        }
+        throw err;
+      }
+    },
     retry: false,
     enabled: isEnabled && Boolean(currentUser),
   });

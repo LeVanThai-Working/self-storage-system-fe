@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useLocale } from "next-intl";
-import { AlertCircle, CheckCircle2, Link2, Search } from "lucide-react";
+import { AlertCircle, Link2, Search } from "lucide-react";
 import { toast } from "sonner";
 import { assignUnmatchedTransactionSchema } from "@self-storage-system-fe/shared";
 import {

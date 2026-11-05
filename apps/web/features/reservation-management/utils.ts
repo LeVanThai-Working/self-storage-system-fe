@@ -199,13 +199,6 @@ export interface TimelineStepItem {
   metaText?: string | null;
 }
 
-const PRIMARY_FLOW_STATUSES: ReservationStatusEnum[] = [
-  ReservationStatusEnum.PENDING_PAYMENT,
-  ReservationStatusEnum.PAYMENT_SUCCESSFUL,
-  ReservationStatusEnum.CONFIRMED,
-  ReservationStatusEnum.COMPLETED,
-];
-
 export function buildReservationTimelineSteps(
   reservation: ReservationResponse,
   locale = "vi"
@@ -215,8 +208,6 @@ export function buildReservationTimelineSteps(
     status === ReservationStatusEnum.CANCELLED ||
     status === ReservationStatusEnum.EXPIRED ||
     status === ReservationStatusEnum.REJECTED;
-
-  const currentIdx = PRIMARY_FLOW_STATUSES.indexOf(status as ReservationStatusEnum);
 
   const unitLabel = reservation.storageUnit?.unitNumber
     ? locale === "en"

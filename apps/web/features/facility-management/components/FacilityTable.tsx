@@ -496,6 +496,25 @@ export const FacilityTable = () => {
                           className="flex items-center justify-end gap-1.5"
                           onClick={(e) => e.stopPropagation()}
                         >
+                          {/* View Time Slots Action */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(
+                                `/${locale}/business-ops/facilities/${facility.id}/time-slots`
+                              );
+                            }}
+                            title={
+                              locale === "vi"
+                                ? "Cấu hình khung giờ tiếp đón"
+                                : "Configure time slots"
+                            }
+                            className="p-2 rounded-xl text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                          >
+                            <Clock className="w-4 h-4" />
+                          </button>
+
                           {/* View Storage Units Action */}
                           <button
                             type="button"
