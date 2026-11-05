@@ -152,6 +152,8 @@ export async function createContractAddendumApi(
 ): Promise<ContractResponse> {
   const response = await api.post<ApiResponse<ContractResponse>>(`/contracts/${id}/addendums`, {
     type: payload.type,
+    newEndDate: payload.newEndDate,
+    newStorageUnitId: payload.newStorageUnitId,
     amenities: payload.amenities,
     notes: payload.notes?.trim() ? payload.notes.trim() : undefined,
   });

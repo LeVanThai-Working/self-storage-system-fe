@@ -1484,7 +1484,7 @@ export default function ContractDetailScreen() {
               >
                 <Calendar size={13} color="#FFFFFF" />
                 <Text className="text-xs font-bold text-white">
-                  {isEn ? "Request Renewal" : "Yêu cầu gia hạn thuê kho"}
+                  {isEn ? "Request Renewal" : "Yêu cầu gia hạn"}
                 </Text>
               </Pressable>
             )}
