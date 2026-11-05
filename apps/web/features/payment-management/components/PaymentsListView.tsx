@@ -264,19 +264,27 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
       {/* Payments Table */}
       <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-600">
+          <table className="w-full text-left text-xs text-slate-600 min-w-[1050px]">
             <thead className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
               <tr>
-                <th className="px-4 py-3.5">
+                <th className="px-4 py-3.5 whitespace-nowrap">
                   {isEn ? "Payment Code / Purpose" : "Mã đơn / Mục đích"}
                 </th>
-                <th className="px-4 py-3.5">{isEn ? "Customer" : "Khách hàng"}</th>
-                <th className="px-4 py-3.5">{isEn ? "Facility" : "Cơ sở"}</th>
-                <th className="px-4 py-3.5 text-right">{isEn ? "Amount" : "Số tiền"}</th>
-                <th className="px-4 py-3.5">{isEn ? "Method" : "Hình thức"}</th>
-                <th className="px-4 py-3.5">{isEn ? "Status" : "Trạng thái"}</th>
-                <th className="px-4 py-3.5">{isEn ? "Created / Expires" : "Ngày tạo / Hạn"}</th>
-                <th className="px-4 py-3.5 text-right">{isEn ? "Actions" : "Thao tác"}</th>
+                <th className="px-4 py-3.5 whitespace-nowrap">
+                  {isEn ? "Customer" : "Khách hàng"}
+                </th>
+                <th className="px-4 py-3.5 whitespace-nowrap">{isEn ? "Facility" : "Cơ sở"}</th>
+                <th className="px-4 py-3.5 text-right whitespace-nowrap">
+                  {isEn ? "Amount" : "Số tiền"}
+                </th>
+                <th className="px-4 py-3.5 whitespace-nowrap">{isEn ? "Method" : "Hình thức"}</th>
+                <th className="px-4 py-3.5 whitespace-nowrap">{isEn ? "Status" : "Trạng thái"}</th>
+                <th className="px-4 py-3.5 whitespace-nowrap">
+                  {isEn ? "Created / Expires" : "Ngày tạo / Hạn"}
+                </th>
+                <th className="px-4 py-3.5 text-right whitespace-nowrap">
+                  {isEn ? "Actions" : "Thao tác"}
+                </th>
               </tr>
             </thead>
 

@@ -123,7 +123,7 @@ export const UnitStatusBadge = ({
   const badgeContent = (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors select-none",
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors select-none whitespace-nowrap shrink-0",
         badgeStyle,
         className
       )}

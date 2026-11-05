@@ -142,6 +142,7 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
                 <Link
                   key={item.href}
                   href={item.href}
+                  title={item.label}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 ${
                     isActive
                       ? "bg-emerald-50 text-emerald-700 font-semibold shadow-sm shadow-emerald-100"
@@ -149,11 +150,11 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
                   }`}
                 >
                   <Icon
-                    className={`w-5 h-5 transition-colors ${
+                    className={`w-5 h-5 shrink-0 transition-colors ${
                       isActive ? "text-emerald-600" : "text-slate-400"
                     }`}
                   />
-                  <span>{item.label}</span>
+                  <span className="truncate whitespace-nowrap">{item.label}</span>
                 </Link>
               );
             })}

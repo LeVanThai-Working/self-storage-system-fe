@@ -397,7 +397,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
                 {facility.name}
               </h1>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 whitespace-nowrap shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" />
                 {facility.status === "active"
                   ? locale === "vi"
@@ -437,7 +437,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
             <button
               type="button"
               onClick={() => setViewMode("list")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === "list"
                   ? "bg-white text-slate-800 shadow-xs"
                   : "text-slate-500 hover:text-slate-700"
@@ -449,7 +449,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
             <button
               type="button"
               onClick={() => setViewMode("map")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === "map"
                   ? "bg-white text-slate-800 shadow-xs"
                   : "text-slate-500 hover:text-slate-700"
@@ -811,20 +811,22 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                           : "No storage units match filters in this unit type."}
                       </div>
                     ) : (
-                      <table className="w-full text-left border-collapse">
+                      <table className="w-full text-left border-collapse min-w-[960px]">
                         <thead>
                           <tr className="border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50">
-                            <th className="py-3 px-6">
+                            <th className="py-3 px-6 whitespace-nowrap">
                               {locale === "vi" ? "Số phòng / Ô kho" : "Unit Number"}
                             </th>
-                            <th className="py-3 px-6">
+                            <th className="py-3 px-6 whitespace-nowrap">
                               {locale === "vi" ? "Vị trí (Tầng - Dãy)" : "Location (Floor - Zone)"}
                             </th>
-                            <th className="py-3 px-6">
+                            <th className="py-3 px-6 whitespace-nowrap">
                               {locale === "vi" ? "Trạng thái" : "Status"}
                             </th>
-                            <th className="py-3 px-6">{locale === "vi" ? "Ghi chú" : "Notes"}</th>
-                            <th className="py-3 px-6 text-right">
+                            <th className="py-3 px-6 whitespace-nowrap">
+                              {locale === "vi" ? "Ghi chú" : "Notes"}
+                            </th>
+                            <th className="py-3 px-6 text-right whitespace-nowrap">
                               {locale === "vi" ? "Chi tiết" : "Actions"}
                             </th>
                           </tr>
@@ -896,7 +898,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                                         setSelectedRackUnit(unit);
                                       }}
                                       title={locale === "vi" ? "Xem sơ đồ kệ kho" : "View rack map"}
-                                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/60 transition-colors text-xs font-semibold cursor-pointer"
+                                      className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-lg text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/60 transition-colors text-xs font-semibold cursor-pointer"
                                     >
                                       <Warehouse className="w-3.5 h-3.5" />
                                       <span>{locale === "vi" ? "Sơ đồ kệ" : "Rack Map"}</span>
@@ -911,7 +913,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                                     title={
                                       locale === "vi" ? "Xem chi tiết ô kho" : "View unit details"
                                     }
-                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-slate-500 hover:text-teal-700 hover:bg-teal-50 transition-colors text-xs font-semibold cursor-pointer"
+                                    className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-lg text-slate-500 hover:text-teal-700 hover:bg-teal-50 transition-colors text-xs font-semibold cursor-pointer"
                                   >
                                     <Eye className="w-3.5 h-3.5" />
                                     <span>{locale === "vi" ? "Chi tiết" : "View"}</span>

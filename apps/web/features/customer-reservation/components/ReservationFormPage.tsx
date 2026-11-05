@@ -295,7 +295,7 @@ export function ReservationFormPage({
           <Section
             title={t("unit.title")}
             headerExtra={
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-700">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-700 whitespace-nowrap shrink-0">
                 <MapPin className="size-3" />
                 {t("unit.mapNotice")}
               </span>

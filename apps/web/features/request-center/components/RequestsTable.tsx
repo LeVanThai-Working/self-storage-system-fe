@@ -60,14 +60,14 @@ export const RequestsTable = () => {
         </div>
       )}
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+        <table className="w-full text-left border-collapse min-w-[920px]">
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              <th className="py-4 px-6">{t("table.target")}</th>
-              <th className="py-4 px-6">{t("table.reason")}</th>
-              <th className="py-4 px-6">{t("table.status")}</th>
-              <th className="py-4 px-6">{t("table.createdAt")}</th>
-              <th className="py-4 px-6 text-right">{t("table.actions")}</th>
+              <th className="py-4 px-6 whitespace-nowrap">{t("table.target")}</th>
+              <th className="py-4 px-6 whitespace-nowrap">{t("table.reason")}</th>
+              <th className="py-4 px-6 whitespace-nowrap">{t("table.status")}</th>
+              <th className="py-4 px-6 whitespace-nowrap">{t("table.createdAt")}</th>
+              <th className="py-4 px-6 text-right whitespace-nowrap">{t("table.actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50 text-sm">
@@ -111,7 +111,7 @@ export const RequestsTable = () => {
                     </td>
                     <td className="py-4 px-6">
                       <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${badge.className}`}
+                        className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${badge.className}`}
                       >
                         <BadgeIcon className="w-3.5 h-3.5" />
                         {t(`status.${req.status}`)}
@@ -130,7 +130,7 @@ export const RequestsTable = () => {
                           }}
                           disabled={cancellingId === req.id}
                           title={t("cancelRequest")}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
+                          className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-3 py-1.5 rounded-lg text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
                         >
                           <X className="w-3.5 h-3.5" />
                           {t("cancelRequest")}

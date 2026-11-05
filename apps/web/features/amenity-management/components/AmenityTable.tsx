@@ -87,22 +87,22 @@ export const AmenityTable = () => {
   const renderTypeBadge = (type: string) => {
     if (type === AmenityTypeEnum.PHYSICAL) {
       return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs">
-          <Wrench className="w-3.5 h-3.5 text-blue-600" />
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs">
+          <Wrench className="w-3.5 h-3.5 text-blue-600 shrink-0" />
           {t("type.physical")}
         </span>
       );
     }
     if (type === AmenityTypeEnum.SERVICE) {
       return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200/80 shadow-2xs">
-          <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-purple-50 text-purple-700 border border-purple-200/80 shadow-2xs">
+          <ShieldCheck className="w-3.5 h-3.5 text-purple-600 shrink-0" />
           {t("type.service")}
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap shrink-0 bg-slate-100 text-slate-700 border border-slate-200">
         {type}
       </span>
     );
@@ -113,14 +113,14 @@ export const AmenityTable = () => {
     const isActive = status === AmenityStatusEnum.ACTIVE;
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 ${
           isActive
             ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
             : "bg-slate-100 text-slate-600 border border-slate-200"
         }`}
       >
         <span
-          className={`w-1.5 h-1.5 rounded-full ${
+          className={`w-1.5 h-1.5 rounded-full shrink-0 ${
             isActive ? "bg-emerald-500 animate-pulse" : "bg-slate-400"
           }`}
         />
@@ -291,15 +291,15 @@ export const AmenityTable = () => {
       {/* Amenities Data Table */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[980px]">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                <th className="py-4 px-6">{t("table.name")}</th>
-                <th className="py-4 px-6">{t("table.type")}</th>
-                <th className="py-4 px-6">{t("table.tags")}</th>
-                <th className="py-4 px-6">{t("table.status")}</th>
-                <th className="py-4 px-6">{t("table.createdAt")}</th>
-                <th className="py-4 px-6 text-right">{t("table.actions")}</th>
+              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.name")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.type")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.tags")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.status")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.createdAt")}</th>
+                <th className="py-4 px-6 text-right whitespace-nowrap">{t("table.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-sm">
@@ -376,7 +376,7 @@ export const AmenityTable = () => {
                     </td>
 
                     {/* Classification Type (Blue for PHYSICAL, Purple for SERVICE) */}
-                    <td className="py-4 px-6">{renderTypeBadge(amenity.type)}</td>
+                    <td className="py-4 px-6 whitespace-nowrap">{renderTypeBadge(amenity.type)}</td>
 
                     {/* Tags */}
                     <td className="py-4 px-6">
@@ -385,14 +385,14 @@ export const AmenityTable = () => {
                           {amenity.tags.slice(0, 3).map((tag, idx) => (
                             <span
                               key={idx}
-                              className="inline-flex items-center gap-1 text-[11px] font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md"
+                              className="inline-flex items-center gap-1 text-[11px] font-medium whitespace-nowrap shrink-0 bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md"
                             >
-                              <Tag className="w-2.5 h-2.5 text-slate-400" />
+                              <Tag className="w-2.5 h-2.5 text-slate-400 shrink-0" />
                               {tag}
                             </span>
                           ))}
                           {amenity.tags.length > 3 && (
-                            <span className="text-[11px] font-semibold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-md">
+                            <span className="text-[11px] font-semibold whitespace-nowrap shrink-0 text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-md">
                               +{amenity.tags.length - 3}
                             </span>
                           )}
@@ -403,15 +403,17 @@ export const AmenityTable = () => {
                     </td>
 
                     {/* Status */}
-                    <td className="py-4 px-6">{renderStatusBadge(amenity.status)}</td>
+                    <td className="py-4 px-6 whitespace-nowrap">
+                      {renderStatusBadge(amenity.status)}
+                    </td>
 
                     {/* Created Date */}
-                    <td className="py-4 px-6 text-xs text-slate-500 font-medium">
+                    <td className="py-4 px-6 text-xs text-slate-500 font-medium whitespace-nowrap">
                       {new Date(amenity.createdAt).toLocaleDateString("vi-VN")}
                     </td>
 
                     {/* Actions */}
-                    <td className="py-4 px-6 text-right">
+                    <td className="py-4 px-6 text-right whitespace-nowrap">
                       <div className="inline-flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                         {/* View Details */}
                         <button

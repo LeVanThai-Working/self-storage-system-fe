@@ -177,7 +177,7 @@ export const OfferingLookupModal = ({
                   </div>
 
                   <span
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold shrink-0 ${
+                    className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-full text-xs font-bold shrink-0 ${
                       isActive
                         ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
                         : "bg-slate-100 text-slate-600 border border-slate-200"

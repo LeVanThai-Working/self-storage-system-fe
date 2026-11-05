@@ -1,7 +1,7 @@
 "use client";
+import { useLocale } from "next-intl";
 
 import React, { useState } from "react";
-import { useLocale } from "next-intl";
 import { ChevronLeft, ChevronRight, Link2, Receipt, RefreshCw, Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnmatchedTransactions } from "../hooks";
@@ -179,20 +179,30 @@ export const UnmatchedTransactionsView: React.FC = () => {
       {/* Transactions Table */}
       <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-600">
+          <table className="w-full text-left text-xs text-slate-600 min-w-[1080px]">
             <thead className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
               <tr>
-                <th className="px-4 py-3.5">{isEn ? "SePay ID / Gateway" : "ID SePay / Cổng"}</th>
-                <th className="px-4 py-3.5">{isEn ? "Outcome" : "Kết quả đối soát"}</th>
-                <th className="px-4 py-3.5 text-right">
+                <th className="px-4 py-3.5 whitespace-nowrap">
+                  {isEn ? "SePay ID / Gateway" : "ID SePay / Cổng"}
+                </th>
+                <th className="px-4 py-3.5 whitespace-nowrap">
+                  {isEn ? "Outcome" : "Kết quả đối soát"}
+                </th>
+                <th className="px-4 py-3.5 text-right whitespace-nowrap">
                   {isEn ? "Transfer Amount" : "Số tiền chuyển"}
                 </th>
-                <th className="px-4 py-3.5">
+                <th className="px-4 py-3.5 whitespace-nowrap">
                   {isEn ? "Transfer Content / Description" : "Nội dung chuyển khoản"}
                 </th>
-                <th className="px-4 py-3.5">{isEn ? "Account" : "Tài khoản nhận"}</th>
-                <th className="px-4 py-3.5">{isEn ? "Transaction Date" : "Thời gian ngân hàng"}</th>
-                <th className="px-4 py-3.5 text-right">{isEn ? "Actions" : "Thao tác"}</th>
+                <th className="px-4 py-3.5 whitespace-nowrap">
+                  {isEn ? "Account" : "Tài khoản nhận"}
+                </th>
+                <th className="px-4 py-3.5 whitespace-nowrap">
+                  {isEn ? "Transaction Date" : "Thời gian ngân hàng"}
+                </th>
+                <th className="px-4 py-3.5 text-right whitespace-nowrap">
+                  {isEn ? "Actions" : "Thao tác"}
+                </th>
               </tr>
             </thead>
 
@@ -206,7 +216,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
                     <td className="px-4 py-3.5">
                       <Skeleton className="h-4 w-28 rounded" />
                     </td>
-                    <td className="px-4 py-3.5 text-right">
+                    <td className="px-4 py-3.5 text-right whitespace-nowrap">
                       <Skeleton className="h-4 w-20 ml-auto rounded" />
                     </td>
                     <td className="px-4 py-3.5">
@@ -218,7 +228,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
                     <td className="px-4 py-3.5">
                       <Skeleton className="h-4 w-28 rounded" />
                     </td>
-                    <td className="px-4 py-3.5 text-right">
+                    <td className="px-4 py-3.5 text-right whitespace-nowrap">
                       <Skeleton className="h-4 w-16 ml-auto rounded" />
                     </td>
                   </tr>
@@ -243,7 +253,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
 
                   return (
                     <tr key={tx.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-4 py-3.5">
+                      <td className="px-4 py-3.5 whitespace-nowrap">
                         <span className="font-mono font-bold text-slate-900 block">
                           #{tx.sepayId}
                         </span>
@@ -252,9 +262,9 @@ export const UnmatchedTransactionsView: React.FC = () => {
                         </span>
                       </td>
 
-                      <td className="px-4 py-3.5">
+                      <td className="px-4 py-3.5 whitespace-nowrap">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border ${resultConfig.badgeClass}`}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border whitespace-nowrap shrink-0 ${resultConfig.badgeClass}`}
                         >
                           <span
                             className={`w-1.5 h-1.5 rounded-full shrink-0 ${resultConfig.dotClass}`}
@@ -263,7 +273,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
                         </span>
                       </td>
 
-                      <td className="px-4 py-3.5 text-right font-black text-slate-900">
+                      <td className="px-4 py-3.5 text-right font-black text-slate-900 whitespace-nowrap">
                         {formatVnd(tx.transferAmount)}
                       </td>
 
@@ -273,11 +283,11 @@ export const UnmatchedTransactionsView: React.FC = () => {
                         </p>
                       </td>
 
-                      <td className="px-4 py-3.5 text-slate-700 font-mono text-[11px]">
+                      <td className="px-4 py-3.5 text-slate-700 font-mono text-[11px] whitespace-nowrap">
                         {tx.accountNumber || "—"}
                       </td>
 
-                      <td className="px-4 py-3.5 text-[11px] text-slate-500">
+                      <td className="px-4 py-3.5 text-[11px] text-slate-500 whitespace-nowrap">
                         {formatDateTime(tx.transactionDate, locale)}
                       </td>
 
@@ -286,7 +296,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setTargetTransaction(tx)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm transition-colors"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm transition-colors whitespace-nowrap shrink-0"
                           >
                             <Link2 className="w-3.5 h-3.5" />
                             <span>{isEn ? "Assign Payment" : "Gán đơn"}</span>

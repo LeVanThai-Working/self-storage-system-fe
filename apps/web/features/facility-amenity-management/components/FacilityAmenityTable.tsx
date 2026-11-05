@@ -329,11 +329,11 @@ export const FacilityAmenityTable = () => {
 
       {/* Filter and Search Bar */}
       <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Search Form with Search and Clear buttons */}
           <form
             onSubmit={handleSearchSubmit}
-            className="flex-1 relative flex items-center min-w-[280px] max-w-md"
+            className="flex-1 relative flex items-center min-w-[300px] sm:min-w-[360px]"
           >
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
@@ -341,7 +341,9 @@ export const FacilityAmenityTable = () => {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder={t("searchPlaceholder")}
-              className="w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-sm text-slate-800 placeholder:text-slate-400 pl-10 pr-24 py-2.5 rounded-xl border border-slate-200/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all duration-200"
+              className={`w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-sm text-slate-800 placeholder:text-slate-400 pl-10 ${
+                searchInput ? "pr-24" : "pr-16"
+              } py-2.5 rounded-xl border border-slate-200/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all duration-200`}
             />
             <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
               {searchInput && (
@@ -356,7 +358,7 @@ export const FacilityAmenityTable = () => {
               )}
               <button
                 type="submit"
-                className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1"
+                className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0"
               >
                 <span>{t("searchButton")}</span>
               </button>
@@ -517,15 +519,15 @@ export const FacilityAmenityTable = () => {
       {/* Offerings Table */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                <th className="py-4 px-6">{t("table.facility")}</th>
-                <th className="py-4 px-6">{t("table.amenity")}</th>
-                <th className="py-4 px-6">{t("table.price")}</th>
-                <th className="py-4 px-6">{t("table.inventory")}</th>
-                <th className="py-4 px-6">{t("table.status")}</th>
-                <th className="py-4 px-6 text-right">{t("table.actions")}</th>
+              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.facility")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.amenity")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.price")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.inventory")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.status")}</th>
+                <th className="py-4 px-6 text-right whitespace-nowrap">{t("table.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-sm">
@@ -606,7 +608,7 @@ export const FacilityAmenityTable = () => {
                       </td>
 
                       {/* Price Column */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-6 whitespace-nowrap">
                         <div className="font-black text-slate-900">
                           {formatPrice(offering.pricePerUnit)}
                         </div>
@@ -616,9 +618,9 @@ export const FacilityAmenityTable = () => {
                       </td>
 
                       {/* Inventory Column (totalQuantity, inUseQuantity, availableQuantity) */}
-                      <td className="py-4 px-6 min-w-[200px]">
-                        <div className="flex items-center justify-between text-xs mb-1.5">
-                          <span className="text-slate-600 font-medium">
+                      <td className="py-4 px-6 min-w-[220px]">
+                        <div className="flex items-center justify-between gap-3 text-xs mb-1.5 whitespace-nowrap">
+                          <span className="text-slate-600 font-medium whitespace-nowrap">
                             Khả dụng:{" "}
                             <b
                               className={
@@ -633,7 +635,7 @@ export const FacilityAmenityTable = () => {
                             </b>
                             /{total}
                           </span>
-                          <span className="text-[11px] text-slate-400">
+                          <span className="text-[11px] text-slate-400 whitespace-nowrap">
                             Đang dùng: <b className="text-slate-700">{inUse}</b>
                           </span>
                         </div>
@@ -657,18 +659,18 @@ export const FacilityAmenityTable = () => {
                         {/* Stock Tag */}
                         <div className="mt-1.5">
                           {available === 0 ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200">
-                              <AlertCircle className="w-2.5 h-2.5" />
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border border-rose-200">
+                              <AlertCircle className="w-2.5 h-2.5 shrink-0" />
                               {t("stock.outOfStock")}
                             </span>
                           ) : available <= 2 ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
-                              <AlertTriangle className="w-2.5 h-2.5" />
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200">
+                              <AlertTriangle className="w-2.5 h-2.5 shrink-0" />
                               {t("stock.lowStock")}
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
-                              <CheckCircle2 className="w-2.5 h-2.5" />
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <CheckCircle2 className="w-2.5 h-2.5 shrink-0" />
                               {t("stock.inStock")}
                             </span>
                           )}
@@ -676,16 +678,16 @@ export const FacilityAmenityTable = () => {
                       </td>
 
                       {/* Status Column */}
-                      <td className="py-4 px-6">
+                      <td className="py-4 px-6 whitespace-nowrap">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 ${
                             offering.status === FacilityAmenityOfferingStatusEnum.ACTIVE
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
                               : "bg-slate-100 text-slate-600 border border-slate-200/80"
                           }`}
                         >
                           <span
-                            className={`w-1.5 h-1.5 rounded-full ${
+                            className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                               offering.status === FacilityAmenityOfferingStatusEnum.ACTIVE
                                 ? "bg-emerald-500"
                                 : "bg-slate-400"
@@ -696,7 +698,7 @@ export const FacilityAmenityTable = () => {
                       </td>
 
                       {/* Actions Column */}
-                      <td className="py-4 px-6 text-right">
+                      <td className="py-4 px-6 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1">
                           <button
                             type="button"

@@ -233,28 +233,28 @@ export const AuditLogTable = () => {
       {/* ── Table ── */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
               <tr className="bg-slate-50/70 border-b border-slate-100">
-                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider w-32">
+                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider w-32 whitespace-nowrap">
                   {t("columns.time")}
                 </th>
-                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                   {t("columns.actor")}
                 </th>
-                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                   {t("columns.action")}
                 </th>
-                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                   {t("columns.resource")}
                 </th>
-                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                   {t("columns.result")}
                 </th>
-                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap">
                   {t("columns.ip")}
                 </th>
-                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">
+                <th className="px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right whitespace-nowrap">
                   {t("columns.details")}
                 </th>
               </tr>
@@ -348,7 +348,7 @@ export const AuditLogTable = () => {
                       {/* Action badge */}
                       <td className="px-5 py-2">
                         <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium capitalize ${colorClass}`}
+                          className={`inline-flex items-center whitespace-nowrap shrink-0 px-2.5 py-1 rounded-md text-xs font-medium capitalize ${colorClass}`}
                         >
                           {actionLabel}
                         </span>
@@ -374,7 +374,7 @@ export const AuditLogTable = () => {
                       {/* Status */}
                       <td className="px-5 py-2">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${
+                          className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${
                             isSuccess
                               ? "bg-emerald-50 text-emerald-700"
                               : "bg-rose-50 text-rose-700"
