@@ -300,19 +300,28 @@ export default function PaymentsScreen() {
           <>
             {/* 1. Outstanding Due Balance Card */}
             <View className="mb-6 rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-sm">
-              <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+              <View className="flex-row items-center justify-between mb-2 gap-2">
+                <Text
+                  numberOfLines={1}
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 flex-1 min-w-0"
+                >
                   {t("payments.dueCardTitle")}
                 </Text>
                 {currentTotalDue > 0 ? (
-                  <Badge variant="outline" className="border-red-300 bg-red-50 dark:bg-red-950/40">
-                    <Text className="text-xs font-semibold text-red-600 dark:text-red-400">
+                  <Badge
+                    variant="outline"
+                    className="border-red-300 bg-red-50 dark:bg-red-950/40 shrink-0"
+                  >
+                    <Text
+                      numberOfLines={1}
+                      className="text-xs font-semibold text-red-600 dark:text-red-400"
+                    >
                       {t("payments.statusUnpaid")}
                     </Text>
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="border-brand/40 bg-brand-light/30">
-                    <Text className="text-xs font-semibold text-brand">
+                  <Badge variant="outline" className="border-brand/40 bg-brand-light/30 shrink-0">
+                    <Text numberOfLines={1} className="text-xs font-semibold text-brand">
                       {t("payments.statusPaid")}
                     </Text>
                   </Badge>
@@ -443,18 +452,21 @@ export default function PaymentsScreen() {
                       key={payment.id}
                       className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-2.5"
                     >
-                      <View className="flex-row items-center justify-between">
-                        <View className="flex-row items-center gap-1.5 flex-1 pr-2">
-                          <Receipt size={16} color="#0B927E" />
+                      <View className="flex-row items-center justify-between gap-2">
+                        <View className="flex-row items-center gap-1.5 flex-1 min-w-0 pr-2">
+                          <Receipt size={16} color="#0B927E" className="shrink-0" />
                           <Text
-                            className="text-xs font-extrabold text-neutral-dark dark:text-neutral-100"
+                            className="text-xs font-extrabold text-neutral-dark dark:text-neutral-100 flex-1"
                             numberOfLines={1}
                           >
                             #{payment.paymentCode}
                           </Text>
                         </View>
-                        <Badge variant="outline" className={statusMeta.badgeClass}>
-                          <Text className={`text-xs font-semibold ${statusMeta.textClass}`}>
+                        <Badge variant="outline" className={`${statusMeta.badgeClass} shrink-0`}>
+                          <Text
+                            numberOfLines={1}
+                            className={`text-xs font-semibold ${statusMeta.textClass}`}
+                          >
                             {statusMeta.label}
                           </Text>
                         </Badge>

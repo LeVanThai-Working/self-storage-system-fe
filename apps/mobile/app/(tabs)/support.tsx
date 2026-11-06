@@ -121,10 +121,12 @@ export default function SupportScreen() {
             {ticket.description}
           </Text>
         </View>
-        <StatusPill
-          label={t(`supportTicket.status.${ticket.status}`)}
-          tone={TICKET_STATUS_TONE[ticket.status]}
-        />
+        <View className="shrink-0">
+          <StatusPill
+            label={t(`supportTicket.status.${ticket.status}`)}
+            tone={TICKET_STATUS_TONE[ticket.status]}
+          />
+        </View>
       </View>
       <View className="flex-row flex-wrap items-center gap-2 border-t border-neutral-border pt-2 dark:border-neutral-800">
         <View className="flex-row items-center gap-1 rounded-full bg-brand-light/50 px-2 py-0.5">
@@ -168,7 +170,7 @@ export default function SupportScreen() {
             {formatWhen(incident.createdAt)}
           </Text>
         </View>
-        <View className="items-end gap-1">
+        <View className="items-end gap-1 shrink-0">
           <StatusPill
             label={t(`incident.severity.${incident.severity}`)}
             tone={INCIDENT_SEVERITY_TONE[incident.severity]}

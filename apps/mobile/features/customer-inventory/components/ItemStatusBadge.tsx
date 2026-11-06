@@ -33,10 +33,10 @@ export function ItemStatusBadge({ status }: { status?: InventoryItemStatusEnum |
 
   return (
     <View
-      className={`flex-row items-center gap-1 self-start rounded-full px-2 py-0.5 ${style.container}`}
+      className={`flex-row items-center gap-1 self-start shrink-0 rounded-full px-2 py-0.5 ${style.container}`}
     >
       {style.icon}
-      <Text className={`text-[10px] font-bold ${style.text}`}>
+      <Text numberOfLines={1} className={`text-[10px] font-bold ${style.text}`}>
         {t(`rackMap.itemStatus.${status}`)}
       </Text>
     </View>

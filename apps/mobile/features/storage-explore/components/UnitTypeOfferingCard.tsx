@@ -184,7 +184,7 @@ export function UnitTypeOfferingCard({
           onPress={handleViewDetail}
           className="flex-1 flex-row items-center justify-center gap-1 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 py-2 active:opacity-80"
         >
-          <Text className="text-xs font-semibold text-brand">
+          <Text numberOfLines={1} className="text-xs font-semibold text-brand">
             {t("storageExplore.viewUnitTypeDetailBtn")}
           </Text>
           <ChevronRight size={14} color="#0B927E" />
@@ -200,14 +200,15 @@ export function UnitTypeOfferingCard({
           }`}
         >
           <Text
+            numberOfLines={1}
             className={`text-xs font-bold ${
               isOutOfStock ? "text-neutral-500 dark:text-neutral-400" : "text-white"
             }`}
           >
             {isOutOfStock
               ? locale === "en"
-                ? "Temporarily out of stock"
-                : "Tạm thời đã hết"
+                ? "Out of stock"
+                : "Hết phòng"
               : t("facilityDetail.selectAndBookBtn")}
           </Text>
           {!isOutOfStock && <ArrowRight size={13} color="#FFFFFF" />}

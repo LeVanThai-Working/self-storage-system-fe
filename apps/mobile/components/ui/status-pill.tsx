@@ -39,8 +39,12 @@ interface StatusPillProps {
 export function StatusPill({ label, tone, className }: StatusPillProps) {
   const style = TONE_CLASS[tone];
   return (
-    <View className={cn("self-start rounded-full px-2.5 py-0.5", style.container, className)}>
-      <Text className={cn("text-[11px] font-bold", style.text)}>{label}</Text>
+    <View
+      className={cn("self-start shrink-0 rounded-full px-2.5 py-0.5", style.container, className)}
+    >
+      <Text numberOfLines={1} className={cn("text-[11px] font-bold", style.text)}>
+        {label}
+      </Text>
     </View>
   );
 }

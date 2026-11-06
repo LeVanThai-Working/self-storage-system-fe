@@ -57,16 +57,22 @@ export function ReservationCard({
     >
       {/* Header: Reservation Code & Status Badge */}
       <View className="flex-row items-start justify-between gap-2 mb-2.5">
-        <View className="flex-1">
-          <Text className="text-base font-extrabold tracking-wide text-neutral-dark dark:text-neutral-100">
+        <View className="flex-1 min-w-0">
+          <Text
+            numberOfLines={1}
+            className="text-base font-extrabold tracking-wide text-neutral-dark dark:text-neutral-100"
+          >
             #{reservation.reservationCode}
           </Text>
           <View className="mt-1 flex-row items-center gap-1.5">
             <View
-              className="h-2 w-2 rounded-full"
+              className="h-2 w-2 rounded-full shrink-0"
               style={{ backgroundColor: statusMeta.dotColor }}
             />
-            <Text className={`text-[11px] font-semibold ${statusMeta.stepTextClass}`}>
+            <Text
+              numberOfLines={1}
+              className={`text-[11px] font-semibold flex-1 ${statusMeta.stepTextClass}`}
+            >
               {linkedContract?.status === ContractStatusEnum.DRAFT
                 ? isEn
                   ? "Step 6/6: Contract Created (Awaiting Check-in)"
@@ -78,9 +84,9 @@ export function ReservationCard({
 
         <Badge
           variant="outline"
-          className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1`}
+          className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1 shrink-0`}
         >
-          <Text className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
+          <Text numberOfLines={1} className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
             {statusMeta.label}
           </Text>
         </Badge>
