@@ -59,12 +59,17 @@ export function RackCard({
             </Text>
 
             {isRented ? (
-              <View className="flex-row items-center rounded-full border border-brand/40 bg-brand-light/30 dark:bg-brand/15 px-2 py-0.5">
-                <Text className="text-[10px] font-bold text-brand">{t("rackMap.rentedBadge")}</Text>
+              <View className="flex-row items-center shrink-0 rounded-full border border-brand/40 bg-brand-light/30 dark:bg-brand/15 px-2 py-0.5">
+                <Text numberOfLines={1} className="text-[10px] font-bold text-brand">
+                  {t("rackMap.rentedBadge")}
+                </Text>
               </View>
             ) : (
-              <View className="flex-row items-center rounded-full border border-neutral-300 dark:border-neutral-700 bg-neutral-200/60 dark:bg-neutral-800 px-2 py-0.5">
-                <Text className="text-[10px] font-semibold text-neutral-600 dark:text-neutral-400">
+              <View className="flex-row items-center shrink-0 rounded-full border border-neutral-300 dark:border-neutral-700 bg-neutral-200/60 dark:bg-neutral-800 px-2 py-0.5">
+                <Text
+                  numberOfLines={1}
+                  className="text-[10px] font-semibold text-neutral-600 dark:text-neutral-400"
+                >
                   {t("rackMap.notRentedBadge")}
                 </Text>
               </View>

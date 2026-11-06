@@ -26,9 +26,16 @@ export const RefundCard: React.FC<RefundCardProps> = ({ refund }) => {
       <Pressable onPress={() => router.push(`/refunds/${refund.id}` as any)} className="p-4">
         <CardContent className="p-0">
           {/* Top row: Code + Status Badge */}
-          <View className="flex-row items-center justify-between mb-2">
-            <Text className="font-mono font-bold text-sm text-foreground">{refund.refundCode}</Text>
-            <RefundStatusBadge status={refund.status} />
+          <View className="flex-row items-center justify-between mb-2 gap-2">
+            <Text
+              numberOfLines={1}
+              className="font-mono font-bold text-sm text-foreground flex-1 min-w-0"
+            >
+              {refund.refundCode}
+            </Text>
+            <View className="shrink-0">
+              <RefundStatusBadge status={refund.status} />
+            </View>
           </View>
 
           {/* Amount */}

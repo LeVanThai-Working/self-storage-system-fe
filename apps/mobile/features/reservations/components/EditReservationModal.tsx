@@ -644,12 +644,15 @@ export function EditReservationModal({
                   </Text>
                 ) : null}
               </View>
-              <View className="flex-row justify-between items-center border-t border-neutral-200 dark:border-neutral-700 pt-2">
-                <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+              <View className="flex-row justify-between items-center border-t border-neutral-200 dark:border-neutral-700 pt-2 gap-2">
+                <Text
+                  numberOfLines={1}
+                  className="text-xs font-bold text-neutral-dark dark:text-neutral-100 flex-1 min-w-0"
+                >
                   {isEn ? "Deposit Due for Reservation:" : "Tiền cọc cần thanh toán:"}
                 </Text>
-                <Badge variant="outline" className="border-brand/40 bg-brand-light/40">
-                  <Text className="text-xs font-extrabold text-brand">
+                <Badge variant="outline" className="border-brand/40 bg-brand-light/40 shrink-0">
+                  <Text numberOfLines={1} className="text-xs font-extrabold text-brand">
                     {formatVnd(reservation.depositAmount)}
                   </Text>
                 </Badge>

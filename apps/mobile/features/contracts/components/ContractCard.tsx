@@ -98,11 +98,11 @@ export function ContractCard({
     >
       {/* Top Row: Contract Code + Status Badge */}
       <View className="flex-row items-start justify-between gap-2">
-        <View className="flex-row items-center gap-2.5 flex-1">
-          <View className="h-10 w-10 items-center justify-center rounded-2xl bg-brand-light dark:bg-brand/20">
+        <View className="flex-row items-center gap-2.5 flex-1 min-w-0">
+          <View className="h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-light dark:bg-brand/20">
             <Boxes size={20} color="#0B927E" />
           </View>
-          <View className="flex-1">
+          <View className="flex-1 min-w-0">
             <Text
               className="text-sm font-extrabold text-neutral-dark dark:text-neutral-100"
               numberOfLines={1}
@@ -110,7 +110,7 @@ export function ContractCard({
               #{contract.contractCode}
             </Text>
             <View className="flex-row items-center gap-1 mt-0.5">
-              <Building2 size={11} color="#647B80" />
+              <Building2 size={11} color="#647B80" className="shrink-0" />
               <Text variant="muted" className="text-xs flex-1" numberOfLines={1}>
                 {displayFacilityName} • #{displayUnitLabel}
                 {rentedRacksLabel ? ` • Kệ: ${rentedRacksLabel}` : ""}
@@ -121,9 +121,9 @@ export function ContractCard({
 
         <Badge
           variant="outline"
-          className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1`}
+          className={`${statusMeta.badgeBorderClass} ${statusMeta.badgeBgClass} px-2.5 py-1 shrink-0`}
         >
-          <Text className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
+          <Text numberOfLines={1} className={`text-[11px] font-bold ${statusMeta.badgeTextClass}`}>
             {statusMeta.label}
           </Text>
         </Badge>

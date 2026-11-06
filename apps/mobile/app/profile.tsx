@@ -557,16 +557,22 @@ export default function ProfileScreen() {
                 {t("profile.email")}
               </Text>
               {isEmailVerified ? (
-                <View className="flex-row items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 px-2 py-0.5">
+                <View className="flex-row items-center gap-1 shrink-0 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 px-2 py-0.5">
                   <CheckCircle2 size={11} color="#059669" />
-                  <Text className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                  <Text
+                    numberOfLines={1}
+                    className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300"
+                  >
                     {t("profile.verified")}
                   </Text>
                 </View>
               ) : (
-                <View className="flex-row items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 px-2 py-0.5">
+                <View className="flex-row items-center gap-1 shrink-0 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 px-2 py-0.5">
                   <AlertTriangle size={11} color="#D97706" />
-                  <Text className="text-[10px] font-bold text-amber-700 dark:text-amber-300">
+                  <Text
+                    numberOfLines={1}
+                    className="text-[10px] font-bold text-amber-700 dark:text-amber-300"
+                  >
                     {t("profile.notVerified")}
                   </Text>
                 </View>
@@ -676,16 +682,22 @@ export default function ProfileScreen() {
 
             {/* Verification Badge */}
             {isIdCardVerified ? (
-              <View className="flex-row items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 px-2.5 py-0.5">
+              <View className="flex-row items-center gap-1 shrink-0 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 px-2.5 py-0.5">
                 <CheckCircle2 size={12} color="#059669" />
-                <Text className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                <Text
+                  numberOfLines={1}
+                  className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
+                >
                   {t("profile.verified")}
                 </Text>
               </View>
             ) : (
-              <View className="flex-row items-center gap-1 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 px-2.5 py-0.5">
+              <View className="flex-row items-center gap-1 shrink-0 rounded-full bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 px-2.5 py-0.5">
                 <AlertTriangle size={12} color="#D97706" />
-                <Text className="text-[11px] font-bold text-amber-700 dark:text-amber-300">
+                <Text
+                  numberOfLines={1}
+                  className="text-[11px] font-bold text-amber-700 dark:text-amber-300"
+                >
                   {t("profile.notVerified")}
                 </Text>
               </View>

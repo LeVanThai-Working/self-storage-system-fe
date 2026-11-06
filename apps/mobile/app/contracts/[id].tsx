@@ -997,18 +997,21 @@ export default function ContractDetailScreen() {
           ) : null}
 
           <View className="rounded-2xl border border-brand/40 bg-brand-light/25 dark:bg-brand/15 p-3.5 gap-2">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2">
-                <Boxes size={16} color="#0B927E" />
-                <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+            <View className="flex-row items-center justify-between gap-2">
+              <View className="flex-row items-center gap-2 flex-1 min-w-0">
+                <Boxes size={16} color="#0B927E" className="shrink-0" />
+                <Text
+                  numberOfLines={1}
+                  className="text-xs font-bold text-neutral-dark dark:text-neutral-100 flex-1"
+                >
                   {isEn ? "Assigned Storage Unit" : "Ô kho vật lý"}
                 </Text>
               </View>
               <Badge
                 variant="outline"
-                className="border-brand bg-white dark:bg-neutral-900 px-2.5 py-0.5"
+                className="border-brand bg-white dark:bg-neutral-900 px-2.5 py-0.5 shrink-0"
               >
-                <Text className="text-xs font-extrabold text-brand">
+                <Text numberOfLines={1} className="text-xs font-extrabold text-brand">
                   #
                   {contract.storageUnit?.unitNumber ||
                     contract.storageUnitId.slice(-6).toUpperCase()}
@@ -1188,18 +1191,24 @@ export default function ContractDetailScreen() {
         {/* 3B. Digitized Signed Physical Contract Scans */}
         {signedContractFiles.length > 0 ? (
           <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-2">
-                <FileCheck size={18} color="#0B927E" />
-                <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
-                  {isEn ? "Digitized Signed Contract Scans" : "Hồ sơ Hợp đồng Ký sống (Bản scan)"}
+            <View className="flex-row items-center justify-between gap-2">
+              <View className="flex-row items-center gap-2 flex-1 min-w-0">
+                <FileCheck size={18} color="#0B927E" className="shrink-0" />
+                <Text
+                  numberOfLines={1}
+                  className="text-sm font-bold text-neutral-dark dark:text-neutral-100 flex-1"
+                >
+                  {isEn ? "Digitized Signed Contract Scans" : "Hồ sơ Hợp đồng Ký sống (Scan)"}
                 </Text>
               </View>
               <Badge
                 variant="outline"
-                className="border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5"
+                className="border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 shrink-0"
               >
-                <Text className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                <Text
+                  numberOfLines={1}
+                  className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
+                >
                   {signedContractFiles.length} {isEn ? "files" : "tài liệu"}
                 </Text>
               </Badge>
