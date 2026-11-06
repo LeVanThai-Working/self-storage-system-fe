@@ -36,6 +36,7 @@ function invalidateSkus(qc: QueryClient) {
   qc.invalidateQueries({ queryKey: customerSkuKeys.all });
   // Tree items embed SKU snapshots (name, image, size), so refresh the rack map too.
   qc.invalidateQueries({ queryKey: ["customer-inventory-tree"] });
+  qc.invalidateQueries({ queryKey: ["customer-inventory-sku-locator"] });
 }
 
 export function useCustomerSkuList(filters: Partial<CustomerSkuListFilters>) {

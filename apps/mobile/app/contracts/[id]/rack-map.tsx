@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { View, ScrollView, Pressable, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
@@ -32,6 +32,7 @@ import { isWarehouseRackContract } from "@/features/contracts/utils/contractForm
 import { SelfStorageGuardView } from "@/features/contracts/components/SelfStorageGuardView";
 import {
   useCustomerInventoryRecords,
+  useSkuLocations,
   useStorageUnitTree,
 } from "@/features/customer-inventory/hooks/useCustomerInventory";
 import { RackMapSummaryBar } from "@/features/customer-inventory/components/RackMapSummaryBar";
@@ -45,7 +46,6 @@ import type { RequestActionType } from "@/features/customer-inventory/types/rack
 import {
   INVENTORY_ERROR,
   buildFloorLabel,
-  filterRentedRacks,
   findTierInTree,
   getContractRequestRights,
   resolveInventoryError,
@@ -68,7 +68,8 @@ export default function ContractRackMapScreen() {
   const { t, locale } = useTranslation();
   const currentLocale: MessageLocale = locale === "en" ? "en" : "vi";
 
-  const params = useLocalSearchParams<{ id?: string }>();
+  /** `skuId` opens the map with that SKU located; no `tierId` then means its holding-area stock. */
+  const params = useLocalSearchParams<{ id?: string; skuId?: string; tierId?: string }>();
   const contractId = params.id ?? "";
 
   const contractQuery = useContractDetail(contractId);
@@ -76,8 +77,9 @@ export default function ContractRackMapScreen() {
   const isWarehouse =
     typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
   const storageUnitId = isWarehouse ? contract?.storageUnitId : undefined;
-  const treeQuery = useStorageUnitTree(storageUnitId);
+  const treeQuery = useStorageUnitTree(storageUnitId, contractId);
   const tree = treeQuery.data;
+  const linkedSkuQuery = useSkuLocations(params.skuId);
 
   const [detailTarget, setDetailTarget] = useState<DetailTarget>(undefined);
   const [historyTierId, setHistoryTierId] = useState<string | null>(null);
@@ -87,6 +89,7 @@ export default function ContractRackMapScreen() {
 
   const scrollRef = useRef<ScrollView>(null);
   const rackOffsetsRef = useRef<Map<string, number>>(new Map());
+  const linkedSkuLocatedRef = useRef(false);
 
   const rights = getContractRequestRights(contract?.status);
   const readOnly = !rights.canRequestOutbound && !rights.canRequestMove;
@@ -123,71 +126,14 @@ export default function ContractRackMapScreen() {
 
   const highlightedTierIds = useMemo(() => {
     const ids = new Set<string>();
-    if (!locateResult || !tree) return ids;
-    locateResult.locations.forEach((location) => {
-      if (location.storageUnit?.id === tree.storageUnit.id && location.rackTier) {
-        ids.add(location.rackTier.id);
-      }
+    locateResult?.locations.forEach((location) => {
+      if (location.rackTier) ids.add(location.rackTier.id);
     });
     return ids;
-  }, [locateResult, tree]);
+  }, [locateResult]);
 
-  const floorHighlighted = Boolean(
-    locateResult &&
-    tree &&
-    locateResult.locations.some(
-      (location) => location.storageUnit?.id === tree.storageUnit.id && !location.rackTier
-    )
-  );
+  const floorHighlighted = Boolean(locateResult?.locations.some((location) => !location.rackTier));
   const highlightActive = highlightedTierIds.size > 0 || floorHighlighted;
-
-  const visibleRacks = useMemo(() => {
-    return filterRentedRacks(tree?.racks, contract);
-  }, [tree?.racks, contract]);
-
-  const customerSummary = useMemo(() => {
-    if (!tree) return null;
-    if (visibleRacks.length === 0) {
-      return tree.summary;
-    }
-
-    const totalRacks = visibleRacks.length;
-    let totalTiers = 0;
-    let occupiedTiers = 0;
-    let totalQuantity = 0;
-    const skuSet = new Set<string>();
-
-    visibleRacks.forEach((rack) => {
-      totalTiers += rack.tiers.length;
-      rack.tiers.forEach((tier) => {
-        if (tier.items.length > 0) {
-          occupiedTiers++;
-        }
-        tier.items.forEach((item) => {
-          totalQuantity += item.quantity;
-          if (item.sku?.id) {
-            skuSet.add(item.sku.id);
-          }
-        });
-      });
-    });
-
-    tree.unrackedItems.forEach((item) => {
-      totalQuantity += item.quantity;
-      if (item.sku?.id) {
-        skuSet.add(item.sku.id);
-      }
-    });
-
-    return {
-      totalRacks,
-      totalTiers,
-      occupiedTiers,
-      availableTiers: Math.max(0, totalTiers - occupiedTiers),
-      totalSkus: skuSet.size,
-      totalQuantity,
-    };
-  }, [tree, visibleRacks]);
 
   const handleBack = () => {
     if (router.canGoBack()) {
@@ -216,53 +162,60 @@ export default function ContractRackMapScreen() {
     });
   };
 
-  const handleLocated = (result: SkuLocationsResponse, focusTierId?: string | null) => {
-    setLocateResult(result);
-    setLocateOpen(false);
-    if (!tree) return;
+  const handleLocated = useCallback(
+    (result: SkuLocationsResponse, focusTierId?: string | null) => {
+      // The SKU may also sit under other contracts; this map only marks the current one.
+      const locations = result.locations.filter((location) => location.contract?.id === contractId);
+      setLocateResult({ ...result, locations });
+      setLocateOpen(false);
+      if (!tree || locations.length === 0) return;
 
-    const unitLocations = result.locations.filter(
-      (location) => location.storageUnit?.id === tree.storageUnit.id
-    );
-    if (unitLocations.length === 0) return;
+      const tierIds = new Set(
+        locations.map((location) => location.rackTier?.id).filter((id): id is string => Boolean(id))
+      );
+      const targetRacks = tree.racks.filter((rack) =>
+        rack.tiers.some((tier) => tierIds.has(tier.id))
+      );
 
-    const unitTierIds = new Set(
-      unitLocations
-        .map((location) => location.rackTier?.id)
-        .filter((id): id is string => Boolean(id))
-    );
-    const targetRacks = visibleRacks.filter((rack) =>
-      rack.tiers.some((tier) => unitTierIds.has(tier.id))
-    );
+      setCollapsedRackIds((prev) => {
+        const next = new Set(prev);
+        targetRacks.forEach((rack) => next.delete(rack.id));
+        return next;
+      });
 
-    setCollapsedRackIds((prev) => {
-      const next = new Set(prev);
-      targetRacks.forEach((rack) => next.delete(rack.id));
-      return next;
-    });
+      // Tier to bring into view: the tapped one, else the top-most located tier of the first rack.
+      const firstRack = targetRacks[0];
+      const scrollTierId =
+        focusTierId !== undefined
+          ? focusTierId
+          : firstRack
+            ? (sortTiersTopDown(firstRack.tiers).find((tier) => tierIds.has(tier.id))?.id ?? null)
+            : null;
 
-    // Tier to bring into view: the tapped one, else the top-most located tier of the first rack.
-    const firstRack = targetRacks[0];
-    const scrollTierId =
-      focusTierId !== undefined
-        ? focusTierId
-        : firstRack
-          ? (sortTiersTopDown(firstRack.tiers).find((tier) => unitTierIds.has(tier.id))?.id ?? null)
-          : null;
+      setTimeout(() => {
+        if (scrollTierId === null) {
+          scrollRef.current?.scrollToEnd({ animated: true });
+          return;
+        }
+        const rack = tree.racks.find((item) => item.tiers.some((tier) => tier.id === scrollTierId));
+        const rackOffset = rack ? rackOffsetsRef.current.get(rack.id) : undefined;
+        if (!rack || rackOffset === undefined) return;
+        const tierIndex = sortTiersTopDown(rack.tiers).findIndex(
+          (tier) => tier.id === scrollTierId
+        );
+        const y =
+          rackOffset + RACK_BODY_OFFSET + tierIndex * TIER_ROW_HEIGHT - SCROLL_CONTEXT_OFFSET;
+        scrollRef.current?.scrollTo({ y: Math.max(0, y), animated: true });
+      }, SCROLL_AFTER_LAYOUT_MS);
+    },
+    [contractId, tree]
+  );
 
-    setTimeout(() => {
-      if (scrollTierId === null) {
-        scrollRef.current?.scrollToEnd({ animated: true });
-        return;
-      }
-      const rack = visibleRacks.find((item) => item.tiers.some((tier) => tier.id === scrollTierId));
-      const rackOffset = rack ? rackOffsetsRef.current.get(rack.id) : undefined;
-      if (!rack || rackOffset === undefined) return;
-      const tierIndex = sortTiersTopDown(rack.tiers).findIndex((tier) => tier.id === scrollTierId);
-      const y = rackOffset + RACK_BODY_OFFSET + tierIndex * TIER_ROW_HEIGHT - SCROLL_CONTEXT_OFFSET;
-      scrollRef.current?.scrollTo({ y: Math.max(0, y), animated: true });
-    }, SCROLL_AFTER_LAYOUT_MS);
-  };
+  useEffect(() => {
+    if (linkedSkuLocatedRef.current || !tree || !linkedSkuQuery.data) return;
+    linkedSkuLocatedRef.current = true;
+    handleLocated(linkedSkuQuery.data, params.tierId ?? null);
+  }, [tree, linkedSkuQuery.data, params.tierId, handleLocated]);
 
   const handleTierPress = (tier: TreeTier) => setDetailTarget(tier.id);
 
@@ -388,7 +341,7 @@ export default function ContractRackMapScreen() {
       );
     }
 
-    const hasRacks = visibleRacks.length > 0;
+    const hasRacks = tree.racks.length > 0;
 
     return (
       <ScrollView
@@ -434,12 +387,12 @@ export default function ContractRackMapScreen() {
         ) : null}
 
         <RackMapSummaryBar
-          summary={customerSummary ?? tree.summary}
+          summary={tree.summary}
           showTiers={hasRacks}
           onPressSkus={() => router.push("/skus")}
         />
 
-        {customerSummary && customerSummary.totalSkus === 0 && !readOnly ? (
+        {tree.summary.totalSkus === 0 && !readOnly ? (
           <View className="rounded-3xl border border-brand/30 bg-brand-light/25 p-4 dark:bg-brand/10">
             <View className="flex-row items-start gap-3">
               <View className="h-10 w-10 items-center justify-center rounded-2xl bg-brand/15">
@@ -473,7 +426,7 @@ export default function ContractRackMapScreen() {
         ) : null}
 
         {hasRacks ? (
-          visibleRacks.map((rack) => (
+          tree.racks.map((rack) => (
             <RackCard
               key={rack.id}
               rack={rack}

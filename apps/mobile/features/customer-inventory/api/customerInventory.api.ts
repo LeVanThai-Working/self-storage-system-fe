@@ -9,19 +9,24 @@ import {
   type InventoryMovementResponse,
   type PaginatedData,
   type SkuLocationsResponse,
+  type SkuLocatorQuery,
+  type SkuLocatorResponse,
   type StorageUnitInventoryTreeResponse,
 } from "@self-storage-system-fe/shared";
 
 /**
  * 1. GET /customer-inventories/unit/{storageUnitId}/tree
  * Fetches the Unit -> Racks -> Tiers -> SKUs tree of a storage unit (2D rack map source).
+ * `contractId` narrows it to the racks and stock of that contract.
  * Stock itself only changes through staff-handled requests (see features/inventory-requests).
  */
 export async function getStorageUnitTreeApi(
-  storageUnitId: string
+  storageUnitId: string,
+  contractId?: string
 ): Promise<StorageUnitInventoryTreeResponse> {
   const response = await api.get<ApiResponse<StorageUnitInventoryTreeResponse>>(
-    `/customer-inventories/unit/${storageUnitId}/tree`
+    `/customer-inventories/unit/${storageUnitId}/tree`,
+    { params: cleanQueryParams({ contractId }) }
   );
   return response.data.data;
 }
@@ -44,6 +49,18 @@ export async function getSkuLocationsApi(skuId: string): Promise<SkuLocationsRes
 export async function getSkuLocationsByBarcodeApi(barcode: string): Promise<SkuLocationsResponse> {
   const response = await api.get<ApiResponse<SkuLocationsResponse>>(
     `/customer-inventories/barcode/${encodeURIComponent(barcode)}/locations`
+  );
+  return response.data.data;
+}
+
+/**
+ * GET /customer-inventories/sku-locator
+ * The customer's SKUs with their positions, across all of their contracts.
+ */
+export async function getSkuLocatorApi(query: SkuLocatorQuery): Promise<SkuLocatorResponse> {
+  const response = await api.get<ApiResponse<SkuLocatorResponse>>(
+    "/customer-inventories/sku-locator",
+    { params: cleanQueryParams(query) }
   );
   return response.data.data;
 }
