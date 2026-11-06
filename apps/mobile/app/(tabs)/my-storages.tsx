@@ -26,6 +26,7 @@ import {
   ArrowUpDown,
   Compass,
   Inbox,
+  MapPin,
   QrCode,
   RefreshCw,
   Search,
@@ -151,17 +152,28 @@ export default function MyStoragesScreen() {
         <View className="flex-row items-center gap-2">
           <Pressable
             onPress={() => router.push("/skus")}
-            className="flex-1 flex-row items-center justify-center gap-2 rounded-2xl border border-brand/40 bg-brand-light/30 dark:bg-brand/15 py-2.5 px-3 active:opacity-80"
+            className="flex-1 flex-row items-center justify-center gap-1.5 rounded-2xl border border-brand/40 bg-brand-light/30 dark:bg-brand/15 py-2.5 px-2 active:opacity-80"
           >
-            <Package size={16} color="#0B927E" />
-            <Text className="text-xs font-bold text-brand">{t("sku.catalogTitle")}</Text>
+            <Package size={15} color="#0B927E" />
+            <Text numberOfLines={1} className="text-xs font-bold text-brand">
+              {t("sku.catalogEntry")}
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/skus/locate")}
+            className="flex-1 flex-row items-center justify-center gap-1.5 rounded-2xl border border-brand/40 bg-brand-light/30 dark:bg-brand/15 py-2.5 px-2 active:opacity-80"
+          >
+            <MapPin size={15} color="#0B927E" />
+            <Text numberOfLines={1} className="text-xs font-bold text-brand">
+              {t("sku.locator.title")}
+            </Text>
           </Pressable>
           <Pressable
             onPress={() => router.push("/skus/new")}
-            className="flex-row items-center justify-center gap-1.5 rounded-2xl bg-brand py-2.5 px-3.5 active:opacity-80"
+            accessibilityLabel={t("sku.createButton")}
+            className="items-center justify-center self-stretch rounded-2xl bg-brand px-3 active:opacity-80"
           >
-            <Plus size={15} color="#FFFFFF" />
-            <Text className="text-xs font-bold text-white">{t("sku.createButton")}</Text>
+            <Plus size={16} color="#FFFFFF" />
           </Pressable>
         </View>
 

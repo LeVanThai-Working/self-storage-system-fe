@@ -531,7 +531,6 @@
       "found": "Locations found (%{count})",
       "total": "Total: %{qty} %{uom}",
       "resultNone": "%{sku} is not in storage right now",
-      "otherUnit": "another unit",
       "highlighting": "Highlighting %{sku} · %{count} locations",
       "clear": "Clear",
       "here": "Here",
@@ -675,6 +674,41 @@
       "notFoundDesc": "Barcode %{barcode} is not in your catalog yet.",
       "createWithBarcode": "Create SKU with this barcode",
       "rescan": "Scan again"
+    },
+    "locator": {
+      "title": "Find my items",
+      "subtitle": "Searches all of your contracts",
+      "searchPlaceholder": "Enter code, name or barcode",
+      "loadError": "Could not load item locations",
+      "empty": "No SKUs to search yet",
+      "emptyResult": "No matching SKU found",
+      "emptyResultHint": "Try another code, name or barcode",
+      "emptyFilter": "No SKUs in this group",
+      "filter": {
+        "all": "All",
+        "onRack": "On rack",
+        "holding": "Holding area",
+        "notStored": "Not stored"
+      },
+      "badge": {
+        "onRack": {
+          "one": "On rack · 1 location",
+          "other": "On rack · %{count} locations"
+        }
+      },
+      "step": {
+        "facility": "Facility",
+        "area": "Area",
+        "rack": "Rack",
+        "tier": "Tier"
+      },
+      "area": {
+        "unit": "Unit %{unit}",
+        "aisle": "Aisle %{aisle}"
+      },
+      "viewOnMap": "View on rack map",
+      "viewSku": "View SKU details",
+      "notStoredHint": "This SKU has not been stored yet, so it has no location."
     }
   },
   "contractPicker": {
