@@ -703,6 +703,7 @@
         "unit": "Phòng %{unit}",
         "aisle": "Dãy %{aisle}"
       },
+      "contractChip": "HĐ %{code}",
       "viewOnMap": "Xem trên sơ đồ",
       "viewSku": "Xem chi tiết mã hàng",
       "notStoredHint": "Mã hàng này chưa được nhập kho, chưa có vị trí nào."

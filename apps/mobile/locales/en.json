@@ -706,6 +706,7 @@
         "unit": "Unit %{unit}",
         "aisle": "Aisle %{aisle}"
       },
+      "contractChip": "Contract %{code}",
       "viewOnMap": "View on rack map",
       "viewSku": "View SKU details",
       "notStoredHint": "This SKU has not been stored yet, so it has no location."

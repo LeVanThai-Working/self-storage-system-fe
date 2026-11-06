@@ -131,7 +131,7 @@ export function TierCell({
       onPress={() => onPress(tier)}
       className={`h-11 flex-row items-center gap-2 rounded-xl px-3 active:opacity-80 ${
         style.container
-      } ${dimmed ? "opacity-30" : ""}`}
+      } ${dimmed ? "opacity-30" : ""} ${highlighted ? "border-2 border-cta" : ""}`}
     >
       {leadingIcon}
       <Text numberOfLines={1} className={`flex-shrink text-xs font-bold ${style.text}`}>

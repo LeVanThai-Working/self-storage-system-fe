@@ -269,23 +269,23 @@ export default function ContractRackMapScreen() {
           onPress={() => router.push("/skus")}
           hitSlop={6}
           accessibilityLabel={t("rackMap.skuButton")}
-          className="h-8 flex-row items-center gap-1.5 rounded-full border border-brand/40 bg-white px-2.5 active:opacity-70 dark:bg-neutral-900"
+          className="h-8 w-8 items-center justify-center rounded-full border border-brand/40 active:opacity-70"
         >
-          <Package size={14} color="#0B927E" />
-          <Text className="text-xs font-bold text-brand">{t("rackMap.skuButton")}</Text>
+          <Package size={15} color="#0B927E" />
         </Pressable>
         {tree ? (
           <Pressable
             onPress={() => setLocateOpen(true)}
-            className="flex-row items-center gap-1.5 rounded-full border border-brand/40 bg-white px-3 py-1.5 active:opacity-70 dark:bg-neutral-900"
+            hitSlop={6}
+            accessibilityLabel={t("rackMap.locate.button")}
+            className="h-8 w-8 items-center justify-center rounded-full border border-brand/40 active:opacity-70"
           >
-            <Search size={14} color="#0B927E" />
-            <Text className="text-xs font-bold text-brand">{t("rackMap.locate.button")}</Text>
+            <Search size={15} color="#0B927E" />
           </Pressable>
         ) : null}
       </View>
       {contract ? (
-        <Text numberOfLines={1} variant="muted" className="pl-9 text-[11px]">
+        <Text numberOfLines={2} variant="muted" className="pl-9 text-[11px]">
           {t("rackMap.unitSubtitle", {
             facility: facilityLabel,
             unit: tree?.storageUnit.unitNumber ?? contract.storageUnit?.unitNumber ?? "",

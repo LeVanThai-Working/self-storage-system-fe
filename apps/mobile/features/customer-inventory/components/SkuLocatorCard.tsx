@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, View } from "react-native";
-import { Box, ChevronRight, Map as MapIcon, PackageOpen } from "lucide-react-native";
+import { Box, ChevronRight, Warehouse } from "lucide-react-native";
 import type { SkuLocationItem, SkuLocatorItem } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
@@ -50,12 +50,11 @@ export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCa
     <View className="mt-2 flex-row items-center gap-2">
       <Text
         numberOfLines={1}
-        className="shrink rounded-full bg-neutral-100 px-2 py-0.5 font-mono text-[10px] font-bold text-neutral-muted dark:bg-neutral-800"
+        className="shrink rounded-full bg-brand-bg px-2 py-0.5 font-mono text-[10px] font-bold text-brand dark:bg-brand/15"
       >
-        {t("rackMap.contractLabel", { code: location.contract?.contractCode ?? "" })}
+        {t("sku.locator.contractChip", { code: location.contract?.contractCode ?? "" })}
       </Text>
       <View className="flex-1" />
-      <MapIcon size={12} color="#0B927E" />
       <Text className="text-[11px] font-bold text-brand">{t("sku.locator.viewOnMap")}</Text>
       <ChevronRight size={13} color="#0B927E" />
     </View>
@@ -63,24 +62,33 @@ export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCa
 
   const renderRackLocation = (location: SkuLocationItem) => (
     <>
-      <View className="flex-row items-start gap-2">
-        <View className="flex-1 gap-1">
-          <PathStep label={t("sku.locator.step.facility")} value={location.facility?.name ?? "—"} />
-          <View className="flex-row flex-wrap items-center gap-x-1.5 gap-y-1">
-            <PathStep label={t("sku.locator.step.area")} value={formatArea(location) || "—"} />
-            <ChevronRight size={12} color="#94A3B8" />
-            <PathStep
-              label={t("sku.locator.step.rack")}
-              value={location.storageRack?.rackCode ?? "—"}
-            />
-            <ChevronRight size={12} color="#94A3B8" />
-            <PathStep
-              label={t("sku.locator.step.tier")}
-              value={formatTierShort(location.rackTier?.tierNumber ?? 0)}
-            />
-          </View>
+      <View className="flex-row items-center gap-1">
+        <Warehouse size={13} color="#0B927E" />
+        <Text variant="muted" className="text-[11px]">
+          {t("sku.locator.step.facility")}:
+        </Text>
+        <Text
+          numberOfLines={1}
+          className="shrink text-[11px] font-bold text-neutral-dark dark:text-neutral-100"
+        >
+          {location.facility?.name ?? "—"}
+        </Text>
+      </View>
+      <View className="flex-row items-center gap-1.5">
+        <View className="flex-1">
+          <PathStep label={t("sku.locator.step.area")} value={formatArea(location) || "—"} />
         </View>
-        <Text className="text-xs font-extrabold text-brand">
+        <ChevronRight size={12} color="#94A3B8" />
+        <PathStep
+          label={t("sku.locator.step.rack")}
+          value={location.storageRack?.rackCode ?? "—"}
+        />
+        <ChevronRight size={12} color="#94A3B8" />
+        <PathStep
+          label={t("sku.locator.step.tier")}
+          value={formatTierShort(location.rackTier?.tierNumber ?? 0)}
+        />
+        <Text className="ml-1 min-w-[36px] text-right text-xs font-extrabold text-brand">
           {location.quantity} {sku.uom}
         </Text>
       </View>
@@ -119,6 +127,23 @@ export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCa
           <Text numberOfLines={1} className="font-mono text-[11px] font-bold text-neutral-muted">
             {sku.skuCode}
           </Text>
+          <View className="mt-1 flex-row flex-wrap gap-1.5">
+            {rackQuantity > 0 ? (
+              <Text className="rounded-full bg-brand-light px-2 py-0.5 text-[10px] font-bold text-brand dark:bg-brand/20">
+                {t("sku.locator.badge.onRack", { count: rackLocationCount })}
+              </Text>
+            ) : null}
+            {holdingQuantity > 0 ? (
+              <Text className="rounded-full bg-cta-light px-2 py-0.5 text-[10px] font-bold text-cta-dark dark:bg-cta/20">
+                {t("sku.locator.filter.holding")}
+              </Text>
+            ) : null}
+            {!stored ? (
+              <Text className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-bold text-neutral-muted dark:bg-neutral-800">
+                {t("sku.locator.filter.notStored")}
+              </Text>
+            ) : null}
+          </View>
         </View>
         <Text
           className={cn(
@@ -134,30 +159,17 @@ export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCa
         </Text>
       </Pressable>
 
-      <View className="mt-2 flex-row flex-wrap gap-1.5">
-        {rackQuantity > 0 ? (
-          <Text className="rounded-full bg-brand-light px-2 py-0.5 text-[10px] font-bold text-brand dark:bg-brand/20">
-            {t("sku.locator.badge.onRack", { count: rackLocationCount })}
-          </Text>
-        ) : null}
-        {holdingQuantity > 0 ? (
-          <Text className="rounded-full bg-cta-light px-2 py-0.5 text-[10px] font-bold text-cta-dark dark:bg-cta/20">
-            {t("sku.locator.filter.holding")}
-          </Text>
-        ) : null}
-        {!stored ? (
-          <Text className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-bold text-neutral-muted dark:bg-neutral-800">
-            {t("sku.locator.filter.notStored")}
-          </Text>
-        ) : null}
-      </View>
-
       {stored ? (
         locations.map((location) => (
           <Pressable
             key={location.inventoryId}
             onPress={() => onOpenLocation(location)}
-            className="mt-3 gap-1 border-t border-neutral-border pt-3 active:opacity-70 dark:border-neutral-800"
+            className={cn(
+              "gap-1.5 active:opacity-70",
+              location.rackTier
+                ? "mt-3 border-t border-neutral-border pt-3 dark:border-neutral-800"
+                : "ml-[52px] mt-2"
+            )}
           >
             {location.rackTier ? renderRackLocation(location) : renderHoldingLocation(location)}
             {renderContractLine(location)}
@@ -166,15 +178,12 @@ export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCa
       ) : (
         <Pressable
           onPress={onOpenSku}
-          className="mt-3 flex-row items-start gap-2 rounded-2xl border border-dashed border-neutral-border p-3 active:opacity-70 dark:border-neutral-700"
+          className="mt-3 items-center gap-1 rounded-xl border border-dashed border-neutral-border bg-neutral-50 p-3 active:opacity-70 dark:border-neutral-700 dark:bg-neutral-800"
         >
-          <PackageOpen size={16} color="#647B80" />
-          <View className="flex-1 gap-1">
-            <Text variant="muted" className="text-[11px] leading-4">
-              {t("sku.locator.notStoredHint")}
-            </Text>
-            <Text className="text-[11px] font-bold text-brand">{t("sku.locator.viewSku")}</Text>
-          </View>
+          <Text variant="muted" className="text-center text-[11px] leading-4">
+            {t("sku.locator.notStoredHint")}
+          </Text>
+          <Text className="text-[11px] font-bold text-brand">{t("sku.locator.viewSku")}</Text>
         </Pressable>
       )}
     </View>
