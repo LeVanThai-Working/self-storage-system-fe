@@ -2449,8 +2449,7 @@
       "unit": {
         "title": "1. Choose a unit",
         "empty": "No free units of this type right now.",
-        "location": "Floor {floor} · Zone {zone}",
-        "mapNotice": "2D Map connecting"
+        "location": "Floor {floor} · Zone {zone}"
       },
       "schedule": {
         "title": "2. Check-in and rental period",
@@ -2500,7 +2499,6 @@
         "terms": "Please accept the booking terms & policy"
       },
       "seatMap": {
-        "unitHint": "Click an available unit on the map to pick it.",
         "entrance": "ENTRANCE · MAIN AISLE",
         "freeCount": "{free} of {total} units available",
         "floor": "Floor {floor}",
@@ -2519,8 +2517,14 @@
         }
       },
       "terms": {
-        "freeCancel": "Cancel at least {hours} hours before check-in: 100% deposit refund.",
-        "forfeit": "Cancel later, or not showing up after the grace period: the deposit is forfeited.",
+        "refund": {
+          "title": "Full deposit refund",
+          "rule": "When you cancel at least {hours} hours before your check-in time."
+        },
+        "noRefund": {
+          "title": "No deposit refund",
+          "rule": "When you cancel less than {hours} hours before, or do not show up (the booking auto-cancels {graceHours} hours after the check-in day ends)."
+        },
         "accept": "I agree to the Booking Terms & Cancellation Policy"
       },
       "forfeitWarning": {

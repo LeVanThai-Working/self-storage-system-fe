@@ -2449,8 +2449,7 @@
       "unit": {
         "title": "1. Chọn phòng kho",
         "empty": "Hiện không còn phòng trống thuộc loại kho này.",
-        "location": "Tầng {floor} · Dãy {zone}",
-        "mapNotice": "Sơ đồ 2D đang kết nối"
+        "location": "Tầng {floor} · Dãy {zone}"
       },
       "schedule": {
         "title": "2. Lịch nhận kho & thời gian thuê",
@@ -2500,7 +2499,6 @@
         "terms": "Vui lòng đồng ý Điều khoản & Chính sách đặt chỗ"
       },
       "seatMap": {
-        "unitHint": "Bấm vào một phòng còn trống trên sơ đồ để chọn.",
         "entrance": "CỬA RA VÀO · LỐI ĐI CHÍNH",
         "freeCount": "{free}/{total} phòng còn trống",
         "floor": "Tầng {floor}",
@@ -2519,8 +2517,14 @@
         }
       },
       "terms": {
-        "freeCancel": "Huỷ trước giờ nhận kho từ {hours} giờ trở lên: hoàn 100% cọc.",
-        "forfeit": "Huỷ sát giờ, hoặc không đến sau thời gian ân hạn: mất 100% cọc.",
+        "refund": {
+          "title": "Được hoàn 100% cọc",
+          "rule": "Khi bạn huỷ trước giờ hẹn nhận kho từ {hours} tiếng trở lên."
+        },
+        "noRefund": {
+          "title": "Không được hoàn cọc",
+          "rule": "Khi bạn huỷ lúc còn dưới {hours} tiếng, hoặc không đến nhận kho (đơn tự huỷ sau {graceHours} tiếng kể từ hết ngày hẹn)."
+        },
         "accept": "Tôi đồng ý Điều khoản & Chính sách đặt chỗ, huỷ cọc"
       },
       "forfeitWarning": {
