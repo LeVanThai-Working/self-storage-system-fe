@@ -49,7 +49,7 @@ export const ReservationStatusBadge: React.FC<ReservationStatusBadgeProps> = ({
   return (
     <div className="inline-flex flex-col items-start gap-1">
       <span
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${tone.bg} ${tone.text} ${tone.border}`}
+        className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${tone.bg} ${tone.text} ${tone.border}`}
       >
         <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
         {t.has(status as ReservationStatusKey) ? t(status as ReservationStatusKey) : status}
@@ -57,7 +57,7 @@ export const ReservationStatusBadge: React.FC<ReservationStatusBadgeProps> = ({
 
       {countdown && (
         <span
-          className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${
+          className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${
             countdown.isExpired
               ? "bg-rose-50 text-rose-600 border border-rose-200"
               : countdown.isUrgent

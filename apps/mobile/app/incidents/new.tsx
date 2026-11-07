@@ -60,7 +60,10 @@ export default function ReportIncidentScreen() {
   const contract = contractQuery.data;
   const isWarehouse =
     typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
-  const treeQuery = useStorageUnitTree(isWarehouse ? contract?.storageUnitId : undefined);
+  const treeQuery = useStorageUnitTree(
+    isWarehouse ? contract?.storageUnitId : undefined,
+    contractId
+  );
   const racks = treeQuery.data?.racks ?? [];
   const rack = racks.find((item) => item.id === rackId);
   const reportMutation = useReportIncident();

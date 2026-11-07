@@ -118,13 +118,13 @@ function ItemsTable({
 }) {
   const t = useTranslations("inventoryOps.detail");
   return (
-    <table className="w-full text-sm">
+    <table className="w-full text-sm min-w-[640px]">
       <thead className="bg-slate-50 text-left text-xs font-bold text-slate-500">
         <tr>
-          <th className="px-3 py-2">{t("col.position")}</th>
-          <th className="px-3 py-2">{t("col.sku")}</th>
-          <th className="px-3 py-2 text-center">{t("col.requested")}</th>
-          {extraHeader ? <th className="px-3 py-2">{extraHeader}</th> : null}
+          <th className="px-3 py-2 whitespace-nowrap">{t("col.position")}</th>
+          <th className="px-3 py-2 whitespace-nowrap">{t("col.sku")}</th>
+          <th className="px-3 py-2 text-center whitespace-nowrap">{t("col.requested")}</th>
+          {extraHeader ? <th className="px-3 py-2 whitespace-nowrap">{extraHeader}</th> : null}
         </tr>
       </thead>
       <tbody>

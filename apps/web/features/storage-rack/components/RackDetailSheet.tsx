@@ -245,16 +245,16 @@ export function RackDetailSheet({
             <p className="text-sm font-bold text-slate-800">
               {t("tiersTitle", { count: rack.tiers?.length ?? 0 })}
             </p>
-            <table className="w-full text-xs">
+            <table className="w-full text-xs min-w-[680px]">
               <thead className="bg-slate-50 text-left font-bold text-slate-500">
                 <tr>
-                  <th className="px-2 py-2">{t("col.tier")}</th>
-                  <th className="px-2 py-2">{t("col.code")}</th>
-                  <th className="px-2 py-2">{t("col.maxWeight")}</th>
-                  <th className="px-2 py-2">{t("col.dimensions")}</th>
-                  <th className="px-2 py-2">{t("col.volume")}</th>
-                  <th className="px-2 py-2">{t("col.status")}</th>
-                  <th className="px-2 py-2" />
+                  <th className="px-2 py-2 whitespace-nowrap">{t("col.tier")}</th>
+                  <th className="px-2 py-2 whitespace-nowrap">{t("col.code")}</th>
+                  <th className="px-2 py-2 whitespace-nowrap">{t("col.maxWeight")}</th>
+                  <th className="px-2 py-2 whitespace-nowrap">{t("col.dimensions")}</th>
+                  <th className="px-2 py-2 whitespace-nowrap">{t("col.volume")}</th>
+                  <th className="px-2 py-2 whitespace-nowrap">{t("col.status")}</th>
+                  <th className="px-2 py-2 whitespace-nowrap" />
                 </tr>
               </thead>
               <tbody>

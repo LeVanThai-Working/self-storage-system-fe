@@ -75,11 +75,13 @@ export const usePublicUnitTypes = () =>
  */
 export const useUnitSearch = (filters: SearchFilters) => {
   const facilitiesQuery = useQuery({
-    queryKey: ["explore", "search-facilities", filters.amenityIds],
+    queryKey: ["explore", "search-facilities", filters.amenityIds, filters.keyword],
     queryFn: () =>
       filters.amenityIds.length
-        ? searchFacilitiesByAmenity(filters.amenityIds)
-        : fetchPublicFacilities({ page: 1, limit: 100 }),
+        ? searchFacilitiesByAmenity(filters.amenityIds, filters.keyword)
+        : fetchPublicFacilities({ page: 1, limit: 100, search: filters.keyword }),
+    // Keep old results on screen while the next keyword is fetched.
+    placeholderData: keepPreviousData,
   });
 
   const facilities = (facilitiesQuery.data?.items ?? []).filter(

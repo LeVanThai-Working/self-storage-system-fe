@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold",
+  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold shrink-0",
   {
     variants: {
       variant: {
@@ -24,8 +24,14 @@ const badgeVariants = cva(
 
 type BadgeProps = TextProps & VariantProps<typeof badgeVariants>;
 
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return <Text className={cn(badgeVariants({ variant }), className)} {...props} />;
+function Badge({ className, variant, numberOfLines = 1, ...props }: BadgeProps) {
+  return (
+    <Text
+      numberOfLines={numberOfLines}
+      className={cn(badgeVariants({ variant }), "shrink-0", className)}
+      {...props}
+    />
+  );
 }
 
 export { Badge, badgeVariants };

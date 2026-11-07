@@ -41,7 +41,7 @@ export default function LoginScreen() {
           contentContainerClassName="flex-grow justify-center px-6 py-6"
           keyboardShouldPersistTaps="handled"
         >
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <TouchableWithoutFeedback onPress={Platform.OS === "web" ? undefined : Keyboard.dismiss}>
             <View>
               {/* Logo & Tiêu đề Chào mừng */}
               <View className="mb-6 items-center">

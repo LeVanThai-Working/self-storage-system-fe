@@ -69,7 +69,7 @@ function MoveTicketRackLink({
   return (
     <Link
       href={`/${locale}/${portalBase}/storage-units/${unitId}/racks?tab=goods`}
-      className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-700"
+      className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-700 whitespace-nowrap shrink-0"
     >
       <Warehouse className="h-3.5 w-3.5" />
       {t("sheet.openRackMap")}
@@ -238,18 +238,18 @@ export function SupportQueueView({ portalBase }: { portalBase: FacilityPortal })
           </select>
         </div>
 
-        <table className="w-full text-sm">
+        <table className="w-full text-sm min-w-[1050px]">
           <thead className="bg-slate-50 text-left text-xs font-bold text-slate-500">
             <tr>
-              <th className="px-4 py-3">{t("col.code")}</th>
-              <th className="px-4 py-3">{t("col.customer")}</th>
-              <th className="px-4 py-3">{t("col.category")}</th>
-              <th className="px-4 py-3">{t("col.title")}</th>
-              <th className="px-4 py-3">{t("col.priority")}</th>
-              <th className="px-4 py-3">{t("col.contract")}</th>
-              <th className="px-4 py-3">{t("col.assignee")}</th>
-              <th className="px-4 py-3">{t("col.createdAt")}</th>
-              <th className="px-4 py-3">{t("col.status")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("col.code")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("col.customer")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("col.category")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("col.title")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("col.priority")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("col.contract")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("col.assignee")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("col.createdAt")}</th>
+              <th className="px-4 py-3 whitespace-nowrap">{t("col.status")}</th>
             </tr>
           </thead>
           <tbody>
@@ -439,7 +439,7 @@ function TicketSheet({
               ) : null}
               <Link
                 href={`/${locale}/${portalBase}/contracts/${contractId}`}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-teal-200 px-3 py-1.5 text-xs font-semibold text-teal-700 hover:bg-teal-50"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-teal-200 px-3 py-1.5 text-xs font-semibold text-teal-700 hover:bg-teal-50 whitespace-nowrap shrink-0"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
                 {t("sheet.openContract")}

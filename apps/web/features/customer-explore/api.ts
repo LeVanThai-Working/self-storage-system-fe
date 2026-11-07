@@ -38,11 +38,20 @@ export async function fetchFacilityPublicDetail(id: string): Promise<FacilityPub
 
 /** GET /facilities/search-by-amenity — facilities offering all (or any) of the given amenities. */
 export async function searchFacilitiesByAmenity(
-  amenityIds: string[]
+  amenityIds: string[],
+  search?: string
 ): Promise<PaginatedData<PublicFacility>> {
   const { data } = await api.get<ApiResponse<PaginatedData<PublicFacility>>>(
     "/facilities/search-by-amenity",
-    { params: { amenityIds: amenityIds.join(","), matchAll: true, page: 1, limit: 100 } }
+    {
+      params: cleanQueryParams({
+        amenityIds: amenityIds.join(","),
+        matchAll: true,
+        search,
+        page: 1,
+        limit: 100,
+      }),
+    }
   );
   return data.data;
 }

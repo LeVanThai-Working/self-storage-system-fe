@@ -105,7 +105,7 @@ export const InvoiceStatusBadge: React.FC<InvoiceStatusBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${tone.bg} ${tone.text} ${tone.border} ${className}`}
+      className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${tone.bg} ${tone.text} ${tone.border} ${className}`}
     >
       <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
       {label}

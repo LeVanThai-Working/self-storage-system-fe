@@ -662,16 +662,16 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="w-full text-left border-collapse text-xs min-w-[1080px]">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/70 text-slate-400 font-bold uppercase tracking-wider text-[11px]">
-                  <th className="py-3.5 px-4">{t("table.codeAndDate")}</th>
-                  <th className="py-3.5 px-4">{t("table.customer")}</th>
-                  <th className="py-3.5 px-4">{t("table.packageAndSchedule")}</th>
-                  <th className="py-3.5 px-4">{t("table.storageUnit")}</th>
-                  <th className="py-3.5 px-4">{t("table.financials")}</th>
-                  <th className="py-3.5 px-4">{t("table.status")}</th>
-                  <th className="py-3.5 px-4 text-right">{t("table.actions")}</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">{t("table.codeAndDate")}</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">{t("table.customer")}</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">{t("table.packageAndSchedule")}</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">{t("table.storageUnit")}</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">{t("table.financials")}</th>
+                  <th className="py-3.5 px-4 whitespace-nowrap">{t("table.status")}</th>
+                  <th className="py-3.5 px-4 text-right whitespace-nowrap">{t("table.actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -757,17 +757,17 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                             nowMs={nowMs}
                           />
                           {r.arrivedAt && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200">
+                            <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200">
                               <UserCheck className="w-2.5 h-2.5" /> Đã có mặt
                             </span>
                           )}
                           {r.pendingUnitChange && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                            <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
                               <AlertTriangle className="w-2.5 h-2.5" /> Chờ duyệt đổi kho
                             </span>
                           )}
                           {r.refundStatus === "pending" && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200">
+                            <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200">
                               <Banknote className="w-2.5 h-2.5" /> Chờ hoàn cọc
                             </span>
                           )}

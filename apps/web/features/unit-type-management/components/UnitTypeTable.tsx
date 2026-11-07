@@ -117,42 +117,42 @@ export const UnitTypeTable = () => {
     switch (category) {
       case UnitTypeCategoryEnum.CLIMATE_CONTROLLED:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200/70">
-            <Snowflake className="w-3 h-3 text-cyan-600" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-cyan-50 text-cyan-700 border border-cyan-200/70">
+            <Snowflake className="w-3 h-3 text-cyan-600 shrink-0" />
             {t("categoryFilter.climate_controlled")}
           </span>
         );
       case UnitTypeCategoryEnum.LOCKER:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/70">
-            <Lock className="w-3 h-3 text-indigo-600" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-indigo-50 text-indigo-700 border border-indigo-200/70">
+            <Lock className="w-3 h-3 text-indigo-600 shrink-0" />
             {t("categoryFilter.locker")}
           </span>
         );
       case UnitTypeCategoryEnum.SMALL:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
-            <Box className="w-3 h-3 text-emerald-600" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+            <Box className="w-3 h-3 text-emerald-600 shrink-0" />
             {t("categoryFilter.small")}
           </span>
         );
       case UnitTypeCategoryEnum.MEDIUM:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/70">
-            <Package className="w-3 h-3 text-amber-600" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200/70">
+            <Package className="w-3 h-3 text-amber-600 shrink-0" />
             {t("categoryFilter.medium")}
           </span>
         );
       case UnitTypeCategoryEnum.LARGE:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200/70">
-            <Boxes className="w-3 h-3 text-purple-600" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-purple-50 text-purple-700 border border-purple-200/70">
+            <Boxes className="w-3 h-3 text-purple-600 shrink-0" />
             {t("categoryFilter.large")}
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap shrink-0 bg-slate-100 text-slate-700 border border-slate-200">
             {category}
           </span>
         );
@@ -164,14 +164,14 @@ export const UnitTypeTable = () => {
     const isActive = status === UnitTypeStatusEnum.ACTIVE;
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 ${
           isActive
             ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
             : "bg-slate-100 text-slate-600 border border-slate-200"
         }`}
       >
         <span
-          className={`w-1.5 h-1.5 rounded-full ${
+          className={`w-1.5 h-1.5 rounded-full shrink-0 ${
             isActive ? "bg-emerald-500 animate-pulse" : "bg-slate-400"
           }`}
         />
@@ -348,16 +348,16 @@ export const UnitTypeTable = () => {
       {/* Unit Types Data Table */}
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                <th className="py-4 px-6">{t("table.name")}</th>
-                <th className="py-4 px-6">{t("table.category")}</th>
-                <th className="py-4 px-6">{t("table.dimensions")}</th>
-                <th className="py-4 px-6">{t("table.metrics")}</th>
-                <th className="py-4 px-6">{t("table.features")}</th>
-                <th className="py-4 px-6">{t("table.status")}</th>
-                <th className="py-4 px-6 text-right">{t("table.actions")}</th>
+              <tr className="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap">
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.name")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.category")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.dimensions")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.metrics")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.features")}</th>
+                <th className="py-4 px-6 whitespace-nowrap">{t("table.status")}</th>
+                <th className="py-4 px-6 text-right whitespace-nowrap">{t("table.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 text-sm">
@@ -442,11 +442,13 @@ export const UnitTypeTable = () => {
                     </td>
 
                     {/* Category */}
-                    <td className="py-4 px-6">{renderCategoryBadge(unitType.category)}</td>
+                    <td className="py-4 px-6 whitespace-nowrap">
+                      {renderCategoryBadge(unitType.category)}
+                    </td>
 
                     {/* Dimensions (D x R x C) */}
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-1.5 text-xs text-slate-700 font-mono font-medium">
+                    <td className="py-4 px-6 whitespace-nowrap">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-700 font-mono font-medium whitespace-nowrap">
                         <Ruler className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
                         <span>
                           {unitType.dimensions?.length ?? 0}m × {unitType.dimensions?.width ?? 0}m ×{" "}
@@ -456,13 +458,13 @@ export const UnitTypeTable = () => {
                     </td>
 
                     {/* Metrics (Area & Volume) */}
-                    <td className="py-4 px-6">
-                      <div className="space-y-0.5">
-                        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800">
-                          <Maximize2 className="w-3 h-3 text-teal-600" />
+                    <td className="py-4 px-6 whitespace-nowrap">
+                      <div className="space-y-0.5 whitespace-nowrap">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 whitespace-nowrap">
+                          <Maximize2 className="w-3 h-3 text-teal-600 shrink-0" />
                           <span>{unitType.area ?? 0} m²</span>
                         </div>
-                        <div className="text-[11px] text-slate-400 font-medium">
+                        <div className="text-[11px] text-slate-400 font-medium whitespace-nowrap">
                           {unitType.volume ?? 0} m³
                         </div>
                       </div>

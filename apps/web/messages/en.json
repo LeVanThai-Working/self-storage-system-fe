@@ -383,6 +383,8 @@
     "search": {
       "title": "Find the right unit",
       "subtitle": "Filter by facility, unit type, area, price and amenities to find available units.",
+      "keyword": "Keyword",
+      "keywordPlaceholder": "Search by facility name, city",
       "facility": "Facility",
       "unitType": "Unit type",
       "categoryLabel": "Unit category",
@@ -2447,8 +2449,7 @@
       "unit": {
         "title": "1. Choose a unit",
         "empty": "No free units of this type right now.",
-        "location": "Floor {floor} · Zone {zone}",
-        "mapNotice": "2D Map connecting"
+        "location": "Floor {floor} · Zone {zone}"
       },
       "schedule": {
         "title": "2. Check-in and rental period",
@@ -2516,8 +2517,14 @@
         }
       },
       "terms": {
-        "freeCancel": "Cancel at least {hours} hours before check-in: 100% deposit refund.",
-        "forfeit": "Cancel later, or not showing up after the grace period: the deposit is forfeited.",
+        "refund": {
+          "title": "Full deposit refund",
+          "rule": "When you cancel at least {hours} hours before your check-in time."
+        },
+        "noRefund": {
+          "title": "No deposit refund",
+          "rule": "When you cancel less than {hours} hours before, or do not show up (the booking auto-cancels {graceHours} hours after the check-in day ends)."
+        },
         "accept": "I agree to the Booking Terms & Cancellation Policy"
       },
       "forfeitWarning": {

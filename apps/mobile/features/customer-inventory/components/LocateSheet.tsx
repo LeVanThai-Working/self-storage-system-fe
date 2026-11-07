@@ -80,10 +80,9 @@ export function LocateSheet({ visible, onClose, tree, onLocated }: LocateSheetPr
 
   const renderLocation = (location: SkuLocationItem, index: number) => {
     if (!result) return null;
-    const inUnit = location.storageUnit?.id === tree.storageUnit.id;
+    const inContract = location.contract?.id === tree.contract?.id;
     const unitNumber = location.storageUnit?.unitNumber;
-    // Only the tree response carries the facility code, so other units fall back to it when BE adds it
-    const facilityCode = location.facility?.code ?? (inUnit ? tree.facility?.code : null);
+    const facilityCode = location.facility?.code;
     const title = location.rackTier
       ? buildLocationLabel({
           facilityCode,
@@ -98,7 +97,9 @@ export function LocateSheet({ visible, onClose, tree, onLocated }: LocateSheetPr
           rack: location.storageRack?.rackCode ?? "",
         })
       : t("rackMap.position.floorHint");
-    const place = inUnit ? "" : ` · ${location.facility?.name ?? t("rackMap.locate.otherUnit")}`;
+    const place = inContract
+      ? ""
+      : ` · ${t("rackMap.contractLabel", { code: location.contract?.contractCode ?? "" })}`;
     const status = location.rackTier
       ? getTierDisplayStatus(location.rackTier.status, location.quantity)
       : null;
@@ -117,7 +118,7 @@ export function LocateSheet({ visible, onClose, tree, onLocated }: LocateSheetPr
           </Text>
         </View>
         {status ? <TierStatusBadge status={status} /> : null}
-        {inUnit ? <ChevronRight size={16} color="#647B80" /> : null}
+        {inContract ? <ChevronRight size={16} color="#647B80" /> : null}
       </>
     );
 
@@ -125,7 +126,7 @@ export function LocateSheet({ visible, onClose, tree, onLocated }: LocateSheetPr
       index > 0 ? "border-t border-neutral-border dark:border-neutral-800" : ""
     }`;
 
-    return inUnit ? (
+    return inContract ? (
       <Pressable
         key={location.inventoryId}
         onPress={() => onLocated(result, location.rackTier?.id ?? null)}

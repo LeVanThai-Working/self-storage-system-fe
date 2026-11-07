@@ -181,14 +181,14 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
               Chi tiết các khoản mục hóa đơn
             </h4>
             <div className="border border-slate-200 rounded-2xl overflow-hidden">
-              <table className="w-full text-left text-xs border-collapse">
+              <table className="w-full text-left text-xs border-collapse min-w-[640px]">
                 <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px]">
                   <tr>
-                    <th className="py-2.5 px-3">Khoản mục</th>
-                    <th className="py-2.5 px-3">Phân loại</th>
-                    <th className="py-2.5 px-3 text-right">SL</th>
-                    <th className="py-2.5 px-3 text-right">Đơn giá</th>
-                    <th className="py-2.5 px-3 text-right">Thành tiền</th>
+                    <th className="py-2.5 px-3 whitespace-nowrap">Khoản mục</th>
+                    <th className="py-2.5 px-3 whitespace-nowrap">Phân loại</th>
+                    <th className="py-2.5 px-3 text-right whitespace-nowrap">SL</th>
+                    <th className="py-2.5 px-3 text-right whitespace-nowrap">Đơn giá</th>
+                    <th className="py-2.5 px-3 text-right whitespace-nowrap">Thành tiền</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">

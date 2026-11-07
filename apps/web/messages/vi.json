@@ -383,6 +383,8 @@
     "search": {
       "title": "Tìm kho phù hợp",
       "subtitle": "Lọc theo cơ sở, loại kho, diện tích, giá và tiện ích để tìm kho còn trống.",
+      "keyword": "Từ khóa",
+      "keywordPlaceholder": "Tìm theo tên cơ sở, thành phố",
       "facility": "Cơ sở",
       "unitType": "Loại kho",
       "categoryLabel": "Nhóm kho",
@@ -2447,8 +2449,7 @@
       "unit": {
         "title": "1. Chọn phòng kho",
         "empty": "Hiện không còn phòng trống thuộc loại kho này.",
-        "location": "Tầng {floor} · Dãy {zone}",
-        "mapNotice": "Sơ đồ 2D đang kết nối"
+        "location": "Tầng {floor} · Dãy {zone}"
       },
       "schedule": {
         "title": "2. Lịch nhận kho & thời gian thuê",
@@ -2516,8 +2517,14 @@
         }
       },
       "terms": {
-        "freeCancel": "Huỷ trước giờ nhận kho từ {hours} giờ trở lên: hoàn 100% cọc.",
-        "forfeit": "Huỷ sát giờ, hoặc không đến sau thời gian ân hạn: mất 100% cọc.",
+        "refund": {
+          "title": "Được hoàn 100% cọc",
+          "rule": "Khi bạn huỷ trước giờ hẹn nhận kho từ {hours} tiếng trở lên."
+        },
+        "noRefund": {
+          "title": "Không được hoàn cọc",
+          "rule": "Khi bạn huỷ lúc còn dưới {hours} tiếng, hoặc không đến nhận kho (đơn tự huỷ sau {graceHours} tiếng kể từ hết ngày hẹn)."
+        },
         "accept": "Tôi đồng ý Điều khoản & Chính sách đặt chỗ, huỷ cọc"
       },
       "forfeitWarning": {

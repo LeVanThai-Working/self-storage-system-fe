@@ -1119,16 +1119,19 @@ export function CreateReservationView({
           key="section-3-amenities"
           className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm"
         >
-          <View className="flex-row items-center justify-between mb-3">
-            <View className="flex-row items-center gap-2">
-              <Sparkles size={18} color="#0B927E" />
-              <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
+          <View className="flex-row items-center justify-between mb-3 gap-2">
+            <View className="flex-row items-center gap-2 flex-1 min-w-0">
+              <Sparkles size={18} color="#0B927E" className="shrink-0" />
+              <Text
+                numberOfLines={1}
+                className="text-sm font-bold text-neutral-dark dark:text-neutral-100 flex-1"
+              >
                 {isEn ? "4. Add-on Amenities (Optional)" : "4. Tiện ích đi kèm (Tùy chọn)"}
               </Text>
             </View>
             {selectedAmenityCount > 0 ? (
-              <Badge variant="outline" className="border-brand/40 bg-brand-light/40">
-                <Text className="text-[11px] font-bold text-brand">
+              <Badge variant="outline" className="border-brand/40 bg-brand-light/40 shrink-0">
+                <Text numberOfLines={1} className="text-[11px] font-bold text-brand">
                   {isEn ? `${selectedAmenityCount} selected` : `Đã chọn ${selectedAmenityCount}`}
                 </Text>
               </Badge>

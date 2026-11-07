@@ -157,6 +157,7 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
                 <Link
                   key={item.href}
                   href={item.href}
+                  title={item.label}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                     isActive
                       ? "bg-emerald-50 text-emerald-700 shadow-xs"
@@ -164,11 +165,11 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
                   }`}
                 >
                   <Icon
-                    className={`w-4 h-4 transition-transform ${
+                    className={`w-4 h-4 shrink-0 transition-transform ${
                       isActive ? "text-emerald-600 scale-110" : "text-slate-400"
                     }`}
                   />
-                  {item.label}
+                  <span className="truncate whitespace-nowrap">{item.label}</span>
                 </Link>
               );
             })}

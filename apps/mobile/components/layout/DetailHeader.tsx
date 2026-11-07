@@ -64,9 +64,9 @@ export function DetailHeader({
 
         {/* Right Element or balancing spacer */}
         {rightElement ? (
-          <View className="flex-row items-center justify-end">{rightElement}</View>
+          <View className="flex-row items-center justify-end shrink-0">{rightElement}</View>
         ) : (
-          <View className="w-6" />
+          <View className="w-6 shrink-0" />
         )}
       </View>
 

@@ -50,7 +50,7 @@ export function HeroSection() {
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1280px] grow flex-col px-4 pt-4 sm:px-6 sm:pt-8 lg:px-8 lg:pt-10">
         <div className="max-w-[500px] lg:max-w-[540px] xl:max-w-[580px]">
-          <span className="mb-6 inline-flex items-center rounded-full bg-brand-light px-4 py-1.5 text-xs font-semibold text-brand-dark shadow-sm sm:text-sm">
+          <span className="mb-6 inline-flex items-center rounded-full bg-brand-light px-4 py-1.5 text-xs font-semibold text-brand-dark shadow-sm sm:text-sm whitespace-nowrap shrink-0">
             {t("badge")}
           </span>
           <h1 className="mb-5 text-4xl leading-[1.15] font-extrabold tracking-tight text-neutral-main sm:text-5xl lg:text-[46px] xl:text-[54px]">

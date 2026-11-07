@@ -1,8 +1,13 @@
 import type { ContractStatusEnum } from "../enums/contract.enum";
-import type { InventoryItemStatusEnum, MovementTypeEnum } from "../enums/customerInventory.enum";
+import type {
+  InventoryItemStatusEnum,
+  MovementTypeEnum,
+  SkuPlacementEnum,
+} from "../enums/customerInventory.enum";
 import type { RackStatusEnum, RackTierStatusEnum, RackZoneEnum } from "../enums/storageRack.enum";
 import type { StorageUnitStatusEnum } from "../enums/storageUnit.enum";
 import type { RoleEnum } from "../enums/user.enum";
+import type { PaginatedData } from "./common.types";
 
 export interface InventoryDimensions {
   length: number;
@@ -46,6 +51,9 @@ export interface InventoryStorageRackSnapshot {
   rackCode: string;
   name?: string | null;
   status?: RackStatusEnum | null;
+  aisle?: string | null;
+  bay?: number | null;
+  zone?: RackZoneEnum | null;
 }
 
 export interface InventoryRackTierSnapshot {
@@ -214,6 +222,7 @@ export interface StorageUnitInventoryTreeResponse {
 export interface SkuLocationItem {
   inventoryId: string;
   quantity: number;
+  status?: InventoryItemStatusEnum;
   lastMovementAt: string;
   notes?: string | null;
   facility?: InventoryFacilitySnapshot | null;
@@ -230,6 +239,33 @@ export interface SkuLocationsSku extends InventorySkuSnapshot {
 export interface SkuLocationsResponse {
   sku: SkuLocationsSku;
   locations: SkuLocationItem[];
+}
+
+export interface SkuLocatorQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  placement?: SkuPlacementEnum;
+}
+
+export interface SkuLocatorItem {
+  sku: InventorySkuSnapshot;
+  totalQuantity: number;
+  rackQuantity: number;
+  holdingQuantity: number;
+  locations: SkuLocationItem[];
+}
+
+/** SKU totals per placement for the current search; `holding` and `onRack` can overlap. */
+export interface SkuLocatorCounts {
+  all: number;
+  onRack: number;
+  holding: number;
+  notStored: number;
+}
+
+export interface SkuLocatorResponse extends PaginatedData<SkuLocatorItem> {
+  counts: SkuLocatorCounts;
 }
 
 export interface CategoryBreakdown {

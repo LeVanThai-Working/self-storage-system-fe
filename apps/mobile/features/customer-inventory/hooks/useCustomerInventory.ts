@@ -1,8 +1,15 @@
 import { useCallback } from "react";
-import { useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from "@tanstack/react-query";
 import type {
   CustomerInventoryQuery,
   CustomerInventoryResponse,
+  SkuLocatorQuery,
 } from "@self-storage-system-fe/shared";
 import {
   getCustomerInventoriesApi,
@@ -10,16 +17,22 @@ import {
   getInventoryMovementsApi,
   getSkuLocationsApi,
   getSkuLocationsByBarcodeApi,
+  getSkuLocatorApi,
   getStorageUnitTreeApi,
 } from "../api/customerInventory.api";
 
 export const TIER_HISTORY_LIMIT = 10;
+const SKU_LOCATOR_PAGE_SIZE = 20;
+
+export type SkuLocatorFilters = Pick<SkuLocatorQuery, "search" | "placement">;
 
 export const customerInventoryKeys = {
-  tree: (storageUnitId?: string) => ["customer-inventory-tree", storageUnitId] as const,
+  tree: (storageUnitId?: string, contractId?: string) =>
+    ["customer-inventory-tree", storageUnitId, contractId] as const,
   skuLocations: (skuId?: string) => ["customer-inventory-sku-locations", skuId] as const,
   barcodeLocations: (barcode?: string) =>
     ["customer-inventory-barcode-locations", barcode] as const,
+  skuLocator: (filters: SkuLocatorFilters) => ["customer-inventory-sku-locator", filters] as const,
   summary: ["customer-inventory-summary"] as const,
   records: (query: Partial<CustomerInventoryQuery>) =>
     ["customer-inventory-records", query] as const,
@@ -33,7 +46,8 @@ export const customerInventoryKeys = {
 
 /** Refreshes every inventory view after staff-side changes surface (e.g. a request completes). */
 export function invalidateInventoryViews(qc: QueryClient, storageUnitId?: string) {
-  qc.invalidateQueries({ queryKey: customerInventoryKeys.tree(storageUnitId) });
+  qc.invalidateQueries({ queryKey: ["customer-inventory-tree", storageUnitId] });
+  qc.invalidateQueries({ queryKey: ["customer-inventory-sku-locator"] });
   qc.invalidateQueries({ queryKey: ["customer-inventory-sku-locations"] });
   qc.invalidateQueries({ queryKey: ["customer-inventory-barcode-locations"] });
   qc.invalidateQueries({ queryKey: ["customer-inventory-movements"] });
@@ -41,11 +55,25 @@ export function invalidateInventoryViews(qc: QueryClient, storageUnitId?: string
   qc.invalidateQueries({ queryKey: ["customer-inventory-records"] });
 }
 
-export function useStorageUnitTree(storageUnitId?: string) {
+/** Rack tree of a unit, limited to one contract: a customer can hold several in the same unit. */
+export function useStorageUnitTree(storageUnitId?: string, contractId?: string) {
   return useQuery({
-    queryKey: customerInventoryKeys.tree(storageUnitId),
-    queryFn: () => getStorageUnitTreeApi(storageUnitId!),
+    queryKey: customerInventoryKeys.tree(storageUnitId, contractId),
+    queryFn: () => getStorageUnitTreeApi(storageUnitId!, contractId),
     enabled: Boolean(storageUnitId),
+  });
+}
+
+/** Where the customer's SKUs are, whichever contract they fall under. */
+export function useSkuLocator(filters: SkuLocatorFilters) {
+  return useInfiniteQuery({
+    queryKey: customerInventoryKeys.skuLocator(filters),
+    queryFn: ({ pageParam }) =>
+      getSkuLocatorApi({ ...filters, page: pageParam, limit: SKU_LOCATOR_PAGE_SIZE }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination.hasNextPage ? lastPage.pagination.page + 1 : undefined,
+    placeholderData: keepPreviousData,
   });
 }
 

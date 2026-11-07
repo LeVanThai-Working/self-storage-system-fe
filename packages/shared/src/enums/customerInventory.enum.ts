@@ -22,6 +22,13 @@ export enum InventoryRequestStatusEnum {
   EXPIRED = "expired",
 }
 
+/** Where a customer's SKU sits: on a rack tier, in the holding area, or not in storage at all. */
+export enum SkuPlacementEnum {
+  ON_RACK = "on_rack",
+  HOLDING = "holding",
+  NOT_STORED = "not_stored",
+}
+
 export enum InventoryItemStatusEnum {
   NORMAL = "normal",
   TEMPORARY_HOLDING = "temporary_holding",
