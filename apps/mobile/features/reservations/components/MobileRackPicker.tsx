@@ -56,7 +56,7 @@ export const MobileRackPicker: React.FC<MobileRackPickerProps> = ({
         <View className="flex-row items-center gap-2">
           <Archive size={18} color="#0B927E" />
           <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
-            {isEn ? "Select Storage Racks" : "Chọn kệ kho thuê (Warehouse Rack)"}
+            {isEn ? "Select Storage Racks" : "Chọn kệ kho thuê"}
           </Text>
         </View>
 

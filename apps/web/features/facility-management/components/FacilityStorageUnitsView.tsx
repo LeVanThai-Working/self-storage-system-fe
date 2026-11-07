@@ -994,9 +994,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                     </div>
                     <div>
                       <p className="font-bold text-slate-900 text-xs sm:text-sm">
-                        {locale === "vi"
-                          ? "Kho hàng kệ pallet (Warehouse)"
-                          : "Warehouse Rack Storage"}
+                        {locale === "vi" ? "Kho hàng kệ cho thuê" : "Warehouse Rack Storage"}
                       </p>
                       <p className="text-[11px] text-teal-700 font-medium">
                         {locale === "vi"

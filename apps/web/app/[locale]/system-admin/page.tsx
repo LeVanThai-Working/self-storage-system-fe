@@ -1,10 +1,12 @@
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function SystemAdminRootPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  redirect(`/${locale}/system-admin/users`);
+import { SystemAdminLayout } from "@/features/system-admin/components/SystemAdminLayout";
+import { StatisticsDashboardView } from "@/features/statistics";
+
+export default function SystemAdminRootPage() {
+  return (
+    <SystemAdminLayout>
+      <StatisticsDashboardView role="system_admin" initialTab="overview" />
+    </SystemAdminLayout>
+  );
 }

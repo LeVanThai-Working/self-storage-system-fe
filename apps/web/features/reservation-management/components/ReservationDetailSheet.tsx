@@ -437,7 +437,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             )}
             {reservation.forfeitedAmount > 0 && (
               <div className="flex justify-between py-1 text-rose-600 font-bold">
-                <span>Số tiền cọc bị tịch thu (No-show / Hủy sát giờ):</span>
+                <span>Số tiền cọc bị tịch thu:</span>
                 <span>{formatVnd(reservation.forfeitedAmount)}</span>
               </div>
             )}

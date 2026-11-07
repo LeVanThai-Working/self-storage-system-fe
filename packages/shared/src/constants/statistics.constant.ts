@@ -1,0 +1,12 @@
+export const STATISTICS_MAX_RANGE_DAYS = 366;
+export const STATISTICS_DEFAULT_RANGE_DAYS = 30;
+export const STATISTICS_TIMEZONE = "Asia/Ho_Chi_Minh";
+
+export const STATISTICS_PEAK_MULTIPLIER = 1.25;
+export const STATISTICS_LOW_MULTIPLIER = 0.75;
+
+export const FACILITY_KPI_TIER_THRESHOLDS = {
+  EXCELLENT: 85,
+  GOOD: 70,
+  AVERAGE: 50,
+} as const;

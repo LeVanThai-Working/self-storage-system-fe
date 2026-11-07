@@ -347,3 +347,16 @@ export {
   type LegalEntityQuery,
   type LegalEntityIdParam,
 } from "./request/legalEntity.request.schema";
+
+export {
+  statisticsBaseQuerySchema,
+  rentalTrendsQuerySchema,
+  facilitiesKpiQuerySchema,
+  financialAnalyticsQuerySchema,
+  productAndOperationsQuerySchema,
+  type StatisticsBaseQuery,
+  type RentalTrendsQuery,
+  type FacilitiesKpiQuery,
+  type FinancialAnalyticsQuery,
+  type ProductAndOperationsQuery,
+} from "./request/statistics.request.schema";
