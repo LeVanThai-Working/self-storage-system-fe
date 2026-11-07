@@ -19,7 +19,6 @@ import { QuantityStepper } from "@/features/customer-inventory/components/Quanti
 import {
   buildTreeTierLabel,
   canRequestMoveItem,
-  filterRentedRacks,
   formatTierShort,
   getContractRequestRights,
   isTierLocked,
@@ -42,7 +41,10 @@ export default function MoveRequestScreen() {
   const contract = contractQuery.data;
   const isWarehouse =
     typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
-  const treeQuery = useStorageUnitTree(isWarehouse ? contract?.storageUnitId : undefined);
+  const treeQuery = useStorageUnitTree(
+    isWarehouse ? contract?.storageUnitId : undefined,
+    contractId
+  );
   const tree = treeQuery.data;
   const rights = getContractRequestRights(contract?.status);
   const createTicket = useCreateSupportTicket();
@@ -69,7 +71,7 @@ export default function MoveRequestScreen() {
   const source = positions.find((position) => position.key === (sourceKey ?? initialKey));
   const targetRacks = useMemo(
     () =>
-      filterRentedRacks(tree?.racks, contract)
+      (tree?.racks ?? [])
         .map((rack) => ({
           rack,
           tiers: sortTiersTopDown(rack.tiers).filter(
@@ -77,7 +79,7 @@ export default function MoveRequestScreen() {
           ),
         }))
         .filter((group) => group.tiers.length > 0),
-    [tree, contract, source]
+    [tree, source]
   );
   const target = targetRacks
     .flatMap((group) => group.tiers.map((tier) => ({ rack: group.rack, tier })))

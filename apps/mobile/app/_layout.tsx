@@ -141,6 +141,7 @@ function RootLayoutNav() {
         <Stack.Screen name="skus/index" options={{ headerShown: false }} />
         <Stack.Screen name="skus/new" options={{ headerShown: false }} />
         <Stack.Screen name="skus/scan" options={{ headerShown: false }} />
+        <Stack.Screen name="skus/locate" options={{ headerShown: false }} />
         <Stack.Screen name="skus/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="skus/[id]/edit" options={{ headerShown: false }} />
         <Stack.Screen name="refunds/index" options={{ headerShown: false }} />

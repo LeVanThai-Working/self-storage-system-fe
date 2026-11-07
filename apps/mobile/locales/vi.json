@@ -531,7 +531,6 @@
       "found": "Vị trí tìm thấy (%{count})",
       "total": "Tổng: %{qty} %{uom}",
       "resultNone": "%{sku} hiện không còn trong kho",
-      "otherUnit": "phòng khác",
       "highlighting": "Đang đánh dấu %{sku} · %{count} vị trí",
       "clear": "Bỏ đánh dấu",
       "here": "Ở đây",
@@ -675,6 +674,39 @@
       "notFoundDesc": "Mã vạch %{barcode} chưa có trong danh mục của bạn.",
       "createWithBarcode": "Tạo mã hàng với mã vạch này",
       "rescan": "Quét lại"
+    },
+    "locator": {
+      "title": "Tìm vị trí hàng",
+      "subtitle": "Tìm trên tất cả hợp đồng của bạn",
+      "searchPlaceholder": "Nhập mã, tên hoặc barcode",
+      "loadError": "Không tải được vị trí hàng",
+      "empty": "Chưa có mã hàng nào để tìm",
+      "emptyResult": "Không tìm thấy mã hàng phù hợp",
+      "emptyResultHint": "Thử tìm bằng mã, tên hoặc barcode khác",
+      "emptyFilter": "Không có mã hàng nào ở mục này",
+      "filter": {
+        "all": "Tất cả",
+        "onRack": "Trên kệ",
+        "holding": "Khu lưu tạm",
+        "notStored": "Chưa lên kệ"
+      },
+      "badge": {
+        "onRack": "Trên kệ · %{count} vị trí"
+      },
+      "step": {
+        "facility": "Kho",
+        "area": "Khu vực",
+        "rack": "Kệ",
+        "tier": "Tầng"
+      },
+      "area": {
+        "unit": "Phòng %{unit}",
+        "aisle": "Dãy %{aisle}"
+      },
+      "contractChip": "HĐ %{code}",
+      "viewOnMap": "Xem trên sơ đồ",
+      "viewSku": "Xem chi tiết mã hàng",
+      "notStoredHint": "Mã hàng này chưa được nhập kho, chưa có vị trí nào."
     }
   },
   "contractPicker": {

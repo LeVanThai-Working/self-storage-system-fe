@@ -91,7 +91,7 @@ export default function SkuDetailScreen() {
     if (!location.contract?.id) return;
     router.push({
       pathname: "/contracts/[id]/rack-map",
-      params: { id: location.contract.id },
+      params: { id: location.contract.id, skuId: id, tierId: location.rackTier?.id },
     });
   };
 
