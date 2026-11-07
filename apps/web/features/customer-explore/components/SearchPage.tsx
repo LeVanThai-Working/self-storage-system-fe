@@ -3,7 +3,7 @@
 import { type FormEvent, useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { MapPin, Ruler } from "lucide-react";
+import { MapPin, Ruler, Search } from "lucide-react";
 import { formatCurrency, type BillingUnitEnum } from "@self-storage-system-fe/shared";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/features/auth/store";
+import { useDebouncedValue } from "@/features/storage-unit-management/hooks";
 import {
   usePublicAmenities,
   usePublicFacilities,
@@ -109,7 +110,9 @@ export function SearchPage({
   const categories = [
     ...new Set(unitTypes.data?.map((u) => u.category).filter(Boolean)),
   ] as string[];
-  const { results, isLoading, isError } = useUnitSearch(applied);
+  // The keyword is sent to the BE as `search`, applied as the user types (debounced).
+  const keyword = useDebouncedValue(draft.keyword.trim());
+  const { results, isLoading, isError } = useUnitSearch({ ...applied, keyword });
 
   const set = <K extends keyof SearchFilters>(key: K, value: SearchFilters[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
@@ -142,6 +145,22 @@ export function SearchPage({
           onSubmit={onSubmit}
           className="h-fit space-y-4 rounded-2xl border border-neutral-border bg-white p-5"
         >
+          <Field label={t("keyword")}>
+            <div className="relative">
+              <Search
+                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-neutral-muted"
+                aria-hidden
+              />
+              <Input
+                type="search"
+                className="pl-9 text-ellipsis"
+                placeholder={t("keywordPlaceholder")}
+                value={draft.keyword}
+                onChange={(e) => set("keyword", e.target.value)}
+              />
+            </div>
+          </Field>
+
           <Field label={t("facility")}>
             <select
               className={selectClass}
