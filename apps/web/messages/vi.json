@@ -2498,6 +2498,7 @@
         "terms": "Vui lòng đồng ý Điều khoản & Chính sách đặt chỗ"
       },
       "seatMap": {
+        "unitHint": "Bấm vào một phòng còn trống trên sơ đồ để chọn.",
         "entrance": "CỬA RA VÀO · LỐI ĐI CHÍNH",
         "freeCount": "{free}/{total} phòng còn trống",
         "floor": "Tầng {floor}",

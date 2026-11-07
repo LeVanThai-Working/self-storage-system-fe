@@ -343,7 +343,10 @@ export function ReservationFormPage({
 
           <Section title={t("schedule.title")}>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label={t("schedule.checkInDate")} hint={t("schedule.checkInHint")}>
+              <Field
+                label={t("schedule.checkInDate")}
+                hint={t("schedule.checkInHint", { days: MAX_CHECK_IN_DAYS_AHEAD })}
+              >
                 <Input
                   type="date"
                   min={today}
@@ -367,7 +370,10 @@ export function ReservationFormPage({
               </Field>
             </div>
 
-            <Field label={t("schedule.duration")} hint={t("schedule.durationHint")}>
+            <Field
+              label={t("schedule.duration", { unit: tBilling(offering.billingUnit) })}
+              hint={t("schedule.durationHint", { min: offering.minRentalDays })}
+            >
               <div className="relative">
                 <Input
                   type="number"
@@ -378,13 +384,15 @@ export function ReservationFormPage({
                   onChange={(e) => setDuration(e.target.value)}
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-neutral-muted">
-                  {t("schedule.durationUnit", { unit: tBilling(offering.billingUnit) })}
+                  {tBilling(offering.billingUnit)}
                 </span>
               </div>
             </Field>
 
             <div className="space-y-2">
-              <span className="text-sm font-medium text-neutral-main">{t("schedule.slot")}</span>
+              <span className="text-sm font-medium text-neutral-main">
+                {t("schedule.timeSlot")}
+              </span>
               {!checkInDate ? (
                 <p className="text-xs text-neutral-muted">{t("schedule.pickDateFirst")}</p>
               ) : slots.isLoading ? (

@@ -2498,6 +2498,7 @@
         "terms": "Please accept the booking terms & policy"
       },
       "seatMap": {
+        "unitHint": "Click an available unit on the map to pick it.",
         "entrance": "ENTRANCE · MAIN AISLE",
         "freeCount": "{free} of {total} units available",
         "floor": "Floor {floor}",
