@@ -316,6 +316,9 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_808: "MESSAGE_CODE_808",
   MESSAGE_CODE_809: "MESSAGE_CODE_809",
   MESSAGE_CODE_810: "MESSAGE_CODE_810",
+
+  // Statistics Message Codes
+  MESSAGE_CODE_820: "MESSAGE_CODE_820",
 } as const;
 
 export type MessageCode = (typeof MESSAGE_CODE)[keyof typeof MESSAGE_CODE];
@@ -520,6 +523,9 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_808: "Invoice Items Cannot Be Empty",
   MESSAGE_CODE_809: "Cannot Void Already Paid Invoice",
   MESSAGE_CODE_810: "Invoice Code Already Exists",
+
+  // Statistics
+  MESSAGE_CODE_820: "Invalid Statistics Date Range Or Exceeds Maximum Allowed Days",
 };
 
 /**
@@ -724,6 +730,9 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_808: "Danh mục khoản mục hóa đơn không được để trống",
   MESSAGE_CODE_809: "Không thể vô hiệu hóa hóa đơn đã được thanh toán",
   MESSAGE_CODE_810: "Mã hóa đơn đã tồn tại",
+
+  // Statistics
+  MESSAGE_CODE_820: "Khoảng thời gian thống kê không hợp lệ hoặc vượt quá số ngày tối đa cho phép",
 };
 
 export const MESSAGE_DICTIONARY = MESSAGE_DICTIONARY_EN;

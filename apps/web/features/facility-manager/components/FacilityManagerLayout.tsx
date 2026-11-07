@@ -16,6 +16,7 @@ import {
   RotateCcw,
   TriangleAlert,
   ArrowLeftRight,
+  BarChart3,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -52,6 +53,11 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
       href: `/${locale}/facility-manager/dashboard`,
       label: t("nav.dashboard"),
       icon: LayoutDashboard,
+    },
+    {
+      href: `/${locale}/facility-manager/analytics`,
+      label: locale === "en" ? "Analytics & Reports" : "Báo cáo & Thống kê",
+      icon: BarChart3,
     },
     {
       href: `/${locale}/facility-manager/reservations`,

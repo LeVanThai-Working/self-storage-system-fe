@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Boxes, Users, Wrench } from "lucide-react";
+import { BarChart3, Boxes, Users, Wrench } from "lucide-react";
 import { FacilityAmenityOfferingStatusEnum } from "@self-storage-system-fe/shared";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFacilityStaffs } from "@/features/contract-management/hooks";
 import { useFacilityAmenityOfferings } from "@/features/facility-amenity-management/hooks";
 import { useMyFacility, useStorageUnitStats } from "@/features/storage-unit-management/hooks";
+import { StatisticsDashboardView } from "@/features/statistics";
 
 const AMENITY_LIMIT = 100;
 
@@ -42,6 +44,7 @@ function Bar({ percent, className }: { percent: number; className: string }) {
 }
 
 export function FacilityDashboardView() {
+  const [dashboardMode, setDashboardMode] = useState<"statistics" | "live">("statistics");
   const t = useTranslations("facilityManager.dashboard");
   const { data: facility, isLoading: facilityLoading, isError } = useMyFacility();
   const stats = useStorageUnitStats(facility?.id);
@@ -70,130 +73,173 @@ export function FacilityDashboardView() {
   const staffItems = staffs.data?.items ?? [];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">{t("title")}</h1>
-        <div className="mt-1 text-slate-500">
-          {facility ? (
-            t("subtitle", { facility: facility.name })
-          ) : (
-            <Skeleton className="h-5 w-72" />
-          )}
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">{t("title")}</h1>
+          <div className="mt-1 text-slate-500">
+            {facility ? (
+              t("subtitle", { facility: facility.name })
+            ) : (
+              <Skeleton className="h-5 w-72" />
+            )}
+          </div>
+        </div>
+
+        {/* View Switcher */}
+        <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 text-xs font-bold text-slate-600 shadow-2xs">
+          <button
+            type="button"
+            onClick={() => setDashboardMode("statistics")}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all cursor-pointer ${
+              dashboardMode === "statistics"
+                ? "bg-teal-600 text-white shadow-2xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <BarChart3 className="h-3.5 w-3.5" />
+            Báo cáo thống kê cơ sở
+          </button>
+          <button
+            type="button"
+            onClick={() => setDashboardMode("live")}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all cursor-pointer ${
+              dashboardMode === "live"
+                ? "bg-teal-600 text-white shadow-2xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Boxes className="h-3.5 w-3.5" />
+            Hiện trạng kho & Nhân sự
+          </button>
         </div>
       </div>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label={t("stats.occupancy")}
-          value={`${occupancy}%`}
-          tone="text-emerald-600"
-          loading={loading}
+      {dashboardMode === "statistics" ? (
+        <StatisticsDashboardView
+          role="facility_manager"
+          lockedFacilityId={facility?.id}
+          facilityName={facility?.name}
+          initialTab="overview"
         />
-        <StatCard
-          label={t("stats.available")}
-          value={stats.available}
-          tone="text-slate-900"
-          loading={loading}
-        />
-        <StatCard
-          label={t("stats.inUse")}
-          value={stats.inUse}
-          tone="text-amber-600"
-          loading={loading}
-        />
-        <StatCard
-          label={t("stats.maintenance")}
-          value={stats.maintenance}
-          tone="text-orange-600"
-          loading={loading}
-        />
-      </section>
+      ) : (
+        <div className="space-y-8">
+          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard
+              label={t("stats.occupancy")}
+              value={`${occupancy}%`}
+              tone="text-emerald-600"
+              loading={loading}
+            />
+            <StatCard
+              label={t("stats.available")}
+              value={stats.available}
+              tone="text-slate-900"
+              loading={loading}
+            />
+            <StatCard
+              label={t("stats.inUse")}
+              value={stats.inUse}
+              tone="text-amber-600"
+              loading={loading}
+            />
+            <StatCard
+              label={t("stats.maintenance")}
+              value={stats.maintenance}
+              tone="text-orange-600"
+              loading={loading}
+            />
+          </section>
 
-      <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-        <div className="mb-3 flex items-center justify-between text-sm">
-          <span className="flex items-center gap-2 font-semibold text-slate-800">
-            <Boxes className="size-4" aria-hidden /> {t("occupancyTitle")}
-          </span>
-          <span className="text-slate-500">{t("totalUnits", { count: stats.total })}</span>
-        </div>
-        <Bar percent={occupancy} className="bg-emerald-500" />
-        <p className="mt-2 flex items-center gap-2 text-xs text-slate-500">
-          <Wrench className="size-3.5" aria-hidden /> {t("occupancyNote")}
-        </p>
-      </section>
+          <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="mb-3 flex items-center justify-between text-sm">
+              <span className="flex items-center gap-2 font-semibold text-slate-800">
+                <Boxes className="size-4" aria-hidden /> {t("occupancyTitle")}
+              </span>
+              <span className="text-slate-500">{t("totalUnits", { count: stats.total })}</span>
+            </div>
+            <Bar percent={occupancy} className="bg-emerald-500" />
+            <p className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+              <Wrench className="size-3.5" aria-hidden /> {t("occupancyNote")}
+            </p>
+          </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-bold text-slate-900">{t("amenities.title")}</h2>
-          {amenities.isLoading ? (
-            <Skeleton className="h-40 rounded-xl" />
-          ) : amenities.isError ? (
-            <p className="text-sm text-slate-500">{t("amenities.error")}</p>
-          ) : amenityItems.length === 0 ? (
-            <p className="text-sm text-slate-500">{t("amenities.empty")}</p>
-          ) : (
-            <ul className="space-y-4">
-              {amenityItems.map((o) => {
-                // Services have no stock: the BE sends no quantities for them.
-                const total = typeof o.totalQuantity === "number" ? o.totalQuantity : 0;
-                const hasStock = total > 0;
-                const usedPercent = hasStock
-                  ? Math.round(((o.inUseQuantity ?? 0) / total) * 100)
-                  : 0;
-                return (
-                  <li key={o.id}>
-                    <div className="mb-1.5 flex items-center justify-between gap-3 text-sm">
-                      <span className="font-medium text-slate-800">{o.amenity.name}</span>
-                      <span className="text-slate-500">
-                        {hasStock
-                          ? t("amenities.stock", {
-                              available: o.availableQuantity ?? 0,
-                              total,
-                            })
-                          : t("amenities.noStock")}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 text-lg font-bold text-slate-900">{t("amenities.title")}</h2>
+              {amenities.isLoading ? (
+                <Skeleton className="h-40 rounded-xl" />
+              ) : amenities.isError ? (
+                <p className="text-sm text-slate-500">{t("amenities.error")}</p>
+              ) : amenityItems.length === 0 ? (
+                <p className="text-sm text-slate-500">{t("amenities.empty")}</p>
+              ) : (
+                <ul className="space-y-4">
+                  {amenityItems.map((o) => {
+                    // Services have no stock: the BE sends no quantities for them.
+                    const total = typeof o.totalQuantity === "number" ? o.totalQuantity : 0;
+                    const hasStock = total > 0;
+                    const usedPercent = hasStock
+                      ? Math.round(((o.inUseQuantity ?? 0) / total) * 100)
+                      : 0;
+                    return (
+                      <li key={o.id}>
+                        <div className="mb-1.5 flex items-center justify-between gap-3 text-sm">
+                          <span className="font-medium text-slate-800">{o.amenity.name}</span>
+                          <span className="text-slate-500">
+                            {hasStock
+                              ? t("amenities.stock", {
+                                  available: o.availableQuantity ?? 0,
+                                  total,
+                                })
+                              : t("amenities.noStock")}
+                          </span>
+                        </div>
+                        {hasStock && (
+                          <>
+                            <Bar percent={usedPercent} className="bg-amber-500" />
+                            <p className="mt-1 text-xs text-slate-400">
+                              {t("amenities.inUse", { count: o.inUseQuantity ?? 0 })}
+                            </p>
+                          </>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+
+            <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900">
+                <Users className="size-5" aria-hidden /> {t("staff.title")}
+                {!staffs.isLoading && <span className="text-slate-400">({staffItems.length})</span>}
+              </h2>
+              {staffs.isLoading ? (
+                <Skeleton className="h-40 rounded-xl" />
+              ) : staffs.isError ? (
+                <p className="text-sm text-slate-500">{t("staff.error")}</p>
+              ) : staffItems.length === 0 ? (
+                <p className="text-sm text-slate-500">{t("staff.empty")}</p>
+              ) : (
+                <ul className="divide-y divide-slate-100">
+                  {staffItems.map((s) => (
+                    <li key={s.id} className="flex items-center justify-between gap-3 py-3 text-sm">
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-slate-800">{s.name}</p>
+                        <p className="truncate text-slate-500">{s.email}</p>
+                      </div>
+                      <span className="shrink-0 text-slate-500">
+                        {s.phoneNumber ?? s.phone ?? "—"}
                       </span>
-                    </div>
-                    {hasStock && (
-                      <>
-                        <Bar percent={usedPercent} className="bg-amber-500" />
-                        <p className="mt-1 text-xs text-slate-400">
-                          {t("amenities.inUse", { count: o.inUseQuantity ?? 0 })}
-                        </p>
-                      </>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
-
-        <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900">
-            <Users className="size-5" aria-hidden /> {t("staff.title")}
-            {!staffs.isLoading && <span className="text-slate-400">({staffItems.length})</span>}
-          </h2>
-          {staffs.isLoading ? (
-            <Skeleton className="h-40 rounded-xl" />
-          ) : staffs.isError ? (
-            <p className="text-sm text-slate-500">{t("staff.error")}</p>
-          ) : staffItems.length === 0 ? (
-            <p className="text-sm text-slate-500">{t("staff.empty")}</p>
-          ) : (
-            <ul className="divide-y divide-slate-100">
-              {staffItems.map((s) => (
-                <li key={s.id} className="flex items-center justify-between gap-3 py-3 text-sm">
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold text-slate-800">{s.name}</p>
-                    <p className="truncate text-slate-500">{s.email}</p>
-                  </div>
-                  <span className="shrink-0 text-slate-500">{s.phoneNumber ?? s.phone ?? "—"}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

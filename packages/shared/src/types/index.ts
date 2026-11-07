@@ -21,3 +21,4 @@ export * from "./supportTicket.types";
 export * from "./signingAuthorization.types";
 export * from "./invoice.types";
 export * from "./legalEntity.types";
+export * from "./statistics.types";

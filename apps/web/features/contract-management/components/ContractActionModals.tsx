@@ -2511,7 +2511,7 @@ export const CheckOutContractModal: React.FC<CheckOutContractModalProps> = ({
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
                   ? "Complete contract (COMPLETED) and move unit to UNDER_MAINTENANCE for cleaning."
-                  : "Hoàn tất hợp đồng (COMPLETED) và chuyển kho sang Đang bảo trì (UNDER_MAINTENANCE) chờ dọn dẹp."}
+                  : "Hoàn tất hợp đồng và chuyển kho sang Đang bảo trì chờ dọn dẹp."}
               </p>
             </div>
           </div>

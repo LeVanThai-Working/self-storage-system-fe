@@ -1,10 +1,12 @@
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function BusinessOpsRootPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  redirect(`/${locale}/business-ops/facilities`);
+import { BusinessOpsLayout } from "@/features/business-ops/components/BusinessOpsLayout";
+import { StatisticsDashboardView } from "@/features/statistics";
+
+export default function BusinessOpsRootPage() {
+  return (
+    <BusinessOpsLayout>
+      <StatisticsDashboardView role="business_ops_manager" initialTab="overview" />
+    </BusinessOpsLayout>
+  );
 }
