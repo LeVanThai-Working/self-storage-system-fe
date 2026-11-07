@@ -383,6 +383,8 @@
     "search": {
       "title": "Tìm kho phù hợp",
       "subtitle": "Lọc theo cơ sở, loại kho, diện tích, giá và tiện ích để tìm kho còn trống.",
+      "keyword": "Từ khóa",
+      "keywordPlaceholder": "Tìm theo tên cơ sở, thành phố",
       "facility": "Cơ sở",
       "unitType": "Loại kho",
       "categoryLabel": "Nhóm kho",

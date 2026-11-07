@@ -383,6 +383,8 @@
     "search": {
       "title": "Find the right unit",
       "subtitle": "Filter by facility, unit type, area, price and amenities to find available units.",
+      "keyword": "Keyword",
+      "keywordPlaceholder": "Search by facility name, city",
       "facility": "Facility",
       "unitType": "Unit type",
       "categoryLabel": "Unit category",
