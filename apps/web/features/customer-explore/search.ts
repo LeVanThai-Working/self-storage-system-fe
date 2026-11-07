@@ -5,6 +5,7 @@ import {
 } from "@self-storage-system-fe/shared";
 
 export interface SearchFilters {
+  keyword: string;
   facilityId: string;
   unitTypeId: string;
   category: string;
@@ -16,6 +17,7 @@ export interface SearchFilters {
 }
 
 export const EMPTY_FILTERS: SearchFilters = {
+  keyword: "",
   facilityId: "",
   unitTypeId: "",
   category: "",

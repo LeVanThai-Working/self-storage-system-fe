@@ -4,7 +4,7 @@ import { type FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { AlertTriangle, ArrowLeft, MapPin } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Check, X } from "lucide-react";
 import {
   FacilityAmenityOfferingStatusEnum,
   FREE_CANCEL_HOURS,
@@ -46,6 +46,9 @@ import { MAX_CHECK_IN_DAYS_AHEAD, depositFor, localDateString, toVietnamIso } fr
 
 /** Services have no stock, so there is no natural cap; this keeps the stepper sane. */
 const MAX_SERVICE_QUANTITY = 99;
+
+/** Mirrors BE `RESERVATION_OVERDUE_GRACE_HOURS` (default 24): hold kept after the check-in day ends. */
+const NO_SHOW_GRACE_HOURS = 24;
 
 const fieldClass =
   "w-full rounded-xl border border-slate-200/80 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-700 outline-none transition-all focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20";
@@ -292,16 +295,7 @@ export function ReservationFormPage({
 
       <form onSubmit={onSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <Section
-            title={t("unit.title")}
-            headerExtra={
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-700 whitespace-nowrap shrink-0">
-                <MapPin className="size-3" />
-                {t("unit.mapNotice")}
-              </span>
-            }
-          >
-            <p className="text-xs text-neutral-muted">{t("seatMap.unitHint")}</p>
+          <Section title={t("unit.title")}>
             <UnitSeatMapWeb
               units={mapUnits}
               selectedUnitId={unitId}
@@ -312,10 +306,7 @@ export function ReservationFormPage({
             />
             {isRackWarehouse && unitId ? (
               <div className="space-y-3 rounded-2xl border border-neutral-border bg-neutral-50/60 p-4">
-                <div>
-                  <h3 className="font-semibold text-neutral-main">{t("seatMap.rackTitle")}</h3>
-                  <p className="text-xs text-neutral-muted">{t("seatMap.rackHint")}</p>
-                </div>
+                <h3 className="font-semibold text-neutral-main">{t("seatMap.racksTitle")}</h3>
                 {racks.isLoading ? (
                   <Skeleton className="h-40 rounded-xl" />
                 ) : (
@@ -343,7 +334,7 @@ export function ReservationFormPage({
 
           <Section title={t("schedule.title")}>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field label={t("schedule.checkInDate")} hint={t("schedule.checkInHint")}>
+              <Field label={t("schedule.checkInDate")}>
                 <Input
                   type="date"
                   min={today}
@@ -357,7 +348,7 @@ export function ReservationFormPage({
                 />
               </Field>
 
-              <Field label={t("schedule.startDate")} hint={t("schedule.startHint")}>
+              <Field label={t("schedule.startDate")}>
                 <Input
                   type="date"
                   min={checkInDate || today}
@@ -367,7 +358,7 @@ export function ReservationFormPage({
               </Field>
             </div>
 
-            <Field label={t("schedule.duration")} hint={t("schedule.durationHint")}>
+            <Field label={t("schedule.duration", { unit: tBilling(offering.billingUnit) })}>
               <div className="relative">
                 <Input
                   type="number"
@@ -378,13 +369,15 @@ export function ReservationFormPage({
                   onChange={(e) => setDuration(e.target.value)}
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-neutral-muted">
-                  {t("schedule.durationUnit", { unit: tBilling(offering.billingUnit) })}
+                  {tBilling(offering.billingUnit)}
                 </span>
               </div>
             </Field>
 
             <div className="space-y-2">
-              <span className="text-sm font-medium text-neutral-main">{t("schedule.slot")}</span>
+              <span className="text-sm font-medium text-neutral-main">
+                {t("schedule.timeSlot")}
+              </span>
               {!checkInDate ? (
                 <p className="text-xs text-neutral-muted">{t("schedule.pickDateFirst")}</p>
               ) : slots.isLoading ? (
@@ -488,10 +481,37 @@ export function ReservationFormPage({
             </div>
           </dl>
           <p className="text-xs text-neutral-muted">{t("summary.holdNote")}</p>
-          <div className="space-y-2 rounded-xl border border-neutral-border bg-neutral-50 p-3">
-            <ul className="list-disc space-y-1 pl-4 text-xs text-neutral-muted">
-              <li>{t("terms.freeCancel", { hours: FREE_CANCEL_HOURS })}</li>
-              <li>{t("terms.forfeit")}</li>
+          <div className="space-y-3 rounded-xl border border-neutral-border bg-neutral-50 p-3">
+            <ul className="space-y-2.5 text-xs">
+              <li className="flex gap-2.5">
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <Check className="size-3" strokeWidth={3} aria-hidden />
+                </span>
+                <span className="space-y-0.5">
+                  <span className="block font-semibold text-emerald-700">
+                    {t("terms.refund.title")}
+                  </span>
+                  <span className="block text-neutral-muted">
+                    {t("terms.refund.rule", { hours: FREE_CANCEL_HOURS })}
+                  </span>
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-700">
+                  <X className="size-3" strokeWidth={3} aria-hidden />
+                </span>
+                <span className="space-y-0.5">
+                  <span className="block font-semibold text-rose-700">
+                    {t("terms.noRefund.title")}
+                  </span>
+                  <span className="block text-neutral-muted">
+                    {t("terms.noRefund.rule", {
+                      hours: FREE_CANCEL_HOURS,
+                      graceHours: NO_SHOW_GRACE_HOURS,
+                    })}
+                  </span>
+                </span>
+              </li>
             </ul>
             <label className="flex cursor-pointer items-start gap-2 text-sm font-medium">
               <input
