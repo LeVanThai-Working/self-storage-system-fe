@@ -688,10 +688,11 @@
         "all": "Tất cả",
         "onRack": "Trên kệ",
         "holding": "Khu lưu tạm",
-        "notStored": "Chưa lên kệ"
+        "notStored": "Chưa lưu trữ"
       },
       "badge": {
-        "onRack": "Trên kệ · %{count} vị trí"
+        "onRack": "Trên kệ · %{count} vị trí",
+        "notStored": "Chưa lưu trữ trên kệ"
       },
       "step": {
         "facility": "Kho",
@@ -706,7 +707,7 @@
       "contractChip": "HĐ %{code}",
       "viewOnMap": "Xem trên sơ đồ",
       "viewSku": "Xem chi tiết mã hàng",
-      "notStoredHint": "Mã hàng này chưa được nhập kho, chưa có vị trí nào."
+      "notStoredHint": "Mã hàng đã được tạo nhưng chưa lưu trữ trên kệ hay khu lưu tạm nào."
     }
   },
   "contractPicker": {

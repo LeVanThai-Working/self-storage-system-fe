@@ -1,10 +1,15 @@
 import React from "react";
 import { Pressable, View } from "react-native";
 import { Box, ChevronRight, Warehouse } from "lucide-react-native";
-import type { SkuLocationItem, SkuLocatorItem } from "@self-storage-system-fe/shared";
+import {
+  ContractStatusEnum,
+  type SkuLocationItem,
+  type SkuLocatorItem,
+} from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/stores/language.store";
+import { getContractStatusMeta } from "@/features/contracts/utils/contractFormat";
 import { formatTierShort } from "../utils/rackMapFormat";
 import { ItemStatusBadge } from "./ItemStatusBadge";
 import { SkuThumb } from "./SkuThumb";
@@ -30,15 +35,17 @@ function PathStep({ label, value }: { label: string; value: string }) {
 
 /** One SKU of the locator: its stock state, then every position under any contract. */
 export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCardProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { sku, totalQuantity, rackQuantity, holdingQuantity, locations } = item;
   const stored = totalQuantity > 0;
   const rackLocationCount = locations.filter((location) => location.rackTier).length;
 
   const formatArea = (location: SkuLocationItem) => {
+    const zone = location.storageUnit?.zone;
     const unit = location.storageUnit?.unitNumber;
     const aisle = location.storageRack?.aisle;
     return [
+      zone ? t("facilityDetail.zoneLabel", { zone }) : null,
       unit ? t("sku.locator.area.unit", { unit }) : null,
       aisle ? t("sku.locator.area.aisle", { aisle }) : null,
     ]
@@ -46,19 +53,34 @@ export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCa
       .join(" · ");
   };
 
-  const renderContractLine = (location: SkuLocationItem) => (
-    <View className="mt-2 flex-row items-center gap-2">
-      <Text
-        numberOfLines={1}
-        className="shrink rounded-full bg-brand-bg px-2 py-0.5 font-mono text-[10px] font-bold text-brand dark:bg-brand/15"
-      >
-        {t("sku.locator.contractChip", { code: location.contract?.contractCode ?? "" })}
-      </Text>
-      <View className="flex-1" />
-      <Text className="text-[11px] font-bold text-brand">{t("sku.locator.viewOnMap")}</Text>
-      <ChevronRight size={13} color="#0B927E" />
-    </View>
-  );
+  // Stock can stay on the rack after its contract ended; say so instead of implying a live rental.
+  const renderContractLine = (location: SkuLocationItem) => {
+    const status = location.contract?.status;
+    const ended =
+      !!status && status !== ContractStatusEnum.ACTIVE && status !== ContractStatusEnum.OVERDUE;
+    const statusMeta = ended ? getContractStatusMeta(status, locale) : null;
+    return (
+      <View className="mt-2 flex-row items-center gap-2">
+        <Text
+          numberOfLines={1}
+          className="shrink rounded-full bg-brand-bg px-2 py-0.5 font-mono text-[10px] font-bold text-brand dark:bg-brand/15"
+        >
+          {t("sku.locator.contractChip", { code: location.contract?.contractCode ?? "" })}
+        </Text>
+        {statusMeta ? (
+          <Text
+            numberOfLines={1}
+            className={cn("shrink text-[10px] font-bold", statusMeta.badgeTextClass)}
+          >
+            {statusMeta.label}
+          </Text>
+        ) : null}
+        <View className="flex-1" />
+        <Text className="text-[11px] font-bold text-brand">{t("sku.locator.viewOnMap")}</Text>
+        <ChevronRight size={13} color="#0B927E" />
+      </View>
+    );
+  };
 
   const renderRackLocation = (location: SkuLocationItem) => (
     <>
@@ -140,7 +162,7 @@ export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCa
             ) : null}
             {!stored ? (
               <Text className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-bold text-neutral-muted dark:bg-neutral-800">
-                {t("sku.locator.filter.notStored")}
+                {t("sku.locator.badge.notStored")}
               </Text>
             ) : null}
           </View>
