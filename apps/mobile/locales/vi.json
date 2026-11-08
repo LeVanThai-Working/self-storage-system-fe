@@ -1042,7 +1042,8 @@
       "purposePlaceholder": "Nhập thêm hàng, lấy hàng về...",
       "submit": "Xác nhận đặt lịch",
       "success": "Đã đặt lịch %{code}",
-      "contractNotActive": "Chỉ hợp đồng đang thuê mới đặt được lịch vào kho"
+      "contractNotActive": "Chỉ hợp đồng đang thuê mới đặt được lịch vào kho",
+      "slotPast": "Đã qua giờ"
     },
     "detail": {
       "title": "Lịch vào kho",

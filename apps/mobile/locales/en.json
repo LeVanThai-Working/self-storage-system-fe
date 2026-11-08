@@ -1045,7 +1045,8 @@
       "purposePlaceholder": "Bring in stock, take goods home...",
       "submit": "Confirm booking",
       "success": "Booked %{code}",
-      "contractNotActive": "Only active contracts can book a warehouse visit"
+      "contractNotActive": "Only active contracts can book a warehouse visit",
+      "slotPast": "Passed"
     },
     "detail": {
       "title": "Warehouse visit",

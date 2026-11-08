@@ -257,8 +257,8 @@ export function ContractCard({
         </View>
       ) : null}
 
-      {/* Quick Action Controls for Active Contracts */}
-      {isActive && ((isWarehouse && onRackMapPress) || onReportIncidentPress) ? (
+      {/* Quick actions; overdue contracts keep them so customers can still take stock out */}
+      {(isActive || isOverdue) && ((isWarehouse && onRackMapPress) || onReportIncidentPress) ? (
         <View className="flex-row items-center gap-2 pt-0.5">
           {/* Rack Map button ONLY for Warehouse Rack contracts */}
           {isWarehouse && onRackMapPress ? (
@@ -274,7 +274,7 @@ export function ContractCard({
             </Pressable>
           ) : null}
 
-          {isWarehouse && onBookAccessPress ? (
+          {isWarehouse && isActive && onBookAccessPress ? (
             <Pressable
               onPress={(e) => {
                 e.stopPropagation();

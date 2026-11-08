@@ -81,9 +81,10 @@ export default function NewAccessScheduleScreen() {
       timeSlotId: slotId,
       scheduledDate: date,
       numberOfPeople: people,
-      vehicleType: vehicleType.trim() || null,
-      vehiclePlate: vehiclePlate.trim() || null,
-      purpose: purpose.trim() || null,
+      // BE route validation rejects null, so leave empty optional fields out.
+      vehicleType: vehicleType.trim() || undefined,
+      vehiclePlate: vehiclePlate.trim() || undefined,
+      purpose: purpose.trim() || undefined,
     });
     if (!parsed.success) {
       setSubmitError(parsed.error.issues[0]?.message ?? t("accessSchedule.loadError"));
@@ -135,6 +136,8 @@ export default function NewAccessScheduleScreen() {
         {slots.map((slot) => {
           const disabled = slotDisabled(slot);
           const selected = slot.timeSlotId === slotId;
+          // BE also closes slots that already started; tell those apart from full ones.
+          const past = isSlotInPast(date, slot.startTime);
           const full = !slot.isAvailable || slot.availableCapacity <= 0;
           return (
             <Pressable
@@ -164,12 +167,14 @@ export default function NewAccessScheduleScreen() {
               <Text
                 className={cn(
                   "text-[11px] font-semibold",
-                  full ? "text-red-600" : "text-neutral-muted"
+                  full && !past ? "text-red-600" : "text-neutral-muted"
                 )}
               >
-                {full
-                  ? t("accessSchedule.form.slotFull")
-                  : t("accessSchedule.form.slotLeft", { count: slot.availableCapacity })}
+                {past
+                  ? t("accessSchedule.form.slotPast")
+                  : full
+                    ? t("accessSchedule.form.slotFull")
+                    : t("accessSchedule.form.slotLeft", { count: slot.availableCapacity })}
               </Text>
             </Pressable>
           );

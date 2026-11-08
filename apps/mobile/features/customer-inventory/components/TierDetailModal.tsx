@@ -211,7 +211,7 @@ export function TierDetailModal({
                       {`  ${item.sku.uom}`}
                     </Text>
                   </View>
-                  {canAct ? (
+                  {canAct && canOperateItem(item) ? (
                     <Pressable
                       onPress={() => setMenuItemId(menuOpen ? null : item.inventoryId)}
                       hitSlop={8}
