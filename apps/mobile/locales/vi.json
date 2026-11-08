@@ -695,15 +695,13 @@
         "notStored": "Chưa lưu trữ trên kệ"
       },
       "step": {
-        "facility": "Kho",
-        "area": "Khu vực",
+        "facility": "Cơ sở",
+        "unit": "Phòng",
         "rack": "Kệ",
-        "tier": "Tầng"
+        "tier": "Tầng",
+        "position": "Vị trí"
       },
-      "area": {
-        "unit": "Phòng %{unit}",
-        "aisle": "Dãy %{aisle}"
-      },
+      "address": "Khu vực",
       "contractChip": "HĐ %{code}",
       "viewOnMap": "Xem trên sơ đồ",
       "viewSku": "Xem chi tiết mã hàng",

@@ -699,14 +699,12 @@
       },
       "step": {
         "facility": "Facility",
-        "area": "Area",
+        "unit": "Unit",
         "rack": "Rack",
-        "tier": "Tier"
+        "tier": "Tier",
+        "position": "Position"
       },
-      "area": {
-        "unit": "Unit %{unit}",
-        "aisle": "Aisle %{aisle}"
-      },
+      "address": "Location",
       "contractChip": "Contract %{code}",
       "viewOnMap": "View on rack map",
       "viewSku": "View SKU details",
