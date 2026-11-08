@@ -48,7 +48,7 @@ import {
   INCIDENT_STEPS,
   getIncidentStepIndex,
 } from "@/features/incidents/utils/incidentFormat";
-import { resolveRequestError } from "@/features/inventory-requests/utils/requestFormat";
+import { resolveRequestError } from "@/lib/apiError";
 
 const CANCEL_MIN = 5;
 

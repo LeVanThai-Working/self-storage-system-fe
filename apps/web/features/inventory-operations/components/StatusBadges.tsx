@@ -1,12 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  InventoryItemStatusEnum,
-  InventoryRequestStatusEnum,
-} from "@self-storage-system-fe/shared";
+import { InventoryItemStatusEnum } from "@self-storage-system-fe/shared";
 
-type Tone = "yellow" | "orange" | "blue" | "purple" | "green" | "red" | "gray" | "brown";
+export type Tone = "yellow" | "orange" | "blue" | "purple" | "green" | "red" | "gray" | "brown";
 
 const TONE: Record<Tone, { badge: string; dot: string }> = {
   yellow: { badge: "bg-amber-50 text-amber-700 border-amber-200/80", dot: "bg-amber-500" },
@@ -19,18 +16,6 @@ const TONE: Record<Tone, { badge: string; dot: string }> = {
   brown: { badge: "bg-stone-100 text-stone-700 border-stone-200", dot: "bg-stone-500" },
 };
 
-const REQUEST_TONE: Record<InventoryRequestStatusEnum, Tone> = {
-  [InventoryRequestStatusEnum.PENDING]: "yellow",
-  [InventoryRequestStatusEnum.PENDING_CUSTOMER_CONFIRMATION]: "orange",
-  [InventoryRequestStatusEnum.ASSIGNED]: "blue",
-  [InventoryRequestStatusEnum.PROCESSING]: "blue",
-  [InventoryRequestStatusEnum.READY_TO_PUTAWAY]: "purple",
-  [InventoryRequestStatusEnum.COMPLETED]: "green",
-  [InventoryRequestStatusEnum.DISPUTED]: "red",
-  [InventoryRequestStatusEnum.CANCELLED]: "gray",
-  [InventoryRequestStatusEnum.EXPIRED]: "brown",
-};
-
 const ITEM_TONE: Record<InventoryItemStatusEnum, Tone> = {
   [InventoryItemStatusEnum.NORMAL]: "green",
   [InventoryItemStatusEnum.TEMPORARY_HOLDING]: "orange",
@@ -38,7 +23,7 @@ const ITEM_TONE: Record<InventoryItemStatusEnum, Tone> = {
   [InventoryItemStatusEnum.DISPUTED]: "gray",
 };
 
-function Pill({ tone, label }: { tone: Tone; label: string }) {
+export function Pill({ tone, label }: { tone: Tone; label: string }) {
   const style = TONE[tone];
   return (
     <span
@@ -49,12 +34,6 @@ function Pill({ tone, label }: { tone: Tone; label: string }) {
     </span>
   );
 }
-
-/** Inventory request status (S1 / S2 colors from the mock style guide). */
-export const RequestStatusBadge = ({ status }: { status: InventoryRequestStatusEnum }) => {
-  const t = useTranslations("inventoryOps.requestStatus");
-  return <Pill tone={REQUEST_TONE[status] ?? "gray"} label={t.has(status) ? t(status) : status} />;
-};
 
 /** Inventory item status (normal / holding / damaged / disputed). */
 export const ItemStatusBadge = ({ status }: { status?: InventoryItemStatusEnum | null }) => {

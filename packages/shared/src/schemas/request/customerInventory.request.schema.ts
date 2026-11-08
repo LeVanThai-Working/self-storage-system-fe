@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { paginationQuerySchema } from "../common/pagination.schema";
-import { MovementTypeEnum, InventoryItemStatusEnum } from "../../enums";
+import { MovementTypeEnum, InventoryItemStatusEnum, SkuPlacementEnum } from "../../enums";
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
@@ -101,6 +101,16 @@ export const storageUnitTreeParamSchema = z.object({
   storageUnitId: z.string().regex(objectIdRegex, "Invalid storageUnitId format"),
 });
 
+export const storageUnitTreeQuerySchema = z.object({
+  contractId: z.string().regex(objectIdRegex, "Invalid contractId format").optional(),
+});
+
+export const skuLocatorQuerySchema = paginationQuerySchema
+  .pick({ page: true, limit: true, search: true })
+  .extend({
+    placement: z.nativeEnum(SkuPlacementEnum).optional(),
+  });
+
 export const skuLocationsParamSchema = z.object({
   skuId: z.string().regex(objectIdRegex, "Invalid skuId format"),
 });
@@ -123,57 +133,10 @@ export type CustomerInventoryQuery = z.infer<typeof customerInventoryQuerySchema
 export type InventoryMovementQuery = z.infer<typeof inventoryMovementQuerySchema>;
 export type InventoryIdParam = z.infer<typeof inventoryIdParamSchema>;
 export type StorageUnitTreeParam = z.infer<typeof storageUnitTreeParamSchema>;
+export type StorageUnitTreeQuery = z.infer<typeof storageUnitTreeQuerySchema>;
+export type SkuLocatorQuery = z.infer<typeof skuLocatorQuerySchema>;
 export type SkuLocationsParam = z.infer<typeof skuLocationsParamSchema>;
 export type BarcodeParam = z.infer<typeof barcodeParamSchema>;
-
-export const batchMigrateRackRequestSchema = z
-  .object({
-    fromRackId: z.string().regex(objectIdRegex, "Invalid fromRackId format"),
-    toRackId: z.string().regex(objectIdRegex, "Invalid toRackId format"),
-    contractId: z.string().regex(objectIdRegex, "Invalid contractId format").optional(),
-    addendumId: z.string().regex(objectIdRegex, "Invalid addendumId format").optional(),
-    incidentId: z.string().regex(objectIdRegex, "Invalid incidentId format").optional(),
-    emergencyReason: z
-      .string()
-      .trim()
-      .min(10, "Emergency reason must be at least 10 characters")
-      .max(1000)
-      .optional(),
-    reason: z.string().trim().max(1000).optional(),
-    notes: z.string().trim().max(1000).optional(),
-  })
-  .refine((data) => data.fromRackId !== data.toRackId, {
-    message: "Destination rack must be different from source rack",
-    path: ["toRackId"],
-  })
-  .refine((data) => Boolean(data.addendumId || data.emergencyReason || data.incidentId), {
-    message:
-      "Either addendumId (signed Addendum), incidentId (Incident Report), or emergencyReason (at least 10 characters) is required",
-    path: ["emergencyReason"],
-  });
-
-export type BatchMigrateRackRequest = z.infer<typeof batchMigrateRackRequestSchema>;
-
-export const evacuateRackToHoldingRequestSchema = z
-  .object({
-    fromRackId: z.string().regex(objectIdRegex, "Invalid fromRackId format"),
-    emergencyReason: z.string().trim().max(1000).optional(),
-    incidentId: z.string().regex(objectIdRegex, "Invalid incidentId format").optional(),
-    notes: z.string().trim().max(1000).optional(),
-  })
-  .refine(
-    (data) => {
-      const hasReason = Boolean(data.emergencyReason && data.emergencyReason.trim().length >= 10);
-      const hasIncident = Boolean(data.incidentId && data.incidentId.trim().length > 0);
-      return hasReason || hasIncident;
-    },
-    {
-      message: "Either emergencyReason (minimum 10 characters) or valid incidentId is required",
-      path: ["emergencyReason"],
-    }
-  );
-
-export type EvacuateRackToHoldingRequest = z.infer<typeof evacuateRackToHoldingRequestSchema>;
 
 export const updateInventoryStatusRequestSchema = z
   .object({

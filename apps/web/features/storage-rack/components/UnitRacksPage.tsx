@@ -10,7 +10,7 @@ import { RoleEnum } from "@self-storage-system-fe/shared";
 import { useAuthStore } from "@/features/auth/store";
 import { fetchStorageUnitById } from "@/features/contract-management/api";
 import { UnitInventoryView } from "@/features/inventory-operations/components/UnitInventoryView";
-import type { FacilityPortal } from "@/features/inventory-operations/components/RequestQueueView";
+import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { RackStructureView } from "./RackStructureView";
 
 type Tab = "structure" | "goods";

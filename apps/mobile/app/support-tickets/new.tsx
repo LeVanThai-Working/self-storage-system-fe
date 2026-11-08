@@ -30,7 +30,7 @@ import { useTranslation } from "@/stores/language.store";
 import { toast } from "@/stores/toast.store";
 import { ContractPicker } from "@/features/contracts/components/ContractPicker";
 import { useCreateSupportTicket } from "@/features/support-tickets/hooks/useSupportTickets";
-import { resolveRequestError } from "@/features/inventory-requests/utils/requestFormat";
+import { resolveRequestError } from "@/lib/apiError";
 
 const MAX_ATTACHMENTS = 5;
 

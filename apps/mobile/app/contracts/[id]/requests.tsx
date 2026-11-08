@@ -2,174 +2,59 @@ import React, { useMemo, useState } from "react";
 import { Pressable, RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import {
-  ArrowDownToLine,
-  ArrowLeft,
-  ArrowLeftRight,
-  ArrowUpFromLine,
-  CircleAlert,
-  Inbox,
-} from "lucide-react-native";
-import {
-  InventoryRequestStatusEnum,
-  InventoryRequestTypeEnum,
-  formatDate,
-  type InventoryRequestResponse,
-  type SupportTicketResponse,
-} from "@self-storage-system-fe/shared";
+import { ArrowLeft, CalendarClock, Inbox } from "lucide-react-native";
+import { ContractStatusEnum } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StatusPill } from "@/components/ui/status-pill";
 import { FilterChips } from "@/components/ui/filter-chips";
 import { useTranslation } from "@/stores/language.store";
 import { useContractDetail } from "@/features/contracts/hooks/useContracts";
 import { isWarehouseRackContract } from "@/features/contracts/utils/contractFormat";
 import { SelfStorageGuardView } from "@/features/contracts/components/SelfStorageGuardView";
 import { useContractMovements } from "@/features/customer-inventory/hooks/useCustomerInventory";
-import { MovementRow, formatTime } from "@/features/customer-inventory/components/MovementRow";
-import { useInventoryRequests } from "@/features/inventory-requests/hooks/useInventoryRequests";
-import {
-  REQUEST_STATUS_TONE,
-  sumRequestQuantity,
-} from "@/features/inventory-requests/utils/requestFormat";
-import { useSupportTicketList } from "@/features/support-tickets/hooks/useSupportTickets";
-import {
-  TICKET_STATUS_TONE,
-  isMoveRequestTicket,
-} from "@/features/support-tickets/utils/ticketTemplates";
+import { MovementRow } from "@/features/customer-inventory/components/MovementRow";
+import { useAccessSchedules } from "@/features/access-schedules/hooks/useAccessSchedules";
+import { AccessScheduleCard } from "@/features/access-schedules/components/AccessScheduleCard";
 
-type Tab = "outbound" | "inbound" | "move" | "activity";
+type Tab = "movements" | "visits";
 
-const REQUEST_LIMIT = 30;
-
-/** C9 — every warehouse request of one contract plus the staff activity feed. */
-export default function ContractRequestsScreen() {
+/** Activity of one contract: the stock ledger and the warehouse visits booked for it. */
+export default function ContractActivityScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { id: contractId = "" } = useLocalSearchParams<{ id?: string }>();
-  const [tab, setTab] = useState<Tab>("outbound");
+  const [tab, setTab] = useState<Tab>("movements");
 
   const contractQuery = useContractDetail(contractId);
   const contract = contractQuery.data;
   const isWarehouse =
     typeof isWarehouseRackContract === "function" ? isWarehouseRackContract(contract) : false;
 
-  const requestQuery = useInventoryRequests(
-    {
-      contractId,
-      page: 1,
-      limit: REQUEST_LIMIT,
-      sortBy: "createdAt",
-      sortOrder: "desc",
-    },
-    Boolean(contractId && isWarehouse)
-  );
-  const ticketQuery = useSupportTicketList({ contractId }, Boolean(tab === "move" && isWarehouse));
   const movementQuery = useContractMovements(
-    Boolean(tab === "activity" && isWarehouse) ? contractId : undefined
+    tab === "movements" && isWarehouse ? contractId : undefined
   );
-
-  const requests = requestQuery.data?.items ?? [];
-  const pendingInbound = requests.filter(
-    (request) => request.status === InventoryRequestStatusEnum.PENDING_CUSTOMER_CONFIRMATION
-  );
-  const visibleRequests = requests.filter((request) =>
-    tab === "outbound"
-      ? request.type === InventoryRequestTypeEnum.OUTBOUND
-      : request.type === InventoryRequestTypeEnum.INBOUND
-  );
-  const moveTickets = useMemo(
-    () =>
-      (ticketQuery.data?.pages.flatMap((page) => page.items) ?? []).filter((ticket) =>
-        isMoveRequestTicket(ticket)
-      ),
-    [ticketQuery.data]
+  const visitQuery = useAccessSchedules({ contractId }, tab === "visits" && isWarehouse);
+  const visits = useMemo(
+    () => visitQuery.data?.pages.flatMap((page) => page.items) ?? [],
+    [visitQuery.data]
   );
 
   const handleRefresh = () => {
-    void requestQuery.refetch();
-    if (tab === "move") void ticketQuery.refetch();
-    if (tab === "activity") void movementQuery.refetch();
+    if (tab === "movements") void movementQuery.refetch();
+    else void visitQuery.refetch();
   };
 
-  const renderRequest = (request: InventoryRequestResponse) => {
-    const outbound = request.type === InventoryRequestTypeEnum.OUTBOUND;
-    return (
-      <Pressable
-        key={request.id}
-        onPress={() =>
-          router.push({ pathname: "/inventory-requests/[id]", params: { id: request.id } })
-        }
-        className="flex-row items-center gap-3 border-b border-neutral-border py-3 active:opacity-70 dark:border-neutral-800"
-      >
-        <View
-          className={`h-9 w-9 items-center justify-center rounded-xl ${
-            outbound ? "bg-cta-light dark:bg-cta/20" : "bg-brand-light dark:bg-brand/20"
-          }`}
-        >
-          {outbound ? (
-            <ArrowUpFromLine size={16} color="#FF702E" />
-          ) : (
-            <ArrowDownToLine size={16} color="#0B927E" />
-          )}
-        </View>
-        <View className="flex-1 gap-0.5">
-          <Text className="font-mono text-[11px] font-bold text-neutral-dark dark:text-neutral-100">
-            {request.requestCode}
-          </Text>
-          <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-            {t(
-              outbound ? "inventoryRequest.list.outboundLine" : "inventoryRequest.list.inboundLine",
-              {
-                qty: sumRequestQuantity(request.items),
-              }
-            )}
-          </Text>
-          <Text variant="muted" className="text-[10px]">
-            {request.transporterInfo?.name ? `${request.transporterInfo.name} · ` : ""}
-            {formatTime(request.createdAt)} {formatDate(request.createdAt)}
-          </Text>
-        </View>
-        <StatusPill
-          label={t(`inventoryRequest.status.${request.status}`)}
-          tone={REQUEST_STATUS_TONE[request.status]}
-        />
-      </Pressable>
-    );
-  };
-
-  const renderTicket = (ticket: SupportTicketResponse) => (
-    <Pressable
-      key={ticket.id}
-      onPress={() => router.push({ pathname: "/support-tickets/[id]", params: { id: ticket.id } })}
-      className="flex-row items-center gap-3 border-b border-neutral-border py-3 active:opacity-70 dark:border-neutral-800"
-    >
-      <View className="h-9 w-9 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-950/50">
-        <ArrowLeftRight size={16} color="#3B82F6" />
-      </View>
-      <View className="flex-1 gap-0.5">
-        <Text className="font-mono text-[11px] font-bold text-neutral-dark dark:text-neutral-100">
-          {ticket.ticketCode}
-        </Text>
-        <Text
-          numberOfLines={1}
-          className="text-xs font-bold text-neutral-dark dark:text-neutral-100"
-        >
-          {ticket.title}
-        </Text>
-        <Text variant="muted" className="text-[10px]">
-          {formatTime(ticket.createdAt)} {formatDate(ticket.createdAt)}
-        </Text>
-      </View>
-      <StatusPill
-        label={t(`supportTicket.status.${ticket.status}`)}
-        tone={TICKET_STATUS_TONE[ticket.status]}
-      />
-    </Pressable>
+  const renderEmpty = (message: string) => (
+    <View className="items-center rounded-3xl border border-neutral-border bg-white p-8 dark:border-neutral-800 dark:bg-neutral-900">
+      <Inbox size={28} color="#647B80" />
+      <Text variant="muted" className="mt-2 text-center text-xs">
+        {message}
+      </Text>
+    </View>
   );
 
   const renderList = () => {
-    if (tab === "activity") {
+    if (tab === "movements") {
       const movements = movementQuery.data?.items ?? [];
       if (movementQuery.isLoading) return <Skeleton className="h-24 w-full rounded-3xl" />;
       return movements.length > 0 ? (
@@ -179,37 +64,33 @@ export default function ContractRequestsScreen() {
           ))}
         </View>
       ) : (
-        renderEmpty()
+        renderEmpty(t("contractActivity.emptyMovements"))
       );
     }
 
-    const loading = tab === "move" ? ticketQuery.isLoading : requestQuery.isLoading;
-    if (loading) return <Skeleton className="h-40 w-full rounded-3xl" />;
-    const rows =
-      tab === "move" ? moveTickets.map(renderTicket) : visibleRequests.map(renderRequest);
-    return rows.length > 0 ? (
-      <View className="rounded-3xl border border-neutral-border bg-white px-4 dark:border-neutral-800 dark:bg-neutral-900">
-        {rows}
+    if (visitQuery.isLoading) return <Skeleton className="h-24 w-full rounded-3xl" />;
+    return visits.length > 0 ? (
+      <View className="gap-2.5">
+        {visits.map((visit) => (
+          <AccessScheduleCard
+            key={visit.id}
+            schedule={visit}
+            onPress={() =>
+              router.push({ pathname: "/access-schedules/[id]", params: { id: visit.id } })
+            }
+          />
+        ))}
       </View>
     ) : (
-      renderEmpty()
+      renderEmpty(t("accessSchedule.list.empty"))
     );
   };
-
-  const renderEmpty = () => (
-    <View className="items-center rounded-3xl border border-neutral-border bg-white p-8 dark:border-neutral-800 dark:bg-neutral-900">
-      <Inbox size={28} color="#647B80" />
-      <Text variant="muted" className="mt-2 text-center text-xs">
-        {t("inventoryRequest.list.empty")}
-      </Text>
-    </View>
-  );
 
   if (contract && !isWarehouse) {
     return (
       <SelfStorageGuardView
         contract={contract}
-        title={t("inventoryRequest.list.title")}
+        title={t("contractActivity.title")}
         reason="inventory_not_supported"
       />
     );
@@ -224,13 +105,13 @@ export default function ContractRequestsScreen() {
           </Pressable>
           <View className="flex-1">
             <Text className="text-lg font-extrabold text-neutral-dark dark:text-neutral-100">
-              {t("inventoryRequest.list.title")}
+              {t("contractActivity.title")}
             </Text>
-            {contractQuery.data ? (
+            {contract ? (
               <Text variant="muted" className="text-[11px]">
-                {t("inventoryRequest.unitContract", {
-                  unit: contractQuery.data.storageUnit?.unitNumber ?? "",
-                  code: contractQuery.data.contractCode,
+                {t("contractActivity.unitContract", {
+                  unit: contract.storageUnit?.unitNumber ?? "",
+                  code: contract.contractCode,
                 })}
               </Text>
             ) : null}
@@ -240,10 +121,8 @@ export default function ContractRequestsScreen() {
           value={tab}
           onChange={setTab}
           options={[
-            { key: "outbound", label: t("inventoryRequest.list.tab.outbound") },
-            { key: "inbound", label: t("inventoryRequest.list.tab.inbound") },
-            { key: "move", label: t("inventoryRequest.list.tab.move") },
-            { key: "activity", label: t("inventoryRequest.list.tab.activity") },
+            { key: "movements", label: t("contractActivity.tab.movements") },
+            { key: "visits", label: t("contractActivity.tab.visits") },
           ]}
         />
       </View>
@@ -252,30 +131,23 @@ export default function ContractRequestsScreen() {
         contentContainerClassName="gap-4 p-4 pb-12"
         refreshControl={
           <RefreshControl
-            refreshing={requestQuery.isRefetching}
+            refreshing={movementQuery.isRefetching || visitQuery.isRefetching}
             onRefresh={handleRefresh}
             tintColor="#0B927E"
           />
         }
       >
-        {pendingInbound.length > 0 ? (
+        {tab === "visits" && contract?.status === ContractStatusEnum.ACTIVE ? (
           <Pressable
             onPress={() =>
-              router.push({
-                pathname: "/inventory-requests/[id]",
-                params: { id: pendingInbound[0].id },
-              })
+              router.push({ pathname: "/access-schedules/new", params: { contractId } })
             }
-            className="flex-row items-center gap-2.5 rounded-2xl border border-cta/30 bg-cta-light/60 p-3 active:opacity-80 dark:bg-cta/10"
+            className="flex-row items-center justify-center gap-1.5 rounded-xl bg-cta py-2.5 active:opacity-80"
           >
-            <CircleAlert size={18} color="#D34D0F" />
-            <Text className="flex-1 text-xs font-bold text-cta-dark">
-              {t("inventoryRequest.list.pendingInbound", { count: pendingInbound.length })}
-            </Text>
-            <Text className="text-xs font-bold text-cta-dark">{t("rackMap.view")}</Text>
+            <CalendarClock size={14} color="#FFFFFF" />
+            <Text className="text-xs font-bold text-white">{t("accessSchedule.bookButton")}</Text>
           </Pressable>
         ) : null}
-
         {renderList()}
       </ScrollView>
     </SafeAreaView>

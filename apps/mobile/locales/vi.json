@@ -446,14 +446,14 @@
       "empty": "Không có hàng ở khu lưu tạm",
       "summary": "Khu lưu tạm (%{qty} món)",
       "skuCount": "%{count} mã hàng",
-      "holdingHint": "Hàng ở khu lưu tạm chưa thể xuất. Nhân viên sẽ xếp lại lên kệ khi kệ sẵn sàng."
+      "holdingHint": "Hàng ở khu lưu tạm đang tạm khóa do sự cố kệ. Nhân viên sẽ mở lại sau khi bạn xác nhận nghiệm thu."
     },
     "position": {
       "tierOfRack": "Tầng %{tier} · Kệ %{rack}",
       "floorHint": "Đặt trực tiếp dưới sàn kho"
     },
     "noRacks": "Phòng kho này không có hệ thống kệ",
-    "readOnlyBanner": "Hợp đồng chưa hiệu lực, không thể thao tác hàng hóa",
+    "readOnlyBanner": "Hợp đồng không còn hiệu lực, chỉ có thể xem hàng hóa",
     "lockedTier": "Tầng này đang tạm khóa, chỉ có thể xem",
     "forbidden": "Bạn không có quyền xem kho này",
     "loadError": "Không tải được sơ đồ kệ hàng",
@@ -467,9 +467,6 @@
       "stockOut": "Xuất",
       "move": "Chuyển",
       "adjust": "Kiểm kê",
-      "requestOutbound": "Yêu cầu xuất",
-      "requestMove": "Yêu cầu chuyển",
-      "notifyInbound": "Báo gửi hàng",
       "reportIncident": "Báo sự cố ở tầng này"
     },
     "form": {
@@ -559,8 +556,7 @@
       "by": "bởi %{name}"
     },
     "view": "Xem",
-    "staffOperatedHint": "Nhân viên kho sẽ thực hiện mọi thao tác nhập, xuất, chuyển hàng",
-    "overdueBanner": "Hợp đồng quá hạn · Chỉ có thể yêu cầu xuất hoặc chuyển hàng",
+    "overdueBanner": "Hợp đồng quá hạn · Chỉ có thể xuất hoặc chuyển hàng",
     "attentionBanner": "%{count} món hàng cần chú ý (lưu tạm, hư hỏng, tranh chấp)",
     "itemStatus": {
       "temporary_holding": "Lưu tạm",
@@ -578,7 +574,8 @@
         "damaged": "Hư hỏng – chờ giám định (%{count})",
         "disputed": "Đang tranh chấp (%{count})"
       }
-    }
+    },
+    "selfManagedHint": "Bạn tự nhập, xuất, chuyển hàng trên kệ của mình. Chạm vào một tầng để thao tác."
   },
   "media": {
     "addPhoto": "Thêm ảnh",
@@ -669,11 +666,11 @@
       "hint": "Đưa mã vạch vào khung để quét",
       "totalAt": "Tổng tồn %{qty} %{uom} ở %{count} vị trí",
       "viewOnMap": "Xem trên sơ đồ",
-      "requestOutbound": "Yêu cầu xuất",
       "notFoundTitle": "Chưa có mã này",
       "notFoundDesc": "Mã vạch %{barcode} chưa có trong danh mục của bạn.",
       "createWithBarcode": "Tạo mã hàng với mã vạch này",
-      "rescan": "Quét lại"
+      "rescan": "Quét lại",
+      "takeOut": "Xuất tại kệ"
     },
     "locator": {
       "title": "Tìm vị trí hàng",
@@ -713,151 +710,6 @@
     "placeholder": "Chọn hợp đồng liên quan",
     "empty": "Bạn chưa có hợp đồng nào phù hợp",
     "loadMore": "Xem thêm"
-  },
-  "inventoryRequest": {
-    "unitContract": "Phòng %{unit} · HĐ #%{code}",
-    "loadError": "Không tải được phiếu kho",
-    "itemsSummary": "Hàng trong phiếu (%{count} mã · %{qty} món)",
-    "discrepancy": "Giao thiếu: %{reason}",
-    "status": {
-      "pending": "Chờ lấy hàng",
-      "pending_confirmation": "Chờ bạn xác nhận",
-      "processing": "Đang xử lý",
-      "ready_to_putaway": "Sẵn sàng xếp kệ",
-      "completed": "Hoàn tất",
-      "disputed": "Khiếu nại",
-      "cancelled": "Đã huỷ",
-      "expired": "Hết hạn"
-    },
-    "recipient": {
-      "title": "Người nhận hàng",
-      "name": "Họ tên",
-      "phone": "Số điện thoại",
-      "plate": "Biển số xe",
-      "company": "Đơn vị vận chuyển"
-    },
-    "outbound": {
-      "title": "Yêu cầu xuất hàng",
-      "itemsTitle": "Hàng muốn lấy (%{count})",
-      "noItems": "Chưa chọn món hàng nào",
-      "addItems": "Thêm hàng từ kệ",
-      "available": "còn lấy được %{qty} %{uom}",
-      "pickerTitle": "Chọn hàng muốn lấy",
-      "holdingNote": "Hàng lưu tạm, hư hỏng hoặc tranh chấp chưa thể xuất",
-      "recipientTitle": "Người đến nhận (không bắt buộc)",
-      "notes": "Ghi chú cho nhân viên",
-      "notesPlaceholder": "VD: Hàng dễ vỡ, xin bốc cẩn thận",
-      "otpHint": "Sau khi gửi, bạn nhận mã QR và mã OTP 6 số. Người nhận đưa mã cho nhân viên kho để lấy hàng. Mã có hiệu lực theo thời hạn bạn chọn ở trên.",
-      "itemsRequired": "Chọn ít nhất một món hàng với số lượng hợp lệ",
-      "recipientInvalid": "Người nhận cần có họ tên và số điện thoại (tối thiểu 8 số)",
-      "submit": "Gửi yêu cầu xuất (%{count} món)",
-      "created": "Đã tạo phiếu %{code}",
-      "heldByOthers": "%{qty} %{uom} đang giữ cho phiếu xuất khác"
-    },
-    "pickup": {
-      "title": "Mã nhận hàng",
-      "otpLabel": "Mã OTP",
-      "otpOnce": "Chỉ hiển thị một lần – hãy lưu lại hoặc chia sẻ cho người nhận",
-      "otpHidden": "Mã OTP chỉ hiện ngay sau khi tạo phiếu. Bấm \"Cấp lại OTP\" nếu bạn chưa lưu mã. Mã QR ở trên vẫn dùng được.",
-      "expiresIn": "Hết hạn sau %{time}",
-      "processingBanner": "Nhân viên đang bốc hàng tại quầy. Bạn không thể huỷ yêu cầu lúc này.",
-      "share": "Chia sẻ cho người nhận",
-      "shareMessage": "Mã nhận hàng StorageHub %{code} tại %{facility}. OTP: %{otp}. Vui lòng đưa mã cho nhân viên kho.",
-      "cancel": "Huỷ yêu cầu",
-      "cancelTitle": "Huỷ yêu cầu xuất?",
-      "cancelPlaceholder": "Lý do huỷ (không bắt buộc)",
-      "cancelSubmit": "Xác nhận huỷ",
-      "cancelled": "Đã huỷ yêu cầu xuất",
-      "regenerateOtp": "Cấp lại OTP",
-      "otpRegenerated": "Đã cấp OTP mới, mã cũ không còn dùng được"
-    },
-    "inbound": {
-      "title": "Xác nhận nhận hàng",
-      "autoConfirmIn": "Tự xác nhận sau %{time}",
-      "notCountedYet": "Hàng chưa được cộng vào tồn kho cho tới khi bạn xác nhận và nhân viên xếp lên kệ.",
-      "evidence": "Ảnh bằng chứng (%{count})",
-      "deliverer": "Người giao",
-      "confirm": "Xác nhận đúng",
-      "confirmed": "Đã xác nhận phiếu nhập",
-      "dispute": "Khiếu nại",
-      "disputeTitle": "Khiếu nại phiếu nhập",
-      "disputePlaceholder": "VD: Tôi gửi 25 bộ nhưng phiếu ghi 20 bộ",
-      "disputeSubmit": "Gửi khiếu nại",
-      "disputeTooShort": "Lý do khiếu nại cần tối thiểu 5 ký tự",
-      "disputed": "Đã gửi khiếu nại"
-    },
-    "move": {
-      "title": "Yêu cầu chuyển vị trí",
-      "itemLabel": "Món hàng cần chuyển",
-      "from": "Từ",
-      "to": "Muốn chuyển đến",
-      "pickTarget": "Chọn tầng muốn chuyển đến",
-      "rack": "Kệ %{code}",
-      "tierItems": "%{count} mã hàng",
-      "onlyYourRacks": "Chỉ hiển thị kệ bạn đang thuê",
-      "quantity": "Số lượng",
-      "all": "Chuyển hết (%{qty})",
-      "reason": "Lý do / ghi chú",
-      "reasonPlaceholder": "VD: Gom hàng dùng thường xuyên xuống tầng thấp",
-      "staffHint": "Yêu cầu sẽ gửi tới nhân viên kho. Vị trí chỉ thay đổi sau khi nhân viên chuyển hàng thực tế, bạn sẽ thấy trong lịch sử.",
-      "submit": "Gửi yêu cầu",
-      "sent": "Đã gửi yêu cầu %{code}"
-    },
-    "timeline": {
-      "created": "Đã tạo yêu cầu",
-      "verified": "Nhân viên xác nhận mã",
-      "handedOver": "Bàn giao hoàn tất",
-      "received": "Nhân viên tiếp nhận hàng",
-      "confirmed": "Bạn đã xác nhận",
-      "autoConfirmed": "Tự động xác nhận sau 24 giờ",
-      "putaway": "Đã xếp lên kệ",
-      "preAdvised": "Bạn đã báo gửi hàng",
-      "arrived": "Nhân viên quét mã nhận hàng"
-    },
-    "list": {
-      "title": "Yêu cầu kho",
-      "empty": "Chưa có yêu cầu nào",
-      "pendingInbound": "%{count} phiếu nhập chờ bạn xác nhận",
-      "outboundLine": "Xuất %{qty} món",
-      "inboundLine": "Nhập %{qty} món",
-      "tab": {
-        "outbound": "Xuất",
-        "inbound": "Nhập",
-        "move": "Chuyển",
-        "activity": "Hoạt động"
-      }
-    },
-    "validity": {
-      "title": "Hiệu lực của mã",
-      "days": "%{count} ngày"
-    },
-    "preAdvised": {
-      "title": "Báo trước hàng gửi vào kho",
-      "detailTitle": "Phiếu nhập báo trước",
-      "activeOnly": "Chỉ hợp đồng đang hiệu lực mới được báo gửi hàng.",
-      "itemsTitle": "Hàng sẽ gửi (%{count} mã)",
-      "noItems": "Chưa chọn mã hàng nào",
-      "addItems": "Thêm từ danh mục hàng",
-      "pickerTitle": "Chọn mã hàng sẽ gửi",
-      "searchPlaceholder": "Tìm theo mã hoặc tên hàng",
-      "noSkus": "Bạn chưa có mã hàng nào đang dùng. Tạo mã hàng trước khi báo gửi.",
-      "createSku": "Tạo mã hàng",
-      "createSkuMore": "+ Tạo thêm mã hàng mới",
-      "selectSkuTitle": "Chọn mã hàng",
-      "delivererTitle": "Người giao hàng (không bắt buộc)",
-      "delivererInvalid": "Người giao cần có họ tên và số điện thoại (tối thiểu 8 số)",
-      "deadline": "Hạn giao hàng tới kho",
-      "notesPlaceholder": "VD: Hàng đến bằng xe tải nhỏ, có 2 kiện dễ vỡ",
-      "otpHint": "Sau khi gửi, bạn nhận mã QR và mã OTP 6 số. Người giao đưa mã cho nhân viên kho khi tới nơi. Nhân viên kiểm đếm rồi xếp hàng lên kệ của bạn.",
-      "itemsRequired": "Chọn ít nhất một mã hàng với số lượng hợp lệ",
-      "submit": "Gửi báo trước (%{count} món)",
-      "created": "Đã tạo phiếu nhập %{code}",
-      "processingBanner": "Hàng đã tới, nhân viên đang kiểm đếm và xếp lên kệ. Bạn không thể huỷ phiếu lúc này.",
-      "share": "Chia sẻ cho người giao",
-      "shareMessage": "Mã gửi hàng StorageHub %{code} tại %{facility}. OTP: %{otp}. Vui lòng đưa mã cho nhân viên kho khi giao hàng.",
-      "cancelTitle": "Huỷ phiếu nhập báo trước?",
-      "cancelled": "Đã huỷ phiếu nhập"
-    }
   },
   "supportTicket": {
     "loadError": "Không tải được yêu cầu hỗ trợ",
@@ -1139,5 +991,86 @@
     "quantityStatus": "Tình trạng số lượng",
     "availableQty": "Khả dụng: %{count} cái",
     "unlimitedQty": "Số lượng không giới hạn"
+  },
+  "contractActivity": {
+    "title": "Hoạt động kho",
+    "unitContract": "Phòng %{unit} · HĐ %{code}",
+    "tab": {
+      "movements": "Lịch sử nhập xuất",
+      "visits": "Lịch vào kho"
+    },
+    "emptyMovements": "Chưa có lần nhập, xuất hay chuyển hàng nào"
+  },
+  "accessSchedule": {
+    "bookButton": "Đặt lịch vào kho",
+    "contractLine": "HĐ %{code} · %{facility}",
+    "peopleCount": {
+      "one": "1 người",
+      "other": "%{count} người"
+    },
+    "loadError": "Không tải được lịch vào kho",
+    "status": {
+      "pending": "Chờ vào kho",
+      "checked_in": "Đang trong kho",
+      "completed": "Hoàn tất",
+      "cancelled": "Đã hủy",
+      "no_show": "Không đến",
+      "expired": "Hết hạn"
+    },
+    "list": {
+      "title": "Lịch vào kho",
+      "subtitle": "Các lần bạn đặt lịch đến kho",
+      "all": "Tất cả",
+      "empty": "Chưa có lịch vào kho nào",
+      "emptyHint": "Đặt lịch từ hợp đồng đang thuê để nhận mã vào cổng"
+    },
+    "form": {
+      "title": "Đặt lịch vào kho",
+      "date": "Ngày đến kho",
+      "change": "Đổi ngày",
+      "slot": "Khung giờ",
+      "slotRequired": "Vui lòng chọn khung giờ",
+      "slotLeft": "Còn %{count} chỗ",
+      "slotFull": "Đầy",
+      "noSlots": "Cơ sở chưa mở khung giờ nào cho ngày này",
+      "windowHint": "Bạn được vào cổng sớm tối đa %{early} phút và trễ tối đa %{late} phút so với giờ bắt đầu.",
+      "people": "Số người vào kho",
+      "vehicleType": "Loại xe (không bắt buộc)",
+      "vehicleTypePlaceholder": "Xe tải 1.5T, xe ba gác...",
+      "vehiclePlate": "Biển số xe (không bắt buộc)",
+      "purpose": "Mục đích (không bắt buộc)",
+      "purposePlaceholder": "Nhập thêm hàng, lấy hàng về...",
+      "submit": "Xác nhận đặt lịch",
+      "success": "Đã đặt lịch %{code}",
+      "contractNotActive": "Chỉ hợp đồng đang thuê mới đặt được lịch vào kho",
+      "slotPast": "Đã qua giờ"
+    },
+    "detail": {
+      "title": "Lịch vào kho",
+      "qrHint": "Đưa mã QR này cho bảo vệ khi đến cổng",
+      "otpLabel": "Mã OTP vào cổng",
+      "otpOnce": "Mã OTP chỉ hiện một lần, hãy ghi lại hoặc dùng mã QR",
+      "otpHidden": "Mã OTP chỉ hiện ngay sau khi đặt. Hãy dùng mã QR để vào cổng.",
+      "date": "Ngày, ca",
+      "window": "Giờ vào cổng",
+      "windowValue": "%{from} – %{to}",
+      "people": "Số người",
+      "vehicle": "Phương tiện",
+      "none": "Không",
+      "racks": "Kệ thuê",
+      "contract": "Hợp đồng",
+      "checkedIn": "Vào kho lúc %{time}",
+      "checkedOut": "Rời kho lúc %{time}",
+      "cancelled": "Đã hủy lúc %{time}"
+    },
+    "cancel": {
+      "button": "Hủy lịch",
+      "title": "Hủy lịch vào kho?",
+      "message": "Khung giờ sẽ được nhả cho khách khác đặt.",
+      "keep": "Giữ lịch",
+      "confirm": "Hủy lịch",
+      "success": "Đã hủy lịch",
+      "tooLate": "Chỉ hủy được trước giờ bắt đầu ít nhất 1 giờ"
+    }
   }
 }

@@ -55,7 +55,8 @@ export default function SkuScanScreen() {
 
   const renderFound = (sku: CustomerSkuResponse, locations: SkuLocationsResponse | null) => {
     const items = locations?.locations ?? [];
-    const firstContractId = items.find((item) => item.contract?.id)?.contract?.id;
+    const firstLocation = items.find((item) => item.contract?.id);
+    const firstContractId = firstLocation?.contract?.id;
     const total = locations?.sku.totalQuantity ?? 0;
     return (
       <View className="gap-3">
@@ -121,8 +122,8 @@ export default function SkuScanScreen() {
             onPress={() =>
               firstContractId &&
               router.push({
-                pathname: "/contracts/[id]/outbound/new",
-                params: { id: firstContractId, skuId: sku.id },
+                pathname: "/contracts/[id]/rack-map",
+                params: { id: firstContractId, skuId: sku.id, tierId: firstLocation?.rackTier?.id },
               })
             }
             className={cn(
@@ -130,7 +131,7 @@ export default function SkuScanScreen() {
               (!firstContractId || total === 0) && "opacity-50"
             )}
           >
-            <Text className="text-xs font-bold text-white">{t("sku.scan.requestOutbound")}</Text>
+            <Text className="text-xs font-bold text-white">{t("sku.scan.takeOut")}</Text>
           </Pressable>
         </View>
       </View>

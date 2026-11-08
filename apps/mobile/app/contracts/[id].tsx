@@ -49,6 +49,7 @@ import {
   FileCheck,
   FileSignature,
   FileText,
+  CalendarClock,
   LayoutGrid,
   Layers,
   MapPin,
@@ -1059,7 +1060,7 @@ export default function ContractDetailScreen() {
 
           {canReportIncident ? (
             <View className="flex-row items-center gap-2">
-              {isWarehouseRack && isActive ? (
+              {isWarehouseRack ? (
                 <Pressable
                   onPress={() =>
                     router.push({
@@ -1082,7 +1083,7 @@ export default function ContractDetailScreen() {
                   })
                 }
                 className={
-                  isWarehouseRack && isActive
+                  isWarehouseRack
                     ? "flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 py-2.5 px-3 active:opacity-90"
                     : "w-full flex-row items-center justify-center gap-2 rounded-xl border border-rose-300 dark:border-rose-900 bg-rose-50/80 dark:bg-rose-950/40 py-3 px-4 active:opacity-90 shadow-sm"
                 }
@@ -1093,6 +1094,21 @@ export default function ContractDetailScreen() {
                 </Text>
               </Pressable>
             </View>
+          ) : null}
+
+          {isWarehouseRack && isActive ? (
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/access-schedules/new",
+                  params: { contractId: contract.id },
+                })
+              }
+              className="flex-row items-center justify-center gap-1.5 rounded-xl bg-cta py-2.5 px-3 active:opacity-90"
+            >
+              <CalendarClock size={14} color="#FFFFFF" />
+              <Text className="text-xs font-bold text-white">{t("accessSchedule.bookButton")}</Text>
+            </Pressable>
           ) : null}
         </View>
 

@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   Clock,
   Droplets,
+  CalendarClock,
   LayoutGrid,
   ShieldAlert,
   Sparkles,
@@ -42,6 +43,8 @@ interface ContractCardProps {
   onUnlockPress?: (contract: ContractResponse) => void;
   onRackMapPress?: (contract: ContractResponse) => void;
   onReportIncidentPress?: (contract: ContractResponse) => void;
+  /** Books a warehouse visit; only offered for active warehouse-rack contracts. */
+  onBookAccessPress?: (contract: ContractResponse) => void;
   isUnlocking?: boolean;
 }
 
@@ -54,6 +57,7 @@ export function ContractCard({
   onUnlockPress,
   onRackMapPress,
   onReportIncidentPress,
+  onBookAccessPress,
   isUnlocking = false,
 }: ContractCardProps) {
   const isEn = locale === "en";
@@ -253,8 +257,8 @@ export function ContractCard({
         </View>
       ) : null}
 
-      {/* Quick Action Controls for Active Contracts */}
-      {isActive && ((isWarehouse && onRackMapPress) || onReportIncidentPress) ? (
+      {/* Quick actions; overdue contracts keep them so customers can still take stock out */}
+      {(isActive || isOverdue) && ((isWarehouse && onRackMapPress) || onReportIncidentPress) ? (
         <View className="flex-row items-center gap-2 pt-0.5">
           {/* Rack Map button ONLY for Warehouse Rack contracts */}
           {isWarehouse && onRackMapPress ? (
@@ -267,6 +271,21 @@ export function ContractCard({
             >
               <LayoutGrid size={14} color="#0B927E" />
               <Text className="text-xs font-bold text-brand">{isEn ? "Rack Map" : "Sơ đồ kệ"}</Text>
+            </Pressable>
+          ) : null}
+
+          {isWarehouse && isActive && onBookAccessPress ? (
+            <Pressable
+              onPress={(e) => {
+                e.stopPropagation();
+                onBookAccessPress(contract);
+              }}
+              className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-cta/40 bg-cta-light/30 px-3.5 py-2.5 active:opacity-80 dark:bg-cta/10"
+            >
+              <CalendarClock size={14} color="#D34D0F" />
+              <Text className="text-xs font-bold text-cta-dark">
+                {isEn ? "Book Visit" : "Đặt lịch"}
+              </Text>
             </Pressable>
           ) : null}
 

@@ -128,12 +128,11 @@ function RootLayoutNav() {
         <Stack.Screen name="reservations/[id]/payment" options={{ headerShown: false }} />
         <Stack.Screen name="contracts/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="contracts/[id]/rack-map" options={{ headerShown: false }} />
-        <Stack.Screen name="contracts/[id]/outbound/new" options={{ headerShown: false }} />
-        <Stack.Screen name="contracts/[id]/inbound/new" options={{ headerShown: false }} />
-        <Stack.Screen name="contracts/[id]/move-request" options={{ headerShown: false }} />
         <Stack.Screen name="contracts/[id]/requests" options={{ headerShown: false }} />
         <Stack.Screen name="contracts/[id]/attention" options={{ headerShown: false }} />
-        <Stack.Screen name="inventory-requests/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="access-schedules/index" options={{ headerShown: false }} />
+        <Stack.Screen name="access-schedules/new" options={{ headerShown: false }} />
+        <Stack.Screen name="access-schedules/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="support-tickets/new" options={{ headerShown: false }} />
         <Stack.Screen name="incidents/new" options={{ headerShown: false }} />
         <Stack.Screen name="incidents/[id]" options={{ headerShown: false }} />

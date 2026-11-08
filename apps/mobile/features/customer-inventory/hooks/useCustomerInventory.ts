@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import {
   keepPreviousData,
   useInfiniteQuery,
+  useMutation,
   useQuery,
   useQueryClient,
   type QueryClient,
@@ -10,6 +11,10 @@ import type {
   CustomerInventoryQuery,
   CustomerInventoryResponse,
   SkuLocatorQuery,
+  StockAdjustRequest,
+  StockInRequest,
+  StockMoveRequest,
+  StockOutRequest,
 } from "@self-storage-system-fe/shared";
 import {
   getCustomerInventoriesApi,
@@ -19,6 +24,10 @@ import {
   getSkuLocationsByBarcodeApi,
   getSkuLocatorApi,
   getStorageUnitTreeApi,
+  stockAdjustApi,
+  stockInApi,
+  stockMoveApi,
+  stockOutApi,
 } from "../api/customerInventory.api";
 
 export const TIER_HISTORY_LIMIT = 10;
@@ -44,7 +53,7 @@ export const customerInventoryKeys = {
     ] as const,
 };
 
-/** Refreshes every inventory view after staff-side changes surface (e.g. a request completes). */
+/** Refreshes every inventory view after stock changes (customer operations or staff incident handling). */
 export function invalidateInventoryViews(qc: QueryClient, storageUnitId?: string) {
   qc.invalidateQueries({ queryKey: ["customer-inventory-tree", storageUnitId] });
   qc.invalidateQueries({ queryKey: ["customer-inventory-sku-locator"] });
@@ -53,6 +62,38 @@ export function invalidateInventoryViews(qc: QueryClient, storageUnitId?: string
   qc.invalidateQueries({ queryKey: ["customer-inventory-movements"] });
   qc.invalidateQueries({ queryKey: ["customer-inventory-summary"] });
   qc.invalidateQueries({ queryKey: ["customer-inventory-records"] });
+}
+
+export function useStockIn(storageUnitId?: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: StockInRequest) => stockInApi(payload),
+    onSuccess: () => invalidateInventoryViews(qc, storageUnitId),
+  });
+}
+
+export function useStockOut(storageUnitId?: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: StockOutRequest) => stockOutApi(payload),
+    onSuccess: () => invalidateInventoryViews(qc, storageUnitId),
+  });
+}
+
+export function useStockMove(storageUnitId?: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: StockMoveRequest) => stockMoveApi(payload),
+    onSuccess: () => invalidateInventoryViews(qc, storageUnitId),
+  });
+}
+
+export function useStockAdjust(storageUnitId?: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: StockAdjustRequest) => stockAdjustApi(payload),
+    onSuccess: () => invalidateInventoryViews(qc, storageUnitId),
+  });
 }
 
 /** Rack tree of a unit, limited to one contract: a customer can hold several in the same unit. */

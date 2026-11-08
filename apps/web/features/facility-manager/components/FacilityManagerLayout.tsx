@@ -6,7 +6,7 @@ import {
   Boxes,
   Building2,
   CalendarCheck,
-  ClipboardList,
+  CalendarClock,
   FileSignature,
   FileText,
   Headset,
@@ -80,9 +80,9 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
       icon: Boxes,
     },
     {
-      href: `/${locale}/facility-manager/inventory-requests`,
-      label: t("nav.inventoryRequests"),
-      icon: ClipboardList,
+      href: `/${locale}/facility-manager/access-schedules`,
+      label: t("nav.accessSchedules"),
+      icon: CalendarClock,
     },
     {
       href: `/${locale}/facility-manager/incidents`,
