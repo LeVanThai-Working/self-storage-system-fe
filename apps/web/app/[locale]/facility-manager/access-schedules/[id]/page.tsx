@@ -2,9 +2,9 @@
 
 import { use } from "react";
 import { FacilityManagerLayout } from "@/features/facility-manager/components/FacilityManagerLayout";
-import { RequestDetailView } from "@/features/inventory-operations/components/RequestDetailView";
+import { AccessScheduleDetailView } from "@/features/access-schedules/components/AccessScheduleDetailView";
 
-export default function FacilityManagerInventoryRequestDetailPage({
+export default function FacilityManagerAccessScheduleDetailPage({
   params,
 }: {
   params: Promise<{ locale: string; id: string }>;
@@ -13,7 +13,7 @@ export default function FacilityManagerInventoryRequestDetailPage({
 
   return (
     <FacilityManagerLayout>
-      <RequestDetailView id={id} portalBase="facility-manager" />
+      <AccessScheduleDetailView id={id} portalBase="facility-manager" />
     </FacilityManagerLayout>
   );
 }

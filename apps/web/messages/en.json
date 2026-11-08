@@ -1804,12 +1804,12 @@
       "sectionFacility": "FACILITY OPERATIONS",
       "requests": "Request Center",
       "dashboard": "Overview",
-      "inventoryRequests": "Warehouse requests",
       "incidents": "Incidents",
       "supportTickets": "Customer support",
       "payments": "Payments",
       "reconciliation": "Bank Reconciliation",
-      "signingAuthorizations": "Signing Authorizations"
+      "signingAuthorizations": "Signing Authorizations",
+      "accessSchedules": "Warehouse visits"
     },
     "sidebar": {
       "assignedFacility": "Assigned facility",
@@ -2693,151 +2693,17 @@
     "slaNotice": "Estimated refund processing time is within 3 business days from approval."
   },
   "inventoryOps": {
-    "requestStatus": {
-      "pending": "Awaiting pickup",
-      "pending_confirmation": "Awaiting customer",
-      "assigned": "Assigned",
-      "processing": "Processing",
-      "ready_to_putaway": "Ready to shelve",
-      "completed": "Completed",
-      "disputed": "Disputed",
-      "cancelled": "Cancelled",
-      "expired": "Expired"
-    },
     "itemStatus": {
       "normal": "Normal",
       "temporary_holding": "Holding",
       "damaged": "Damaged",
       "disputed": "Disputed"
     },
-    "tierSelect": {
-      "placeholder": "Choose rack · tier",
-      "empty": "No available customer racks",
-      "holding": "Holding area (off the rack)"
-    },
-    "queue": {
-      "title": "Warehouse requests",
-      "subtitle": "Customer pickup and inbound requests at this facility",
-      "codePlaceholder": "Scan QR or enter 6-digit OTP…",
-      "requestCodePlaceholder": "Request code REQ-OUT-… / REQ-IN-…",
-      "otpNeedsRequestCode": "An OTP needs the request code",
-      "verify": "Verify",
-      "verified": "Code valid · {code} is now processing",
-      "type": {
-        "all": "All",
-        "outbound": "Pickup",
-        "inbound": "Inbound"
-      },
-      "allStatuses": "All statuses",
-      "searchPlaceholder": "Search request code",
-      "receiveInbound": "Receive goods",
-      "col": {
-        "code": "Code",
-        "type": "Type",
-        "unit": "Unit",
-        "items": "Items",
-        "transporter": "Carrier / collector",
-        "createdAt": "Created",
-        "status": "Status"
-      },
-      "action": {
-        "detail": "Details",
-        "handover": "Hand over",
-        "putaway": "Shelve"
-      },
-      "empty": "No requests yet",
-      "pageInfo": "Page {page}/{pages} · {total} requests"
-    },
-    "detail": {
-      "notFound": "Request not found",
-      "outboundTitle": "Hand over {code}",
-      "inboundTitle": "Inbound {code}",
-      "subtitle": "Unit {unit} · created {date}",
-      "col": {
-        "position": "Position",
-        "sku": "Item",
-        "requested": "Requested",
-        "actual": "Actual"
-      },
-      "recipient": "Collector",
-      "deliverer": "Delivered by",
-      "evidence": "Evidence",
-      "discrepancy": "Discrepancy: {reason}",
-      "hint": {
-        "pending": "The collector has not arrived yet. Verify the QR/OTP on the requests page when they do.",
-        "pendingConfirmation": "Waiting for the customer to confirm (auto-confirms after 24 hours).",
-        "disputed": "The customer disputed this inbound request. Contact them to reconcile."
-      }
-    },
-    "handover": {
-      "verifiedAt": "Pickup code valid · verified {time}",
-      "pickList": "Pick list",
-      "actual": "Handed over",
-      "discrepancyTitle": "Short handover ({count} SKUs)",
-      "discrepancyReason": "Reason for shortage",
-      "discrepancyImages": "Shortage photos",
-      "discrepancyRequired": "Some items are short, please give a reason",
-      "evidence": "Handover photos",
-      "evidenceHint": "At least 1 photo required",
-      "evidenceRequired": "At least 1 handover photo is required",
-      "signature": "Collector signature",
-      "signatureClear": "Clear",
-      "signatureHint": "Sign inside the box (optional)",
-      "staffNotes": "Staff notes",
-      "complete": "Complete handover ({count} pcs)",
-      "completed": "Handover completed"
-    },
-    "putaway": {
-      "title": "Shelve items",
-      "tier": "Tier",
-      "hint": "Only racks under the customer's contract are accepted (637 otherwise).",
-      "rentedRacksOnly": "Customer rented racks: {racks}",
-      "missingTier": "{count} SKUs still need a tier",
-      "submit": "Complete shelving",
-      "done": "Items shelved, stock updated"
-    },
-    "inbound": {
-      "back": "Warehouse requests",
-      "title": "Receive goods",
-      "subtitle": "Record goods arriving for a customer. Stock is added once the customer confirms.",
-      "contract": "Contract",
-      "contractPlaceholder": "Choose an active contract",
-      "contractRequired": "Please choose a contract",
-      "items": "Received items",
-      "newSku": "Create SKU for customer",
-      "skuPlaceholder": "Choose SKU",
-      "addRow": "Add row",
-      "tierHint": "Pick a tier now, or leave it empty and shelve after the customer confirms.",
-      "itemsRequired": "Add at least 1 SKU with a valid quantity",
-      "evidence": "Receiving photos",
-      "evidenceHint": "At least {min} photos: vehicle, package condition, delivery slip",
-      "evidenceMin": "At least {min} receiving photos are required",
-      "transporter": "Delivered by",
-      "transporterName": "Full name",
-      "transporterPhone": "Phone number",
-      "transporterPlate": "Vehicle plate",
-      "transporterCompany": "Carrier",
-      "transporterRequired": "Driver name and phone number are required",
-      "signature": "Driver signature",
-      "signatureClear": "Clear",
-      "signatureHint": "Sign inside the box (optional)",
-      "staffNotes": "Notes (e.g. one dented box)",
-      "submit": "Create inbound request",
-      "created": "Request {code} created, awaiting customer",
-      "customerConfirmHint": "The customer is notified and has 24 hours to confirm or dispute.",
-      "newSkuTitle": "New SKU for {customer}",
-      "newSkuCode": "SKU code",
-      "newSkuName": "Item name",
-      "newSkuUom": "Unit of measure",
-      "newSkuSave": "Create SKU",
-      "skuCreated": "SKU {code} created",
-      "cancel": "Cancel"
-    },
     "unit": {
       "back": "Storage units",
       "title": "Inventory · Unit {unit}",
-      "subtitle": "Rack map and item operations",
-      "subtitleContract": "Rack map and item operations · Contract {code}",
+      "subtitle": "Rack map and customer goods",
+      "subtitleContract": "Rack map and customer goods · Contract {code}",
       "treeForbidden": "You can only see rack contents of units in your own facility. The rack layout is still shown.",
       "entrance": "ENTRANCE · MAIN AISLE",
       "noRacks": "This unit has no racks",
@@ -2850,77 +2716,17 @@
       "pickRack": "Choose a rack on the map",
       "rackTitle": "Rack {rack}",
       "tiers": "{count} tiers",
-      "rackIncident": "Rack incident",
       "emptyTier": "Empty tier",
-      "pickItem": "Choose an item to work on",
-      "action": {
-        "move": "Move",
-        "adjust": "Recount",
-        "status": "Status"
-      },
-      "moveTo": "Move to",
-      "rentedRacksOnly": "Customer rented racks: {racks}",
-      "quantity": "Quantity",
-      "ticketCode": "For request (SUP code)",
-      "countedQuantity": "Counted quantity",
-      "systemQuantity": "System: {qty}",
-      "newStatus": "New status",
-      "itemStatus": {
-        "normal": "Normal",
-        "temporary_holding": "Holding",
-        "damaged": "Damaged",
-        "disputed": "Disputed"
-      },
-      "incidentId": "Incident ID",
-      "incidentIdPlaceholder": "Related incident ID (if any)",
-      "reason": "Reason",
-      "reasonMin": "Reason needs at least {min} characters",
-      "notifyHint": "The reason is saved in the customer's item history.",
-      "pickTarget": "Choose where to move it",
-      "noContract": "Could not determine this unit's contract",
-      "submit": {
-        "move": "Confirm move",
-        "adjust": "Save recount",
-        "status": "Update status"
-      },
-      "moved": "Items moved",
-      "adjusted": "Recount saved",
-      "statusUpdated": "Item status updated",
-      "incidentRequired": "Marking goods as damaged needs a valid incident ID (24 characters)"
-    },
-    "rackIncident": {
-      "title": "Rack incident · {rack}",
-      "subtitle": "Move goods to safety and update the rack status",
-      "mode": {
-        "migrate": "Move whole rack",
-        "evacuate": "Drop to holding area"
-      },
-      "target": "Destination rack",
-      "targetPlaceholder": "Choose an empty rack with the same tier count",
-      "noCustomerRacks": "No other racks under customer contract",
-      "targetHint": "Only empty, available racks with the same tier count are valid.",
-      "tiers": "{count} tiers",
-      "notFree": "not free",
-      "evacuateHint": "Every item on the rack becomes Holding and cannot be picked up until re-shelved.",
-      "basis": "Basis",
-      "basisOption": {
-        "incident": "Reported incident",
-        "addendum": "Signed contract addendum",
-        "emergency": "Emergency reason"
-      },
-      "incidentIdPlaceholder": "Incident ID",
-      "addendumIdPlaceholder": "Addendum ID",
-      "emergencyPlaceholder": "Describe the reason (at least 10 characters)",
-      "pickTarget": "Please choose a destination rack",
-      "basisRequired": "An incident, addendum or emergency reason (≥10 chars) is required",
-      "evacuateBasisRequired": "An incident or emergency reason (≥10 chars) is required",
-      "migrateNote": "Emergency moves put the old rack under maintenance; addendum moves free it.",
-      "evacuateNote": "The rack will be set to maintenance.",
-      "migrated": "Moved {count} items to rack {to}",
-      "evacuated": "Dropped {count} items to the holding area",
-      "submitMigrate": "Confirm move",
-      "submitEvacuate": "Drop to holding",
-      "cancel": "Cancel"
+      "pickItem": "Pick an item to see its details",
+      "viewOnly": "Customers put away, take out, move and count their own goods. Staff only watch load and safety.",
+      "detail": {
+        "position": "Position",
+        "quantity": "Quantity",
+        "weight": "Estimated weight",
+        "lastMovement": "Last movement",
+        "holdingReason": "Holding reason",
+        "notes": "Notes"
+      }
     }
   },
   "supportDesk": {
@@ -3097,8 +2903,8 @@
     },
     "warehouse": {
       "title": "Warehouse impact",
-      "subtitle": "Serious incident on a rack. Goods can be moved urgently.",
-      "open": "Handle rack {rack} incident"
+      "subtitle": "Serious rack incident. Review the customer goods on this rack.",
+      "open": "View goods on rack {rack}"
     },
     "action": {
       "title": "Handling",
@@ -3330,6 +3136,64 @@
       "validityRequired": "Please select valid from and valid to dates.",
       "dateValidation": "Valid to date must be greater than or equal to valid from date.",
       "documentRequired": "Please upload the signed authorization document."
+    }
+  },
+  "accessScheduleDesk": {
+    "title": "Warehouse visits",
+    "subtitle": "Visits customers booked at this facility. View only.",
+    "back": "Warehouse visits",
+    "view": "View",
+    "empty": "No warehouse visits yet",
+    "pageInfo": "Page {page}/{pages} · {total} visits",
+    "viewOnly": "View only. Check-in and check-out are recorded at the gate.",
+    "kpi": {
+      "pending": "Upcoming",
+      "checkedIn": "In warehouse",
+      "completed": "Completed",
+      "noShow": "No-show"
+    },
+    "filter": {
+      "allStatuses": "All statuses",
+      "from": "From",
+      "to": "To"
+    },
+    "status": {
+      "pending": "Upcoming",
+      "checked_in": "In warehouse",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "no_show": "No-show",
+      "expired": "Expired"
+    },
+    "col": {
+      "code": "Code",
+      "customer": "Customer",
+      "contract": "Contract",
+      "slot": "Date · slot",
+      "people": "People",
+      "vehicle": "Plate",
+      "checkedIn": "Entered",
+      "checkedOut": "Left",
+      "status": "Status"
+    },
+    "detail": {
+      "visit": "Visit",
+      "customer": "Customer",
+      "phone": "Phone",
+      "contract": "Contract",
+      "facility": "Facility",
+      "slot": "Date · slot",
+      "window": "Gate window",
+      "people": "People",
+      "vehicle": "Vehicle",
+      "purpose": "Purpose",
+      "gate": "Gate records",
+      "checkedIn": "Entered",
+      "checkedOut": "Left",
+      "cancelled": "Cancelled",
+      "staffNotes": "Staff notes",
+      "racks": "Rented racks",
+      "aisle": "Aisle {aisle}"
     }
   }
 }

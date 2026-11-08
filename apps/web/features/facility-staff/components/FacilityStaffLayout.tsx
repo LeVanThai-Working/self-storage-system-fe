@@ -6,7 +6,7 @@ import {
   Boxes,
   Building2,
   CalendarCheck,
-  ClipboardList,
+  CalendarClock,
   FileSignature,
   Headset,
   Receipt,
@@ -76,9 +76,9 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
       icon: Boxes,
     },
     {
-      href: `/${locale}/facility-staff/inventory-requests`,
-      label: t("nav.inventoryRequests"),
-      icon: ClipboardList,
+      href: `/${locale}/facility-staff/access-schedules`,
+      label: t("nav.accessSchedules"),
+      icon: CalendarClock,
     },
     {
       href: `/${locale}/facility-staff/incidents`,
