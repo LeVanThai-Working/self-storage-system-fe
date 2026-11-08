@@ -49,6 +49,7 @@ import {
   FileCheck,
   FileSignature,
   FileText,
+  CalendarClock,
   LayoutGrid,
   Layers,
   MapPin,
@@ -1093,6 +1094,21 @@ export default function ContractDetailScreen() {
                 </Text>
               </Pressable>
             </View>
+          ) : null}
+
+          {isWarehouseRack && isActive ? (
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/access-schedules/new",
+                  params: { contractId: contract.id },
+                })
+              }
+              className="flex-row items-center justify-center gap-1.5 rounded-xl bg-cta py-2.5 px-3 active:opacity-90"
+            >
+              <CalendarClock size={14} color="#FFFFFF" />
+              <Text className="text-xs font-bold text-white">{t("accessSchedule.bookButton")}</Text>
+            </Pressable>
           ) : null}
         </View>
 

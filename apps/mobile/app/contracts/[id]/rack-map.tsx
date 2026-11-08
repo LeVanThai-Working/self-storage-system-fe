@@ -4,8 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import {
   ArrowLeft,
-  ArrowLeftRight,
-  ArrowUpFromLine,
+  CalendarClock,
   CircleAlert,
   ClipboardList,
   Info,
@@ -14,10 +13,10 @@ import {
   Plus,
   Search,
   ShieldAlert,
-  Truck,
   TriangleAlert,
 } from "lucide-react-native";
 import {
+  ContractStatusEnum,
   InventoryItemStatusEnum,
   type MessageLocale,
   type SkuLocationsResponse,
@@ -42,12 +41,19 @@ import { TierDetailModal } from "@/features/customer-inventory/components/TierDe
 import { LocateSheet } from "@/features/customer-inventory/components/LocateSheet";
 import { LocateResultBanner } from "@/features/customer-inventory/components/LocateResultBanner";
 import { TierHistoryModal } from "@/features/customer-inventory/components/TierHistoryModal";
-import type { RequestActionType } from "@/features/customer-inventory/types/rackMap.types";
+import { StockInModal } from "@/features/customer-inventory/components/StockInModal";
+import { StockOutModal } from "@/features/customer-inventory/components/StockOutModal";
+import { StockMoveModal } from "@/features/customer-inventory/components/StockMoveModal";
+import { StockAdjustModal } from "@/features/customer-inventory/components/StockAdjustModal";
+import type {
+  StockActionType,
+  StockFormTarget,
+} from "@/features/customer-inventory/types/rackMap.types";
 import {
   INVENTORY_ERROR,
   buildFloorLabel,
   findTierInTree,
-  getContractRequestRights,
+  getContractStockRights,
   resolveInventoryError,
   sortTiersTopDown,
 } from "@/features/customer-inventory/utils/rackMapFormat";
@@ -86,13 +92,16 @@ export default function ContractRackMapScreen() {
   const [collapsedRackIds, setCollapsedRackIds] = useState<Set<string>>(() => new Set());
   const [locateOpen, setLocateOpen] = useState(false);
   const [locateResult, setLocateResult] = useState<SkuLocationsResponse | null>(null);
+  const [stockForm, setStockForm] = useState<StockFormTarget | null>(null);
 
   const scrollRef = useRef<ScrollView>(null);
   const rackOffsetsRef = useRef<Map<string, number>>(new Map());
   const linkedSkuLocatedRef = useRef(false);
 
-  const rights = getContractRequestRights(contract?.status);
-  const readOnly = !rights.canRequestOutbound && !rights.canRequestMove;
+  const rights = getContractStockRights(contract?.status);
+  const readOnly = !rights.canIn && !rights.canOut && !rights.canMove && !rights.canAdjust;
+  // Booking a visit needs a live contract (BE checks ACTIVE).
+  const canBookAccess = contract?.status === ContractStatusEnum.ACTIVE;
   const attentionQuery = useCustomerInventoryRecords(
     { contractId, minQuantity: 1, limit: 100 },
     Boolean(contractId)
@@ -148,6 +157,24 @@ export default function ContractRackMapScreen() {
   const handleRefresh = () => {
     refetchContract();
     if (storageUnitId) refetchTree();
+  };
+
+  /** Stale tree or contract state made BE refuse the operation: reload what the map shows. */
+  const handleApiError = (messageCode?: string) => {
+    if (
+      messageCode === INVENTORY_ERROR.CONTRACT_NOT_ACTIVE ||
+      messageCode === INVENTORY_ERROR.CONTRACT_STATUS_BLOCKED
+    ) {
+      refetchContract();
+    }
+    if (
+      messageCode === INVENTORY_ERROR.TIER_LOCKED ||
+      messageCode === INVENTORY_ERROR.TIER_NOT_IN_UNIT ||
+      messageCode === INVENTORY_ERROR.ITEM_STATUS_BLOCKED ||
+      messageCode === INVENTORY_ERROR.INSUFFICIENT_QUANTITY
+    ) {
+      refetchTree();
+    }
   };
 
   const toggleRack = (rackId: string) => {
@@ -219,17 +246,14 @@ export default function ContractRackMapScreen() {
 
   const handleTierPress = (tier: TreeTier) => setDetailTarget(tier.id);
 
-  /** Opens the request form for a tier (optionally preselecting one item). */
-  const handleRequest = (type: RequestActionType, item?: TreeTierItem) => {
-    const tierId = typeof detailTarget === "string" ? detailTarget : undefined;
-    setDetailTarget(undefined);
-    const params = { id: contractId, tierId, skuId: item?.sku.id };
-    if (type === "outbound") {
-      router.push({ pathname: "/contracts/[id]/outbound/new", params });
-    } else {
-      router.push({ pathname: "/contracts/[id]/move-request", params });
-    }
+  /** Opens a stock form on the position shown in the detail sheet (optionally on one item). */
+  const handleAction = (type: StockActionType, item?: TreeTierItem) => {
+    if (detailTarget === undefined) return;
+    setStockForm({ type, tierId: detailTarget, item });
   };
+
+  const openBooking = () =>
+    router.push({ pathname: "/access-schedules/new", params: { contractId } });
 
   const isLoading = contractQuery.isLoading || (Boolean(storageUnitId) && treeQuery.isLoading);
   const forbidden = treeError?.messageCode === INVENTORY_ERROR.FORBIDDEN;
@@ -260,7 +284,7 @@ export default function ContractRackMapScreen() {
             router.push({ pathname: "/contracts/[id]/requests", params: { id: contractId } })
           }
           hitSlop={6}
-          accessibilityLabel={t("inventoryRequest.list.title")}
+          accessibilityLabel={t("contractActivity.title")}
           className="h-8 w-8 items-center justify-center rounded-full border border-brand/40 active:opacity-70"
         >
           <ClipboardList size={15} color="#0B927E" />
@@ -456,10 +480,26 @@ export default function ContractRackMapScreen() {
           highlighted={floorHighlighted}
           dimmed={highlightActive && !floorHighlighted}
           onPress={() => setDetailTarget(null)}
+          onStockIn={
+            !hasRacks && rights.canIn ? () => setStockForm({ type: "in", tierId: null }) : undefined
+          }
         />
       </ScrollView>
     );
   };
+
+  const formProps =
+    tree && stockForm && storageUnitId
+      ? {
+          visible: true,
+          onClose: () => setStockForm(null),
+          contractId,
+          storageUnitId,
+          tree,
+          target: stockForm,
+          onApiError: handleApiError,
+        }
+      : null;
 
   if (contract && !isWarehouse) {
     return (
@@ -479,12 +519,12 @@ export default function ContractRackMapScreen() {
       {tree && detailTarget !== undefined ? (
         <TierDetailModal
           key={String(detailTarget)}
-          visible={!historyTierId}
+          visible={!stockForm && !historyTierId}
           onClose={() => setDetailTarget(undefined)}
           tree={tree}
           tierId={detailTarget}
           rights={rights}
-          onRequest={handleRequest}
+          onAction={handleAction}
           onReportIncident={() => {
             const found =
               typeof detailTarget === "string" ? findTierInTree(tree, detailTarget) : null;
@@ -509,54 +549,26 @@ export default function ContractRackMapScreen() {
         />
       ) : null}
 
-      {tree && !locateResult ? (
+      {formProps && stockForm?.type === "in" ? <StockInModal {...formProps} /> : null}
+      {formProps && stockForm?.type === "out" ? <StockOutModal {...formProps} /> : null}
+      {formProps && stockForm?.type === "move" ? <StockMoveModal {...formProps} /> : null}
+      {formProps && stockForm?.type === "adjust" ? <StockAdjustModal {...formProps} /> : null}
+
+      {tree && !locateResult && !readOnly ? (
         <View className="gap-2 border-t border-neutral-border bg-white px-4 pb-5 pt-2.5 dark:border-neutral-800 dark:bg-neutral-900">
           <Text variant="muted" className="text-center text-[10px]">
-            {t("rackMap.staffOperatedHint")}
+            {t("rackMap.selfManagedHint")}
           </Text>
-          <View className="flex-row gap-2">
-            <Pressable
-              disabled={!rights.canRequestMove}
-              onPress={() => handleRequest("move")}
-              className={`flex-1 flex-row items-center justify-center gap-1 rounded-xl border border-neutral-border py-2.5 active:opacity-80 dark:border-neutral-700 ${
-                rights.canRequestMove ? "" : "opacity-40"
-              }`}
-            >
-              <ArrowLeftRight size={13} color="#0B927E" />
-              <Text className="text-[11px] font-bold text-neutral-700 dark:text-neutral-200">
-                {t("rackMap.action.requestMove")}
-              </Text>
-            </Pressable>
-            <Pressable
-              disabled={!rights.canNotifyInbound}
-              onPress={() =>
-                router.push({
-                  pathname: "/contracts/[id]/inbound/new",
-                  params: { id: contractId },
-                })
-              }
-              className={`flex-1 flex-row items-center justify-center gap-1 rounded-xl border border-neutral-border py-2.5 active:opacity-80 dark:border-neutral-700 ${
-                rights.canNotifyInbound ? "" : "opacity-40"
-              }`}
-            >
-              <Truck size={13} color="#0B927E" />
-              <Text className="text-[11px] font-bold text-neutral-700 dark:text-neutral-200">
-                {t("rackMap.action.notifyInbound")}
-              </Text>
-            </Pressable>
-            <Pressable
-              disabled={!rights.canRequestOutbound}
-              onPress={() => handleRequest("outbound")}
-              className={`flex-1 flex-row items-center justify-center gap-1 rounded-xl bg-cta py-2.5 active:opacity-80 ${
-                rights.canRequestOutbound ? "" : "opacity-40"
-              }`}
-            >
-              <ArrowUpFromLine size={13} color="#FFFFFF" />
-              <Text className="text-[11px] font-bold text-white">
-                {t("rackMap.action.requestOutbound")}
-              </Text>
-            </Pressable>
-          </View>
+          <Pressable
+            disabled={!canBookAccess}
+            onPress={openBooking}
+            className={`flex-row items-center justify-center gap-1.5 rounded-xl bg-cta py-2.5 active:opacity-80 ${
+              canBookAccess ? "" : "opacity-40"
+            }`}
+          >
+            <CalendarClock size={14} color="#FFFFFF" />
+            <Text className="text-xs font-bold text-white">{t("accessSchedule.bookButton")}</Text>
+          </Pressable>
         </View>
       ) : null}
 

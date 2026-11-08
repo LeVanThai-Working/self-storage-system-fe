@@ -24,6 +24,7 @@ import {
 import {
   AlertCircle,
   ArrowUpDown,
+  CalendarClock,
   Compass,
   Inbox,
   MapPin,
@@ -167,6 +168,13 @@ export default function MyStoragesScreen() {
             <Text numberOfLines={1} className="text-xs font-bold text-brand">
               {t("sku.locator.title")}
             </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/access-schedules" as any)}
+            accessibilityLabel={t("accessSchedule.list.title")}
+            className="items-center justify-center self-stretch rounded-2xl border border-brand/40 bg-brand-light/30 px-3 active:opacity-80 dark:bg-brand/15"
+          >
+            <CalendarClock size={16} color="#0B927E" />
           </Pressable>
           <Pressable
             onPress={() => router.push("/skus/new")}
@@ -328,6 +336,15 @@ export default function MyStoragesScreen() {
                       router.push({
                         pathname: "/contracts/[id]/rack-map" as any,
                         params: { id: c.id },
+                      })
+                  : undefined
+              }
+              onBookAccessPress={
+                typeof isWarehouseRackContract === "function" && isWarehouseRackContract(item)
+                  ? (c) =>
+                      router.push({
+                        pathname: "/access-schedules/new",
+                        params: { contractId: c.id },
                       })
                   : undefined
               }

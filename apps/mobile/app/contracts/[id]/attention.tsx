@@ -110,7 +110,7 @@ export default function ContractAttentionScreen() {
         </View>
         {contractQuery.data ? (
           <Text variant="muted" className="pl-9 text-[11px]">
-            {t("inventoryRequest.unitContract", {
+            {t("contractActivity.unitContract", {
               unit: contractQuery.data.storageUnit?.unitNumber ?? "",
               code: contractQuery.data.contractCode,
             })}
