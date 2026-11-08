@@ -5,23 +5,6 @@ export enum MovementTypeEnum {
   ADJUST = "adjust",
 }
 
-export enum InventoryRequestTypeEnum {
-  INBOUND = "inbound",
-  OUTBOUND = "outbound",
-}
-
-export enum InventoryRequestStatusEnum {
-  PENDING = "pending",
-  PENDING_CUSTOMER_CONFIRMATION = "pending_confirmation",
-  ASSIGNED = "assigned",
-  PROCESSING = "processing",
-  READY_TO_PUTAWAY = "ready_to_putaway",
-  COMPLETED = "completed",
-  DISPUTED = "disputed",
-  CANCELLED = "cancelled",
-  EXPIRED = "expired",
-}
-
 /** Where a customer's SKU sits: on a rack tier, in the holding area, or not in storage at all. */
 export enum SkuPlacementEnum {
   ON_RACK = "on_rack",
@@ -34,4 +17,13 @@ export enum InventoryItemStatusEnum {
   TEMPORARY_HOLDING = "temporary_holding",
   DAMAGED = "damaged",
   DISPUTED = "disputed",
+}
+
+export enum AccessScheduleStatusEnum {
+  PENDING = "pending",
+  CHECKED_IN = "checked_in",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
+  NO_SHOW = "no_show",
+  EXPIRED = "expired",
 }

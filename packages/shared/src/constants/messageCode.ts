@@ -269,6 +269,24 @@ export const MESSAGE_CODE = {
   // You Are Not The Assigned Staff For This Request
   MESSAGE_CODE_649: "MESSAGE_CODE_649",
   MESSAGE_CODE_650: "MESSAGE_CODE_650",
+  // Access Schedule Not Found
+  MESSAGE_CODE_651: "MESSAGE_CODE_651",
+  // Time Slot Is Fully Booked
+  MESSAGE_CODE_652: "MESSAGE_CODE_652",
+  // Invalid Access Schedule Status Transition
+  MESSAGE_CODE_653: "MESSAGE_CODE_653",
+  // Check-in Time Has Not Started Yet
+  MESSAGE_CODE_654: "MESSAGE_CODE_654",
+  // Check-in Grace Period Has Expired
+  MESSAGE_CODE_655: "MESSAGE_CODE_655",
+  // Cannot Cancel Access Schedule Too Close To Start Time
+  MESSAGE_CODE_656: "MESSAGE_CODE_656",
+  // Customer Already Has An Active Schedule In This Time Slot
+  MESSAGE_CODE_657: "MESSAGE_CODE_657",
+  // Access Schedule Does Not Belong To Facility
+  MESSAGE_CODE_658: "MESSAGE_CODE_658",
+  // Invalid Or Expired Access QR Token Or OTP
+  MESSAGE_CODE_659: "MESSAGE_CODE_659",
   // Incident Not Found
   MESSAGE_CODE_700: "MESSAGE_CODE_700",
   // Invalid Incident Status Transition
@@ -493,6 +511,15 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_648: "Request already assigned to another staff",
   MESSAGE_CODE_649: "You are not the assigned staff for this request",
   MESSAGE_CODE_650: "Self Storage Units Do Not Support Inventory And SKU Management",
+  MESSAGE_CODE_651: "Access Schedule Not Found",
+  MESSAGE_CODE_652: "Time Slot Is Fully Booked",
+  MESSAGE_CODE_653: "Invalid Access Schedule Status Transition",
+  MESSAGE_CODE_654: "Check-in Time Has Not Started Yet",
+  MESSAGE_CODE_655: "Check-in Grace Period Has Expired",
+  MESSAGE_CODE_656: "Cannot Cancel Access Schedule Too Close To Start Time",
+  MESSAGE_CODE_657: "Customer Already Has An Active Schedule In This Time Slot",
+  MESSAGE_CODE_658: "Access Schedule Does Not Belong To Facility",
+  MESSAGE_CODE_659: "Invalid Or Expired Access QR Token Or OTP",
   MESSAGE_CODE_700: "Incident Not Found",
   MESSAGE_CODE_701: "Invalid Incident Status Transition",
   MESSAGE_CODE_702: "Storage Unit Not Owned By Contract",
@@ -700,6 +727,15 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_648: "Đơn này đã được giao cho nhân viên khác phụ trách",
   MESSAGE_CODE_649: "Bạn không phải nhân viên phụ trách đơn này",
   MESSAGE_CODE_650: "Kho tự quản không áp dụng tính năng quản lý hàng hóa và danh mục SKU.",
+  MESSAGE_CODE_651: "Không tìm thấy lịch hẹn vào kho",
+  MESSAGE_CODE_652: "Khung giờ này đã kín sức chứa tiếp nhận",
+  MESSAGE_CODE_653: "Trạng thái lịch hẹn không hợp lệ",
+  MESSAGE_CODE_654: "Chưa đến giờ check-in (chỉ cho phép vào sớm tối đa 30 phút)",
+  MESSAGE_CODE_655: "Đã quá thời gian ân hạn vào kho (trễ hơn 45 phút)",
+  MESSAGE_CODE_656: "Không thể hủy lịch hẹn sát giờ (phải hủy trước tối thiểu 1 giờ)",
+  MESSAGE_CODE_657: "Bạn đã có một lịch hẹn trong khung giờ này",
+  MESSAGE_CODE_658: "Lịch hẹn không thuộc cơ sở chi nhánh này",
+  MESSAGE_CODE_659: "Mã QR hoặc mã OTP không hợp lệ hoặc đã hết hạn",
   MESSAGE_CODE_700: "Không tìm thấy sự cố",
   MESSAGE_CODE_701: "Trạng thái sự cố không cho phép thao tác này",
   MESSAGE_CODE_702: "Phòng kho không thuộc hợp đồng này",
