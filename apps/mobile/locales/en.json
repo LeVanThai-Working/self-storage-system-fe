@@ -694,22 +694,21 @@
         "onRack": {
           "one": "On rack · 1 location",
           "other": "On rack · %{count} locations"
-        }
+        },
+        "notStored": "Not stored on a rack"
       },
       "step": {
         "facility": "Facility",
-        "area": "Area",
+        "unit": "Unit",
         "rack": "Rack",
-        "tier": "Tier"
+        "tier": "Tier",
+        "position": "Position"
       },
-      "area": {
-        "unit": "Unit %{unit}",
-        "aisle": "Aisle %{aisle}"
-      },
+      "address": "Location",
       "contractChip": "Contract %{code}",
       "viewOnMap": "View on rack map",
       "viewSku": "View SKU details",
-      "notStoredHint": "This SKU has not been stored yet, so it has no location."
+      "notStoredHint": "This SKU was created but is not stored on any rack or holding area yet."
     }
   },
   "contractPicker": {

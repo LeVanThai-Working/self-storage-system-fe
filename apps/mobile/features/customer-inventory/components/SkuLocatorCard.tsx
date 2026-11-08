@@ -1,11 +1,16 @@
 import React from "react";
 import { Pressable, View } from "react-native";
-import { Box, ChevronRight, Warehouse } from "lucide-react-native";
-import type { SkuLocationItem, SkuLocatorItem } from "@self-storage-system-fe/shared";
+import { Box, ChevronRight, MapPin } from "lucide-react-native";
+import {
+  ContractStatusEnum,
+  type SkuLocationItem,
+  type SkuLocatorItem,
+} from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/stores/language.store";
-import { formatTierShort } from "../utils/rackMapFormat";
+import { getContractStatusMeta } from "@/features/contracts/utils/contractFormat";
+import { buildFloorLabel, buildLocationLabel, formatTierShort } from "../utils/rackMapFormat";
 import { ItemStatusBadge } from "./ItemStatusBadge";
 import { SkuThumb } from "./SkuThumb";
 
@@ -30,88 +35,103 @@ function PathStep({ label, value }: { label: string; value: string }) {
 
 /** One SKU of the locator: its stock state, then every position under any contract. */
 export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCardProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { sku, totalQuantity, rackQuantity, holdingQuantity, locations } = item;
   const stored = totalQuantity > 0;
   const rackLocationCount = locations.filter((location) => location.rackTier).length;
 
-  const formatArea = (location: SkuLocationItem) => {
-    const unit = location.storageUnit?.unitNumber;
-    const aisle = location.storageRack?.aisle;
-    return [
-      unit ? t("sku.locator.area.unit", { unit }) : null,
-      aisle ? t("sku.locator.area.aisle", { aisle }) : null,
-    ]
-      .filter(Boolean)
-      .join(" · ");
-  };
-
-  const renderContractLine = (location: SkuLocationItem) => (
-    <View className="mt-2 flex-row items-center gap-2">
-      <Text
-        numberOfLines={1}
-        className="shrink rounded-full bg-brand-bg px-2 py-0.5 font-mono text-[10px] font-bold text-brand dark:bg-brand/15"
-      >
-        {t("sku.locator.contractChip", { code: location.contract?.contractCode ?? "" })}
-      </Text>
-      <View className="flex-1" />
-      <Text className="text-[11px] font-bold text-brand">{t("sku.locator.viewOnMap")}</Text>
-      <ChevronRight size={13} color="#0B927E" />
-    </View>
-  );
-
-  const renderRackLocation = (location: SkuLocationItem) => (
-    <>
-      <View className="flex-row items-center gap-1">
-        <Warehouse size={13} color="#0B927E" />
-        <Text variant="muted" className="text-[11px]">
-          {t("sku.locator.step.facility")}:
-        </Text>
+  // Stock can stay on the rack after its contract ended; say so instead of implying a live rental.
+  const renderContractLine = (location: SkuLocationItem) => {
+    const status = location.contract?.status;
+    const ended =
+      !!status && status !== ContractStatusEnum.ACTIVE && status !== ContractStatusEnum.OVERDUE;
+    const statusMeta = ended ? getContractStatusMeta(status, locale) : null;
+    return (
+      <View className="mt-2 flex-row items-center gap-2">
         <Text
           numberOfLines={1}
-          className="shrink text-[11px] font-bold text-neutral-dark dark:text-neutral-100"
+          className="shrink rounded-full bg-brand-bg px-2 py-0.5 font-mono text-[10px] font-bold text-brand dark:bg-brand/15"
         >
-          {location.facility?.name ?? "—"}
+          {t("sku.locator.contractChip", { code: location.contract?.contractCode ?? "" })}
         </Text>
+        {statusMeta ? (
+          <Text
+            numberOfLines={1}
+            className={cn("shrink text-[10px] font-bold", statusMeta.badgeTextClass)}
+          >
+            {statusMeta.label}
+          </Text>
+        ) : null}
+        <View className="flex-1" />
+        <Text className="text-[11px] font-bold text-brand">{t("sku.locator.viewOnMap")}</Text>
+        <ChevronRight size={13} color="#0B927E" />
       </View>
-      <View className="flex-row items-center gap-1.5">
-        <View className="flex-1">
-          <PathStep label={t("sku.locator.step.area")} value={formatArea(location) || "—"} />
-        </View>
-        <ChevronRight size={12} color="#94A3B8" />
-        <PathStep
-          label={t("sku.locator.step.rack")}
-          value={location.storageRack?.rackCode ?? "—"}
-        />
-        <ChevronRight size={12} color="#94A3B8" />
-        <PathStep
-          label={t("sku.locator.step.tier")}
-          value={formatTierShort(location.rackTier?.tierNumber ?? 0)}
-        />
-        <Text className="ml-1 min-w-[36px] text-right text-xs font-extrabold text-brand">
-          {location.quantity} {sku.uom}
-        </Text>
-      </View>
-      <ItemStatusBadge status={location.status} />
-    </>
-  );
+    );
+  };
 
-  const renderHoldingLocation = (location: SkuLocationItem) => (
-    <View className="flex-row items-start gap-2">
-      <Box size={16} color="#E1601C" />
-      <View className="flex-1">
-        <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-          {location.facility?.name}
-        </Text>
-        <Text variant="muted" className="mt-0.5 text-[11px]">
-          {t("sku.detail.holdingHint", { unit: location.storageUnit?.unitNumber ?? "" })}
-        </Text>
-      </View>
-      <Text className="text-xs font-extrabold text-cta-dark">
-        {location.quantity} {sku.uom}
-      </Text>
-    </View>
-  );
+  // The area of a position is its address: facility › unit › rack › tier, or the unit's holding area.
+  const renderLocation = (location: SkuLocationItem) => {
+    const tier = location.rackTier;
+    const facilityCode = location.facility?.code;
+    const unitNumber = location.storageUnit?.unitNumber;
+    const address = tier
+      ? buildLocationLabel({
+          facilityCode,
+          unitNumber,
+          rackCode: location.storageRack?.rackCode,
+          tierCode: tier.tierCode,
+        })
+      : buildFloorLabel(facilityCode, unitNumber);
+    return (
+      <>
+        <View className="flex-row items-center gap-1.5">
+          {tier ? <MapPin size={13} color="#0B927E" /> : <Box size={13} color="#E1601C" />}
+          <Text variant="muted" className="text-[11px]">
+            {t("sku.locator.address")}
+          </Text>
+          <Text
+            numberOfLines={1}
+            className="flex-1 font-mono text-[11px] font-bold text-neutral-dark dark:text-neutral-100"
+          >
+            {address}
+          </Text>
+          <Text className={cn("text-xs font-extrabold", tier ? "text-brand" : "text-cta-dark")}>
+            {location.quantity} {sku.uom}
+          </Text>
+        </View>
+        <View className="flex-row items-center gap-1.5">
+          <View className="flex-1">
+            <PathStep
+              label={t("sku.locator.step.facility")}
+              value={location.facility?.name ?? "—"}
+            />
+          </View>
+          <ChevronRight size={12} color="#94A3B8" />
+          <PathStep label={t("sku.locator.step.unit")} value={unitNumber ?? "—"} />
+          <ChevronRight size={12} color="#94A3B8" />
+          {tier ? (
+            <>
+              <PathStep
+                label={t("sku.locator.step.rack")}
+                value={location.storageRack?.rackCode ?? "—"}
+              />
+              <ChevronRight size={12} color="#94A3B8" />
+              <PathStep
+                label={t("sku.locator.step.tier")}
+                value={formatTierShort(tier.tierNumber)}
+              />
+            </>
+          ) : (
+            <PathStep
+              label={t("sku.locator.step.position")}
+              value={t("sku.locator.filter.holding")}
+            />
+          )}
+        </View>
+        {tier ? <ItemStatusBadge status={location.status} /> : null}
+      </>
+    );
+  };
 
   return (
     <View className="rounded-3xl border border-neutral-border bg-white p-3.5 dark:border-neutral-800 dark:bg-neutral-900">
@@ -140,7 +160,7 @@ export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCa
             ) : null}
             {!stored ? (
               <Text className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-bold text-neutral-muted dark:bg-neutral-800">
-                {t("sku.locator.filter.notStored")}
+                {t("sku.locator.badge.notStored")}
               </Text>
             ) : null}
           </View>
@@ -164,14 +184,9 @@ export function SkuLocatorCard({ item, onOpenSku, onOpenLocation }: SkuLocatorCa
           <Pressable
             key={location.inventoryId}
             onPress={() => onOpenLocation(location)}
-            className={cn(
-              "gap-1.5 active:opacity-70",
-              location.rackTier
-                ? "mt-3 border-t border-neutral-border pt-3 dark:border-neutral-800"
-                : "ml-[52px] mt-2"
-            )}
+            className="mt-3 gap-1.5 border-t border-neutral-border pt-3 active:opacity-70 dark:border-neutral-800"
           >
-            {location.rackTier ? renderRackLocation(location) : renderHoldingLocation(location)}
+            {renderLocation(location)}
             {renderContractLine(location)}
           </Pressable>
         ))
