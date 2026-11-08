@@ -3140,12 +3140,11 @@
   },
   "accessScheduleDesk": {
     "title": "Lịch vào kho",
-    "subtitle": "Các lượt khách đặt lịch đến kho của cơ sở. Chỉ xem.",
+    "subtitle": "Quét QR hoặc nhập OTP khi khách đến cổng; theo dõi các lượt vào kho của cơ sở.",
     "back": "Lịch vào kho",
     "view": "Xem",
     "empty": "Chưa có lịch vào kho nào",
     "pageInfo": "Trang {page}/{pages} · {total} lịch",
-    "viewOnly": "Màn hình chỉ để xem. Check-in và check-out được ghi nhận tại cổng.",
     "kpi": {
       "pending": "Chờ vào kho",
       "checkedIn": "Đang trong kho",
@@ -3194,6 +3193,29 @@
       "staffNotes": "Ghi chú nhân viên",
       "racks": "Kệ khách thuê",
       "aisle": "Dãy {aisle}"
+    },
+    "gate": {
+      "title": "Check-in tại cổng",
+      "hint": "Dùng máy quét QR (mã tự điền vào ô) hoặc nhập mã OTP 6 số khách đọc. Chỉ cần một trong hai.",
+      "codePlaceholder": "Quét QR hoặc nhập OTP 6 số",
+      "notesPlaceholder": "Ghi chú (không bắt buộc)",
+      "codeRequired": "Vui lòng quét mã QR hoặc nhập mã OTP 6 số",
+      "submit": "Xác nhận vào kho",
+      "success": "Đã check-in lịch {code}",
+      "resultTitle": "Đã check-in {code}",
+      "people": "{count} người",
+      "racks": "Kệ khách thuê, điều phối xe tới",
+      "aisle": "Dãy {aisle}",
+      "bay": "Khoang {bay}",
+      "openDetail": "Xem chi tiết lượt vào kho",
+      "empty": "Kết quả check-in sẽ hiện ở đây, kèm kệ khách thuê để điều phối xe."
+    },
+    "checkOut": {
+      "title": "Khách đang trong kho",
+      "notesPlaceholder": "Ghi chú khi rời kho (không bắt buộc)",
+      "submit": "Xác nhận rời kho",
+      "success": "Đã check-out lịch {code}",
+      "pendingHint": "Lịch đang chờ khách đến. Check-in bằng QR hoặc OTP ở trang Lịch vào kho."
     }
   }
 }

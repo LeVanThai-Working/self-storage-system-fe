@@ -1,13 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowLeft, Eye } from "lucide-react";
+import { ArrowLeft, Info, Loader2, LogOut } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AccessScheduleStatusEnum,
+  type AccessScheduleDetailResponse,
+} from "@self-storage-system-fe/shared";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { formatDateTime } from "@/features/support-desk/utils";
-import { useAccessSchedule } from "../hooks";
+import { useAccessSchedule, useCheckOutAccessSchedule } from "../hooks";
 import { formatScheduleDate, getCheckInWindow } from "../utils";
 import { AccessScheduleStatusBadge } from "./AccessScheduleStatusBadge";
 
@@ -20,7 +27,70 @@ function Row({ label, value }: { label: string; value?: string | number | null }
   );
 }
 
-/** One warehouse visit (view only): who comes, when, with which vehicle, and gate timestamps. */
+/** Check-out for a visit inside the warehouse; other statuses only get a short hint. */
+function GateActions({ schedule }: { schedule: AccessScheduleDetailResponse }) {
+  const t = useTranslations("accessScheduleDesk.checkOut");
+  const getErrorMessage = useApiErrorMessage();
+  const checkOut = useCheckOutAccessSchedule();
+  const [staffNotes, setStaffNotes] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  if (schedule.status === AccessScheduleStatusEnum.PENDING) {
+    return (
+      <p className="flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+        {t("pendingHint")}
+      </p>
+    );
+  }
+  if (schedule.status !== AccessScheduleStatusEnum.CHECKED_IN) return null;
+
+  const handleCheckOut = async () => {
+    setError(null);
+    try {
+      await checkOut.mutateAsync({
+        id: schedule.id,
+        payload: { staffNotes: staffNotes.trim() || undefined },
+      });
+      toast.success(t("success", { code: schedule.scheduleCode }));
+      setStaffNotes("");
+    } catch (err) {
+      setError(getErrorMessage(err));
+    }
+  };
+
+  return (
+    <section className="space-y-3 rounded-xl border border-sky-200 bg-sky-50/50 p-5">
+      <p className="text-sm font-bold text-slate-800">{t("title")}</p>
+      <input
+        value={staffNotes}
+        onChange={(event) => setStaffNotes(event.target.value)}
+        placeholder={t("notesPlaceholder")}
+        maxLength={500}
+        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-teal-400"
+      />
+      {error ? (
+        <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          {error}
+        </p>
+      ) : null}
+      <Button
+        onClick={() => void handleCheckOut()}
+        disabled={checkOut.isPending}
+        className="w-full bg-sky-600 text-white hover:bg-sky-700"
+      >
+        {checkOut.isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <LogOut className="h-4 w-4" />
+        )}
+        {t("submit")}
+      </Button>
+    </section>
+  );
+}
+
+/** One warehouse visit: who comes, when, with which vehicle, gate timestamps and check-out. */
 export function AccessScheduleDetailView({
   id,
   portalBase,
@@ -149,10 +219,7 @@ export function AccessScheduleDetailView({
             )}
           </section>
 
-          <p className="flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-            <Eye className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            {t("viewOnly")}
-          </p>
+          <GateActions schedule={schedule} />
         </div>
       </div>
     </div>

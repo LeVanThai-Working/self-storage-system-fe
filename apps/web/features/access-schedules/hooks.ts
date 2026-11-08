@@ -1,6 +1,15 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import type { AccessScheduleQuery } from "@self-storage-system-fe/shared";
-import { fetchAccessSchedule, fetchAccessSchedules } from "./api";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type {
+  AccessScheduleQuery,
+  CheckInAccessScheduleRequest,
+  CheckOutAccessScheduleRequest,
+} from "@self-storage-system-fe/shared";
+import {
+  checkInAccessSchedule,
+  checkOutAccessSchedule,
+  fetchAccessSchedule,
+  fetchAccessSchedules,
+} from "./api";
 
 export const accessScheduleKeys = {
   all: ["access-schedules"] as const,
@@ -22,3 +31,20 @@ export const useAccessSchedule = (id?: string) =>
     queryFn: () => fetchAccessSchedule(id!),
     enabled: Boolean(id),
   });
+
+export const useCheckInAccessSchedule = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CheckInAccessScheduleRequest) => checkInAccessSchedule(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: accessScheduleKeys.all }),
+  });
+};
+
+export const useCheckOutAccessSchedule = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: CheckOutAccessScheduleRequest }) =>
+      checkOutAccessSchedule(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: accessScheduleKeys.all }),
+  });
+};

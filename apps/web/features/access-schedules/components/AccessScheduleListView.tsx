@@ -22,6 +22,7 @@ import { fetchAccessSchedules } from "../api";
 import { accessScheduleKeys, useAccessSchedules } from "../hooks";
 import { formatScheduleDate } from "../utils";
 import { AccessScheduleStatusBadge } from "./AccessScheduleStatusBadge";
+import { GateCheckInPanel } from "./GateCheckInPanel";
 
 const PAGE_SIZE = 10;
 const FIELD = "rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm";
@@ -53,7 +54,7 @@ const KPIS = [
   },
 ] as const;
 
-/** Warehouse visits booked at the facility (view only): KPIs, filters, table and paging. */
+/** Warehouse visits of the facility: gate check-in, KPIs, filters, table and paging. */
 export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPortal }) {
   const t = useTranslations("accessScheduleDesk");
   const locale = useLocale();
@@ -92,6 +93,8 @@ export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPor
         <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">{t("title")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("subtitle")}</p>
       </div>
+
+      <GateCheckInPanel portalBase={portalBase} />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {KPIS.map(({ key, icon: Icon, tone }, index) => (

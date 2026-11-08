@@ -3140,12 +3140,11 @@
   },
   "accessScheduleDesk": {
     "title": "Warehouse visits",
-    "subtitle": "Visits customers booked at this facility. View only.",
+    "subtitle": "Scan the QR code or enter the OTP when customers arrive; track facility visits.",
     "back": "Warehouse visits",
     "view": "View",
     "empty": "No warehouse visits yet",
     "pageInfo": "Page {page}/{pages} · {total} visits",
-    "viewOnly": "View only. Check-in and check-out are recorded at the gate.",
     "kpi": {
       "pending": "Upcoming",
       "checkedIn": "In warehouse",
@@ -3194,6 +3193,29 @@
       "staffNotes": "Staff notes",
       "racks": "Rented racks",
       "aisle": "Aisle {aisle}"
+    },
+    "gate": {
+      "title": "Gate check-in",
+      "hint": "Use a QR scanner (it fills the field) or type the 6-digit OTP the customer reads out. Either one works.",
+      "codePlaceholder": "Scan QR or enter 6-digit OTP",
+      "notesPlaceholder": "Notes (optional)",
+      "codeRequired": "Please scan the QR code or enter the 6-digit OTP",
+      "submit": "Check in",
+      "success": "Checked in {code}",
+      "resultTitle": "Checked in {code}",
+      "people": "{count} people",
+      "racks": "Rented racks, direct the vehicle here",
+      "aisle": "Aisle {aisle}",
+      "bay": "Bay {bay}",
+      "openDetail": "Open visit details",
+      "empty": "The check-in result shows here, with the rented racks to direct vehicles."
+    },
+    "checkOut": {
+      "title": "Customer is inside",
+      "notesPlaceholder": "Notes on leaving (optional)",
+      "submit": "Check out",
+      "success": "Checked out {code}",
+      "pendingHint": "Waiting for the customer. Check them in with the QR code or OTP on the Warehouse visits page."
     }
   }
 }
