@@ -621,14 +621,14 @@ export function buildContractLifecycleSteps(
     {
       key: "DRAFT",
       stepNumber: 1,
-      title: isEn ? "1. Draft & Deposit" : "1. Khởi tạo & Đóng cọc (DRAFT)",
+      title: isEn ? "1. Draft & Deposit" : "1. Khởi tạo & Đóng cọc",
       subtitle: step1Subtitle,
       state: step1State,
     },
     {
       key: "ACTIVE",
       stepNumber: 2,
-      title: isEn ? "2. Handover & Active Lease" : "2. Bàn giao & Đang thuê (ACTIVE / OVERDUE)",
+      title: isEn ? "2. Handover & Active Lease" : "2. Bàn giao & Đang thuê",
       subtitle: contract.actualCheckInDate
         ? isEn
           ? `Checked in: ${formatDateTime(contract.actualCheckInDate, locale)}`
@@ -641,7 +641,7 @@ export function buildContractLifecycleSteps(
     {
       key: "COMPLETED",
       stepNumber: 3,
-      title: isEn ? "3. Check-out & Settlement" : "3. Trả kho & Thanh lý (COMPLETED)",
+      title: isEn ? "3. Check-out & Settlement" : "3. Trả kho & Thanh lý",
       subtitle: contract.actualCheckOutDate
         ? isEn
           ? `Checked out: ${formatDateTime(contract.actualCheckOutDate, locale)}`

@@ -2089,7 +2089,7 @@
     },
     "reservations": {
       "title": "Reservation & Unit Assignment Management",
-      "subtitle": "Receive reservations, assign physical storage units, verify deposit payments, and confirm bookings at {facility}.",
+      "subtitle": "Receive and confirm reservations at {facility}.",
       "refresh": "Refresh",
       "retry": "Retry",
       "loadError": "Unable to load reservations. Please try again.",
@@ -2413,9 +2413,6 @@
         "inUse": "Reserved / rented units",
         "maintenance": "Under maintenance"
       },
-      "occupancyTitle": "Storage unit utilisation",
-      "totalUnits": "{count} units in total",
-      "occupancyNote": "Occupancy = (reserved + rented) / all units; units under maintenance still count toward the total.",
       "amenities": {
         "title": "Amenity stock",
         "empty": "This facility has no active amenities.",
@@ -3056,7 +3053,7 @@
   },
   "signingAuthorizations": {
     "title": "Signing Authorization Management",
-    "subtitle": "Manage legal signing authorization documents issued by legal entities to facility managers for handover check-in and addendum signing procedures.",
+    "subtitle": "Authorizations for facility managers to sign handovers and contract addendums.",
     "addNew": "Create Authorization",
     "facilityScope": "Your Facility",
     "noFacilityAssigned": "Your Facility Manager account is not assigned to any facility. Please contact a system administrator.",
@@ -3196,7 +3193,6 @@
     },
     "gate": {
       "title": "Gate check-in",
-      "hint": "Use a QR scanner (it fills the field) or type the 6-digit OTP the customer reads out. Either one works.",
       "codePlaceholder": "Scan QR or enter 6-digit OTP",
       "notesPlaceholder": "Notes (optional)",
       "codeRequired": "Please scan the QR code or enter the 6-digit OTP",
@@ -3207,8 +3203,7 @@
       "racks": "Rented racks, direct the vehicle here",
       "aisle": "Aisle {aisle}",
       "bay": "Bay {bay}",
-      "openDetail": "Open visit details",
-      "empty": "The check-in result shows here, with the rented racks to direct vehicles."
+      "openDetail": "Open visit details"
     },
     "checkOut": {
       "title": "Customer is inside",

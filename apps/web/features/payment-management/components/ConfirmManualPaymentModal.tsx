@@ -128,7 +128,7 @@ export const ConfirmManualPaymentModal: React.FC<ConfirmManualPaymentModalProps>
                 {isEn ? "Amount to Collect" : "Số tiền cần thu"}
               </span>
               <span className="text-xs text-slate-500">
-                {payment.customer?.name || isEn ? "Customer Payment" : "Khách hàng"}
+                {payment.customer?.name || (isEn ? "Customer Payment" : "Khách hàng")}
               </span>
             </div>
             <span className="text-lg font-black text-emerald-700">{formatVnd(payment.amount)}</span>

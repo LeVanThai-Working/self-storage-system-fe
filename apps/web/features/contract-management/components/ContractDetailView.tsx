@@ -393,7 +393,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
       {/* A. Contract Lifecycle Stepper */}
       <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-4">
         <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
-          {isEn ? "Contract Lifecycle Progress" : "Thanh Tiến trình Vòng đời Hợp đồng"}
+          {isEn ? "Contract progress" : "Tiến trình hợp đồng"}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -765,15 +765,13 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   ? "Active Lease Operations: Renew, Amenities & Check-out"
                   : "Quản lý Hợp đồng Đang thuê: Gia hạn, Tiện ích & Trả kho Check-out"}
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {isOverdue
-                  ? isEn
+              {isOverdue && (
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {isEn
                     ? "This contract is currently OVERDUE. Please renew the lease or perform Check-out settlement."
-                    : "Hợp đồng đang quá hạn trả kho. Vui lòng gia hạn hợp đồng hoặc làm thủ tục Check-out thanh lý."
-                  : isEn
-                    ? "Manage add-on amenities, extend the lease end date, or inspect the unit for Check-out."
-                    : "Quản lý tiện ích đi kèm, gia hạn thời gian thuê kho hoặc làm biên bản kiểm tra trả kho (Check-out)."}
-              </p>
+                    : "Hợp đồng đang quá hạn trả kho. Vui lòng gia hạn hợp đồng hoặc làm thủ tục Check-out thanh lý."}
+                </p>
+              )}
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
@@ -1397,11 +1395,6 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                       ({contract.addendums?.length ?? 0})
                     </h3>
                   </div>
-                  <p className="text-[11px] text-slate-500">
-                    {isEn
-                      ? "All amenity additions and removals are processed via dual-signed Contract Addendums."
-                      : "Mọi thay đổi thêm/bớt tiện ích đều thực hiện qua Phụ lục hợp đồng có chữ ký xác nhận 2 chiều."}
-                  </p>
                 </div>
               </div>
 
@@ -1503,11 +1496,6 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                       {/* Addendum Specific Content based on Type */}
                       {addendum.type === ContractAddendumTypeEnum.RENEW ? (
                         <div className="rounded-xl bg-teal-50/70 border border-teal-200/70 p-3 space-y-1 text-xs">
-                          <p className="font-extrabold text-teal-900">
-                            {isEn
-                              ? "Contract Extension (RENEW)"
-                              : "Gia hạn thời hạn hợp đồng (RENEW)"}
-                          </p>
                           <p className="text-teal-800">
                             <span className="font-semibold">
                               {isEn ? "New End Date:" : "Thời hạn mới:"}
@@ -1522,8 +1510,8 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                         <div className="rounded-xl bg-indigo-50/70 border border-indigo-200/70 p-3 space-y-1 text-xs">
                           <p className="font-extrabold text-indigo-900">
                             {isEn
-                              ? "Emergency Storage Unit Transfer (UNIT_CHANGE)"
-                              : "Điều chuyển kho sự cố kỹ thuật (UNIT_CHANGE)"}
+                              ? "Emergency Storage Unit Transfer"
+                              : "Điều chuyển kho sự cố kỹ thuật"}
                           </p>
                           <p className="text-indigo-800">
                             <span className="font-semibold">
@@ -1824,11 +1812,6 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   {signedContractUrls.length} {isEn ? "files" : "trang scan"}
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
-                {isEn
-                  ? "Scanned pages of the paper contract with live signatures, hashed with SHA-256 for legal integrity."
-                  : "Các trang hợp đồng giấy A4 có chữ ký sống của 2 bên đã được số hóa và băm SHA-256 lưu vết toàn vẹn."}
-              </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {signedContractUrls.map((url, idx) => (
                   <a
@@ -1924,14 +1907,9 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
 
             {/* Total Periodic Price */}
             <div className="flex items-center justify-between py-2 border-b border-slate-200">
-              <div className="flex flex-col">
-                <span className="font-bold text-slate-800 text-sm">
-                  {isEn ? "Total Periodic Price:" : "Tổng giá thuê định kỳ:"}
-                </span>
-                <span className="text-[10px] text-slate-400">
-                  {isEn ? "Base rent + recurring amenities" : "Giá kho cơ bản + tiện ích định kỳ"}
-                </span>
-              </div>
+              <span className="font-bold text-slate-800 text-sm">
+                {isEn ? "Total Periodic Price:" : "Tổng giá thuê định kỳ:"}
+              </span>
               <strong className="text-emerald-700 text-base font-extrabold">
                 {formatVnd(displayPeriodicPrice)} /{" "}
                 {getBillingUnitLabel(contract.billingUnit, locale)}

@@ -54,8 +54,8 @@ export const UnmatchedTransactionsView: React.FC = () => {
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             {isEn
-              ? "Identify and reconcile unmatched, late, or amount-mismatch SePay bank transfers."
-              : "Tra cứu và gán giao dịch ngân hàng mồ côi (chưa khớp mã, sai tiền hoặc chuyển trễ)."}
+              ? "Find and assign bank transfers that did not match an order (wrong code, wrong amount or late)."
+              : "Tra cứu và gán các giao dịch ngân hàng chưa khớp đơn (sai mã, sai tiền hoặc chuyển trễ)."}
           </p>
         </div>
 
@@ -183,7 +183,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
             <thead className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
               <tr>
                 <th className="px-4 py-3.5 whitespace-nowrap">
-                  {isEn ? "SePay ID / Gateway" : "ID SePay / Cổng"}
+                  {isEn ? "Transaction ID" : "Mã giao dịch"}
                 </th>
                 <th className="px-4 py-3.5 whitespace-nowrap">
                   {isEn ? "Outcome" : "Kết quả đối soát"}

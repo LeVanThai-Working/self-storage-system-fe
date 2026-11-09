@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { BarChart3, Boxes, Users, Wrench } from "lucide-react";
+import { BarChart3, Boxes, Users } from "lucide-react";
 import { FacilityAmenityOfferingStatusEnum } from "@self-storage-system-fe/shared";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFacilityStaffs } from "@/features/contract-management/hooks";
@@ -121,6 +121,7 @@ export function FacilityDashboardView() {
           lockedFacilityId={facility?.id}
           facilityName={facility?.name}
           initialTab="overview"
+          hideHeader
         />
       ) : (
         <div className="space-y-8">
@@ -149,19 +150,6 @@ export function FacilityDashboardView() {
               tone="text-orange-600"
               loading={loading}
             />
-          </section>
-
-          <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-            <div className="mb-3 flex items-center justify-between text-sm">
-              <span className="flex items-center gap-2 font-semibold text-slate-800">
-                <Boxes className="size-4" aria-hidden /> {t("occupancyTitle")}
-              </span>
-              <span className="text-slate-500">{t("totalUnits", { count: stats.total })}</span>
-            </div>
-            <Bar percent={occupancy} className="bg-emerald-500" />
-            <p className="mt-2 flex items-center gap-2 text-xs text-slate-500">
-              <Wrench className="size-3.5" aria-hidden /> {t("occupancyNote")}
-            </p>
           </section>
 
           <div className="grid gap-6 lg:grid-cols-2">

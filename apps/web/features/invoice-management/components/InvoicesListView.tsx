@@ -280,10 +280,10 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
       <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
         {[
           { key: "ALL", label: "Tất cả" },
-          { key: "ISSUED", label: "Chờ thanh toán (Due)" },
-          { key: "PAID", label: "Đã thanh toán (Paid)" },
-          { key: "OVERDUE", label: "Quá hạn (Overdue)" },
-          { key: "CANCELLED", label: "Đã hủy (Cancelled)" },
+          { key: "ISSUED", label: "Chờ thanh toán" },
+          { key: "PAID", label: "Đã thanh toán" },
+          { key: "OVERDUE", label: "Quá hạn" },
+          { key: "CANCELLED", label: "Đã hủy" },
         ].map((tab) => {
           const isActive = activeTab === tab.key;
           return (
@@ -335,12 +335,10 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
               className="w-full py-2 px-3 bg-slate-50 focus:bg-white rounded-xl border border-slate-200 focus:border-teal-500 outline-none"
             >
               <option value="ALL">Tất cả loại hóa đơn</option>
-              <option value={InvoiceTypeEnum.FIRST_PERIOD}>Kỳ đầu (first_period)</option>
-              <option value={InvoiceTypeEnum.RECURRING}>Định kỳ (recurring)</option>
-              <option value={InvoiceTypeEnum.INCIDENTAL}>Phụ phí phát sinh (incidental)</option>
-              <option value={InvoiceTypeEnum.CHECK_OUT_SETTLEMENT}>
-                Quyết toán trả kho (settlement)
-              </option>
+              <option value={InvoiceTypeEnum.FIRST_PERIOD}>Kỳ đầu</option>
+              <option value={InvoiceTypeEnum.RECURRING}>Định kỳ</option>
+              <option value={InvoiceTypeEnum.INCIDENTAL}>Phụ phí phát sinh</option>
+              <option value={InvoiceTypeEnum.CHECK_OUT_SETTLEMENT}>Quyết toán trả kho</option>
             </select>
           </div>
 

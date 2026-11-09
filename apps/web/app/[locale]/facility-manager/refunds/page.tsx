@@ -8,7 +8,7 @@ export default function FacilityManagerRefundsPage() {
     <FacilityManagerLayout>
       <RefundsListView
         pageTitle="Quản lý Phê duyệt Hoàn tiền Cơ sở"
-        pageSubtitle="Duyệt yêu cầu hoàn tiền (<= 10M VND), từ chối và xác nhận chi trả tiền thuộc cơ sở"
+        pageSubtitle="Duyệt và chi trả yêu cầu hoàn tiền đến 10 triệu đồng tại cơ sở"
       />
     </FacilityManagerLayout>
   );

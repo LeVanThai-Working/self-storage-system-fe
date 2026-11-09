@@ -50,6 +50,20 @@ interface RefundsListViewProps {
   pageSubtitle?: string;
 }
 
+// Base UI's SelectValue shows the raw value unless the Select gets an `items` label map.
+const REASON_ITEMS: Record<string, string> = {
+  ALL: "Tất cả lý do",
+  ...Object.fromEntries(
+    Object.values(RefundRequestReasonEnum).map((r) => [r, getRefundReasonLabel(r)])
+  ),
+};
+
+const SORT_ITEMS: Record<string, string> = {
+  createdAt: "Ngày tạo",
+  amount: "Số tiền",
+  status: "Trạng thái",
+};
+
 const formatVND = (num: number) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(num);
 
@@ -208,6 +222,7 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
 
         {/* Reason Filter */}
         <Select
+          items={REASON_ITEMS}
           value={selectedReason}
           onValueChange={(val) => {
             if (val) {
@@ -231,6 +246,7 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
 
         {/* Sort By */}
         <Select
+          items={SORT_ITEMS}
           value={sortBy}
           onValueChange={(val) => {
             if (val) {
