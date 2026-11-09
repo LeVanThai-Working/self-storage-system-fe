@@ -967,11 +967,10 @@
       },
       "categoryFilter": {
         "all": "Tất cả nhóm",
-        "locker": "Tủ đồ (Locker)",
-        "small": "Kho nhỏ (Small)",
-        "medium": "Kho vừa (Medium)",
-        "large": "Kho lớn (Large)",
-        "climate_controlled": "Kiểm soát nhiệt độ"
+        "locker": "Tủ đồ",
+        "small": "Kho nhỏ",
+        "large": "Kho lớn",
+        "warehouse_rack": "Kệ kho"
       },
       "statusFilter": {
         "all": "Tất cả trạng thái",
@@ -1115,8 +1114,8 @@
       },
       "typeFilter": {
         "all": "Tất cả phân loại",
-        "physical": "Cơ sở vật chất (Physical)",
-        "service": "Dịch vụ hỗ trợ (Service)"
+        "physical": "Cơ sở vật chất",
+        "service": "Dịch vụ hỗ trợ"
       },
       "statusFilter": {
         "all": "Tất cả trạng thái",
@@ -1169,9 +1168,9 @@
         "nameLabel": "Tên tiện ích / dịch vụ",
         "namePlaceholder": "Ví dụ: Thang máy vận chuyển hàng, Bảo vệ 24/7...",
         "typeLabel": "Phân loại",
-        "typePhysical": "Cơ sở vật chất (Physical)",
+        "typePhysical": "Cơ sở vật chất",
         "typePhysicalDesc": "Thiết bị, hạ tầng vật lý (Thang máy, Máy lạnh, Xe đẩy...)",
-        "typeService": "Dịch vụ hỗ trợ (Service)",
+        "typeService": "Dịch vụ hỗ trợ",
         "typeServiceDesc": "Dịch vụ phục vụ khách hàng (Bảo vệ 24/7, Vệ sinh định kỳ...)",
         "statusLabel": "Trạng thái áp dụng",
         "statusActive": "Đang áp dụng (Active)",
@@ -1201,9 +1200,9 @@
         "nameLabel": "Tên tiện ích / dịch vụ",
         "namePlaceholder": "Ví dụ: Thang máy vận chuyển hàng, Bảo vệ 24/7...",
         "typeLabel": "Phân loại",
-        "typePhysical": "Cơ sở vật chất (Physical)",
+        "typePhysical": "Cơ sở vật chất",
         "typePhysicalDesc": "Thiết bị, hạ tầng vật lý (Thang máy, Máy lạnh, Xe đẩy...)",
-        "typeService": "Dịch vụ hỗ trợ (Service)",
+        "typeService": "Dịch vụ hỗ trợ",
         "typeServiceDesc": "Dịch vụ phục vụ khách hàng (Bảo vệ 24/7, Vệ sinh định kỳ...)",
         "statusLabel": "Trạng thái áp dụng",
         "statusActive": "Đang áp dụng (Active)",
@@ -1431,7 +1430,7 @@
     },
     "facilityAmenities": {
       "title": "Bảng phân bổ tiện ích cho từng cơ sở",
-      "subtitle": "Quản lý tiện ích trang bị tại từng cơ sở, theo dõi tồn kho (tổng, đang dùng, khả dụng) và đơn giá thuê.",
+      "subtitle": "Quản lý tiện ích trang bị tại từng cơ sở, theo dõi tồn kho và đơn giá thuê.",
       "addOffering": "+ Phân bổ tiện ích",
       "quickLookup": "Tra cứu nhanh",
       "refresh": "Làm mới",
@@ -1857,7 +1856,7 @@
       },
       "location": {
         "floor": "Tầng {floor}",
-        "zone": "Dãy {zone}"
+        "zone": "{zone}"
       },
       "empty": {
         "title": "Cơ sở chưa có phòng kho nào",

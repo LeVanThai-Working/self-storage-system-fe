@@ -8,7 +8,7 @@ export default function BusinessOpsRefundsPage() {
     <BusinessOpsLayout>
       <RefundsListView
         pageTitle="Hàng đợi Phê duyệt & Đối soát Hoàn tiền"
-        pageSubtitle="Phê duyệt các yêu cầu hoàn tiền lớn vượt ngưỡng (> 10M VND), giám sát hàng đợi hoàn tiền toàn hệ thống"
+        pageSubtitle="Duyệt yêu cầu hoàn tiền trên 10 triệu đồng và theo dõi hoàn tiền ở tất cả cơ sở."
       />
     </BusinessOpsLayout>
   );

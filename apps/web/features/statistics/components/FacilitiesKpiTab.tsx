@@ -5,6 +5,7 @@ import { AlertTriangle, Filter, Trophy } from "lucide-react";
 import { formatCurrency } from "@self-storage-system-fe/shared";
 import { FacilityKpiSortByEnum, FacilityKpiTierEnum, type FacilitiesKpiResponse } from "../types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ActionTooltip } from "@/components/ui/tooltip";
 
 interface FacilitiesKpiTabProps {
   data?: FacilitiesKpiResponse;
@@ -17,35 +18,66 @@ interface FacilitiesKpiTabProps {
   onSortOrderChange: (order: "asc" | "desc") => void;
 }
 
+const TIER_BADGES: Record<
+  FacilityKpiTierEnum,
+  { label: string; range: string; className: string }
+> = {
+  [FacilityKpiTierEnum.EXCELLENT]: {
+    label: "Xuất sắc",
+    range: "Từ 85 điểm trở lên",
+    className: "bg-emerald-100 text-emerald-800",
+  },
+  [FacilityKpiTierEnum.GOOD]: {
+    label: "Tốt",
+    range: "Từ 70 đến 84 điểm",
+    className: "bg-blue-100 text-blue-800",
+  },
+  [FacilityKpiTierEnum.AVERAGE]: {
+    label: "Trung bình",
+    range: "Từ 50 đến 69 điểm",
+    className: "bg-amber-100 text-amber-800",
+  },
+  [FacilityKpiTierEnum.NEEDS_IMPROVEMENT]: {
+    label: "Cần cải thiện",
+    range: "Dưới 50 điểm",
+    className: "bg-rose-100 text-rose-800",
+  },
+};
+
 function getTierBadge(tier: FacilityKpiTierEnum) {
-  switch (tier) {
-    case FacilityKpiTierEnum.EXCELLENT:
-      return (
-        <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-black text-emerald-800">
-          Xuất sắc (≥85)
-        </span>
-      );
-    case FacilityKpiTierEnum.GOOD:
-      return (
-        <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-black text-blue-800">
-          Tốt (70–84)
-        </span>
-      );
-    case FacilityKpiTierEnum.AVERAGE:
-      return (
-        <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-black text-amber-800">
-          Trung bình (50–69)
-        </span>
-      );
-    case FacilityKpiTierEnum.NEEDS_IMPROVEMENT:
-      return (
-        <span className="rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-black text-rose-800">
-          Cần cải thiện (&lt;50)
-        </span>
-      );
-    default:
-      return null;
-  }
+  const badge = TIER_BADGES[tier];
+  if (!badge) return null;
+  return (
+    <ActionTooltip content={badge.range}>
+      <span
+        className={`cursor-help rounded-full px-2.5 py-0.5 text-xs font-black ${badge.className}`}
+      >
+        {badge.label}
+      </span>
+    </ActionTooltip>
+  );
+}
+
+// shortcut: BE sends alerts as finished Vietnamese sentences with a trailing "(...)" that holds
+// either a formula ("0% < 40%") or a raw enum ("FACILITY_FAULT"); move to structured alerts if BE adds them.
+function splitAlert(alert: string): { text: string; detail?: string } {
+  const match = /^(.*\S)\s*\(([^()]+)\)$/.exec(alert);
+  if (!match) return { text: alert };
+  const [, text, inner] = match;
+  if (/^[A-Z_]+$/.test(inner)) return { text };
+  const threshold = /^(.+?)\s*<\s*(.+)$/.exec(inner);
+  return {
+    text,
+    detail: threshold ? `Hiện tại ${threshold[1]}, ngưỡng cảnh báo ${threshold[2]}` : inner,
+  };
+}
+
+function HeaderHint({ label, hint }: { label: string; hint: string }) {
+  return (
+    <ActionTooltip content={hint}>
+      <span className="cursor-help underline decoration-dotted underline-offset-2">{label}</span>
+    </ActionTooltip>
+  );
 }
 
 export function FacilitiesKpiTab({
@@ -276,8 +308,12 @@ export function FacilitiesKpiTab({
               <th className="py-3 px-3">Phân hạng</th>
               <th className="py-3 px-3 text-right">Lấp đầy kho</th>
               <th className="py-3 px-3 text-right">Thực thu</th>
-              <th className="py-3 px-3 text-right">RevPAU</th>
-              <th className="py-3 px-3 text-right">RevPAM</th>
+              <th className="py-3 px-3 text-right">
+                <HeaderHint label="RevPAU" hint="Doanh thu trung bình trên mỗi phòng kho" />
+              </th>
+              <th className="py-3 px-3 text-right">
+                <HeaderHint label="RevPAM" hint="Doanh thu trung bình trên mỗi m² diện tích" />
+              </th>
               <th className="py-3 px-3 text-right">Thu nợ</th>
               <th className="py-3 px-3">Cảnh báo</th>
             </tr>
@@ -311,14 +347,18 @@ export function FacilitiesKpiTab({
                 <td className="py-3 px-3">
                   {item.alerts?.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
-                      {item.alerts.map((alert, i) => (
-                        <span
-                          key={i}
-                          className="rounded bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700"
-                        >
-                          {alert}
-                        </span>
-                      ))}
+                      {item.alerts.map((alert, i) => {
+                        const { text, detail } = splitAlert(alert);
+                        return (
+                          <ActionTooltip key={i} content={detail}>
+                            <span
+                              className={`rounded bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 ${detail ? "cursor-help" : ""}`}
+                            >
+                              {text}
+                            </span>
+                          </ActionTooltip>
+                        );
+                      })}
                     </div>
                   ) : (
                     <span className="text-[11px] text-slate-400">—</span>

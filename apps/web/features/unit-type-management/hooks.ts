@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import {
   fetchUnitTypes,
   fetchUnitTypeById,
@@ -75,3 +76,12 @@ export const useRestoreUnitType = () => {
     },
   });
 };
+
+/** Display name for a unit type category; falls back to the raw value for unknown ones. */
+export function useUnitTypeCategoryLabel() {
+  const t = useTranslations("businessOps.unitTypes.categoryFilter");
+  return (category?: string | null) => {
+    const key = category?.toLowerCase() ?? "";
+    return key && t.has(key) ? t(key) : (category ?? "");
+  };
+}

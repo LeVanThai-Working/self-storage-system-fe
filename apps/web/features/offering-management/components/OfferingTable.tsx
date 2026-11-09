@@ -24,7 +24,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useFacilities } from "@/features/facility-management/hooks";
-import { useUnitTypes } from "@/features/unit-type-management/hooks";
+import { useUnitTypeCategoryLabel, useUnitTypes } from "@/features/unit-type-management/hooks";
 import { useOfferings } from "../hooks";
 import {
   BillingUnitEnum,
@@ -52,6 +52,7 @@ const normalizeVi = (str?: string | null): string => {
 
 export const OfferingTable = () => {
   const t = useTranslations("businessOps.offerings");
+  const categoryLabel = useUnitTypeCategoryLabel();
 
   // Query states
   const [page, setPage] = useState(1);
@@ -547,8 +548,8 @@ export const OfferingTable = () => {
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-slate-900">{offering.unitType.name}</span>
                           {offering.unitType.category && (
-                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
-                              {offering.unitType.category}
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
+                              {categoryLabel(offering.unitType.category)}
                             </span>
                           )}
                         </div>
