@@ -77,13 +77,7 @@ export function FacilityDashboardView() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">{t("title")}</h1>
-          <div className="mt-1 text-slate-500">
-            {facility ? (
-              t("subtitle", { facility: facility.name })
-            ) : (
-              <Skeleton className="h-5 w-72" />
-            )}
-          </div>
+          <p className="mt-1 text-slate-500">{t("subtitle")}</p>
         </div>
 
         {/* View Switcher */}

@@ -1817,7 +1817,7 @@
     },
     "storageUnits": {
       "title": "Quản lý Phòng kho",
-      "subtitle": "Danh sách phòng kho vật lý thuộc cơ sở {facility}: vị trí, loại kho và trạng thái.",
+      "subtitle": "Danh sách phòng kho của cơ sở: vị trí, loại kho và trạng thái.",
       "addUnit": "+ Thêm phòng kho",
       "searchPlaceholder": "Tìm theo số phòng...",
       "floorPlaceholder": "Tầng",
@@ -2089,7 +2089,7 @@
     },
     "reservations": {
       "title": "Quản lý Đơn đặt chỗ & Phân bổ kho",
-      "subtitle": "Tiếp nhận và xác nhận đơn đặt chỗ tại {facility}.",
+      "subtitle": "Tiếp nhận và xác nhận đơn đặt chỗ tại cơ sở.",
       "refresh": "Làm mới",
       "retry": "Thử lại",
       "loadError": "Không thể tải danh sách đơn đặt chỗ. Vui lòng thử lại.",
@@ -2405,7 +2405,7 @@
     },
     "dashboard": {
       "title": "Tổng quan cơ sở",
-      "subtitle": "Tình hình vận hành hiện tại của {facility}.",
+      "subtitle": "Tình hình vận hành hiện tại của cơ sở.",
       "noFacility": "Bạn chưa được gán cơ sở nào để hiển thị tổng quan.",
       "stats": {
         "occupancy": "Tỷ lệ lấp đầy",

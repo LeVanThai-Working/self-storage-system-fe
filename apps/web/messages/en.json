@@ -1817,7 +1817,7 @@
     },
     "storageUnits": {
       "title": "Storage Unit Management",
-      "subtitle": "Physical storage units of {facility}: location, unit type and status.",
+      "subtitle": "Storage units at your facility: location, unit type and status.",
       "addUnit": "+ Add storage unit",
       "searchPlaceholder": "Search by unit number...",
       "floorPlaceholder": "Floor",
@@ -2089,7 +2089,7 @@
     },
     "reservations": {
       "title": "Reservation & Unit Assignment Management",
-      "subtitle": "Receive and confirm reservations at {facility}.",
+      "subtitle": "Receive and confirm reservations at your facility.",
       "refresh": "Refresh",
       "retry": "Retry",
       "loadError": "Unable to load reservations. Please try again.",
@@ -2405,7 +2405,7 @@
     },
     "dashboard": {
       "title": "Facility overview",
-      "subtitle": "Current operations at {facility}.",
+      "subtitle": "Current operations at your facility.",
       "noFacility": "You have not been assigned a facility yet, so there is no overview to show.",
       "stats": {
         "occupancy": "Occupancy rate",

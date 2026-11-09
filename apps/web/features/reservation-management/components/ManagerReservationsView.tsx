@@ -440,14 +440,10 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             {isStaff
-              ? facility?.name
-                ? locale === "en"
-                  ? `Reservations assigned to you at ${facility.name}.`
-                  : `Các đơn đặt chỗ thuộc về bạn tại cơ sở ${facility.name}.`
-                : locale === "en"
-                  ? "Manage and fulfill reservations assigned to you."
-                  : "Quản lý và tiếp đón khách hàng theo các đơn đặt chỗ thuộc về bạn."
-              : t("subtitle", { facility: facility?.name ?? "..." })}
+              ? locale === "en"
+                ? "Manage and fulfill reservations assigned to you."
+                : "Quản lý và tiếp đón khách hàng theo các đơn đặt chỗ thuộc về bạn."
+              : t("subtitle")}
           </p>
         </div>
 
