@@ -274,14 +274,7 @@ export function FinancialAnalyticsTab({
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-blue-600" />
-              <div>
-                <h4 className="text-base font-extrabold text-slate-900">
-                  Đối soát giao dịch SePay
-                </h4>
-                <p className="text-xs text-slate-500">
-                  Kết quả tự động ghi nhận thanh toán ngân hàng
-                </p>
-              </div>
+              <h4 className="text-base font-extrabold text-slate-900">Đối soát giao dịch SePay</h4>
             </div>
           </div>
 

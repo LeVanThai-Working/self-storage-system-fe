@@ -1817,7 +1817,7 @@
     },
     "storageUnits": {
       "title": "Quản lý Phòng kho",
-      "subtitle": "Danh sách phòng kho vật lý thuộc cơ sở {facility}: vị trí, loại kho và trạng thái.",
+      "subtitle": "Danh sách phòng kho của cơ sở: vị trí, loại kho và trạng thái.",
       "addUnit": "+ Thêm phòng kho",
       "searchPlaceholder": "Tìm theo số phòng...",
       "floorPlaceholder": "Tầng",
@@ -1984,7 +1984,7 @@
     },
     "requests": {
       "title": "Trung tâm Yêu cầu Đề xuất",
-      "subtitle": "Tra cứu danh mục loại kho, tiện ích hiện có tại cơ sở và gửi đề xuất đến Business Operations.",
+      "subtitle": "Tra cứu danh mục loại kho, tiện ích hiện có tại cơ sở và gửi đề xuất đến bộ phận Vận hành.",
       "createRequest": "+ Tạo đề xuất mới",
       "catalogSectionTitle": "Danh mục hiện có tại cơ sở",
       "requestsSectionTitle": "Yêu cầu đã gửi",
@@ -2089,7 +2089,7 @@
     },
     "reservations": {
       "title": "Quản lý Đơn đặt chỗ & Phân bổ kho",
-      "subtitle": "Tiếp nhận, phân bổ ô kho vật lý, kiểm tra đặt cọc và xác nhận đơn đặt chỗ tại cơ sở {facility}.",
+      "subtitle": "Tiếp nhận và xác nhận đơn đặt chỗ tại cơ sở.",
       "refresh": "Làm mới",
       "retry": "Thử lại",
       "loadError": "Không thể tải danh sách đơn đặt chỗ. Vui lòng thử lại.",
@@ -2405,7 +2405,7 @@
     },
     "dashboard": {
       "title": "Tổng quan cơ sở",
-      "subtitle": "Tình hình vận hành hiện tại của {facility}.",
+      "subtitle": "Tình hình vận hành hiện tại của cơ sở.",
       "noFacility": "Bạn chưa được gán cơ sở nào để hiển thị tổng quan.",
       "stats": {
         "occupancy": "Tỷ lệ lấp đầy",
@@ -2413,9 +2413,6 @@
         "inUse": "Phòng đã đặt / đang thuê",
         "maintenance": "Phòng bảo trì"
       },
-      "occupancyTitle": "Mức độ sử dụng phòng kho",
-      "totalUnits": "Tổng {count} phòng",
-      "occupancyNote": "Tỷ lệ lấp đầy = (đã đặt + đang thuê) / tổng số phòng, phòng bảo trì vẫn tính vào tổng.",
       "amenities": {
         "title": "Tồn kho tiện ích",
         "empty": "Cơ sở chưa có tiện ích nào đang hoạt động.",
@@ -3056,7 +3053,7 @@
   },
   "signingAuthorizations": {
     "title": "Quản lý Văn bản ủy quyền ký",
-    "subtitle": "Quản lý văn bản ủy quyền ký hợp đồng pháp lý của Pháp nhân cho Quản lý cơ sở để thực hiện thủ tục Ký bàn giao nhận kho (check-in) và Ký phụ lục hợp đồng (staff-sign).",
+    "subtitle": "Văn bản ủy quyền cho quản lý cơ sở ký bàn giao kho và phụ lục hợp đồng.",
     "addNew": "Tạo văn bản ủy quyền",
     "facilityScope": "Cơ sở của bạn",
     "noFacilityAssigned": "Tài khoản Quản lý cơ sở chưa được gán cho cơ sở nào. Vui lòng liên hệ Quản trị viên hệ thống.",
@@ -3196,7 +3193,6 @@
     },
     "gate": {
       "title": "Check-in tại cổng",
-      "hint": "Dùng máy quét QR (mã tự điền vào ô) hoặc nhập mã OTP 6 số khách đọc. Chỉ cần một trong hai.",
       "codePlaceholder": "Quét QR hoặc nhập OTP 6 số",
       "notesPlaceholder": "Ghi chú (không bắt buộc)",
       "codeRequired": "Vui lòng quét mã QR hoặc nhập mã OTP 6 số",
@@ -3207,8 +3203,7 @@
       "racks": "Kệ khách thuê, điều phối xe tới",
       "aisle": "Dãy {aisle}",
       "bay": "Khoang {bay}",
-      "openDetail": "Xem chi tiết lượt vào kho",
-      "empty": "Kết quả check-in sẽ hiện ở đây, kèm kệ khách thuê để điều phối xe."
+      "openDetail": "Xem chi tiết lượt vào kho"
     },
     "checkOut": {
       "title": "Khách đang trong kho",

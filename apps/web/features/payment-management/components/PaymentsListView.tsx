@@ -111,8 +111,8 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             {isEn
-              ? "Track dynamic VietQR transactions, counter cash/transfers, and settlement status."
-              : "Theo dõi các giao dịch thanh toán VietQR động SePay, thu tiền tại quầy và đối soát."}
+              ? "Track VietQR payments, counter collections and reconciliation."
+              : "Theo dõi thanh toán VietQR, thu tiền tại quầy và đối soát."}
           </p>
         </div>
 
@@ -350,7 +350,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
 
                     <td className="px-4 py-3.5">
                       <div className="font-semibold text-slate-800">
-                        {payment.customer?.name || isEn ? "Customer" : "Khách hàng"}
+                        {payment.customer?.name || (isEn ? "Customer" : "Khách hàng")}
                       </div>
                       <div className="text-[11px] text-slate-400">
                         {payment.customer?.email || "—"}

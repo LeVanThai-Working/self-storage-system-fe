@@ -58,13 +58,16 @@ export function GateCheckInPanel({ portalBase }: { portalBase: FacilityPortal })
   const schedule = result?.schedule;
 
   return (
-    <section className="grid gap-4 rounded-xl border border-teal-200 bg-teal-50/40 p-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+    <section
+      className={`grid gap-4 rounded-xl border border-teal-200 bg-teal-50/40 p-5 ${
+        schedule ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""
+      }`}
+    >
       <form onSubmit={(event) => void handleSubmit(event)} className="space-y-3">
         <div className="flex items-center gap-2">
           <QrCode className="h-5 w-5 text-teal-700" />
           <p className="text-sm font-bold text-slate-800">{t("title")}</p>
         </div>
-        <p className="text-xs text-slate-500">{t("hint")}</p>
         <input
           value={code}
           onChange={(event) => setCode(event.target.value)}
@@ -95,8 +98,8 @@ export function GateCheckInPanel({ portalBase }: { portalBase: FacilityPortal })
         </Button>
       </form>
 
-      <div className="rounded-lg border border-slate-200 bg-white p-4">
-        {schedule ? (
+      {schedule ? (
+        <div className="rounded-lg border border-slate-200 bg-white p-4">
           <div className="space-y-2 text-sm">
             <p className="flex items-center gap-2 font-bold text-emerald-700">
               <CheckCircle2 className="h-4 w-4" />
@@ -142,10 +145,8 @@ export function GateCheckInPanel({ portalBase }: { portalBase: FacilityPortal })
               {t("openDetail")}
             </Link>
           </div>
-        ) : (
-          <p className="py-6 text-center text-sm text-slate-500">{t("empty")}</p>
-        )}
-      </div>
+        </div>
+      ) : null}
     </section>
   );
 }

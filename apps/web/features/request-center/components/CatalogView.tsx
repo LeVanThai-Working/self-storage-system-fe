@@ -58,9 +58,12 @@ export const CatalogView = ({ facilityId }: CatalogViewProps) => {
               <div key={o.id} className="p-4 flex items-center justify-between text-sm">
                 <div>
                   <span className="font-medium text-slate-800">{o.amenity.name}</span>
-                  <span className="text-xs text-slate-400 ml-2">
-                    {t("available")}: {o.availableQuantity}/{o.totalQuantity}
-                  </span>
+                  {/* Services have no stock: the BE sends no quantities for them. */}
+                  {typeof o.totalQuantity === "number" && o.totalQuantity > 0 && (
+                    <span className="text-xs text-slate-400 ml-2">
+                      {t("available")}: {o.availableQuantity}/{o.totalQuantity}
+                    </span>
+                  )}
                 </div>
                 <span className="text-xs text-slate-500">
                   {o.pricePerUnit.toLocaleString("vi-VN")}đ/{t(`billingUnit.${o.billingUnit}`)}

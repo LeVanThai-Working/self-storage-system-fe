@@ -185,7 +185,6 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               </span>
               <FileSignature className="h-4 w-4 text-emerald-600" />
             </div>
-            <p className="mt-1 text-[11px] text-slate-400">Đang lưu kho thực tế</p>
           </div>
 
           <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
@@ -196,7 +195,6 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               </span>
               <Scale className="h-4 w-4 text-rose-500" />
             </div>
-            <p className="mt-1 text-[11px] text-slate-400">Cần liên hệ nhắc nợ/khóa kho</p>
           </div>
 
           <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
@@ -207,7 +205,6 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               </span>
               <CalendarCheck className="h-4 w-4 text-blue-500" />
             </div>
-            <p className="mt-1 text-[11px] text-slate-400">Khách đặt trong khoảng ngày chọn</p>
           </div>
 
           <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
@@ -220,7 +217,6 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               </span>
               <CheckCircle className="h-4 w-4 text-teal-500" />
             </div>
-            <p className="mt-1 text-[11px] text-slate-400">Đã kích hoạt hợp đồng thành công</p>
           </div>
         </div>
       </div>
