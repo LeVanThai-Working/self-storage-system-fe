@@ -46,6 +46,7 @@ import {
   useFacilityOfferings,
 } from "@/features/storage-unit-management/hooks";
 import { StorageUnitMapView } from "@/features/storage-unit-management/components/StorageUnitMapView";
+import { useUnitTypeCategoryLabel } from "@/features/unit-type-management/hooks";
 import { RackStructureView } from "@/features/storage-rack/components/RackStructureView";
 import type {
   FacilityUnitTypeOfferingResponse,
@@ -81,6 +82,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
 }) => {
   const locale = useLocale();
   const t = useTranslations("facilityManager.storageUnits");
+  const categoryLabel = useUnitTypeCategoryLabel();
   const currentUser = useAuthStore((state) => state.currentUser);
   const isFacilityManager =
     String(currentUser?.role ?? "").toLowerCase() === RoleEnum.FACILITY_MANAGER;
@@ -734,8 +736,8 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                           {ut.name}
                         </h2>
                         {ut.category && (
-                          <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700 uppercase tracking-wider">
-                            {ut.category}
+                          <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700">
+                            {categoryLabel(ut.category)}
                           </span>
                         )}
                         {group.offeringPrice !== undefined && (

@@ -35,6 +35,8 @@ import { ReviewConfirmModal } from "./ReviewConfirmModal";
 
 export const ApprovalTable = () => {
   const t = useTranslations("businessOps.approvals");
+  // Role labels cover every BE RoleEnum value.
+  const tRole = useTranslations("incidentDesk.detail.role");
   const queryClient = useQueryClient();
 
   // Query state
@@ -496,7 +498,8 @@ export const ApprovalTable = () => {
                       </div>
                       <div className="text-xs text-slate-400 mt-0.5 whitespace-nowrap">
                         {req.requester?.name || req.requesterId}
-                        {req.requester?.role && ` • ${req.requester.role}`}
+                        {req.requester?.role &&
+                          ` • ${tRole.has(req.requester.role) ? tRole(req.requester.role) : req.requester.role}`}
                       </div>
                     </td>
 

@@ -1389,10 +1389,8 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 <div>
                   <div className="space-y-1">
                     <h3 className="text-sm font-extrabold text-slate-900">
-                      {isEn
-                        ? "Contract Addendums (Renew, Transfer & Amenities)"
-                        : "Phụ lục Hợp đồng (Gia hạn, Đổi kho & Tiện ích)"}{" "}
-                      ({contract.addendums?.length ?? 0})
+                      {isEn ? "Contract addendums" : "Phụ lục hợp đồng"} (
+                      {contract.addendums?.length ?? 0})
                     </h3>
                   </div>
                 </div>
@@ -1457,14 +1455,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                         </div>
 
                         <div className="flex items-center gap-2 flex-wrap">
-                          {isRenew ? (
-                            addendum.newEndDate ? (
-                              <span className="text-xs font-bold text-teal-800 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-lg">
-                                {isEn ? "New End Date: " : "Hạn thuê mới: "}
-                                {formatDateOnly(addendum.newEndDate, locale)}
-                              </span>
-                            ) : null
-                          ) : isUnitChange ? (
+                          {isRenew ? null : isUnitChange ? (
                             <span className="text-xs font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded-lg">
                               {isEn ? "Unit Transfer" : "Điều chuyển phòng kho"}
                             </span>
@@ -1781,17 +1772,25 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                         {formatDateOnly(rn.previousEndDate, locale)} →{" "}
                         <span className="text-emerald-700">
                           {formatDateOnly(rn.newEndDate, locale)}
-                        </span>{" "}
-                        (+{rn.additionalDuration} {getBillingUnitLabel(rn.billingUnit, locale)})
+                        </span>
+                        {/* BE renewal entries do not carry duration yet; skip rather than print "(+ tháng)". */}
+                        {rn.additionalDuration ? (
+                          <>
+                            {" "}
+                            (+{rn.additionalDuration} {getBillingUnitLabel(rn.billingUnit, locale)})
+                          </>
+                        ) : null}
                       </p>
                       <p className="text-[11px] text-slate-500">
                         {formatDateTime(rn.renewedAt, locale)}
                         {rn.renewedBy?.name ? ` • ${rn.renewedBy.name}` : ""}
                       </p>
                     </div>
-                    <div className="font-extrabold text-teal-700 text-sm">
-                      +{formatVnd(rn.additionalAmount)}
-                    </div>
+                    {rn.additionalAmount != null && (
+                      <div className="font-extrabold text-teal-700 text-sm">
+                        +{formatVnd(rn.additionalAmount)}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1805,7 +1804,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 <div className="flex items-center gap-2">
                   <FileCheck className="w-4 h-4 text-emerald-600" />
                   <h3 className="text-sm font-extrabold text-slate-900">
-                    {isEn ? "Digitized Signed Contract Scans" : "Hồ sơ Hợp đồng Ký sống (Bản scan)"}
+                    {isEn ? "Signed contract scans" : "Bản scan hợp đồng"}
                   </h3>
                 </div>
                 <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">

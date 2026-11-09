@@ -24,6 +24,19 @@ const BILLING_UNIT_LABELS: Record<string, string> = {
   one_time: "Một lần",
 };
 
+/** BE period keys: YYYY-MM-DD, YYYY-Www, YYYY-MM, YYYY-Qn. */
+function formatPeriod(period: string): string {
+  let m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(period);
+  if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+  m = /^(\d{4})-W(\d{2})$/.exec(period);
+  if (m) return `Tuần ${Number(m[2])}/${m[1]}`;
+  m = /^(\d{4})-(\d{2})$/.exec(period);
+  if (m) return `${m[2]}/${m[1]}`;
+  m = /^(\d{4})-Q(\d)$/.exec(period);
+  if (m) return `Quý ${m[2]}/${m[1]}`;
+  return period;
+}
+
 export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
   if (isLoading) {
     return (
@@ -49,6 +62,16 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
   } = data;
 
   const maxSeriesRevenue = Math.max(...timeSeries.map((t) => t.collectedRevenue), 1);
+  // Bars and the busiest badge follow the reservation count shown on each row
+  // (BE ranks days by total activity, which also counts check-ins and visits).
+  const maxDayReservations = Math.max(
+    ...dayOfWeekDistribution.items.map((d) => d.reservationsCreated),
+    0
+  );
+  const busiestDay =
+    maxDayReservations > 0
+      ? dayOfWeekDistribution.items.find((d) => d.reservationsCreated === maxDayReservations)
+      : undefined;
 
   return (
     <div className="space-y-6">
@@ -66,7 +89,6 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
           <div className="mt-2 text-3xl font-black text-slate-900">
             {peakAndLowAnalysis.averageReservationsPerPeriod}
           </div>
-          <p className="mt-1 text-xs text-slate-500">Số đơn đặt chỗ trung bình mỗi mốc thời gian</p>
         </div>
 
         <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-5 shadow-xs">
@@ -83,7 +105,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
           </div>
           <p className="mt-1 text-xs text-amber-800">
             {peakAndLowAnalysis.peakPeriods.length > 0
-              ? `Kỳ cao nhất: ${peakAndLowAnalysis.peakPeriods[0]?.period} (${peakAndLowAnalysis.peakPeriods[0]?.reservationsCreated} đơn)`
+              ? `Kỳ cao nhất: ${formatPeriod(peakAndLowAnalysis.peakPeriods[0]?.period ?? "")} (${peakAndLowAnalysis.peakPeriods[0]?.reservationsCreated} đơn)`
               : "Không có giai đoạn vượt 125% mức trung bình"}
           </p>
         </div>
@@ -102,7 +124,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
           </div>
           <p className="mt-1 text-xs text-blue-800">
             {peakAndLowAnalysis.lowPeriods.length > 0
-              ? `Kỳ thấp nhất: ${peakAndLowAnalysis.lowPeriods[0]?.period} (${peakAndLowAnalysis.lowPeriods[0]?.reservationsCreated} đơn)`
+              ? `Kỳ thấp nhất: ${formatPeriod(peakAndLowAnalysis.lowPeriods[0]?.period ?? "")} (${peakAndLowAnalysis.lowPeriods[0]?.reservationsCreated} đơn)`
               : "Không có giai đoạn dưới 75% mức trung bình"}
           </p>
         </div>
@@ -146,7 +168,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
                     }`}
                   >
                     <td className="py-3 px-3 font-bold text-slate-900 flex items-center gap-1.5">
-                      {item.period}
+                      {formatPeriod(item.period)}
                       {isPeak && (
                         <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-black text-amber-800">
                           Cao điểm
@@ -208,37 +230,24 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
                 Phân bố theo ngày trong tuần
               </h4>
             </div>
-            {dayOfWeekDistribution.busiestDay && (
+            {busiestDay && (
               <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700">
-                Đông nhất: {dayOfWeekDistribution.busiestDay.dayName}
+                Đông nhất: {busiestDay.dayName}
               </span>
             )}
           </div>
 
           <div className="mt-4 space-y-3">
             {dayOfWeekDistribution.items.map((day) => {
-              const maxActivity = Math.max(
-                ...dayOfWeekDistribution.items.map((d) => d.totalActivity),
-                1
-              );
-              const percent = Math.round((day.totalActivity / maxActivity) * 100);
-              const isBusiest = day.dayOfWeek === dayOfWeekDistribution.busiestDay?.dayOfWeek;
-              const isQuietest = day.dayOfWeek === dayOfWeekDistribution.quietestDay?.dayOfWeek;
+              const percent = busiestDay
+                ? Math.round((day.reservationsCreated / maxDayReservations) * 100)
+                : 0;
+              const isBusiest = day.dayOfWeek === busiestDay?.dayOfWeek;
 
               return (
                 <div key={day.dayOfWeek} className="text-xs space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-700 flex items-center gap-1.5">
-                      {day.dayName}
-                      {isBusiest && (
-                        <span className="text-[10px] text-amber-600 font-extrabold">
-                          ★ Đông nhất
-                        </span>
-                      )}
-                      {isQuietest && (
-                        <span className="text-[10px] text-slate-400">(Vắng nhất)</span>
-                      )}
-                    </span>
+                    <span className="font-semibold text-slate-700">{day.dayName}</span>
                     <span className="font-bold text-slate-900">{day.reservationsCreated} đơn</span>
                   </div>
                   <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">

@@ -272,10 +272,10 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
           <p className="text-sm text-slate-500 mt-1">
             {isEn
               ? isOpsOrAdmin
-                ? "Oversee and audit all storage lease contracts, revenue cycles, and handovers across all facilities."
+                ? "Track storage lease contracts, billing cycles and handovers across all facilities."
                 : "Manage rental contracts, handover and move-out at your facility."
               : isOpsOrAdmin
-                ? "Giám sát, kiểm toán toàn bộ hợp đồng thuê kho, kỳ thu phí và bàn giao trên toàn hệ thống cơ sở."
+                ? "Theo dõi hợp đồng thuê kho, kỳ thu phí và bàn giao ở tất cả cơ sở."
                 : "Quản lý hợp đồng thuê kho, bàn giao và trả kho tại cơ sở."}
           </p>
         </div>

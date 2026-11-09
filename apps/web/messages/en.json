@@ -969,9 +969,8 @@
         "all": "All Categories",
         "locker": "Locker",
         "small": "Small",
-        "medium": "Medium",
         "large": "Large",
-        "climate_controlled": "Climate Controlled"
+        "warehouse_rack": "Warehouse rack"
       },
       "statusFilter": {
         "all": "All Statuses",
@@ -1857,7 +1856,7 @@
       },
       "location": {
         "floor": "Floor {floor}",
-        "zone": "Zone {zone}"
+        "zone": "{zone}"
       },
       "empty": {
         "title": "This facility has no storage units yet",

@@ -5,6 +5,7 @@ import { DoorOpen, Truck } from "lucide-react";
 import { RackZoneEnum, formatCurrency } from "@self-storage-system-fe/shared";
 import type { ProductAndOperationsResponse } from "../types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUnitTypeCategoryLabel } from "@/features/unit-type-management/hooks";
 
 const ZONE_LABEL: Record<RackZoneEnum, string> = {
   [RackZoneEnum.PRIME]: "Vị trí đắc địa",
@@ -18,6 +19,8 @@ interface ProductOperationsTabProps {
 }
 
 export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabProps) {
+  const categoryLabel = useUnitTypeCategoryLabel();
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -158,8 +161,8 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
               {unitTypePerformance.map((ut) => (
                 <tr key={ut.unitTypeId} className="hover:bg-slate-50/70">
                   <td className="py-3 px-3 font-bold text-slate-900">{ut.name}</td>
-                  <td className="py-3 px-3 uppercase text-[11px] text-slate-500">
-                    {ut.category} ({ut.area}m²)
+                  <td className="py-3 px-3 text-[11px] text-slate-500">
+                    {categoryLabel(ut.category)} ({ut.area} m²)
                   </td>
                   <td className="py-3 px-3 text-right font-bold text-slate-900">{ut.totalUnits}</td>
                   <td className="py-3 px-3 text-right text-blue-600 font-bold">
@@ -220,7 +223,7 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
               Hiệu suất tiện ích & dịch vụ cộng thêm
             </h4>
             <span className="text-xs text-teal-700 font-bold">
-              Gắn HĐ: {amenityPerformance.contractAttachRate}%
+              Tỷ lệ gắn vào hợp đồng: {amenityPerformance.contractAttachRate}%
             </span>
           </div>
 

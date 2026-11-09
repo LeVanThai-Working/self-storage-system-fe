@@ -10,9 +10,8 @@ import {
   Box,
   Calendar,
   AlertCircle,
-  Snowflake,
+  Warehouse,
   Lock,
-  Package,
   Boxes,
   ImageIcon,
 } from "lucide-react";
@@ -44,11 +43,11 @@ export const UnitTypeDetailModal = ({ unitTypeId, isOpen, onClose }: UnitTypeDet
 
   const renderCategoryBadge = (category?: string) => {
     switch (category) {
-      case UnitTypeCategoryEnum.CLIMATE_CONTROLLED:
+      case UnitTypeCategoryEnum.WAREHOUSE_RACK:
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200/80 whitespace-nowrap shrink-0">
-            <Snowflake className="w-3.5 h-3.5 text-cyan-600" />
-            {t("categoryFilter.climate_controlled")}
+            <Warehouse className="w-3.5 h-3.5 text-cyan-600" />
+            {t("categoryFilter.warehouse_rack")}
           </span>
         );
       case UnitTypeCategoryEnum.LOCKER:
@@ -63,13 +62,6 @@ export const UnitTypeDetailModal = ({ unitTypeId, isOpen, onClose }: UnitTypeDet
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 whitespace-nowrap shrink-0">
             <Box className="w-3.5 h-3.5 text-emerald-600" />
             {t("categoryFilter.small")}
-          </span>
-        );
-      case UnitTypeCategoryEnum.MEDIUM:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200/80 whitespace-nowrap shrink-0">
-            <Package className="w-3.5 h-3.5 text-amber-600" />
-            {t("categoryFilter.medium")}
           </span>
         );
       case UnitTypeCategoryEnum.LARGE:

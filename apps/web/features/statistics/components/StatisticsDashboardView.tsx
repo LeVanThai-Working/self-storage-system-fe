@@ -29,6 +29,8 @@ interface StatisticsDashboardViewProps {
   facilityName?: string;
   /** Hide the page title when embedded under another page header. */
   hideHeader?: boolean;
+  /** Override the role-based page title. */
+  title?: string;
 }
 
 export function StatisticsDashboardView({
@@ -37,6 +39,7 @@ export function StatisticsDashboardView({
   lockedFacilityId,
   facilityName,
   hideHeader = false,
+  title,
 }: StatisticsDashboardViewProps) {
   const [activeTab, setActiveTab] = useState<
     "overview" | "trends" | "kpi" | "financial" | "operations"
@@ -165,7 +168,7 @@ export function StatisticsDashboardView({
       {!hideHeader && (
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
-            {roleText.title}
+            {title ?? roleText.title}
           </h1>
         </div>
       )}

@@ -68,7 +68,8 @@ export const useContractStats = (
   assignedStaffId?: string,
   enabledProp = true
 ) => {
-  const enabled = Boolean(facilityId || assignedStaffId) && enabledProp;
+  // No facility filter means "all facilities" for ops/admin, so counts must still load.
+  const enabled = enabledProp;
   const baseFilter = { facilityId, assignedStaffId };
 
   const results = useQueries({

@@ -135,9 +135,6 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               <div className="text-2xl font-black text-indigo-600">
                 {occupancy.storageRacks.occupancyRate}%
               </div>
-              <span className="text-[11px] font-semibold text-slate-400">
-                Khả dụng: {occupancy.storageRacks.available} kệ trống
-              </span>
             </div>
           </div>
 
@@ -208,9 +205,7 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
           </div>
 
           <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
-            <span className="text-xs text-slate-500 font-medium">
-              Nhận phòng hoàn tất (Check-in)
-            </span>
+            <span className="text-xs text-slate-500 font-medium">Nhận phòng hoàn tất</span>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="text-2xl font-black text-teal-600">
                 {contractsAndBookings.completedReservationsInPeriod}

@@ -8,8 +8,8 @@ export default function BusinessOpsInvoicesPage() {
     <BusinessOpsLayout>
       <InvoicesListView
         portalBase="business-ops"
-        pageTitle="Quản lý Hóa đơn & Quét Billing Toàn hệ thống"
-        pageSubtitle="Giám sát doanh thu hóa đơn, kích hoạt mẻ quét sinh hóa đơn T-7, quét phạt quá hạn và nhắc nợ đa kênh"
+        pageTitle="Quản lý hóa đơn"
+        pageSubtitle="Theo dõi hóa đơn của tất cả cơ sở, tạo hóa đơn kỳ tới trước hạn 7 ngày, xử lý quá hạn và gửi nhắc nợ."
       />
     </BusinessOpsLayout>
   );

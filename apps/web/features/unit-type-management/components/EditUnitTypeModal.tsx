@@ -33,6 +33,7 @@ interface EditUnitTypeModalProps {
 
 export const EditUnitTypeModal = ({ unitTypeId, isOpen, onClose }: EditUnitTypeModalProps) => {
   const t = useTranslations("businessOps.unitTypes.editModal");
+  const tCategory = useTranslations("businessOps.unitTypes.categoryFilter");
 
   const { data: unitType, isLoading } = useUnitType(unitTypeId, {
     enabled: isOpen && Boolean(unitTypeId),
@@ -41,7 +42,7 @@ export const EditUnitTypeModal = ({ unitTypeId, isOpen, onClose }: EditUnitTypeM
 
   // Form states
   const [name, setName] = useState<string>("");
-  const [category, setCategory] = useState<string>(UnitTypeCategoryEnum.MEDIUM);
+  const [category, setCategory] = useState<string>(UnitTypeCategoryEnum.SMALL);
   const [length, setLength] = useState<string>("2");
   const [width, setWidth] = useState<string>("2");
   const [height, setHeight] = useState<string>("2.5");
@@ -60,7 +61,7 @@ export const EditUnitTypeModal = ({ unitTypeId, isOpen, onClose }: EditUnitTypeM
     if (unitType && isOpen) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(unitType.name || "");
-      setCategory(unitType.category || UnitTypeCategoryEnum.MEDIUM);
+      setCategory(unitType.category || UnitTypeCategoryEnum.SMALL);
       setLength(String(unitType.dimensions?.length ?? 2));
       setWidth(String(unitType.dimensions?.width ?? 2));
       setHeight(String(unitType.dimensions?.height ?? 2.5));
@@ -260,13 +261,11 @@ export const EditUnitTypeModal = ({ unitTypeId, isOpen, onClose }: EditUnitTypeM
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-sm font-medium text-slate-700 px-3.5 py-2.5 rounded-xl border border-slate-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all cursor-pointer"
                 >
-                  <option value={UnitTypeCategoryEnum.LOCKER}>Tủ đồ (Locker)</option>
-                  <option value={UnitTypeCategoryEnum.SMALL}>Kho nhỏ (Small)</option>
-                  <option value={UnitTypeCategoryEnum.MEDIUM}>Kho vừa (Medium)</option>
-                  <option value={UnitTypeCategoryEnum.LARGE}>Kho lớn (Large)</option>
-                  <option value={UnitTypeCategoryEnum.CLIMATE_CONTROLLED}>
-                    Kiểm soát nhiệt độ (Climate Controlled)
-                  </option>
+                  {Object.values(UnitTypeCategoryEnum).map((value) => (
+                    <option key={value} value={value}>
+                      {tCategory(value)}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

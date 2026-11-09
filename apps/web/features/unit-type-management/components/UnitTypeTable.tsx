@@ -15,7 +15,7 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
-  Snowflake,
+  Warehouse,
   Lock,
   Box,
   Package,
@@ -115,11 +115,11 @@ export const UnitTypeTable = () => {
   // Helper: Format category badge
   const renderCategoryBadge = (category: string) => {
     switch (category) {
-      case UnitTypeCategoryEnum.CLIMATE_CONTROLLED:
+      case UnitTypeCategoryEnum.WAREHOUSE_RACK:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-cyan-50 text-cyan-700 border border-cyan-200/70">
-            <Snowflake className="w-3 h-3 text-cyan-600 shrink-0" />
-            {t("categoryFilter.climate_controlled")}
+            <Warehouse className="w-3 h-3 text-cyan-600 shrink-0" />
+            {t("categoryFilter.warehouse_rack")}
           </span>
         );
       case UnitTypeCategoryEnum.LOCKER:
@@ -134,13 +134,6 @@ export const UnitTypeTable = () => {
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200/70">
             <Box className="w-3 h-3 text-emerald-600 shrink-0" />
             {t("categoryFilter.small")}
-          </span>
-        );
-      case UnitTypeCategoryEnum.MEDIUM:
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200/70">
-            <Package className="w-3 h-3 text-amber-600 shrink-0" />
-            {t("categoryFilter.medium")}
           </span>
         );
       case UnitTypeCategoryEnum.LARGE:
@@ -258,7 +251,9 @@ export const UnitTypeTable = () => {
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.categories")}
             </p>
-            <p className="text-2xl font-black text-orange-600 mt-1">5</p>
+            <p className="text-2xl font-black text-orange-600 mt-1">
+              {Object.values(UnitTypeCategoryEnum).length}
+            </p>
           </div>
           <div className="w-11 h-11 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600">
             <Boxes className="w-5 h-5" />
@@ -294,13 +289,11 @@ export const UnitTypeTable = () => {
               className="bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-xs sm:text-sm font-medium text-slate-700 py-2.5 px-3.5 rounded-xl border border-slate-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all cursor-pointer"
             >
               <option value="ALL">{t("categoryFilter.all")}</option>
-              <option value={UnitTypeCategoryEnum.LOCKER}>{t("categoryFilter.locker")}</option>
-              <option value={UnitTypeCategoryEnum.SMALL}>{t("categoryFilter.small")}</option>
-              <option value={UnitTypeCategoryEnum.MEDIUM}>{t("categoryFilter.medium")}</option>
-              <option value={UnitTypeCategoryEnum.LARGE}>{t("categoryFilter.large")}</option>
-              <option value={UnitTypeCategoryEnum.CLIMATE_CONTROLLED}>
-                {t("categoryFilter.climate_controlled")}
-              </option>
+              {Object.values(UnitTypeCategoryEnum).map((category) => (
+                <option key={category} value={category}>
+                  {t(`categoryFilter.${category}`)}
+                </option>
+              ))}
             </select>
           </div>
 
