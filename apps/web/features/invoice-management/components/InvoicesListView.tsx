@@ -175,11 +175,11 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
     try {
       const res = await recurringScanMutation.mutateAsync();
       setJobFeedback(
-        `Quét T-7 hoàn tất: Đã quét ${res.scannedCount}, tạo mới ${res.generatedCount} hóa đơn kỳ tiếp theo.`
+        `Đã kiểm tra ${res.scannedCount} hợp đồng, tạo mới ${res.generatedCount} hóa đơn kỳ tới.`
       );
       setTimeout(() => setJobFeedback(null), 5000);
     } catch {
-      setJobFeedback("Kích hoạt quét định kỳ thất bại.");
+      setJobFeedback("Không tạo được hóa đơn kỳ tới, vui lòng thử lại.");
       setTimeout(() => setJobFeedback(null), 4000);
     }
   };
@@ -227,10 +227,10 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
                 onClick={handleTriggerRecurringScan}
                 disabled={recurringScanMutation.isPending}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-xs font-bold text-indigo-800 disabled:opacity-50 shadow-sm"
-                title="Kích hoạt job quét T-7 tự động sinh hóa đơn kỳ tiếp theo"
+                title="Tạo hóa đơn cho các hợp đồng có kỳ thuê mới bắt đầu trong 7 ngày tới. Hệ thống cũng tự chạy việc này hằng ngày."
               >
                 <Calendar className="w-3.5 h-3.5 text-indigo-600" />
-                Quét T-7 sinh HĐ
+                Tạo hóa đơn kỳ tới
               </button>
 
               <button
