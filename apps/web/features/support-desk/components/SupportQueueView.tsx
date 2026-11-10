@@ -32,7 +32,7 @@ import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useAuthStore } from "@/features/auth/store";
 import { useContractDetail, useFacilityStaffs } from "@/features/contract-management/hooks";
-import type { FacilityPortal } from "@/features/inventory-operations/components/RequestQueueView";
+import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { fetchSupportTickets } from "../api";
 import {
   supportDeskKeys,

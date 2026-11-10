@@ -6,7 +6,11 @@ import { StatisticsDashboardView } from "@/features/statistics";
 export default function BusinessOpsRootPage() {
   return (
     <BusinessOpsLayout>
-      <StatisticsDashboardView role="business_ops_manager" initialTab="overview" />
+      <StatisticsDashboardView
+        role="business_ops_manager"
+        initialTab="overview"
+        title="Tổng quan"
+      />
     </BusinessOpsLayout>
   );
 }

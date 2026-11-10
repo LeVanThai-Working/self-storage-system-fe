@@ -9,6 +9,8 @@ import {
   Move,
   Package,
   PackageOpen,
+  PackagePlus,
+  SquarePen,
   TriangleAlert,
   Weight,
 } from "lucide-react-native";
@@ -18,12 +20,12 @@ import type {
 } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
-import type { RequestActionType } from "../types/rackMap.types";
+import type { StockActionType } from "../types/rackMap.types";
 import {
   buildFloorLabel,
   buildTreeTierLabel,
-  canRequestMoveItem,
-  canRequestOutboundItem,
+  canOperateItem,
+  type ContractStockRights,
   findTierInTree,
   formatWeightKg,
   getPositionItems,
@@ -37,19 +39,12 @@ import { SkuThumb } from "./SkuThumb";
 import { TierStatusBadge } from "./TierStatusBadge";
 import { ItemStatusBadge } from "./ItemStatusBadge";
 
-const REQUEST_ACTIONS: {
-  type: RequestActionType;
-  labelKey: string;
-  Icon: typeof Move;
-  allowed: (item: TreeTierItem) => boolean;
-}[] = [
-  {
-    type: "outbound",
-    labelKey: "rackMap.action.requestOutbound",
-    Icon: ArrowUpFromLine,
-    allowed: canRequestOutboundItem,
-  },
-  { type: "move", labelKey: "rackMap.action.requestMove", Icon: Move, allowed: canRequestMoveItem },
+type ItemActionType = Exclude<StockActionType, "in">;
+
+const ITEM_ACTIONS: { type: ItemActionType; labelKey: string; Icon: typeof Move }[] = [
+  { type: "out", labelKey: "rackMap.action.stockOut", Icon: ArrowUpFromLine },
+  { type: "move", labelKey: "rackMap.action.move", Icon: Move },
+  { type: "adjust", labelKey: "rackMap.action.adjust", Icon: SquarePen },
 ];
 
 interface TierDetailModalProps {
@@ -58,9 +53,9 @@ interface TierDetailModalProps {
   tree: StorageUnitInventoryTreeResponse;
   /** Tier being viewed, or `null` for floor (unracked) items. */
   tierId: string | null;
-  /** Contract-level rights (ACTIVE: all, OVERDUE: outbound + move, otherwise none). */
-  rights: { canRequestOutbound: boolean; canRequestMove: boolean };
-  onRequest: (type: RequestActionType, item?: TreeTierItem) => void;
+  /** Contract-level rights (ACTIVE: all, OVERDUE: out + move, otherwise none). */
+  rights: ContractStockRights;
+  onAction: (type: StockActionType, item?: TreeTierItem) => void;
   /** Opens the incident form prefilled with this rack / tier. */
   onReportIncident?: () => void;
   onShowHistory?: () => void;
@@ -72,7 +67,7 @@ export function TierDetailModal({
   tree,
   tierId,
   rights,
-  onRequest,
+  onAction,
   onReportIncident,
   onShowHistory,
 }: TierDetailModalProps) {
@@ -86,10 +81,10 @@ export function TierDetailModal({
   const items = getPositionItems(tree, tierId);
   const status = tier ? getTierDisplayStatus(tier.status, tier.items.length) : null;
   const locked = tier ? isTierLocked(tier.status) : false;
-  const readOnly = !rights.canRequestOutbound && !rights.canRequestMove;
+  const readOnly = !rights.canIn && !rights.canOut && !rights.canMove && !rights.canAdjust;
   const canAct = !readOnly && !locked;
-  const isRightGranted = (type: RequestActionType) =>
-    type === "outbound" ? rights.canRequestOutbound : rights.canRequestMove;
+  const isRightGranted = (type: ItemActionType) =>
+    type === "out" ? rights.canOut : type === "move" ? rights.canMove : rights.canAdjust;
   const weight = tier ? getTierWeight(tier) : null;
   const weightPercent = weight && weight.ratio !== null ? Math.round(weight.ratio * 100) : 0;
 
@@ -216,7 +211,7 @@ export function TierDetailModal({
                       {`  ${item.sku.uom}`}
                     </Text>
                   </View>
-                  {canAct ? (
+                  {canAct && canOperateItem(item) ? (
                     <Pressable
                       onPress={() => setMenuItemId(menuOpen ? null : item.inventoryId)}
                       hitSlop={8}
@@ -233,13 +228,13 @@ export function TierDetailModal({
 
                 {menuOpen ? (
                   <View className="flex-row gap-2">
-                    {REQUEST_ACTIONS.map((action) => {
-                      const enabled = isRightGranted(action.type) && action.allowed(item);
+                    {ITEM_ACTIONS.map((action) => {
+                      const enabled = isRightGranted(action.type) && canOperateItem(item);
                       return (
                         <Pressable
                           key={action.type}
                           disabled={!enabled}
-                          onPress={() => onRequest(action.type, item)}
+                          onPress={() => onAction(action.type, item)}
                           className={`flex-1 flex-row items-center justify-center gap-1 rounded-xl bg-brand-bg py-2 active:opacity-80 dark:bg-brand/10 ${
                             enabled ? "" : "opacity-40"
                           }`}
@@ -261,14 +256,13 @@ export function TierDetailModal({
 
       {canAct && !isFloor ? (
         <View className="flex-row gap-2.5">
-          {REQUEST_ACTIONS.map((action) => {
-            const enabled =
-              isRightGranted(action.type) && items.some((item) => action.allowed(item));
+          {ITEM_ACTIONS.map((action) => {
+            const enabled = isRightGranted(action.type) && items.some(canOperateItem);
             return (
               <Pressable
                 key={action.type}
                 disabled={!enabled}
-                onPress={() => onRequest(action.type)}
+                onPress={() => onAction(action.type)}
                 className={`flex-1 items-center gap-1.5 rounded-2xl border border-neutral-border bg-white py-3.5 active:opacity-80 dark:border-neutral-800 dark:bg-neutral-900 ${
                   enabled ? "" : "opacity-40"
                 }`}
@@ -281,6 +275,16 @@ export function TierDetailModal({
             );
           })}
         </View>
+      ) : null}
+
+      {canAct && rights.canIn && !isFloor ? (
+        <Pressable
+          onPress={() => onAction("in")}
+          className="h-12 flex-row items-center justify-center gap-2 rounded-xl bg-cta active:opacity-90"
+        >
+          <PackagePlus size={17} color="#FFFFFF" />
+          <Text className="text-sm font-bold text-white">{t("rackMap.action.stockIn")}</Text>
+        </Pressable>
       ) : null}
 
       {isFloor && items.length > 0 ? (

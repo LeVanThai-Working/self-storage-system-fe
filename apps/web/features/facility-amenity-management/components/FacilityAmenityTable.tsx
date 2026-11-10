@@ -24,6 +24,7 @@ import {
   AlertCircle,
   AlertTriangle,
 } from "lucide-react";
+import { AmenityTypeEnum } from "@self-storage-system-fe/shared";
 import { useFacilities } from "@/features/facility-management/hooks";
 import { useAmenities } from "@/features/amenity-management/hooks";
 import { useFacilityAmenityOfferings } from "../hooks";
@@ -53,6 +54,7 @@ const normalizeVi = (str?: string | null): string => {
 
 export const FacilityAmenityTable = () => {
   const t = useTranslations("businessOps.facilityAmenities");
+  const tType = useTranslations("businessOps.amenities.typeFilter");
 
   // Query states
   const [page, setPage] = useState(1);
@@ -596,8 +598,10 @@ export const FacilityAmenityTable = () => {
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-slate-900">{offering.amenity.name}</span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
-                            {offering.amenity.type}
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
+                            {tType.has(offering.amenity.type)
+                              ? tType(offering.amenity.type)
+                              : offering.amenity.type}
                           </span>
                         </div>
                         {offering.amenity.description && (
@@ -619,62 +623,69 @@ export const FacilityAmenityTable = () => {
 
                       {/* Inventory Column (totalQuantity, inUseQuantity, availableQuantity) */}
                       <td className="py-4 px-6 min-w-[220px]">
-                        <div className="flex items-center justify-between gap-3 text-xs mb-1.5 whitespace-nowrap">
-                          <span className="text-slate-600 font-medium whitespace-nowrap">
-                            Khả dụng:{" "}
-                            <b
-                              className={
-                                available === 0
-                                  ? "text-rose-600 font-extrabold"
-                                  : available <= 2
-                                    ? "text-amber-600 font-extrabold"
-                                    : "text-emerald-700 font-extrabold"
-                              }
-                            >
-                              {available}
-                            </b>
-                            /{total}
-                          </span>
-                          <span className="text-[11px] text-slate-400 whitespace-nowrap">
-                            Đang dùng: <b className="text-slate-700">{inUse}</b>
-                          </span>
-                        </div>
+                        {offering.amenity.type === AmenityTypeEnum.SERVICE ? (
+                          // Services carry no stock, so there is nothing to count here.
+                          <span className="text-xs text-slate-400">—</span>
+                        ) : (
+                          <>
+                            <div className="flex items-center justify-between gap-3 text-xs mb-1.5 whitespace-nowrap">
+                              <span className="text-slate-600 font-medium whitespace-nowrap">
+                                Khả dụng:{" "}
+                                <b
+                                  className={
+                                    available === 0
+                                      ? "text-rose-600 font-extrabold"
+                                      : available <= 2
+                                        ? "text-amber-600 font-extrabold"
+                                        : "text-emerald-700 font-extrabold"
+                                  }
+                                >
+                                  {available}
+                                </b>
+                                /{total}
+                              </span>
+                              <span className="text-[11px] text-slate-400 whitespace-nowrap">
+                                Đang dùng: <b className="text-slate-700">{inUse}</b>
+                              </span>
+                            </div>
 
-                        {/* Progress Bar */}
-                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden flex">
-                          <div
-                            className="bg-amber-500 h-2"
-                            style={{ width: `${percentUsed}%` }}
-                            title={`Đang dùng: ${inUse}`}
-                          />
-                          <div
-                            className="bg-emerald-500 h-2"
-                            style={{
-                              width: `${total > 0 ? (available / total) * 100 : 0}%`,
-                            }}
-                            title={`Khả dụng: ${available}`}
-                          />
-                        </div>
+                            {/* Progress Bar */}
+                            <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden flex">
+                              <div
+                                className="bg-amber-500 h-2"
+                                style={{ width: `${percentUsed}%` }}
+                                title={`Đang dùng: ${inUse}`}
+                              />
+                              <div
+                                className="bg-emerald-500 h-2"
+                                style={{
+                                  width: `${total > 0 ? (available / total) * 100 : 0}%`,
+                                }}
+                                title={`Khả dụng: ${available}`}
+                              />
+                            </div>
 
-                        {/* Stock Tag */}
-                        <div className="mt-1.5">
-                          {available === 0 ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border border-rose-200">
-                              <AlertCircle className="w-2.5 h-2.5 shrink-0" />
-                              {t("stock.outOfStock")}
-                            </span>
-                          ) : available <= 2 ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200">
-                              <AlertTriangle className="w-2.5 h-2.5 shrink-0" />
-                              {t("stock.lowStock")}
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200">
-                              <CheckCircle2 className="w-2.5 h-2.5 shrink-0" />
-                              {t("stock.inStock")}
-                            </span>
-                          )}
-                        </div>
+                            {/* Stock Tag */}
+                            <div className="mt-1.5">
+                              {available === 0 ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border border-rose-200">
+                                  <AlertCircle className="w-2.5 h-2.5 shrink-0" />
+                                  {t("stock.outOfStock")}
+                                </span>
+                              ) : available <= 2 ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200">
+                                  <AlertTriangle className="w-2.5 h-2.5 shrink-0" />
+                                  {t("stock.lowStock")}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                  <CheckCircle2 className="w-2.5 h-2.5 shrink-0" />
+                                  {t("stock.inStock")}
+                                </span>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </td>
 
                       {/* Status Column */}

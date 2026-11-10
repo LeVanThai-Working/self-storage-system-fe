@@ -59,7 +59,6 @@ function TrashTab({ tabId }: { tabId: TrashTabId }) {
             <tr key={e.resourceId}>
               <td className="px-5 py-3">
                 <div className="font-medium text-slate-800">{e.label}</div>
-                <div className="font-mono text-xs text-slate-400">{e.resourceId}</div>
               </td>
               <td className="px-5 py-3 text-slate-600">
                 {new Date(e.deletedAt).toLocaleString(locale === "en" ? "en-US" : "vi-VN")}

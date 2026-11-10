@@ -23,7 +23,7 @@ import {
   useSupportTicket,
 } from "@/features/support-tickets/hooks/useSupportTickets";
 import { TICKET_STATUS_TONE } from "@/features/support-tickets/utils/ticketTemplates";
-import { resolveRequestError } from "@/features/inventory-requests/utils/requestFormat";
+import { resolveRequestError } from "@/lib/apiError";
 
 function refName(ref: TicketUserRef | string | null | undefined): string | undefined {
   if (!ref) return undefined;

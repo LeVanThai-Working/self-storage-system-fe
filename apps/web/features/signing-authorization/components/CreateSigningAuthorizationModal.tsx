@@ -363,7 +363,7 @@ export const CreateSigningAuthorizationModal: React.FC<CreateSigningAuthorizatio
           {/* 5. Cloudinary Document Upload */}
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-              <span>{t("modals.documentFile")} (PDF / Image)</span>
+              <span>{t("modals.documentFile")}</span>
               <span className="text-rose-500">*</span>
             </Label>
             <CloudinaryUploader
@@ -372,7 +372,6 @@ export const CreateSigningAuthorizationModal: React.FC<CreateSigningAuthorizatio
               accept="application/pdf,image/*"
               value={documentUrl ? [documentUrl] : []}
               onChange={(urls) => setDocumentUrl(urls[0] || "")}
-              label={t("modals.uploadPrompt")}
               description={t("modals.uploadHint")}
             />
           </div>

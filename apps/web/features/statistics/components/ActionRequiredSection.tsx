@@ -60,7 +60,7 @@ export function ActionRequiredSection({ actionRequired, role }: ActionRequiredSe
     {
       key: "sepay",
       count: actionRequired.unmatchedSepayTransactions,
-      label: "Giao dịch SePay chưa khớp",
+      label: "Giao dịch ngân hàng chưa khớp",
       sublabel: "Biến động số dư chưa gán hóa đơn/đơn đặt chỗ",
       icon: Unplug,
       href: `${basePath}/reconciliation`,

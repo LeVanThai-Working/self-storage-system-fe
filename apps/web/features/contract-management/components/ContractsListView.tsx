@@ -272,11 +272,11 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
           <p className="text-sm text-slate-500 mt-1">
             {isEn
               ? isOpsOrAdmin
-                ? "Oversee and audit all storage lease contracts, revenue cycles, and handovers across all facilities."
-                : `Manage contract lifecycle, walk-in deposits, check-in handover, renewals, and check-out settlement at ${facility?.name ?? "your facility"}.`
+                ? "Track storage lease contracts, billing cycles and handovers across all facilities."
+                : "Manage rental contracts, handover and move-out at your facility."
               : isOpsOrAdmin
-                ? "Giám sát, kiểm toán toàn bộ hợp đồng thuê kho, kỳ thu phí và bàn giao trên toàn hệ thống cơ sở."
-                : `Quản lý vòng đời hợp đồng, thu cọc tại quầy, bàn giao Check-in, gia hạn và thanh lý Check-out tại ${facility?.name ?? "cơ sở"}.`}
+                ? "Theo dõi hợp đồng thuê kho, kỳ thu phí và bàn giao ở tất cả cơ sở."
+                : "Quản lý hợp đồng thuê kho, bàn giao và trả kho tại cơ sở."}
           </p>
         </div>
 
@@ -358,16 +358,6 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
               </button>
             )}
           </div>
-
-          <p className="text-xs text-slate-500 px-2">
-            {effectiveScope === "ASSIGNED_TO_ME"
-              ? isEn
-                ? "Showing only contracts assigned to you (DRAFT contracts awaiting check-in are prioritized)."
-                : "Chỉ hiển thị các hợp đồng được phân công cho bạn phụ trách (ưu tiên hợp đồng DRAFT chờ đón khách Check-in)."
-              : isEn
-                ? "Showing all contracts across the facility."
-                : "Hiển thị toàn bộ hợp đồng thuê kho tại cơ sở."}
-          </p>
         </div>
       )}
 

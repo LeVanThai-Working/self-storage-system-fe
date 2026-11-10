@@ -135,9 +135,6 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               <div className="text-2xl font-black text-indigo-600">
                 {occupancy.storageRacks.occupancyRate}%
               </div>
-              <span className="text-[11px] font-semibold text-slate-400">
-                Khả dụng: {occupancy.storageRacks.available} kệ trống
-              </span>
             </div>
           </div>
 
@@ -149,7 +146,7 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               color="bg-indigo-600"
             />
             <ProgressItem
-              label="Đặt trước chờ check-in"
+              label="Đặt trước chờ nhận"
               value={occupancy.storageRacks.reserved}
               total={occupancy.storageRacks.total}
               color="bg-amber-500"
@@ -185,7 +182,6 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               </span>
               <FileSignature className="h-4 w-4 text-emerald-600" />
             </div>
-            <p className="mt-1 text-[11px] text-slate-400">Đang lưu kho thực tế</p>
           </div>
 
           <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
@@ -196,7 +192,6 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               </span>
               <Scale className="h-4 w-4 text-rose-500" />
             </div>
-            <p className="mt-1 text-[11px] text-slate-400">Cần liên hệ nhắc nợ/khóa kho</p>
           </div>
 
           <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
@@ -207,20 +202,16 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               </span>
               <CalendarCheck className="h-4 w-4 text-blue-500" />
             </div>
-            <p className="mt-1 text-[11px] text-slate-400">Khách đặt trong khoảng ngày chọn</p>
           </div>
 
           <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
-            <span className="text-xs text-slate-500 font-medium">
-              Nhận phòng hoàn tất (Check-in)
-            </span>
+            <span className="text-xs text-slate-500 font-medium">Nhận phòng hoàn tất</span>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="text-2xl font-black text-teal-600">
                 {contractsAndBookings.completedReservationsInPeriod}
               </span>
               <CheckCircle className="h-4 w-4 text-teal-500" />
             </div>
-            <p className="mt-1 text-[11px] text-slate-400">Đã kích hoạt hợp đồng thành công</p>
           </div>
         </div>
       </div>

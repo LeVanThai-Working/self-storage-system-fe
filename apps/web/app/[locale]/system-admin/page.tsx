@@ -6,7 +6,7 @@ import { StatisticsDashboardView } from "@/features/statistics";
 export default function SystemAdminRootPage() {
   return (
     <SystemAdminLayout>
-      <StatisticsDashboardView role="system_admin" initialTab="overview" />
+      <StatisticsDashboardView role="system_admin" initialTab="overview" title="Tổng quan" />
     </SystemAdminLayout>
   );
 }

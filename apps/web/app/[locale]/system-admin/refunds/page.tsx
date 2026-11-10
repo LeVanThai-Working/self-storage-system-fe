@@ -7,8 +7,8 @@ export default function SystemAdminRefundsPage() {
   return (
     <SystemAdminLayout>
       <RefundsListView
-        pageTitle="Quản trị Hoàn tiền Toàn hệ thống"
-        pageSubtitle="Toàn quyền kiểm soát, phê duyệt và giám sát luồng tiền hoàn trên toàn hệ thống"
+        pageTitle="Quản lý hoàn tiền"
+        pageSubtitle="Duyệt yêu cầu hoàn tiền và theo dõi hoàn tiền ở tất cả cơ sở."
       />
     </SystemAdminLayout>
   );

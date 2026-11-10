@@ -22,9 +22,7 @@ import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useAuthStore } from "@/features/auth/store";
 import { useFacilityStaffs } from "@/features/contract-management/hooks";
 import { getCurrentUserId } from "@/features/contract-management/utils";
-import { useUnitRacks } from "@/features/inventory-operations/hooks";
-import { RackIncidentDialog } from "@/features/inventory-operations/components/RackIncidentDialog";
-import type { FacilityPortal } from "@/features/inventory-operations/components/RequestQueueView";
+import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { formatDateTime, refName } from "@/features/support-desk/utils";
 import {
   useAssignIncident,
@@ -96,7 +94,7 @@ export function IncidentDetailView({ id, portalBase }: { id: string; portalBase:
         <div className="space-y-5">
           <ReportCard incident={incident} />
           <TimelineCard incident={incident} />
-          <WarehouseCard incident={incident} />
+          <WarehouseCard incident={incident} portalBase={portalBase} />
         </div>
         <ActionPanel incident={incident} portalBase={portalBase} />
       </div>
@@ -198,18 +196,25 @@ function TimelineCard({ incident }: { incident: IncidentResponse }) {
   );
 }
 
-/** Lets staff move goods off a damaged rack (S5) straight from the incident. */
-function WarehouseCard({ incident }: { incident: IncidentResponse }) {
+/** Points staff of a serious rack incident to the goods on that rack (view only). */
+function WarehouseCard({
+  incident,
+  portalBase,
+}: {
+  incident: IncidentResponse;
+  portalBase: FacilityPortal;
+}) {
   const t = useTranslations("incidentDesk.warehouse");
-  const [open, setOpen] = useState(false);
+  const locale = useLocale();
   const urgent =
     incident.requiresRelocation ||
     incident.severity === IncidentSeverityEnum.HIGH ||
     incident.severity === IncidentSeverityEnum.CRITICAL;
-  const racksQuery = useUnitRacks(incident.storageRack ? incident.storageUnit?.id : undefined);
-  const rack = racksQuery.data?.find((item) => item.id === incident.storageRack?.id);
+  const unitId = incident.storageUnit?.id;
 
-  if (!incident.storageRack || !urgent || !OPEN_STATUSES.has(incident.status)) return null;
+  if (!incident.storageRack || !unitId || !urgent || !OPEN_STATUSES.has(incident.status)) {
+    return null;
+  }
 
   return (
     <section className="rounded-xl border border-orange-200 bg-orange-50/50 p-5">
@@ -220,23 +225,13 @@ function WarehouseCard({ incident }: { incident: IncidentResponse }) {
           <p className="text-sm text-slate-600">{t("subtitle")}</p>
         </div>
       </div>
-      <Button
-        onClick={() => setOpen(true)}
-        disabled={!rack}
-        className="mt-3 bg-orange-500 text-white hover:bg-orange-600"
+      <Link
+        href={`/${locale}/${portalBase}/storage-units/${unitId}/racks?tab=goods`}
+        className="mt-3 inline-flex items-center gap-2 rounded-lg border border-orange-300 bg-white px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-50"
       >
         <Siren className="h-4 w-4" />
         {t("open", { rack: incident.storageRack.rackCode ?? "" })}
-      </Button>
-      {open && rack ? (
-        <RackIncidentDialog
-          open
-          onClose={() => setOpen(false)}
-          fromRack={rack}
-          racks={racksQuery.data ?? []}
-          incidentId={incident.id}
-        />
-      ) : null}
+      </Link>
     </section>
   );
 }

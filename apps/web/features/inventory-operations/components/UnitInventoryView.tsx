@@ -2,44 +2,26 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Info, Loader2, Siren, Wrench } from "lucide-react";
-import { toast } from "sonner";
+import { Eye, Info, Wrench } from "lucide-react";
 import {
   InventoryItemStatusEnum,
   RackStatusEnum,
   RackZoneEnum,
+  formatDate,
   type StorageRackResponse,
   type TreeTierItem,
 } from "@self-storage-system-fe/shared";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppApiError } from "@/lib/api/axios";
 import { useApiErrorMessage } from "@/features/auth/error-message";
-import {
-  useStockAdjust,
-  useStockMove,
-  useUnitInventoryTree,
-  useUnitRacks,
-  useUpdateInventoryStatus,
-} from "../hooks";
+import { useUnitInventoryTree, useUnitRacks } from "../hooks";
 import { ItemStatusBadge } from "./StatusBadges";
-import { RackIncidentDialog } from "./RackIncidentDialog";
-import { TierSelect, type TierSelectValue } from "./TierSelect";
-import { useContractDetail } from "@/features/contract-management/hooks";
-import { filterCustomerRacks } from "../utils";
-
-const LABEL = "mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700";
-const INPUT =
-  "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-teal-400";
-const MOVE_REASON_MIN = 5;
 
 const ZONE_BORDER: Record<RackZoneEnum, string> = {
   [RackZoneEnum.PRIME]: "border-amber-400",
   [RackZoneEnum.STANDARD]: "border-teal-500",
   [RackZoneEnum.ECONOMY]: "border-slate-400",
 };
-
-type Action = "move" | "adjust" | "status";
 
 interface SelectedItem {
   item: TreeTierItem;
@@ -50,15 +32,15 @@ interface SelectedItem {
 
 const tierLabel = (tierNumber: number) => `T${String(tierNumber).padStart(2, "0")}`;
 
-/** S4 — goods tab of a rack unit: rack grid, tiers with items and the staff operations panel. */
+/**
+ * S4 — goods tab of a rack unit: rack grid, tiers with items and the item details.
+ * View only: customers run stock operations themselves; staff watch load and safety.
+ */
 export function UnitInventoryView({ unitId }: { unitId: string }) {
   const t = useTranslations("inventoryOps.unit");
   const getErrorMessage = useApiErrorMessage();
   const racksQuery = useUnitRacks(unitId);
   const treeQuery = useUnitInventoryTree(unitId);
-  const moveMutation = useStockMove();
-  const adjustMutation = useStockAdjust();
-  const statusMutation = useUpdateInventoryStatus();
 
   const racks = useMemo(() => racksQuery.data ?? [], [racksQuery.data]);
   const tree = treeQuery.data;
@@ -85,102 +67,6 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
   const [rackId, setRackId] = useState<string | null>(null);
   const rack = racks.find((item) => item.id === rackId) ?? null;
   const [selected, setSelected] = useState<SelectedItem | null>(null);
-  const [action, setAction] = useState<Action>("move");
-  const [incidentRack, setIncidentRack] = useState<StorageRackResponse | null>(null);
-
-  // Action form state
-  const [target, setTarget] = useState<TierSelectValue>(null);
-  const [quantity, setQuantity] = useState(1);
-  const [reason, setReason] = useState("");
-  const [ticketCode, setTicketCode] = useState("");
-  const [newQuantity, setNewQuantity] = useState(0);
-  const [newStatus, setNewStatus] = useState<InventoryItemStatusEnum>(
-    InventoryItemStatusEnum.NORMAL
-  );
-  const [incidentId, setIncidentId] = useState("");
-  const [error, setError] = useState<string | null>(null);
-
-  const selectItem = (entry: SelectedItem) => {
-    setSelected(entry);
-    setTarget(null);
-    setQuantity(entry.item.quantity);
-    setNewQuantity(entry.item.quantity);
-    setNewStatus(entry.item.status ?? InventoryItemStatusEnum.NORMAL);
-    setReason("");
-    setTicketCode("");
-    setIncidentId("");
-    setError(null);
-  };
-
-  const contractId = tree?.contract?.id;
-  const activeContractId = selected?.rack.currentContractId || tree?.contract?.id;
-  const contractQuery = useContractDetail(activeContractId);
-  const activeCustomerId = selected?.rack.currentCustomerId || tree?.contract?.customer?.id;
-
-  const contractData = contractQuery.data;
-  const moveTargetRacks = useMemo(() => {
-    if (!selected) return racks;
-    const effectiveContract = contractData ?? (activeContractId ? { id: activeContractId } : null);
-    return filterCustomerRacks(racks, effectiveContract, activeCustomerId);
-  }, [racks, selected, contractData, activeContractId, activeCustomerId]);
-
-  const handleSubmit = async () => {
-    if (!selected) return;
-    setError(null);
-    const fullReason = [ticketCode.trim() && `[${ticketCode.trim()}]`, reason.trim()]
-      .filter(Boolean)
-      .join(" ");
-    try {
-      if (action === "move") {
-        if (!target) return setError(t("pickTarget"));
-        if (reason.trim().length < MOVE_REASON_MIN)
-          return setError(t("reasonMin", { min: MOVE_REASON_MIN }));
-        if (!contractId) return setError(t("noContract"));
-        await moveMutation.mutateAsync({
-          contractId,
-          skuId: selected.item.sku.id,
-          quantity,
-          fromRackTierId: selected.tierId,
-          toRackTierId: target === "holding" ? null : target.rackTierId,
-          reason: fullReason,
-        });
-        toast.success(t("moved"));
-      } else if (action === "adjust") {
-        if (reason.trim().length < MOVE_REASON_MIN)
-          return setError(t("reasonMin", { min: MOVE_REASON_MIN }));
-        if (!contractId) return setError(t("noContract"));
-        await adjustMutation.mutateAsync({
-          contractId,
-          skuId: selected.item.sku.id,
-          rackTierId: selected.tierId,
-          newQuantity,
-          reason: fullReason,
-        });
-        toast.success(t("adjusted"));
-      } else {
-        if (reason.trim().length < MOVE_REASON_MIN)
-          return setError(t("reasonMin", { min: MOVE_REASON_MIN }));
-        // BE requires the incident behind a `damaged` mark (G12).
-        if (
-          newStatus === InventoryItemStatusEnum.DAMAGED &&
-          !/^[0-9a-fA-F]{24}$/.test(incidentId.trim())
-        )
-          return setError(t("incidentRequired"));
-        await statusMutation.mutateAsync({
-          id: selected.item.inventoryId,
-          status: newStatus,
-          reason: fullReason,
-          incidentId: /^[0-9a-fA-F]{24}$/.test(incidentId.trim()) ? incidentId.trim() : undefined,
-        });
-        toast.success(t("statusUpdated"));
-      }
-      setSelected(null);
-    } catch (err) {
-      setError(getErrorMessage(err));
-    }
-  };
-
-  const pending = moveMutation.isPending || adjustMutation.isPending || statusMutation.isPending;
 
   const renderRackTile = (item: StorageRackResponse) => {
     const maintenance = item.status === RackStatusEnum.MAINTENANCE;
@@ -287,10 +173,6 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
                     {[rack.zone, t("tiers", { count: rack.tierCount })].filter(Boolean).join(" · ")}
                   </p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setIncidentRack(rack)}>
-                  <Siren className="h-3.5 w-3.5 text-orange-600" />
-                  {t("rackIncident")}
-                </Button>
               </div>
               <div className="space-y-2 border-x-[6px] border-slate-300 px-2">
                 {[...(rack.tiers ?? [])]
@@ -314,7 +196,7 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
                                     key={item.inventoryId}
                                     type="button"
                                     onClick={() =>
-                                      selectItem({
+                                      setSelected({
                                         item,
                                         rack,
                                         tierId: tier.id,
@@ -363,160 +245,57 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
                 </div>
               </div>
 
-              <div className="flex gap-1 rounded-lg bg-slate-100 p-1">
-                {(["move", "adjust", "status"] as const).map((value) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => {
-                      setAction(value);
-                      setError(null);
-                    }}
-                    className={`flex-1 rounded-md px-2 py-1.5 text-xs font-bold ${
-                      action === value ? "bg-white text-teal-700 shadow-sm" : "text-slate-500"
-                    }`}
-                  >
-                    {t(`action.${value}`)}
-                  </button>
-                ))}
-              </div>
+              <dl className="space-y-2 text-sm">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-slate-500">{t("detail.position")}</dt>
+                  <dd className="font-semibold text-slate-900">
+                    {selected.rack.rackCode} · {tierLabel(selected.tierNumber)}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-slate-500">{t("detail.quantity")}</dt>
+                  <dd className="font-semibold text-slate-900">
+                    {selected.item.quantity} {selected.item.sku.uom}
+                  </dd>
+                </div>
+                {selected.item.sku.weightKg ? (
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-slate-500">{t("detail.weight")}</dt>
+                    <dd className="font-semibold text-slate-900">
+                      {(selected.item.sku.weightKg * selected.item.quantity).toLocaleString()} kg
+                    </dd>
+                  </div>
+                ) : null}
+                <div className="flex justify-between gap-3">
+                  <dt className="text-slate-500">{t("detail.lastMovement")}</dt>
+                  <dd className="font-semibold text-slate-900">
+                    {formatDate(selected.item.lastMovementAt)}
+                  </dd>
+                </div>
+                {selected.item.holdingReason ? (
+                  <div>
+                    <dt className="text-slate-500">{t("detail.holdingReason")}</dt>
+                    <dd className="mt-0.5 text-slate-900">{selected.item.holdingReason}</dd>
+                  </div>
+                ) : null}
+                {selected.item.notes ? (
+                  <div>
+                    <dt className="text-slate-500">{t("detail.notes")}</dt>
+                    <dd className="mt-0.5 text-slate-900">{selected.item.notes}</dd>
+                  </div>
+                ) : null}
+              </dl>
 
-              {action === "move" ? (
-                <>
-                  <div>
-                    <label className={LABEL}>{t("moveTo")} *</label>
-                    <TierSelect
-                      racks={moveTargetRacks}
-                      value={target}
-                      onChange={setTarget}
-                      excludeTierId={selected.tierId}
-                      allowHolding
-                    />
-                    {moveTargetRacks.length > 0 ? (
-                      <p className="mt-1 text-xs font-semibold text-teal-700">
-                        {t("rentedRacksOnly", {
-                          racks: moveTargetRacks.map((r) => r.rackCode).join(", "),
-                        })}
-                      </p>
-                    ) : null}
-                  </div>
-                  <div>
-                    <label className={LABEL}>{t("quantity")}</label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={selected.item.quantity}
-                      value={quantity}
-                      onChange={(event) =>
-                        setQuantity(
-                          Math.max(
-                            1,
-                            Math.min(selected.item.quantity, Number(event.target.value) || 1)
-                          )
-                        )
-                      }
-                      className={INPUT}
-                    />
-                  </div>
-                  <div>
-                    <label className={LABEL}>{t("ticketCode")}</label>
-                    <input
-                      value={ticketCode}
-                      onChange={(event) => setTicketCode(event.target.value.toUpperCase())}
-                      placeholder="SUP-261029-0002"
-                      className={INPUT}
-                    />
-                  </div>
-                </>
-              ) : action === "adjust" ? (
-                <>
-                  <div>
-                    <label className={LABEL}>{t("countedQuantity")}</label>
-                    <input
-                      type="number"
-                      min={0}
-                      value={newQuantity}
-                      onChange={(event) =>
-                        setNewQuantity(Math.max(0, Number(event.target.value) || 0))
-                      }
-                      className={INPUT}
-                    />
-                    <p className="mt-1 text-xs text-slate-500">
-                      {t("systemQuantity", { qty: selected.item.quantity })}
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <label className={LABEL}>{t("newStatus")}</label>
-                    <select
-                      value={newStatus}
-                      onChange={(event) =>
-                        setNewStatus(event.target.value as InventoryItemStatusEnum)
-                      }
-                      className={INPUT}
-                    >
-                      {Object.values(InventoryItemStatusEnum).map((value) => (
-                        <option key={value} value={value}>
-                          {t(`itemStatus.${value}`)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className={LABEL}>{t("incidentId")}</label>
-                    <input
-                      value={incidentId}
-                      onChange={(event) => setIncidentId(event.target.value)}
-                      placeholder={t("incidentIdPlaceholder")}
-                      className={INPUT}
-                    />
-                  </div>
-                </>
-              )}
-
-              <div>
-                <label className={LABEL}>{t("reason")} *</label>
-                <textarea
-                  value={reason}
-                  onChange={(event) => setReason(event.target.value)}
-                  rows={2}
-                  maxLength={1000}
-                  className={INPUT}
-                />
-                <p className="mt-1 text-xs text-slate-500">{t("notifyHint")}</p>
-              </div>
-
-              {error ? (
-                <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-                  {error}
-                </p>
-              ) : null}
-
-              <Button
-                onClick={() => void handleSubmit()}
-                disabled={pending}
-                className="w-full bg-orange-500 text-white hover:bg-orange-600"
-              >
-                {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {t(`submit.${action}`)}
-              </Button>
+              <p className="flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                <Eye className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                {t("viewOnly")}
+              </p>
             </div>
           ) : (
             <p className="py-10 text-center text-sm text-slate-500">{t("pickItem")}</p>
           )}
         </div>
       </div>
-
-      {incidentRack ? (
-        <RackIncidentDialog
-          open
-          onClose={() => setIncidentRack(null)}
-          fromRack={incidentRack}
-          racks={racks}
-        />
-      ) : null}
     </div>
   );
 }

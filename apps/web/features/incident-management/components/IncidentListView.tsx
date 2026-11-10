@@ -21,7 +21,7 @@ import {
 } from "@self-storage-system-fe/shared";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { FacilityPortal } from "@/features/inventory-operations/components/RequestQueueView";
+import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { formatDateTime, refName } from "@/features/support-desk/utils";
 import { fetchIncidents } from "../api";
 import { incidentKeys, useIncidents } from "../hooks";

@@ -1,22 +1,16 @@
 export const CUSTOMER_INVENTORY_ENDPOINTS = {
-  // Requests List & Details
-  REQUESTS: "/api/v1/customer-inventories/requests",
-  REQUEST_DETAIL: (id: string) => `/api/v1/customer-inventories/requests/${id}`,
-
-  // Inbound Requests
-  INBOUND_PRE_ADVISED: "/api/v1/customer-inventories/inbound-requests/pre-advised",
-  INBOUND_CANCEL: (id: string) => `/api/v1/customer-inventories/inbound-requests/${id}/cancel`,
-  INBOUND_PUTAWAY: (id: string) => `/api/v1/customer-inventories/inbound-requests/${id}/putaway`,
-  INBOUND_CONFIRM: (id: string) => `/api/v1/customer-inventories/inbound-requests/${id}/confirm`,
-  INBOUND_DISPUTE: (id: string) => `/api/v1/customer-inventories/inbound-requests/${id}/dispute`,
-
-  // Outbound Requests
-  OUTBOUND_CREATE: "/api/v1/customer-inventories/outbound-requests",
-  OUTBOUND_CANCEL: (id: string) => `/api/v1/customer-inventories/outbound-requests/${id}/cancel`,
-  OUTBOUND_COMPLETE: (id: string) =>
-    `/api/v1/customer-inventories/outbound-requests/${id}/complete`,
-
-  // Verification & Assignment
-  VERIFY_PICKUP_CODE: "/api/v1/customer-inventories/verify-pickup-code",
-  ASSIGN_STAFF: (id: string) => `/api/v1/customer-inventories/requests/${id}/assign`,
+  LIST: "/customer-inventories",
+  IN: "/customer-inventories/in",
+  OUT: "/customer-inventories/out",
+  MOVE: "/customer-inventories/move",
+  ADJUST: "/customer-inventories/adjust",
+  MOVEMENTS: "/customer-inventories/movements",
+  SUMMARY: "/customer-inventories/summary",
+  SKU_LOCATOR: "/customer-inventories/sku-locator",
+  TREE: (storageUnitId: string) => `/customer-inventories/unit/${storageUnitId}/tree`,
+  SKU_LOCATIONS: (skuId: string) => `/customer-inventories/sku/${skuId}/locations`,
+  BARCODE_LOCATIONS: (barcode: string) =>
+    `/customer-inventories/barcode/${encodeURIComponent(barcode)}/locations`,
+  DETAIL: (id: string) => `/customer-inventories/${id}`,
+  STATUS: (id: string) => `/customer-inventories/${id}/status`,
 } as const;

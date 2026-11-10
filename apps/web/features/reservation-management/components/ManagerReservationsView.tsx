@@ -33,7 +33,10 @@ import { ContractSourceEnum, RoleEnum } from "@self-storage-system-fe/shared";
 import { useFacilityOfferings, useMyFacility } from "@/features/storage-unit-management/hooks";
 import { useFacility } from "@/features/facility-management/hooks";
 import { useCreateContract } from "@/features/contract-management/hooks";
-import { resolveContractErrorMessage } from "@/features/contract-management/utils";
+import {
+  getBillingUnitLabel,
+  resolveContractErrorMessage,
+} from "@/features/contract-management/utils";
 import { useManagerReservationStats, useManagerReservations } from "../hooks";
 import {
   ReservationStatusEnum,
@@ -437,14 +440,10 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             {isStaff
-              ? facility?.name
-                ? locale === "en"
-                  ? `Reservations assigned to you at ${facility.name}.`
-                  : `Các đơn đặt chỗ thuộc về bạn tại cơ sở ${facility.name}.`
-                : locale === "en"
-                  ? "Manage and fulfill reservations assigned to you."
-                  : "Quản lý và tiếp đón khách hàng theo các đơn đặt chỗ thuộc về bạn."
-              : t("subtitle", { facility: facility?.name ?? "..." })}
+              ? locale === "en"
+                ? "Manage and fulfill reservations assigned to you."
+                : "Quản lý và tiếp đón khách hàng theo các đơn đặt chỗ thuộc về bạn."
+              : t("subtitle")}
           </p>
         </div>
 
@@ -577,7 +576,8 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
               <option value="">{t("filters.allOfferings")}</option>
               {offerings.map((o) => (
                 <option key={o.id} value={o.id}>
-                  {o.unitType.name} ({formatVnd(o.pricePerUnit)}/{o.billingUnit})
+                  {o.unitType.name} ({formatVnd(o.pricePerUnit)}/
+                  {getBillingUnitLabel(o.billingUnit, locale)})
                 </option>
               ))}
             </select>
@@ -732,7 +732,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                             </span>
                             <span className="text-[11px] text-slate-400 block mt-0.5">
                               Tầng {r.storageUnit.floor}{" "}
-                              {r.storageUnit.zone ? `• Khu ${r.storageUnit.zone}` : ""}
+                              {r.storageUnit.zone ? `• ${r.storageUnit.zone}` : ""}
                             </span>
                           </div>
                         ) : (

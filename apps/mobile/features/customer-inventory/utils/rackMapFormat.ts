@@ -32,7 +32,7 @@ export function getItemStatus(item: Pick<TreeTierItem, "status">): InventoryItem
   return item.status ?? InventoryItemStatusEnum.NORMAL;
 }
 
-/** Quantity a new outbound request can still take: stock minus what pending requests hold (G11). */
+/** Quantity that can still leave a position: stock minus what is reserved for pending outbound. */
 export function getAvailableQuantity(
   item: Pick<TreeTierItem, "quantity" | "availableQuantity" | "pendingOutboundQuantity">
 ): number {
@@ -40,31 +40,31 @@ export function getAvailableQuantity(
   return Math.max(0, item.quantity - (item.pendingOutboundQuantity ?? 0));
 }
 
-/** Only `normal` items can be requested for pickup (BE rejects others with 645). */
-export function canRequestOutboundItem(item: Pick<TreeTierItem, "status">): boolean {
+/**
+ * Only `normal` items accept stock operations. Holding-area, damaged and disputed items are frozen
+ * until staff clear them (BE rejects them with 645).
+ */
+export function canOperateItem(item: Pick<TreeTierItem, "status">): boolean {
   return getItemStatus(item) === InventoryItemStatusEnum.NORMAL;
 }
 
-/** Damaged or disputed items cannot be moved (645). */
-export function canRequestMoveItem(item: Pick<TreeTierItem, "status">): boolean {
-  const status = getItemStatus(item);
-  return status !== InventoryItemStatusEnum.DAMAGED && status !== InventoryItemStatusEnum.DISPUTED;
-}
-
 /**
- * What the customer may request for a contract (INVENTORY_OPS_BY_CONTRACT_STATUS in BE):
- * ACTIVE allows everything, OVERDUE only pickup and move, other statuses are read-only.
+ * Operations the customer may run on a contract (INVENTORY_OPS_BY_CONTRACT_STATUS in BE):
+ * ACTIVE allows everything, OVERDUE only taking stock out and moving it, other statuses are read-only.
  */
-export function getContractRequestRights(status?: ContractStatusEnum | null) {
+export function getContractStockRights(status?: ContractStatusEnum | null) {
   const active = status === ContractStatusEnum.ACTIVE;
   const overdue = status === ContractStatusEnum.OVERDUE;
   return {
-    canRequestOutbound: active || overdue,
-    canRequestMove: active || overdue,
-    canNotifyInbound: active,
+    canIn: active,
+    canOut: active || overdue,
+    canMove: active || overdue,
+    canAdjust: active,
     overdue,
   };
 }
+
+export type ContractStockRights = ReturnType<typeof getContractStockRights>;
 
 export type TierWeightLevel = "none" | "normal" | "near" | "over";
 

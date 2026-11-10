@@ -11,7 +11,6 @@ import {
   Users,
   CheckCircle2,
   MapPin,
-  Sparkles,
   ChevronDown,
 } from "lucide-react";
 import { useFacilities } from "@/features/facility-management/hooks";
@@ -137,13 +136,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
       {/* Top Header Card */}
       <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex-row md:items-center md:justify-between">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 whitespace-nowrap shrink-0">
-              <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
-              Vận hành Cơ sở & Lịch tiếp nhận
-            </span>
-          </div>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
             Khung giờ Làm việc & Tiếp đón Khách hàng
           </h1>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
@@ -199,14 +192,6 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
       {selectedFacility && (
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 rounded-2xl bg-emerald-50/60 border border-emerald-100 dark:bg-emerald-950/20 dark:border-emerald-900/40 text-xs text-slate-700 dark:text-slate-300">
           <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-emerald-600 shrink-0" />
-            <span>
-              Đang cấu hình:{" "}
-              <strong className="text-slate-900 dark:text-slate-100 font-bold">
-                {selectedFacility.name}
-              </strong>
-            </span>
-            <span className="text-slate-400">|</span>
             <span className="flex items-center gap-1 text-slate-600 dark:text-slate-400">
               <MapPin className="h-3.5 w-3.5 text-slate-400" />
               {selectedFacility.address}, {selectedFacility.city}
@@ -306,7 +291,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
             }`}
           >
             <Calendar className="h-3.5 w-3.5" />
-            Lịch tuần (Weekly Grid)
+            Lịch tuần
           </button>
           <button
             type="button"

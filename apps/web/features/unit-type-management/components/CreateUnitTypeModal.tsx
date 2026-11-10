@@ -32,11 +32,12 @@ interface CreateUnitTypeModalProps {
 
 export const CreateUnitTypeModal = ({ isOpen, onClose }: CreateUnitTypeModalProps) => {
   const t = useTranslations("businessOps.unitTypes.createModal");
+  const tCategory = useTranslations("businessOps.unitTypes.categoryFilter");
   const createMutation = useCreateUnitType();
 
   // Form states
   const [name, setName] = useState<string>("");
-  const [category, setCategory] = useState<string>(UnitTypeCategoryEnum.MEDIUM);
+  const [category, setCategory] = useState<string>(UnitTypeCategoryEnum.SMALL);
   const [length, setLength] = useState<string>("2");
   const [width, setWidth] = useState<string>("2");
   const [height, setHeight] = useState<string>("2.5");
@@ -79,7 +80,7 @@ export const CreateUnitTypeModal = ({ isOpen, onClose }: CreateUnitTypeModalProp
 
   const resetForm = () => {
     setName("");
-    setCategory(UnitTypeCategoryEnum.MEDIUM);
+    setCategory(UnitTypeCategoryEnum.SMALL);
     setLength("2");
     setWidth("2");
     setHeight("2.5");
@@ -241,13 +242,11 @@ export const CreateUnitTypeModal = ({ isOpen, onClose }: CreateUnitTypeModalProp
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white text-sm font-medium text-slate-700 px-3.5 py-2.5 rounded-xl border border-slate-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all cursor-pointer"
               >
-                <option value={UnitTypeCategoryEnum.LOCKER}>Tủ đồ (Locker)</option>
-                <option value={UnitTypeCategoryEnum.SMALL}>Kho nhỏ (Small)</option>
-                <option value={UnitTypeCategoryEnum.MEDIUM}>Kho vừa (Medium)</option>
-                <option value={UnitTypeCategoryEnum.LARGE}>Kho lớn (Large)</option>
-                <option value={UnitTypeCategoryEnum.CLIMATE_CONTROLLED}>
-                  Kiểm soát nhiệt độ (Climate Controlled)
-                </option>
+                {Object.values(UnitTypeCategoryEnum).map((value) => (
+                  <option key={value} value={value}>
+                    {tCategory(value)}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

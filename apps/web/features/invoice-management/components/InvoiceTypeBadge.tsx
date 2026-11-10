@@ -15,10 +15,10 @@ export function getInvoiceTypeLabel(type: InvoiceTypeEnum | string, locale = "vi
   switch (type) {
     case InvoiceTypeEnum.FIRST_PERIOD:
     case "first_period":
-      return isEn ? "First Period" : "Kỳ đầu (Kỳ 1)";
+      return isEn ? "First Period" : "Kỳ đầu";
     case InvoiceTypeEnum.RECURRING:
     case "recurring":
-      return isEn ? "Recurring Cycle" : "Kỳ định kỳ";
+      return isEn ? "Recurring" : "Định kỳ";
     case InvoiceTypeEnum.INCIDENTAL:
     case "incidental":
       return isEn ? "Incidental / Fee" : "Phụ phí phát sinh";

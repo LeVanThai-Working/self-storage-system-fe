@@ -130,7 +130,7 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
           : "";
       const entityName =
         typeof item.legalEntityId === "object" && item.legalEntityId !== null
-          ? item.legalEntityId.name?.toLowerCase() || ""
+          ? item.legalEntityId.companyName?.toLowerCase() || ""
           : "";
       return matchNumber || managerName.includes(q) || entityName.includes(q);
     });
@@ -314,7 +314,7 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
                         {legalEntity ? (
                           <div>
                             <span className="font-semibold text-slate-800 line-clamp-1">
-                              {legalEntity.name}
+                              {legalEntity.companyName}
                             </span>
                             <span className="text-[11px] font-mono text-slate-400">
                               MST: {legalEntity.taxCode}

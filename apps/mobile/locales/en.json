@@ -446,14 +446,14 @@
       "empty": "Nothing in the holding area",
       "summary": "Holding area (%{qty} items)",
       "skuCount": "%{count} SKUs",
-      "holdingHint": "Items in the holding area cannot be picked up yet. Staff will re-shelve them once a rack is ready."
+      "holdingHint": "Holding-area stock is frozen after a rack incident. Staff unlock it once you confirm the hand-back."
     },
     "position": {
       "tierOfRack": "Tier %{tier} · Rack %{rack}",
       "floorHint": "Placed directly on the floor"
     },
     "noRacks": "This unit has no rack system",
-    "readOnlyBanner": "Contract is not active, inventory actions are disabled",
+    "readOnlyBanner": "This contract is no longer active, stock is view only",
     "lockedTier": "This tier is locked and view-only",
     "forbidden": "You do not have access to this unit",
     "loadError": "Could not load the rack map",
@@ -467,9 +467,6 @@
       "stockOut": "Take out",
       "move": "Move",
       "adjust": "Recount",
-      "requestOutbound": "Request pickup",
-      "requestMove": "Request move",
-      "notifyInbound": "Notify delivery",
       "reportIncident": "Report an incident on this tier"
     },
     "form": {
@@ -559,8 +556,7 @@
       "by": "by %{name}"
     },
     "view": "View",
-    "staffOperatedHint": "Warehouse staff carry out every inbound, outbound and move",
-    "overdueBanner": "Contract overdue · You can only request pickups or moves",
+    "overdueBanner": "Contract overdue · You can only take stock out or move it",
     "attentionBanner": "%{count} items need attention (holding, damaged, disputed)",
     "itemStatus": {
       "temporary_holding": "Holding",
@@ -578,7 +574,8 @@
         "damaged": "Damaged – awaiting assessment (%{count})",
         "disputed": "Disputed (%{count})"
       }
-    }
+    },
+    "selfManagedHint": "You put away, take out and move stock on your own racks. Tap a tier to start."
   },
   "media": {
     "addPhoto": "Add photo",
@@ -669,11 +666,11 @@
       "hint": "Point the camera at a barcode",
       "totalAt": "%{qty} %{uom} in stock across %{count} locations",
       "viewOnMap": "View on rack map",
-      "requestOutbound": "Request pickup",
       "notFoundTitle": "Not in your catalog",
       "notFoundDesc": "Barcode %{barcode} is not in your catalog yet.",
       "createWithBarcode": "Create SKU with this barcode",
-      "rescan": "Scan again"
+      "rescan": "Scan again",
+      "takeOut": "Take out at rack"
     },
     "locator": {
       "title": "Find my items",
@@ -694,22 +691,21 @@
         "onRack": {
           "one": "On rack · 1 location",
           "other": "On rack · %{count} locations"
-        }
+        },
+        "notStored": "Not stored on a rack"
       },
       "step": {
         "facility": "Facility",
-        "area": "Area",
+        "unit": "Unit",
         "rack": "Rack",
-        "tier": "Tier"
+        "tier": "Tier",
+        "position": "Position"
       },
-      "area": {
-        "unit": "Unit %{unit}",
-        "aisle": "Aisle %{aisle}"
-      },
+      "address": "Location",
       "contractChip": "Contract %{code}",
       "viewOnMap": "View on rack map",
       "viewSku": "View SKU details",
-      "notStoredHint": "This SKU has not been stored yet, so it has no location."
+      "notStoredHint": "This SKU was created but is not stored on any rack or holding area yet."
     }
   },
   "contractPicker": {
@@ -717,151 +713,6 @@
     "placeholder": "Choose the related contract",
     "empty": "You have no eligible contracts",
     "loadMore": "Load more"
-  },
-  "inventoryRequest": {
-    "unitContract": "Unit %{unit} · Contract #%{code}",
-    "loadError": "Could not load the request",
-    "itemsSummary": "Items (%{count} SKUs · %{qty} pcs)",
-    "discrepancy": "Short delivery: %{reason}",
-    "status": {
-      "pending": "Awaiting pickup",
-      "pending_confirmation": "Awaiting your confirmation",
-      "processing": "Processing",
-      "ready_to_putaway": "Ready to shelve",
-      "completed": "Completed",
-      "disputed": "Disputed",
-      "cancelled": "Cancelled",
-      "expired": "Expired"
-    },
-    "recipient": {
-      "title": "Recipient",
-      "name": "Full name",
-      "phone": "Phone number",
-      "plate": "Vehicle plate",
-      "company": "Carrier"
-    },
-    "outbound": {
-      "title": "Request pickup",
-      "itemsTitle": "Items to pick up (%{count})",
-      "noItems": "No items selected",
-      "addItems": "Add items from racks",
-      "available": "%{qty} %{uom} available",
-      "pickerTitle": "Choose items to pick up",
-      "holdingNote": "Items in holding, damaged or disputed cannot be picked up",
-      "recipientTitle": "Who will collect (optional)",
-      "notes": "Notes for staff",
-      "notesPlaceholder": "e.g. Fragile, please handle with care",
-      "otpHint": "After sending you get a QR code and a 6-digit OTP. The recipient shows it to warehouse staff to collect the goods. The code is valid for the period you chose above.",
-      "itemsRequired": "Select at least one item with a valid quantity",
-      "recipientInvalid": "Recipient needs a name and a phone number (at least 8 digits)",
-      "submit": "Send pickup request (%{count} pcs)",
-      "created": "Request %{code} created",
-      "heldByOthers": "%{qty} %{uom} held by other pickup requests"
-    },
-    "pickup": {
-      "title": "Pickup code",
-      "otpLabel": "OTP",
-      "otpOnce": "Shown only once – save it or share it with the collector",
-      "otpHidden": "The OTP is shown only right after the request is created. Tap \"New OTP\" if you did not save it. The QR code above still works.",
-      "expiresIn": "Expires in %{time}",
-      "processingBanner": "Staff are picking your items at the counter. You can no longer cancel.",
-      "share": "Share with collector",
-      "shareMessage": "StorageHub pickup %{code} at %{facility}. OTP: %{otp}. Please show this to warehouse staff.",
-      "cancel": "Cancel request",
-      "cancelTitle": "Cancel pickup request?",
-      "cancelPlaceholder": "Reason (optional)",
-      "cancelSubmit": "Confirm cancel",
-      "cancelled": "Pickup request cancelled",
-      "regenerateOtp": "New OTP",
-      "otpRegenerated": "New OTP issued, the old one no longer works"
-    },
-    "inbound": {
-      "title": "Confirm received goods",
-      "autoConfirmIn": "Auto-confirms in %{time}",
-      "notCountedYet": "Goods are added to your stock only after you confirm and staff shelve them.",
-      "evidence": "Evidence photos (%{count})",
-      "deliverer": "Delivered by",
-      "confirm": "Confirm",
-      "confirmed": "Inbound request confirmed",
-      "dispute": "Dispute",
-      "disputeTitle": "Dispute inbound request",
-      "disputePlaceholder": "e.g. I sent 25 sets but the slip says 20",
-      "disputeSubmit": "Send dispute",
-      "disputeTooShort": "The reason needs at least 5 characters",
-      "disputed": "Dispute sent"
-    },
-    "move": {
-      "title": "Request a move",
-      "itemLabel": "Item to move",
-      "from": "From",
-      "to": "Move to",
-      "pickTarget": "Choose the destination tier",
-      "rack": "Rack %{code}",
-      "tierItems": "%{count} SKUs",
-      "onlyYourRacks": "Only racks you rent are shown",
-      "quantity": "Quantity",
-      "all": "Move all (%{qty})",
-      "reason": "Reason / notes",
-      "reasonPlaceholder": "e.g. Keep frequently used items on a low tier",
-      "staffHint": "Warehouse staff receive this request. The position changes only after staff move the items; you will see it in the history.",
-      "submit": "Send request",
-      "sent": "Request %{code} sent"
-    },
-    "timeline": {
-      "created": "Request created",
-      "verified": "Staff verified the code",
-      "handedOver": "Handover completed",
-      "received": "Staff received the goods",
-      "confirmed": "You confirmed",
-      "autoConfirmed": "Auto-confirmed after 24 hours",
-      "putaway": "Shelved",
-      "preAdvised": "You announced the delivery",
-      "arrived": "Staff scanned the code on arrival"
-    },
-    "list": {
-      "title": "Warehouse requests",
-      "empty": "No requests yet",
-      "pendingInbound": "%{count} inbound requests await your confirmation",
-      "outboundLine": "Pickup of %{qty} pcs",
-      "inboundLine": "Inbound of %{qty} pcs",
-      "tab": {
-        "outbound": "Pickups",
-        "inbound": "Inbound",
-        "move": "Moves",
-        "activity": "Activity"
-      }
-    },
-    "validity": {
-      "title": "Code validity",
-      "days": "%{count} days"
-    },
-    "preAdvised": {
-      "title": "Announce a delivery",
-      "detailTitle": "Pre-advised inbound",
-      "activeOnly": "Only active contracts can announce deliveries.",
-      "itemsTitle": "Goods on the way (%{count} SKUs)",
-      "noItems": "No SKU selected yet",
-      "addItems": "Add from your SKU catalog",
-      "pickerTitle": "Pick the SKUs you are sending",
-      "searchPlaceholder": "Search by code or name",
-      "noSkus": "You have no active SKUs. Create one before announcing a delivery.",
-      "createSku": "Create SKU",
-      "createSkuMore": "+ Create another SKU",
-      "selectSkuTitle": "Select SKUs",
-      "delivererTitle": "Deliverer (optional)",
-      "delivererInvalid": "The deliverer needs a name and a phone number (at least 8 digits)",
-      "deadline": "Delivery deadline",
-      "notesPlaceholder": "E.g. arriving by small truck, 2 fragile boxes",
-      "otpHint": "After sending you get a QR code and a 6-digit OTP. The deliverer shows it to warehouse staff on arrival. Staff count the goods and put them on your racks.",
-      "itemsRequired": "Pick at least one SKU with a valid quantity",
-      "submit": "Send notice (%{count} items)",
-      "created": "Inbound request %{code} created",
-      "processingBanner": "The goods have arrived and staff are counting and shelving them. You cannot cancel now.",
-      "share": "Share with the deliverer",
-      "shareMessage": "StorageHub delivery code %{code} at %{facility}. OTP: %{otp}. Please show it to warehouse staff on delivery.",
-      "cancelTitle": "Cancel this pre-advised inbound?",
-      "cancelled": "Inbound request cancelled"
-    }
   },
   "supportTicket": {
     "loadError": "Could not load the support request",
@@ -1143,5 +994,86 @@
     "quantityStatus": "Quantity Status",
     "availableQty": "Available: %{count} item(s)",
     "unlimitedQty": "Unlimited quantity"
+  },
+  "contractActivity": {
+    "title": "Warehouse activity",
+    "unitContract": "Unit %{unit} · Contract %{code}",
+    "tab": {
+      "movements": "Stock history",
+      "visits": "Warehouse visits"
+    },
+    "emptyMovements": "No stock in, out or move yet"
+  },
+  "accessSchedule": {
+    "bookButton": "Book a warehouse visit",
+    "contractLine": "Contract %{code} · %{facility}",
+    "peopleCount": {
+      "one": "1 person",
+      "other": "%{count} people"
+    },
+    "loadError": "Could not load warehouse visits",
+    "status": {
+      "pending": "Upcoming",
+      "checked_in": "In warehouse",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "no_show": "No-show",
+      "expired": "Expired"
+    },
+    "list": {
+      "title": "Warehouse visits",
+      "subtitle": "Visits you booked to the warehouse",
+      "all": "All",
+      "empty": "No warehouse visits yet",
+      "emptyHint": "Book one from an active contract to get your gate code"
+    },
+    "form": {
+      "title": "Book a warehouse visit",
+      "date": "Visit date",
+      "change": "Change",
+      "slot": "Time slot",
+      "slotRequired": "Please pick a time slot",
+      "slotLeft": "%{count} left",
+      "slotFull": "Full",
+      "noSlots": "The facility has no time slots on this day",
+      "windowHint": "You can pass the gate up to %{early} minutes early and %{late} minutes late from the slot start.",
+      "people": "People entering",
+      "vehicleType": "Vehicle type (optional)",
+      "vehicleTypePlaceholder": "1.5T truck, cargo tricycle...",
+      "vehiclePlate": "Plate number (optional)",
+      "purpose": "Purpose (optional)",
+      "purposePlaceholder": "Bring in stock, take goods home...",
+      "submit": "Confirm booking",
+      "success": "Booked %{code}",
+      "contractNotActive": "Only active contracts can book a warehouse visit",
+      "slotPast": "Passed"
+    },
+    "detail": {
+      "title": "Warehouse visit",
+      "qrHint": "Show this QR code to the guard at the gate",
+      "otpLabel": "Gate OTP",
+      "otpOnce": "The OTP is shown only once, note it down or use the QR code",
+      "otpHidden": "The OTP is only shown right after booking. Use the QR code at the gate.",
+      "date": "Date, slot",
+      "window": "Gate window",
+      "windowValue": "%{from} – %{to}",
+      "people": "People",
+      "vehicle": "Vehicle",
+      "none": "None",
+      "racks": "Rented racks",
+      "contract": "Contract",
+      "checkedIn": "Entered at %{time}",
+      "checkedOut": "Left at %{time}",
+      "cancelled": "Cancelled at %{time}"
+    },
+    "cancel": {
+      "button": "Cancel visit",
+      "title": "Cancel this visit?",
+      "message": "The time slot will be released for other customers.",
+      "keep": "Keep it",
+      "confirm": "Cancel visit",
+      "success": "Visit cancelled",
+      "tooLate": "Visits can only be cancelled at least 1 hour before the slot starts"
+    }
   }
 }

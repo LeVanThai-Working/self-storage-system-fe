@@ -127,15 +127,9 @@ export const EditLegalEntityModal: React.FC<EditLegalEntityModalProps> = ({
             <div className="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white shadow-md shadow-amber-500/20">
               <Building2 className="w-5 h-5" />
             </div>
-            <div>
-              <h2 className="text-lg font-extrabold text-slate-900">
-                {isEn ? "Edit Legal Entity" : "Chỉnh sửa Pháp nhân Doanh nghiệp"}
-              </h2>
-              <p className="text-xs text-slate-500">
-                {entity.companyName} • MST:{" "}
-                <span className="font-mono font-bold">{entity.taxCode}</span>
-              </p>
-            </div>
+            <h2 className="text-lg font-extrabold text-slate-900">
+              {isEn ? "Edit Legal Entity" : "Chỉnh sửa Pháp nhân Doanh nghiệp"}
+            </h2>
           </div>
           <button
             type="button"

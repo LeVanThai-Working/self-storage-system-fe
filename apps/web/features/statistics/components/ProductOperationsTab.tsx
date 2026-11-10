@@ -2,9 +2,16 @@
 
 import React from "react";
 import { DoorOpen, Truck } from "lucide-react";
-import { formatCurrency } from "@self-storage-system-fe/shared";
+import { RackZoneEnum, formatCurrency } from "@self-storage-system-fe/shared";
 import type { ProductAndOperationsResponse } from "../types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUnitTypeCategoryLabel } from "@/features/unit-type-management/hooks";
+
+const ZONE_LABEL: Record<RackZoneEnum, string> = {
+  [RackZoneEnum.PRIME]: "Vị trí đắc địa",
+  [RackZoneEnum.STANDARD]: "Tiêu chuẩn",
+  [RackZoneEnum.ECONOMY]: "Tiết kiệm",
+};
 
 interface ProductOperationsTabProps {
   data?: ProductAndOperationsResponse;
@@ -12,6 +19,8 @@ interface ProductOperationsTabProps {
 }
 
 export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabProps) {
+  const categoryLabel = useUnitTypeCategoryLabel();
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -33,16 +42,14 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
     bookingFunnel,
     warehouseTraffic,
   } = data;
+  const activeRackZones = rackZonePerformance.filter((rz) => rz.totalRacks > 0);
 
   return (
     <div className="space-y-6">
       {/* 1. Booking Funnel */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-          <div>
-            <h4 className="text-base font-extrabold text-slate-900">Phễu chuyển đổi đặt chỗ</h4>
-            <p className="text-xs text-slate-500">Theo dõi tỷ lệ rớt khách qua từng bước đặt kho</p>
-          </div>
+          <h4 className="text-base font-extrabold text-slate-900">Phễu chuyển đổi đặt chỗ</h4>
           <div className="text-right">
             <span className="text-2xl font-black text-teal-600">
               {bookingFunnel.overallConversionRate}%
@@ -154,8 +161,8 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
               {unitTypePerformance.map((ut) => (
                 <tr key={ut.unitTypeId} className="hover:bg-slate-50/70">
                   <td className="py-3 px-3 font-bold text-slate-900">{ut.name}</td>
-                  <td className="py-3 px-3 uppercase text-[11px] text-slate-500">
-                    {ut.category} ({ut.area}m²)
+                  <td className="py-3 px-3 text-[11px] text-slate-500">
+                    {categoryLabel(ut.category)} ({ut.area} m²)
                   </td>
                   <td className="py-3 px-3 text-right font-bold text-slate-900">{ut.totalUnits}</td>
                   <td className="py-3 px-3 text-right text-blue-600 font-bold">
@@ -185,26 +192,28 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
           <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-800 mb-4">
             Hiệu quả phân khu kệ cho thuê
           </h4>
-          <div className="space-y-3">
-            {rackZonePerformance.map((rz, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between rounded-xl bg-slate-50 p-3.5 text-xs"
-              >
-                <div>
-                  <div className="font-extrabold text-slate-900">Phân khu {rz.zone}</div>
-                  <div className="text-[11px] text-slate-500">
-                    Tổng: {rz.totalRacks} kệ | Trống: {rz.availableRacks} | Đang thuê:{" "}
-                    {rz.rentedRacks}
+          {activeRackZones.length === 0 ? (
+            <p className="text-xs text-slate-500">Cơ sở chưa có kệ cho thuê.</p>
+          ) : (
+            <div className="space-y-3">
+              {activeRackZones.map((rz) => (
+                <div
+                  key={rz.zone}
+                  className="flex items-center justify-between rounded-xl bg-slate-50 p-3.5 text-xs"
+                >
+                  <div>
+                    <div className="font-extrabold text-slate-900">
+                      Phân khu {ZONE_LABEL[rz.zone] ?? rz.zone}
+                    </div>
+                    <div className="text-[11px] text-slate-500">
+                      Đang thuê {rz.rentedRacks}/{rz.totalRacks} kệ
+                    </div>
                   </div>
-                </div>
-                <div className="text-right">
                   <span className="text-sm font-black text-indigo-700">{rz.occupancyRate}%</span>
-                  <div className="text-[10px] text-slate-400">Tỷ lệ lấp đầy</div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Amenity Performance */}
@@ -214,7 +223,7 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
               Hiệu suất tiện ích & dịch vụ cộng thêm
             </h4>
             <span className="text-xs text-teal-700 font-bold">
-              Gắn HĐ: {amenityPerformance.contractAttachRate}%
+              Tỷ lệ gắn vào hợp đồng: {amenityPerformance.contractAttachRate}%
             </span>
           </div>
 

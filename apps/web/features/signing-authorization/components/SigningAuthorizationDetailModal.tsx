@@ -33,6 +33,8 @@ export const SigningAuthorizationDetailModal: React.FC<SigningAuthorizationDetai
   onClose,
 }) => {
   const t = useTranslations("signingAuthorizations");
+  const tRole = useTranslations("incidentDesk.detail.role");
+  const roleLabel = (role?: string) => (role && tRole.has(role) ? tRole(role) : role);
 
   if (!authorization) return null;
 
@@ -87,19 +89,21 @@ export const SigningAuthorizationDetailModal: React.FC<SigningAuthorizationDetai
               </div>
               {legalEntity ? (
                 <div>
-                  <p className="font-semibold text-slate-900">{legalEntity.name}</p>
+                  <p className="font-semibold text-slate-900">{legalEntity.companyName}</p>
                   <p className="text-xs text-slate-500 mt-0.5">
                     {t("modals.taxCode")}:{" "}
                     <span className="font-mono text-slate-700">{legalEntity.taxCode}</span>
                   </p>
-                  {legalEntity.address && (
-                    <p className="text-xs text-slate-500 mt-0.5 truncate">{legalEntity.address}</p>
+                  {legalEntity.registeredAddress && (
+                    <p className="text-xs text-slate-500 mt-0.5 truncate">
+                      {legalEntity.registeredAddress}
+                    </p>
                   )}
-                  {legalEntity.representativeName && (
+                  {legalEntity.legalRepresentative?.name && (
                     <p className="text-xs text-slate-600 mt-1">
-                      {t("modals.representative")}: {legalEntity.representativeName}
-                      {legalEntity.representativePosition
-                        ? ` (${legalEntity.representativePosition})`
+                      {t("modals.representative")}: {legalEntity.legalRepresentative.name}
+                      {legalEntity.legalRepresentative.title
+                        ? ` (${legalEntity.legalRepresentative.title})`
                         : ""}
                     </p>
                   )}
@@ -121,8 +125,8 @@ export const SigningAuthorizationDetailModal: React.FC<SigningAuthorizationDetai
                 <div>
                   <p className="font-semibold text-slate-900">{authorizedUser.name}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{authorizedUser.email}</p>
-                  <p className="text-xs text-slate-500 mt-0.5 capitalize">
-                    {t("modals.role")}: {authorizedUser.role}
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {t("modals.role")}: {roleLabel(authorizedUser.role)}
                   </p>
                 </div>
               ) : (
@@ -190,9 +194,6 @@ export const SigningAuthorizationDetailModal: React.FC<SigningAuthorizationDetai
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-slate-900">{t("columns.document")}</p>
-                <p className="text-[11px] text-slate-500 truncate max-w-md font-mono mt-0.5">
-                  {authorization.documentUrl}
-                </p>
               </div>
             </div>
             <Button

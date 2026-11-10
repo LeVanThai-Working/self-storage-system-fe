@@ -1,9 +1,5 @@
 import type { ContractStatusEnum } from "../enums/contract.enum";
-import type {
-  InventoryItemStatusEnum,
-  MovementTypeEnum,
-  SkuPlacementEnum,
-} from "../enums/customerInventory.enum";
+import type { InventoryItemStatusEnum, MovementTypeEnum } from "../enums/customerInventory.enum";
 import type { RackStatusEnum, RackTierStatusEnum, RackZoneEnum } from "../enums/storageRack.enum";
 import type { StorageUnitStatusEnum } from "../enums/storageUnit.enum";
 import type { RoleEnum } from "../enums/user.enum";
@@ -161,7 +157,7 @@ export interface TreeTierItem {
   pendingOutboundQuantity?: number;
   availableQuantity?: number;
   /** Older rows may lack it; treat as `normal`. */
-  status?: InventoryItemStatusEnum;
+  status?: InventoryItemStatusEnum | null;
   holdingReason?: string | null;
   relatedIncidentId?: string | null;
   lastMovementAt: string;
@@ -222,7 +218,7 @@ export interface StorageUnitInventoryTreeResponse {
 export interface SkuLocationItem {
   inventoryId: string;
   quantity: number;
-  status?: InventoryItemStatusEnum;
+  status?: InventoryItemStatusEnum | null;
   lastMovementAt: string;
   notes?: string | null;
   facility?: InventoryFacilitySnapshot | null;
@@ -239,13 +235,6 @@ export interface SkuLocationsSku extends InventorySkuSnapshot {
 export interface SkuLocationsResponse {
   sku: SkuLocationsSku;
   locations: SkuLocationItem[];
-}
-
-export interface SkuLocatorQuery {
-  page?: number;
-  limit?: number;
-  search?: string;
-  placement?: SkuPlacementEnum;
 }
 
 export interface SkuLocatorItem {

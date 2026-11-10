@@ -11,6 +11,10 @@ import {
   type SkuLocationsResponse,
   type SkuLocatorQuery,
   type SkuLocatorResponse,
+  type StockAdjustRequest,
+  type StockInRequest,
+  type StockMoveRequest,
+  type StockOutRequest,
   type StorageUnitInventoryTreeResponse,
 } from "@self-storage-system-fe/shared";
 
@@ -18,7 +22,6 @@ import {
  * 1. GET /customer-inventories/unit/{storageUnitId}/tree
  * Fetches the Unit -> Racks -> Tiers -> SKUs tree of a storage unit (2D rack map source).
  * `contractId` narrows it to the racks and stock of that contract.
- * Stock itself only changes through staff-handled requests (see features/inventory-requests).
  */
 export async function getStorageUnitTreeApi(
   storageUnitId: string,
@@ -57,7 +60,9 @@ export async function getSkuLocationsByBarcodeApi(barcode: string): Promise<SkuL
  * GET /customer-inventories/sku-locator
  * The customer's SKUs with their positions, across all of their contracts.
  */
-export async function getSkuLocatorApi(query: SkuLocatorQuery): Promise<SkuLocatorResponse> {
+export async function getSkuLocatorApi(
+  query: Partial<SkuLocatorQuery>
+): Promise<SkuLocatorResponse> {
   const response = await api.get<ApiResponse<SkuLocatorResponse>>(
     "/customer-inventories/sku-locator",
     { params: cleanQueryParams(query) }
@@ -100,6 +105,47 @@ export async function getCustomerInventoriesApi(
 export async function getCustomerInventorySummaryApi(): Promise<CustomerInventorySummaryResponse> {
   const response = await api.get<ApiResponse<CustomerInventorySummaryResponse>>(
     "/customer-inventories/summary"
+  );
+  return response.data.data;
+}
+
+/**
+ * POST /customer-inventories/in
+ * The customer puts stock on one of their rack tiers, or in the holding area when `rackTierId` is null.
+ */
+export async function stockInApi(payload: StockInRequest): Promise<CustomerInventoryResponse> {
+  const response = await api.post<ApiResponse<CustomerInventoryResponse>>(
+    "/customer-inventories/in",
+    payload
+  );
+  return response.data.data;
+}
+
+/** POST /customer-inventories/out: the customer takes stock out of a position. */
+export async function stockOutApi(payload: StockOutRequest): Promise<CustomerInventoryResponse> {
+  const response = await api.post<ApiResponse<CustomerInventoryResponse>>(
+    "/customer-inventories/out",
+    payload
+  );
+  return response.data.data;
+}
+
+/** POST /customer-inventories/move: moves stock between two positions of the same contract. */
+export async function stockMoveApi(payload: StockMoveRequest): Promise<CustomerInventoryResponse> {
+  const response = await api.post<ApiResponse<CustomerInventoryResponse>>(
+    "/customer-inventories/move",
+    payload
+  );
+  return response.data.data;
+}
+
+/** POST /customer-inventories/adjust: recounts and overwrites the quantity at a position. */
+export async function stockAdjustApi(
+  payload: StockAdjustRequest
+): Promise<CustomerInventoryResponse> {
+  const response = await api.post<ApiResponse<CustomerInventoryResponse>>(
+    "/customer-inventories/adjust",
+    payload
   );
   return response.data.data;
 }

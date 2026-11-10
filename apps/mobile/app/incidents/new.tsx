@@ -27,7 +27,7 @@ import {
 } from "@/features/customer-inventory/utils/rackMapFormat";
 import { useReportIncident } from "@/features/incidents/hooks/useIncidents";
 import { INCIDENT_CATEGORY_ICON } from "@/features/incidents/utils/incidentFormat";
-import { resolveRequestError } from "@/features/inventory-requests/utils/requestFormat";
+import { resolveRequestError } from "@/lib/apiError";
 
 const SEVERITY_DOT: Record<IncidentSeverityEnum, string> = {
   [IncidentSeverityEnum.LOW]: "bg-neutral-400",

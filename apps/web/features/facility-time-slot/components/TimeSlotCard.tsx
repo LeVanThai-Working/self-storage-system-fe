@@ -39,15 +39,11 @@ export const TimeSlotCard: React.FC<TimeSlotCardProps> = ({
           </span>
         </div>
 
-        <span
-          className={`shrink-0 whitespace-nowrap inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold border ${
-            slot.isActive
-              ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800"
-              : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
-          }`}
-        >
-          {slot.isActive ? "Hoạt động" : "Tạm dừng"}
-        </span>
+        {!slot.isActive && (
+          <span className="shrink-0 whitespace-nowrap inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold border bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700">
+            Tạm dừng
+          </span>
+        )}
       </div>
 
       {/* Custom Slot Name */}

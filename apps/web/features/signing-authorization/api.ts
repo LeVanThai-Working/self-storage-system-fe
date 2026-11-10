@@ -159,14 +159,12 @@ export const fetchLegalEntities = async (): Promise<LegalEntityItem[]> => {
           : [];
     return rawList.map((item) => ({
       _id: String(item._id || item.id || ""),
-      name: String(item.name || ""),
+      name: String(item.companyName || ""),
       taxCode: String(item.taxCode || ""),
-      address: String(item.address || ""),
+      address: String(item.registeredAddress || ""),
       status: typeof item.status === "string" ? item.status : undefined,
-      representativeName:
-        typeof item.representativeName === "string" ? item.representativeName : undefined,
-      representativePosition:
-        typeof item.representativePosition === "string" ? item.representativePosition : undefined,
+      representativeName: (item.legalRepresentative as { name?: string } | undefined)?.name,
+      representativePosition: (item.legalRepresentative as { title?: string } | undefined)?.title,
     }));
   } catch (error) {
     console.warn("fetchLegalEntities failed", error);

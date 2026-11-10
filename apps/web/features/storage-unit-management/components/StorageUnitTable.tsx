@@ -290,9 +290,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
             </div>
             {t("title")}
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
-            {t("subtitle", { facility: facility.name })}
-          </p>
+          <p className="text-slate-500 text-sm mt-1">{t("subtitle")}</p>
         </div>
 
         <div className="flex items-center gap-3">
