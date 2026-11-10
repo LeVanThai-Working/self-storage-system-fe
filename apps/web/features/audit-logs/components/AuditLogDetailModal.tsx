@@ -57,6 +57,7 @@ const formatDate = (iso: string, locale: string) => {
 
 export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModalProps) => {
   const t = useTranslations("systemAdmin.auditLog");
+  const tRole = useTranslations("incidentDesk.detail.role");
   const locale = useLocale();
   const { data: log, isLoading, isError } = useAuditLog(id || "", { enabled: !!id && isOpen });
 
@@ -137,8 +138,8 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
                               {log.actorEmail}
                             </div>
                             {log.actorRole && (
-                              <div className="inline-flex items-center whitespace-nowrap shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 mt-1.5 uppercase tracking-wider truncate max-w-full">
-                                {log.actorRole.replace(/_/g, " ")}
+                              <div className="inline-flex items-center whitespace-nowrap shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 mt-1.5 truncate max-w-full">
+                                {tRole.has(log.actorRole) ? tRole(log.actorRole) : log.actorRole}
                               </div>
                             )}
                           </div>

@@ -143,7 +143,7 @@ export const RefundDetailModal: React.FC<RefundDetailModalProps> = ({
           {/* Amount Display & Alerts */}
           <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 my-2 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div>
-              <p className="text-xs text-slate-500 font-medium">Số tiền hoàn (VND)</p>
+              <p className="text-xs text-slate-500 font-medium">Số tiền hoàn</p>
               <p className="text-2xl font-extrabold text-emerald-600">{formatVND(refund.amount)}</p>
             </div>
 
@@ -227,7 +227,6 @@ export const RefundDetailModal: React.FC<RefundDetailModalProps> = ({
             <div className="p-3.5 border border-slate-200 rounded-lg bg-white space-y-2">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                 <CreditCard className="w-3.5 h-3.5 text-slate-500" /> Thông tin tài khoản thụ hưởng
-                (Nghị định 13/2023/NĐ-CP)
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-xs">
                 <div>

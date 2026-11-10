@@ -50,7 +50,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            {isEn ? "Bank Reconciliation" : "Đối Soát Giao Dịch Ngân Hàng"}
+            {isEn ? "Bank Reconciliation" : "Đối soát giao dịch ngân hàng"}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             {isEn
@@ -95,19 +95,19 @@ export const UnmatchedTransactionsView: React.FC = () => {
             >
               <option value="">{isEn ? "All Outcomes" : "Tất cả kết quả"}</option>
               <option value={PaymentTransactionResultEnum.UNMATCHED}>
-                {isEn ? "Unmatched (Missing/Wrong Code)" : "Chưa khớp mã (Thiếu/sai mã)"}
+                {isEn ? "Unmatched" : "Chưa khớp mã"}
               </option>
               <option value={PaymentTransactionResultEnum.AMOUNT_MISMATCH}>
-                {isEn ? "Amount Mismatch (Refund Pending)" : "Sai số tiền (Chờ hoàn cọc)"}
+                {isEn ? "Amount mismatch" : "Sai số tiền"}
               </option>
               <option value={PaymentTransactionResultEnum.LATE}>
-                {isEn ? "Late Transaction (Exceeded Grace Period)" : "Giao dịch trễ hạn"}
+                {isEn ? "Late transaction" : "Giao dịch trễ hạn"}
               </option>
               <option value={PaymentTransactionResultEnum.MATCHED}>
                 {isEn ? "Matched / Settled" : "Đã khớp thành công"}
               </option>
               <option value={PaymentTransactionResultEnum.RECEIVED}>
-                {isEn ? "Received (In Process)" : "Đã tiếp nhận"}
+                {isEn ? "Received" : "Đã tiếp nhận"}
               </option>
             </select>
           </div>

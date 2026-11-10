@@ -33,7 +33,10 @@ export interface TrashEntry {
 const labelOf = (log: AuditLog) => {
   const b = log.changes?.before ?? {};
   const pick = (k: string) => (typeof b[k] === "string" && b[k] ? (b[k] as string) : null);
-  return pick("name") ?? pick("unitNumber") ?? pick("email") ?? log.resourceId;
+  // Offerings have no name; the snapshot keeps the populated unit type and facility.
+  const refName = (k: string) => (b[k] as { name?: string } | undefined)?.name;
+  const offering = [refName("unitTypeId"), refName("facilityId")].filter(Boolean).join(" · ");
+  return pick("name") ?? pick("unitNumber") ?? pick("email") ?? (offering || log.resourceId);
 };
 
 /**

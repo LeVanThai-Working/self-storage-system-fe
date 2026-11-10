@@ -98,8 +98,8 @@ export const AssignTransactionModal: React.FC<AssignTransactionModalProps> = ({
               </DialogTitle>
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
-                  ? `SePay ID: #${transaction.sepayId}`
-                  : `Mã giao dịch SePay: #${transaction.sepayId}`}
+                  ? `Transaction ID: #${transaction.sepayId}`
+                  : `Mã giao dịch: #${transaction.sepayId}`}
               </p>
             </div>
           </div>
@@ -150,9 +150,7 @@ export const AssignTransactionModal: React.FC<AssignTransactionModalProps> = ({
           {/* Target Payment Code Input */}
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1">
-              {isEn
-                ? "Target Payment Code * (e.g. SSM...)"
-                : "Mã đơn thanh toán cần gán * (VD: SSM...)"}
+              {isEn ? "Target Payment Code *" : "Mã đơn thanh toán cần gán *"}
             </label>
             <div className="relative">
               <input

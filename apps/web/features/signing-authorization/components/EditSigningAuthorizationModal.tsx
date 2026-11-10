@@ -130,7 +130,7 @@ const EditSigningAuthorizationContent: React.FC<EditSigningAuthorizationContentP
         <div className="space-y-1.5">
           <Label className="text-xs font-semibold text-slate-700 flex items-center gap-1">
             <Calendar className="w-3.5 h-3.5 text-orange-600" />
-            {t("modals.validTo")} (Gia hạn)
+            {t("modals.validTo")}
           </Label>
           <Input
             type="date"
@@ -163,7 +163,6 @@ const EditSigningAuthorizationContent: React.FC<EditSigningAuthorizationContentP
             accept="application/pdf,image/*"
             value={documentUrl ? [documentUrl] : []}
             onChange={(urls) => setDocumentUrl(urls[0] || "")}
-            label={t("modals.uploadPrompt")}
             description={t("modals.uploadHint")}
           />
         </div>
