@@ -274,21 +274,10 @@ export function EditReservationModal({
       4
     );
 
-    return uniqueDays.map((days) => {
-      if (days % 30 === 0) {
-        const months = days / 30;
-        return {
-          days,
-          label: isEn
-            ? `${months} ${months === 1 ? "month" : "months"} (${days} days)`
-            : `${months} tháng (${days} ngày)`,
-        };
-      }
-      return {
-        days,
-        label: isEn ? `${days} ${days === 1 ? "day" : "days"}` : `${days} ngày`,
-      };
-    });
+    return uniqueDays.map((days) => ({
+      days,
+      label: isEn ? `${days} ${days === 1 ? "day" : "days"}` : `${days} ngày`,
+    }));
   }, [minRentalDays, isEn]);
 
   return (
@@ -427,9 +416,6 @@ export function EditReservationModal({
                     />
                     <Text className="text-xs font-bold text-brand">{isEn ? "days" : "ngày"}</Text>
                   </View>
-                  <Text className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-300">
-                    {formatRentalDurationDays(rentalDuration, locale)}
-                  </Text>
                 </View>
 
                 <Pressable
@@ -636,13 +622,13 @@ export function EditReservationModal({
                     {formatVnd(estimatedAmenitiesTotal)}
                   </Text>
                 </View>
-                {estimatedAmenitiesTotal > 0 ? (
+                {/* {estimatedAmenitiesTotal > 0 ? (
                   <Text className="text-[10px] text-neutral-500 dark:text-neutral-400 italic">
                     {isEn
                       ? "• Reserved — Pay with 1st period rent upon check-in"
                       : "• Đã giữ chỗ — Thanh toán cùng tiền thuê kỳ đầu khi nhận kho"}
                   </Text>
-                ) : null}
+                ) : null} */}
               </View>
               <View className="flex-row justify-between items-center border-t border-neutral-200 dark:border-neutral-700 pt-2 gap-2">
                 <Text

@@ -1029,7 +1029,7 @@
         "floorArea": "Diện tích sàn (m²)",
         "volume": "Thể tích không gian (m³)",
         "statusLabel": "Trạng thái áp dụng",
-        "statusActive": "Hoạt động (Active)",
+        "statusActive": "Hoạt động ",
         "statusInactive": "Tạm dừng (Inactive)",
         "descriptionLabel": "Mô tả chi tiết",
         "descriptionPlaceholder": "Mô tả đối tượng lưu trữ phù hợp, vật liệu sàn/vách...",

@@ -83,6 +83,7 @@ import {
   getPendingRemoveAmenityQty,
   getRemainingDays,
   getRentalUnitLabel,
+  getSignedAddendumFiles,
   getSignedContractFiles,
   isWarehouseRackContract,
   resolveReservationErrorMessage,
@@ -134,8 +135,6 @@ export default function ContractDetailScreen() {
   const [signAddendumTarget, setSignAddendumTarget] = useState<ContractAddendumResponse | null>(
     null
   );
-  const [addendumTermsAccepted, setAddendumTermsAccepted] = useState(true);
-  const [addendumSignNotes, setAddendumSignNotes] = useState("");
 
   // Cancel Addendum Modal state
   const [cancelAddendumTarget, setCancelAddendumTarget] = useState<ContractAddendumResponse | null>(
@@ -280,7 +279,7 @@ export default function ContractDetailScreen() {
         updated.status === ContractStatusEnum.ACTIVE
           ? isEn
             ? "Contract signed and activated! Your storage unit is ready."
-            : "Đã ký xác nhận! Cả 2 bên đã hoàn tất ký, hợp đồng đã kích hoạt sang Đang thuê (ACTIVE)."
+            : "Đã ký xác nhận! Cả 2 bên đã hoàn tất ký, hợp đồng đã kích hoạt sang Đang thuê."
           : isEn
             ? "Contract signed! Waiting for facility staff handover signature."
             : "Bạn đã ký xác nhận hợp đồng! Hợp đồng sẽ kích hoạt ngay khi phía cơ sở ký bàn giao kho."
@@ -374,28 +373,18 @@ export default function ContractDetailScreen() {
 
   const handleCustomerSignAddendum = async () => {
     if (!signAddendumTarget) return;
-    if (!addendumTermsAccepted) {
-      toast.error(
-        isEn
-          ? "Please accept the addendum terms before signing."
-          : "Vui lòng đồng ý điều khoản phụ lục trước khi ký xác nhận."
-      );
-      return;
-    }
 
     try {
       await signAddendumMutation.mutateAsync({
         addendumId: signAddendumTarget.id,
         payload: {
           termsAccepted: true,
-          notes: addendumSignNotes.trim() || undefined,
         },
       });
       toast.success(
         isEn ? "Addendum signed successfully!" : "Đã ký xác nhận phụ lục hợp đồng thành công!"
       );
       setSignAddendumTarget(null);
-      setAddendumSignNotes("");
     } catch (err) {
       const resolved = resolveReservationErrorMessage(err, currentLocale, "contract addendum");
       toast.error(resolved.message);
@@ -552,6 +541,48 @@ export default function ContractDetailScreen() {
 
   const signedContractFiles = getSignedContractFiles(contract);
 
+  const hasAddendumsWithFiles = (contract?.addendums || []).some(
+    (a) => getSignedAddendumFiles(a, contract).length > 0
+  );
+
+  const allScanFiles: { url: string; label: string; title: string }[] = [];
+
+  // 1. Contract scans
+  signedContractFiles.forEach((f, idx) => {
+    allScanFiles.push({
+      url: f.url,
+      label: hasAddendumsWithFiles
+        ? isEn
+          ? `Hợp đồng • Trang ${idx + 1}`
+          : `Hợp đồng • Trang ${idx + 1}`
+        : isEn
+          ? `Page ${idx + 1}`
+          : `Trang ${idx + 1}`,
+      title: isEn ? `Contract scan page ${idx + 1}` : `Bản scan hợp đồng trang ${idx + 1}`,
+    });
+  });
+
+  // 2. Addendum scans (flat in the exact same list, no inner boxes)
+  (contract?.addendums || []).forEach((addendum) => {
+    const files = getSignedAddendumFiles(addendum, contract);
+    const shortCode = addendum.addendumCode ? addendum.addendumCode.replace(/^ADD-/, "") : "";
+    files.forEach((f, fIdx) => {
+      allScanFiles.push({
+        url: f.url,
+        label: shortCode
+          ? isEn
+            ? `Phụ lục #${shortCode} • Bản ${fIdx + 1}`
+            : `Phụ lục #${shortCode} • Bản ${fIdx + 1}`
+          : isEn
+            ? `Phụ lục • Bản ${fIdx + 1}`
+            : `Phụ lục • Bản ${fIdx + 1}`,
+        title: isEn
+          ? `Addendum #${shortCode} scan ${fIdx + 1}`
+          : `Bản scan phụ lục #${shortCode} (${fIdx + 1})`,
+      });
+    });
+  });
+
   const recurringAmenitiesTotal = (contract.amenities || [])
     .filter((a) => a.billingUnit !== BillingUnitEnum.ONE_TIME)
     .reduce((sum, a) => sum + (a.totalPrice ?? a.pricePerUnit * a.quantity), 0);
@@ -596,44 +627,24 @@ export default function ContractDetailScreen() {
           <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#0B927E" />
         }
       >
-        {/* 1. Status & Lifecycle Overview Card */}
-        <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-2.5">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-xs font-extrabold uppercase tracking-wider text-neutral-500">
-              {isEn ? "Contract Status" : "Trạng thái hợp đồng"}
+        {/* Cancellation Reason Alert */}
+        {contract.cancellationReason ? (
+          <View className="rounded-3xl border border-red-200 bg-red-50 dark:bg-red-950/30 p-4 shadow-sm">
+            <Text className="text-xs font-bold text-red-700 dark:text-red-300">
+              {isEn ? "Cancellation Reason:" : "Lý do hủy hợp đồng:"} {contract.cancellationReason}
             </Text>
-            {contract.termsAccepted ? (
-              <View className="flex-row items-center gap-1">
-                <CheckCircle2 size={13} color="#0B927E" />
-                <Text className="text-[11px] font-bold text-brand">
-                  {isEn ? "Both Parties Signed" : "Đã hoàn tất ký 2 bên"}
-                </Text>
-              </View>
-            ) : null}
           </View>
+        ) : null}
 
-          <Text className="text-xs text-neutral-700 dark:text-neutral-300 leading-5">
-            {statusMeta.description}
-          </Text>
-
-          {contract.cancellationReason ? (
-            <View className="rounded-2xl border border-red-200 bg-red-50 dark:bg-red-950/30 p-3 mt-1">
-              <Text className="text-xs font-bold text-red-700 dark:text-red-300">
-                {isEn ? "Cancellation Reason:" : "Lý do hủy hợp đồng:"}{" "}
-                {contract.cancellationReason}
-              </Text>
-            </View>
-          ) : null}
-
-          {contract.terminationReason ? (
-            <View className="rounded-2xl border border-red-200 bg-red-50 dark:bg-red-950/30 p-3 mt-1">
-              <Text className="text-xs font-bold text-red-700 dark:text-red-300">
-                {isEn ? "Early Termination Reason:" : "Lý do chấm dứt trước hạn:"}{" "}
-                {contract.terminationReason}
-              </Text>
-            </View>
-          ) : null}
-        </View>
+        {/* Early Termination Reason Alert */}
+        {contract.terminationReason ? (
+          <View className="rounded-3xl border border-red-200 bg-red-50 dark:bg-red-950/30 p-4 shadow-sm">
+            <Text className="text-xs font-bold text-red-700 dark:text-red-300">
+              {isEn ? "Early Termination Reason:" : "Lý do chấm dứt trước hạn:"}{" "}
+              {contract.terminationReason}
+            </Text>
+          </View>
+        ) : null}
 
         {/* Renewal Status Alerts */}
         {pendingRenewalAddendum ? (
@@ -662,18 +673,18 @@ export default function ContractDetailScreen() {
         ) : null}
 
         {draftRenewalAddendum ? (
-          <View className="rounded-3xl border border-brand/50 bg-brand-light/20 dark:bg-brand/10 p-4 shadow-sm gap-3">
-            <View className="flex-row items-center gap-2.5">
-              <View className="h-9 w-9 rounded-xl bg-brand/15 items-center justify-center">
-                <FileSignature size={18} color="#0B927E" />
+          <View className="rounded-3xl border border-brand/30 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3">
+            <View className="flex-row items-start gap-3">
+              <View className="h-10 w-10 rounded-2xl bg-brand-light dark:bg-brand/20 items-center justify-center shrink-0 mt-0.5">
+                <FileSignature size={20} color="#0B927E" />
               </View>
               <View className="flex-1">
-                <Text className="text-xs font-extrabold text-brand dark:text-brand-light">
+                <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
                   {isEn
                     ? "Renewal Approved - Action Required"
                     : "Yêu cầu gia hạn đã được phê duyệt"}
                 </Text>
-                <Text className="text-[11px] font-medium text-neutral-700 dark:text-neutral-300 mt-0.5 leading-4">
+                <Text className="text-xs text-neutral-600 dark:text-neutral-300 mt-1 leading-5">
                   {isEn
                     ? `Facility Manager approved renewal to ${formatDateShort(draftRenewalAddendum.newEndDate)}. Please sign to complete the extension.`
                     : `Quản lý cơ sở đã duyệt yêu cầu gia hạn đến ngày ${formatDateShort(draftRenewalAddendum.newEndDate)}. Vui lòng ký xác nhận phụ lục gia hạn để hoàn tất.`}
@@ -684,13 +695,11 @@ export default function ContractDetailScreen() {
             <Pressable
               onPress={() => {
                 setSignAddendumTarget(draftRenewalAddendum);
-                setAddendumTermsAccepted(true);
-                setAddendumSignNotes("");
               }}
-              className="flex-row items-center justify-center gap-2 rounded-xl bg-brand py-3 px-4 active:opacity-90 shadow-sm"
+              className="flex-row items-center justify-center gap-2 rounded-2xl bg-brand py-3.5 px-4 active:opacity-90 shadow-sm"
             >
-              <FileSignature size={15} color="#FFFFFF" />
-              <Text className="text-xs font-extrabold text-white">
+              <FileSignature size={16} color="#FFFFFF" />
+              <Text className="text-xs font-bold text-white">
                 {isEn ? "Sign Renewal Addendum" : "Ký phụ lục gia hạn"}
               </Text>
             </Pressable>
@@ -703,9 +712,7 @@ export default function ContractDetailScreen() {
             <View className="flex-row items-center gap-2">
               <FileSignature size={18} color="#0B927E" />
               <Text className="text-sm font-extrabold text-neutral-dark dark:text-neutral-100 flex-1">
-                {isEn
-                  ? "Deposit & Dual-Party Contract Signing"
-                  : "Tiền cọc & Ký Xác nhận Hợp đồng (2 chiều)"}
+                {isEn ? "Deposit & Dual-Party Contract Signing" : "Tiền cọc & Ký Xác nhận Hợp đồng"}
               </Text>
             </View>
 
@@ -963,7 +970,7 @@ export default function ContractDetailScreen() {
                 <Text className="flex-1 text-xs font-semibold text-brand leading-4">
                   {isEn
                     ? "You have signed this contract! Once facility staff signs the handover, your contract will automatically become ACTIVE."
-                    : "Bạn đã ký xác nhận hợp đồng! Ngay khi phía cơ sở ký xác nhận bàn giao kho, hợp đồng sẽ tự động chuyển sang Đang thuê (ACTIVE)."}
+                    : "Bạn đã ký xác nhận hợp đồng! Ngay khi phía cơ sở ký xác nhận bàn giao kho, hợp đồng sẽ tự động chuyển sang Đang thuê."}
                 </Text>
               </View>
             ) : null}
@@ -1188,8 +1195,8 @@ export default function ContractDetailScreen() {
           ) : null}
         </View>
 
-        {/* 3B. Digitized Signed Physical Contract Scans */}
-        {signedContractFiles.length > 0 ? (
+        {/* 3B. Digitized Signed Physical Contract & Addendum Scans (Tách riêng phần tài liệu, không lồng khung) */}
+        {allScanFiles.length > 0 ? (
           <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3">
             <View className="flex-row items-center justify-between gap-2">
               <View className="flex-row items-center gap-2 flex-1 min-w-0">
@@ -1198,7 +1205,7 @@ export default function ContractDetailScreen() {
                   numberOfLines={1}
                   className="text-sm font-bold text-neutral-dark dark:text-neutral-100 flex-1"
                 >
-                  {isEn ? "Digitized Signed Contract Scans" : "Hồ sơ Hợp đồng Ký sống (Scan)"}
+                  {isEn ? "Signed Legal Documents" : "Hồ sơ & Tài liệu Ký sống"}
                 </Text>
               </View>
               <Badge
@@ -1209,29 +1216,26 @@ export default function ContractDetailScreen() {
                   numberOfLines={1}
                   className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300"
                 >
-                  {signedContractFiles.length} {isEn ? "files" : "tài liệu"}
+                  {allScanFiles.length} {isEn ? "files" : "tài liệu"}
                 </Text>
               </Badge>
             </View>
 
             <Text variant="muted" className="text-xs leading-4">
               {isEn
-                ? "Scanned pages of the paper contract with live signatures, stored securely for legal compliance."
-                : "Các trang hợp đồng giấy có chữ ký trực tiếp của 2 bên đã được số hóa và lưu trữ toàn vẹn."}
+                ? "Scanned pages of the paper contract and signed addendums with live signatures, stored securely."
+                : "Bản scan tài liệu hợp đồng và phụ lục có chữ ký sống của 2 bên đã được số hóa lưu vết toàn vẹn."}
             </Text>
 
+            {/* Flat unified grid: exactly like contract UI, NO nested frame boxes */}
             <View className="flex-row flex-wrap gap-2.5 pt-1">
-              {signedContractFiles.map((file, idx) => {
-                const isPdf = file.url.toLowerCase().includes(".pdf");
+              {allScanFiles.map((file, idx) => {
+                const isPdf =
+                  typeof file.url === "string" && file.url.toLowerCase().includes(".pdf");
                 return (
                   <Pressable
-                    key={`${file.url}-${idx}`}
-                    onPress={() =>
-                      handleOpenFile(
-                        file.url,
-                        isEn ? `Contract scan ${idx + 1}` : `Bản scan hợp đồng ${idx + 1}`
-                      )
-                    }
+                    key={`scan-${file.url}-${idx}`}
+                    onPress={() => handleOpenFile(file.url, file.title || file.label)}
                     className="w-[48%] rounded-2xl border border-neutral-border dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60 p-2.5 items-center justify-center gap-2 overflow-hidden active:opacity-80"
                   >
                     {isPdf ? (
@@ -1255,7 +1259,7 @@ export default function ContractDetailScreen() {
                         className="text-xs font-semibold text-neutral-dark dark:text-neutral-200 flex-1 mr-1"
                         numberOfLines={1}
                       >
-                        {isEn ? `File ${idx + 1}` : `Bản ký ${idx + 1}`}
+                        {file.label}
                       </Text>
                       <ExternalLink size={13} color="#0B927E" />
                     </View>
@@ -1674,6 +1678,12 @@ export default function ContractDetailScreen() {
                       </View>
                     ) : null}
 
+                    {addendum.notes ? (
+                      <Text variant="muted" className="text-[11px]">
+                        {isEn ? "Notes:" : "Ghi chú:"} {addendum.notes}
+                      </Text>
+                    ) : null}
+
                     {addendum.rejectionReason ? (
                       <Text className="text-[11px] font-semibold text-red-600 dark:text-red-400">
                         {isEn ? "Rejection Reason:" : "Lý do từ chối:"} {addendum.rejectionReason}
@@ -1708,8 +1718,6 @@ export default function ContractDetailScreen() {
                           <Pressable
                             onPress={() => {
                               setSignAddendumTarget(addendum);
-                              setAddendumTermsAccepted(true);
-                              setAddendumSignNotes("");
                             }}
                             className="flex-row items-center gap-1.5 rounded-xl bg-brand px-3.5 py-2 active:opacity-90"
                           >
@@ -2116,20 +2124,9 @@ export default function ContractDetailScreen() {
                           : "Tiện ích mua 1 lần"}
                 </Text>
 
-                <Pressable
-                  onPress={() => setAddendumTermsAccepted((prev) => !prev)}
-                  className="flex-row items-start gap-2.5 rounded-2xl bg-neutral-50 dark:bg-neutral-800 p-3"
-                >
-                  <View
-                    className={`mt-0.5 h-5 w-5 items-center justify-center rounded-md border ${
-                      addendumTermsAccepted
-                        ? "border-brand bg-brand"
-                        : "border-neutral-400 bg-white dark:bg-neutral-900"
-                    }`}
-                  >
-                    {addendumTermsAccepted ? <Check size={13} color="#FFFFFF" /> : null}
-                  </View>
-                  <Text className="flex-1 text-xs font-semibold text-neutral-dark dark:text-neutral-200 leading-4">
+                <View className="flex-row items-start gap-2.5 rounded-2xl bg-neutral-50 dark:bg-neutral-800 p-3.5">
+                  <CheckCircle2 size={18} color="#0B927E" className="mt-0.5 shrink-0" />
+                  <Text className="flex-1 text-xs font-semibold text-neutral-dark dark:text-neutral-200 leading-5">
                     {signAddendumTarget.type === ContractAddendumTypeEnum.RENEW
                       ? isEn
                         ? "I confirm and agree to extend the contract lease period as specified in this addendum."
@@ -2138,36 +2135,37 @@ export default function ContractDetailScreen() {
                         ? "I confirm the amenity change details and agree to the terms of this contract addendum."
                         : "Tôi xác nhận chi tiết thay đổi tiện ích và đồng ý với các điều khoản của phụ lục hợp đồng này."}
                   </Text>
-                </Pressable>
+                </View>
 
-                <TextInput
-                  value={addendumSignNotes}
-                  onChangeText={setAddendumSignNotes}
-                  placeholder={isEn ? "Optional notes..." : "Ghi chú khi ký (không bắt buộc)..."}
-                  placeholderTextColor="#94A3B8"
-                  className="rounded-xl border border-neutral-border dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-xs text-neutral-dark dark:text-neutral-100"
-                />
+                {/* Confirm or Cancel Actions */}
+                <View className="flex-row items-center gap-2.5 mt-2">
+                  <Pressable
+                    onPress={() => setSignAddendumTarget(null)}
+                    disabled={signAddendumMutation.isPending}
+                    className="flex-1 rounded-2xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 py-3.5 items-center justify-center active:opacity-80"
+                  >
+                    <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-200">
+                      {isEn ? "Cancel" : "Không"}
+                    </Text>
+                  </Pressable>
 
-                <Pressable
-                  onPress={handleCustomerSignAddendum}
-                  disabled={!addendumTermsAccepted || signAddendumMutation.isPending}
-                  className={`flex-row items-center justify-center gap-2 rounded-xl py-3 px-4 ${
-                    !addendumTermsAccepted || signAddendumMutation.isPending
-                      ? "bg-neutral-300 dark:bg-neutral-700"
-                      : "bg-brand active:opacity-90"
-                  }`}
-                >
-                  {signAddendumMutation.isPending ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
-                  ) : (
-                    <>
-                      <FileSignature size={15} color="#FFFFFF" />
-                      <Text className="text-xs font-extrabold text-white">
-                        {isEn ? "Sign Addendum" : "Ký xác nhận phụ lục"}
-                      </Text>
-                    </>
-                  )}
-                </Pressable>
+                  <Pressable
+                    onPress={handleCustomerSignAddendum}
+                    disabled={signAddendumMutation.isPending}
+                    className="flex-1 flex-row items-center justify-center gap-1.5 rounded-2xl bg-brand py-3.5 active:opacity-90 shadow-sm"
+                  >
+                    {signAddendumMutation.isPending ? (
+                      <ActivityIndicator size="small" color="#FFFFFF" />
+                    ) : (
+                      <>
+                        <FileSignature size={15} color="#FFFFFF" />
+                        <Text className="text-xs font-bold text-white">
+                          {isEn ? "Confirm" : "Xác nhận"}
+                        </Text>
+                      </>
+                    )}
+                  </Pressable>
+                </View>
               </>
             ) : null}
           </View>

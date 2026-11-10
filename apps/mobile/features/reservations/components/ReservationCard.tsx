@@ -25,6 +25,7 @@ import {
   formatRentalDurationDays,
   formatVnd,
   getReservationStatusMeta,
+  getReservationTotalAmount,
 } from "../utils/reservationFormat";
 
 interface ReservationCardProps {
@@ -183,7 +184,7 @@ export function ReservationCard({
           <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100 mt-0.5">
             {isEn ? "Total:" : "Tổng đơn:"}{" "}
             <Text className="text-sm font-extrabold text-brand">
-              {formatVnd(reservation.totalAmount)}
+              {formatVnd(getReservationTotalAmount(reservation))}
             </Text>
           </Text>
         </View>

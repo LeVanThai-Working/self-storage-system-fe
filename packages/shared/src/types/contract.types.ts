@@ -269,3 +269,86 @@ export function extractSignedContractFileUrls(
 
   return urls;
 }
+
+/**
+ * Normalizes signed addendum documents from either `addendum` or fallback to `contract`.
+ */
+export function extractSignedAddendumFileUrls(
+  addendum?: Partial<ContractAddendumResponse> | null,
+  contract?: Partial<ContractResponse> | null
+): string[] {
+  if (!addendum && !contract) return [];
+  const urls: string[] = [];
+  const seen = new Set<string>();
+
+  const addUrl = (u: unknown) => {
+    if (!u) return;
+    if (typeof u === "string") {
+      const trimmed = u.trim();
+      if (!trimmed || seen.has(trimmed)) return;
+      if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) {
+            for (const item of parsed) addUrl(item);
+            return;
+          }
+        } catch {
+          // ignore json parse error
+        }
+      }
+      seen.add(trimmed);
+      urls.push(trimmed);
+    } else if (typeof u === "object") {
+      const obj = u as Record<string, unknown>;
+      const link =
+        typeof obj.url === "string"
+          ? obj.url.trim()
+          : typeof obj.fileUrl === "string"
+            ? obj.fileUrl.trim()
+            : typeof obj.secure_url === "string"
+              ? obj.secure_url.trim()
+              : typeof obj.path === "string"
+                ? obj.path.trim()
+                : null;
+      if (link && !seen.has(link)) {
+        seen.add(link);
+        urls.push(link);
+      }
+    }
+  };
+
+  const processSource = (source: unknown) => {
+    if (!source) return;
+    if (Array.isArray(source)) {
+      for (const item of source) addUrl(item);
+    } else {
+      addUrl(source);
+    }
+  };
+
+  if (addendum) {
+    const rawAdd = addendum as Record<string, unknown>;
+    processSource(rawAdd.signedAddendumFileUrls);
+    processSource(rawAdd.signedAddendumFiles);
+    processSource(rawAdd.signedFiles);
+    processSource(rawAdd.signedFileUrls);
+    processSource(rawAdd.fileUrls);
+    processSource(rawAdd.files);
+    processSource(rawAdd.documents);
+    processSource(rawAdd.documentUrls);
+    processSource(rawAdd.scanFiles);
+    processSource(rawAdd.scanUrls);
+    processSource(rawAdd.signedDocumentUrls);
+    processSource(rawAdd.attachments);
+  }
+
+  if (urls.length === 0 && contract) {
+    const rawC = contract as Record<string, unknown>;
+    processSource(rawC.signedAddendumFileUrls);
+    processSource(rawC.signedAddendumFiles);
+    processSource(rawC.signedAddendumUrls);
+  }
+
+  return urls;
+}

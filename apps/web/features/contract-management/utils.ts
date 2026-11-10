@@ -138,7 +138,7 @@ export function getContractAddendumTypeLabel(
   const isEn = locale === "en";
   switch (String(type).toLowerCase()) {
     case ContractAddendumTypeEnum.RENEW:
-      return isEn ? "Contract Extension (RENEW)" : "Gia hạn hợp đồng (RENEW)";
+      return isEn ? "Contract Extension (RENEW)" : "Gia hạn hợp đồng";
     case ContractAddendumTypeEnum.UNIT_CHANGE:
       return isEn ? "Emergency Unit Transfer (UNIT_CHANGE)" : "Điều chuyển kho sự cố (UNIT_CHANGE)";
     case ContractAddendumTypeEnum.ADD:
@@ -467,7 +467,7 @@ const CONTRACT_ERROR_MESSAGES_VI: Record<string, string> = {
     "Khách hàng phải ký hợp đồng trước khi Quản lý hoàn tất nhận kho.",
   [MESSAGE_CODE.MESSAGE_CODE_415]: "Khách hàng phải ký phụ lục trước khi Quản lý ký duyệt.",
   [MESSAGE_CODE.MESSAGE_CODE_416]:
-    "Tính năng gia hạn trực tiếp đã đóng. Vui lòng tạo phụ lục gia hạn (RENEW).",
+    "Tính năng gia hạn trực tiếp đã đóng. Vui lòng tạo phụ lục gia hạn.",
   [MESSAGE_CODE.MESSAGE_CODE_417]: "Quyết toán cọc đang trong quá trình giải quyết tranh chấp.",
   [MESSAGE_CODE.MESSAGE_CODE_418]:
     "Bắt buộc đính kèm ảnh hiện trường khi có phát sinh chi phí hư hại.",
@@ -519,7 +519,7 @@ const CONTRACT_ERROR_MESSAGES_EN: Record<string, string> = {
   [MESSAGE_CODE.MESSAGE_CODE_414]: "Customer must sign contract before check-in handover.",
   [MESSAGE_CODE.MESSAGE_CODE_415]: "Customer must sign contract addendum before staff sign.",
   [MESSAGE_CODE.MESSAGE_CODE_416]:
-    "Direct contract renewal is deprecated. Please use contract addendum (RENEW).",
+    "Direct contract renewal is deprecated. Please use contract addendum.",
   [MESSAGE_CODE.MESSAGE_CODE_417]: "Contract deposit settlement is disputed.",
   [MESSAGE_CODE.MESSAGE_CODE_418]: "Inspection photos are required when damage fee is assessed.",
   [MESSAGE_CODE.MESSAGE_CODE_419]: "Deposit settlement has already been confirmed.",
@@ -621,14 +621,14 @@ export function buildContractLifecycleSteps(
     {
       key: "DRAFT",
       stepNumber: 1,
-      title: isEn ? "1. Draft & Deposit" : "1. Khởi tạo & Đóng cọc (DRAFT)",
+      title: isEn ? "1. Draft & Deposit" : "1. Khởi tạo & Đóng cọc",
       subtitle: step1Subtitle,
       state: step1State,
     },
     {
       key: "ACTIVE",
       stepNumber: 2,
-      title: isEn ? "2. Handover & Active Lease" : "2. Bàn giao & Đang thuê (ACTIVE / OVERDUE)",
+      title: isEn ? "2. Handover & Active Lease" : "2. Bàn giao & Đang thuê",
       subtitle: contract.actualCheckInDate
         ? isEn
           ? `Checked in: ${formatDateTime(contract.actualCheckInDate, locale)}`
@@ -641,7 +641,7 @@ export function buildContractLifecycleSteps(
     {
       key: "COMPLETED",
       stepNumber: 3,
-      title: isEn ? "3. Check-out & Settlement" : "3. Trả kho & Thanh lý (COMPLETED)",
+      title: isEn ? "3. Check-out & Settlement" : "3. Trả kho & Thanh lý",
       subtitle: contract.actualCheckOutDate
         ? isEn
           ? `Checked out: ${formatDateTime(contract.actualCheckOutDate, locale)}`

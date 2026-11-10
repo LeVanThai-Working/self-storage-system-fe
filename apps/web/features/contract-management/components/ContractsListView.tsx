@@ -839,20 +839,22 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
 
                       {/* 8. Status */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="space-y-1">
+                        <div className="flex flex-col items-start gap-1.5">
                           <ContractStatusBadge status={contract.status} />
 
                           {contract.status === ContractStatusEnum.DRAFT && (
                             <>
                               {!contract.customerSigned ? (
-                                <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 block w-max">
-                                  <Clock className="w-2.5 h-2.5 text-slate-400" />
-                                  {isEn ? "Awaiting Customer Sign" : "Chờ khách ký"}
+                                <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                                  <Clock className="w-2.5 h-2.5 text-slate-400 shrink-0" />
+                                  <span>{isEn ? "Awaiting Customer Sign" : "Chờ khách ký"}</span>
                                 </span>
                               ) : !contract.staffSigned ? (
-                                <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 block w-max">
-                                  <Clock className="w-2.5 h-2.5 text-amber-600" />
-                                  {isEn ? "Awaiting Manager Check-in" : "Chờ Quản lý ký bàn giao"}
+                                <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                  <Clock className="w-2.5 h-2.5 text-amber-600 shrink-0" />
+                                  <span>
+                                    {isEn ? "Awaiting Manager Check-in" : "Chờ Quản lý ký bàn giao"}
+                                  </span>
                                 </span>
                               ) : null}
                             </>
@@ -860,12 +862,11 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
 
                           {contract.status === ContractStatusEnum.TERMINATED &&
                             contract.terminationType && (
-                              <div className="pt-0.5">
-                                <ContractTerminationBadge
-                                  terminationType={contract.terminationType}
-                                  violationCategory={contract.violationCategory}
-                                />
-                              </div>
+                              <ContractTerminationBadge
+                                terminationType={contract.terminationType}
+                                violationCategory={contract.violationCategory}
+                                className="text-[10px] px-2 py-0.5 gap-1"
+                              />
                             )}
                         </div>
                       </td>

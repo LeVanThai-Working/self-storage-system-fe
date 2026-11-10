@@ -22,6 +22,7 @@ import {
   retryReservationPaymentApi,
   updateReservationApi,
 } from "../api/reservations.api";
+import { getReservationTotalAmount } from "../utils/reservationFormat";
 
 export type ReservationFilterTabKey =
   "ALL" | "PROCESSING" | "PENDING_DEPOSIT" | "PAID_CONFIRMED" | "COMPLETED" | "TERMINATED";
@@ -53,7 +54,7 @@ function sortReservations(
   const dir = sortOrder === "asc" ? 1 : -1;
   return [...items].sort((a, b) => {
     if (sortBy === "totalAmount") {
-      return ((a.totalAmount ?? 0) - (b.totalAmount ?? 0)) * dir;
+      return (getReservationTotalAmount(a) - getReservationTotalAmount(b)) * dir;
     }
     if (sortBy === "startDate") {
       return (new Date(a.startDate).getTime() - new Date(b.startDate).getTime()) * dir;

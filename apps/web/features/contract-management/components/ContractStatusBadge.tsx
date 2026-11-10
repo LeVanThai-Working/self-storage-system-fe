@@ -16,6 +16,7 @@ import {
   UserCheck,
   XCircle,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   ContractAddendumStatusEnum,
   ContractAddendumTypeEnum,
@@ -105,17 +106,24 @@ export function getContractStatusTone(status: ContractStatusEnum | string): Cont
 
 interface ContractStatusBadgeProps {
   status: ContractStatusEnum;
+  className?: string;
 }
 
-export const ContractStatusBadge: React.FC<ContractStatusBadgeProps> = ({ status }) => {
+export const ContractStatusBadge: React.FC<ContractStatusBadgeProps> = ({ status, className }) => {
   const isEn = useLocale() === "en";
   const tone = getContractStatusTone(status);
 
   return (
     <span
-      className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${tone.bg} ${tone.text} ${tone.border}`}
+      className={cn(
+        "inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border",
+        tone.bg,
+        tone.text,
+        tone.border,
+        className
+      )}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
+      <span className={cn("w-1.5 h-1.5 rounded-full", tone.dot)} />
       {isEn ? tone.labelEn : tone.labelVi}
     </span>
   );
@@ -379,18 +387,25 @@ export const ContractAddendumStatusBadge: React.FC<ContractAddendumStatusBadgePr
 interface ContractTerminationBadgeProps {
   terminationType?: ContractTerminationTypeEnum | null;
   violationCategory?: ViolationCategoryEnum | null;
+  className?: string;
 }
 
 export const ContractTerminationBadge: React.FC<ContractTerminationBadgeProps> = ({
   terminationType,
   violationCategory,
+  className,
 }) => {
   const isEn = useLocale() === "en";
   if (!terminationType) return null;
 
   return (
-    <div className="inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border bg-rose-50 text-rose-800 border-rose-200">
-      <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
+    <span
+      className={cn(
+        "inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border bg-rose-50 text-rose-800 border-rose-200",
+        className
+      )}
+    >
+      <ShieldAlert className="w-3.5 h-3.5 text-rose-600 shrink-0" />
       <span>
         {terminationType === ContractTerminationTypeEnum.MUTUAL
           ? isEn
@@ -420,6 +435,6 @@ export const ContractTerminationBadge: React.FC<ContractTerminationBadgeProps> =
                 : "Phá hoại kho"}
         </span>
       )}
-    </div>
+    </span>
   );
 };

@@ -11,7 +11,6 @@ import {
   Timer,
   RefreshCw,
   UserCheck,
-  QrCode,
 } from "lucide-react-native";
 import {
   ReservationStatusEnum,
@@ -51,7 +50,7 @@ export function ReservationTimelineStepper({
         <View className="flex-row items-center gap-2">
           <Clock size={18} color="#0B927E" />
           <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
-            {isEn ? "Reservation Progress (6 Steps)" : "Tiến trình đặt chỗ (6 bước)"}
+            {isEn ? "Reservation Progress (6 Steps)" : "Tiến trình đặt chỗ"}
           </Text>
         </View>
 
@@ -212,22 +211,16 @@ export function ReservationTimelineStepper({
                   </View>
                 ) : null}
 
-                {/* Step 3 Action Button: Pay Deposit & Show VietQR when status === PENDING_PAYMENT */}
+                {/* Step 3 Deposit Amount when status === PENDING_PAYMENT */}
                 {step.stepNumber === 3 &&
                 isCurrent &&
-                reservation.status === ReservationStatusEnum.PENDING_PAYMENT &&
-                onPayDepositPress ? (
-                  <Pressable
-                    onPress={onPayDepositPress}
-                    className="mt-2.5 flex-row items-center justify-center gap-2 self-start rounded-xl bg-cta px-3.5 py-2 shadow-sm active:opacity-85"
-                  >
-                    <QrCode size={14} color="#FFFFFF" />
-                    <Text className="text-xs font-bold text-white">
-                      {isEn
-                        ? `Pay Deposit (${formatVnd(reservation.depositAmount)}) • Show QR`
-                        : `Thanh toán cọc (${formatVnd(reservation.depositAmount)}) • Hiển thị mã QR`}
+                reservation.status === ReservationStatusEnum.PENDING_PAYMENT ? (
+                  <Text className="mt-1 text-xs text-neutral-main dark:text-neutral-300">
+                    {isEn ? "Deposit amount: " : "Số tiền cọc: "}
+                    <Text className="text-xs font-extrabold text-cta">
+                      {formatVnd(reservation.depositAmount)}
                     </Text>
-                  </Pressable>
+                  </Text>
                 ) : null}
 
                 {/* PAYMENT_FAILED Warning Box at Step 3 */}
