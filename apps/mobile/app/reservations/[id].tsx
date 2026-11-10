@@ -43,7 +43,6 @@ import {
   CheckCircle2,
 } from "lucide-react-native";
 import { useCustomerContractsByReservationMap } from "@/features/contracts/hooks/useContracts";
-import { getContractStatusMeta } from "@/features/contracts/utils/contractFormat";
 import {
   useReservationDetail,
   useRetryReservationPayment,
@@ -60,7 +59,9 @@ import {
   formatVnd,
   getBillingUnitName,
   getCountdownRemaining,
+  getReservationAmenitiesTotal,
   getReservationStatusMeta,
+  getReservationTotalAmount,
   getStorageUnitStatusLabel,
   resolveReservationErrorMessage,
 } from "@/features/reservations/utils/reservationFormat";
@@ -216,14 +217,11 @@ export default function ReservationDetailScreen() {
     }
   };
 
-  const reservationAmenities = reservation?.amenities;
-  const amenitiesTotal = useMemo(() => {
-    if (!reservationAmenities) return 0;
-    return reservationAmenities.reduce(
-      (sum, item) => sum + (item.totalPrice ?? item.pricePerUnit * item.quantity),
-      0
-    );
-  }, [reservationAmenities]);
+  const amenitiesTotal = useMemo(() => getReservationAmenitiesTotal(reservation), [reservation]);
+  const totalReservationAmount = useMemo(
+    () => getReservationTotalAmount(reservation),
+    [reservation]
+  );
 
   if (isLoading) {
     return (
@@ -271,9 +269,6 @@ export default function ReservationDetailScreen() {
   }
 
   const statusMeta = getReservationStatusMeta(reservation.status, currentLocale);
-  const contractStatusMeta = linkedContract
-    ? getContractStatusMeta(linkedContract.status, currentLocale)
-    : null;
   const billingLabel = getBillingUnitName(reservation.billingUnit, currentLocale);
 
   const canEdit = reservation.status === ReservationStatusEnum.PENDING;
@@ -396,32 +391,21 @@ export default function ReservationDetailScreen() {
         />
 
         {/* ── Linked Contract Card (Visible from DRAFT through Check-in & Active Lease) ── */}
-        {linkedContract && contractStatusMeta ? (
-          <View className="rounded-3xl border border-brand/40 bg-brand-light/20 dark:bg-brand/15 p-4 shadow-sm gap-3">
-            <View className="flex-row items-center justify-between gap-2">
-              <View className="flex-row items-center gap-2 flex-1">
-                <FileText size={18} color="#0B927E" />
-                <View className="flex-1">
-                  <Text className="text-sm font-extrabold text-neutral-dark dark:text-neutral-100">
-                    {isEn ? "Storage Lease Contract" : "Hợp đồng thuê kho đã khởi tạo"}
-                  </Text>
-                  <Text className="text-xs font-bold text-brand mt-0.5">
-                    #{linkedContract.contractCode}
-                  </Text>
-                </View>
-              </View>
-
-              <Badge
-                variant="outline"
-                className={`${contractStatusMeta.badgeBorderClass} bg-white dark:bg-neutral-900 px-2.5 py-1`}
-              >
-                <Text className={`text-[11px] font-bold ${contractStatusMeta.badgeTextClass}`}>
-                  {contractStatusMeta.label}
+        {linkedContract ? (
+          <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3">
+            <View className="flex-row items-center gap-2">
+              <FileText size={18} color="#0B927E" />
+              <View className="flex-1">
+                <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
+                  {isEn ? "Storage Lease Contract" : "Hợp đồng thuê kho đã khởi tạo"}
                 </Text>
-              </Badge>
+                <Text className="text-xs font-bold text-brand mt-0.5">
+                  #{linkedContract.contractCode}
+                </Text>
+              </View>
             </View>
 
-            <View className="rounded-2xl bg-white/90 dark:bg-neutral-900/80 border border-neutral-border dark:border-neutral-800 p-3 gap-2">
+            <View className="rounded-2xl bg-neutral-50 dark:bg-neutral-800/70 border border-neutral-border dark:border-neutral-800 p-3.5 gap-2">
               <Text className="text-xs text-neutral-700 dark:text-neutral-300 leading-4">
                 {linkedContract.status === ContractStatusEnum.DRAFT
                   ? isEn
@@ -433,7 +417,7 @@ export default function ReservationDetailScreen() {
               </Text>
 
               {linkedContract.assignedStaff?.name ? (
-                <View className="flex-row items-center gap-1.5 border-t border-neutral-200/70 dark:border-neutral-800 pt-2">
+                <View className="flex-row items-center gap-1.5 border-t border-neutral-200/70 dark:border-neutral-700 pt-2">
                   <UserCheck size={13} color="#0B927E" />
                   <Text variant="muted" className="text-xs">
                     {isEn ? "Assigned Check-in Staff:" : "NV phụ trách Check-in:"}{" "}
@@ -447,7 +431,7 @@ export default function ReservationDetailScreen() {
 
             <Pressable
               onPress={handleOpenLinkedContract}
-              className="flex-row items-center justify-center gap-2 rounded-2xl bg-brand py-3 shadow-sm active:opacity-90"
+              className="flex-row items-center justify-center gap-2 rounded-2xl bg-brand py-3.5 shadow-sm active:opacity-90"
             >
               <FileText size={16} color="#FFFFFF" />
               <Text className="text-xs font-bold text-white">
@@ -688,7 +672,7 @@ export default function ReservationDetailScreen() {
                 {isEn ? "Total Reservation Value:" : "Tổng giá trị đơn:"}
               </Text>
               <Text className="text-sm font-extrabold text-brand">
-                {formatVnd(reservation.totalAmount)}
+                {formatVnd(totalReservationAmount)}
               </Text>
             </View>
 
@@ -760,9 +744,7 @@ export default function ReservationDetailScreen() {
             >
               <QrCode size={18} color="#FFFFFF" />
               <Text className="text-sm font-bold text-white">
-                {isEn
-                  ? `Pay Deposit via VietQR (${formatVnd(reservation.depositAmount)})`
-                  : `Thanh toán cọc ngay (${formatVnd(reservation.depositAmount)})`}
+                {isEn ? "Pay Deposit via VietQR" : "Thanh toán cọc ngay"}
               </Text>
             </Pressable>
           ) : null}

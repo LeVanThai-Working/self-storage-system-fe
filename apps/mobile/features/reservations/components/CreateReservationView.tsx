@@ -332,81 +332,87 @@ export function CreateReservationView({
 
     const parsedDate = parseAndValidateStartDate(startDateInput, selectedCategory);
     if (!parsedDate.isValidFormat) {
-      setDateError(
-        isEn
-          ? "Invalid date format. Please use YYYY-MM-DD."
-          : "Định dạng ngày không hợp lệ. Vui lòng nhập theo YYYY-MM-DD."
-      );
+      const msg = isEn
+        ? "Invalid date format. Please use YYYY-MM-DD."
+        : "Định dạng ngày không hợp lệ. Vui lòng nhập theo YYYY-MM-DD.";
+      setDateError(msg);
+      toast.error(msg);
       return;
     }
     if (!parsedDate.isNotInPast) {
-      setDateError(
-        isEn
-          ? "Start date cannot be in the past."
-          : "Ngày bắt đầu thuê không được nằm trong quá khứ."
-      );
+      const msg = isEn
+        ? "Start date cannot be in the past."
+        : "Ngày bắt đầu thuê không được nằm trong quá khứ.";
+      setDateError(msg);
+      toast.error(msg);
       return;
     }
     if (!parsedDate.isSatisfyingAdvanceDay) {
-      setDateError(
-        isEn
-          ? "For Small, Medium, and Large storage units, the expected move-in date must be at least 1 day after today (to allow time for order processing)."
-          : "Đối với kho loại Nhỏ, Trung bình, Lớn thì ngày dự kiến bắt đầu thuê sẽ phải là sau 1 ngày hiện tại (để chừa thời gian tiếp nhận đơn)."
-      );
+      const msg = isEn
+        ? "For Small, Medium, and Large storage units, the expected move-in date must be at least 1 day after today (to allow time for order processing)."
+        : "Đối với kho loại Nhỏ, Trung bình, Lớn thì ngày dự kiến bắt đầu thuê sẽ phải là sau 1 ngày hiện tại (để chừa thời gian tiếp nhận đơn).";
+      setDateError(msg);
+      toast.error(msg);
       return;
     }
     if (checkInDateKey && checkInDateKey > getTodayDateInput(MAX_ADVANCE_DAYS)) {
-      setDateError(
-        isEn
-          ? `Check-in can be booked at most ${MAX_ADVANCE_DAYS} days ahead.`
-          : `Chỉ được đặt trước tối đa ${MAX_ADVANCE_DAYS} ngày.`
-      );
+      const msg = isEn
+        ? `Check-in can be booked at most ${MAX_ADVANCE_DAYS} days ahead.`
+        : `Chỉ được đặt trước tối đa ${MAX_ADVANCE_DAYS} ngày.`;
+      setDateError(msg);
+      toast.error(msg);
       return;
     }
 
     if (!Number.isInteger(rentalDuration) || rentalDuration < minRentalDays) {
-      setDurationError(
-        isEn
-          ? `Minimum rental duration for this package is ${minRentalDays} days.`
-          : `Thời gian thuê tối thiểu của gói kho này là ${minRentalDays} ngày.`
-      );
+      const msg = isEn
+        ? `Minimum rental duration for this package is ${minRentalDays} days.`
+        : `Thời gian thuê tối thiểu của gói kho này là ${minRentalDays} ngày.`;
+      setDurationError(msg);
+      toast.error(msg);
       return;
     }
 
     if (!selectedUnitId) {
-      setSeatError(
-        isEn ? "Please pick a storage unit on the map." : "Vui lòng chọn một phòng kho trên sơ đồ."
-      );
+      const msg = isEn
+        ? "Please pick a storage unit on the map."
+        : "Vui lòng chọn một phòng kho trên sơ đồ.";
+      setSeatError(msg);
+      toast.error(msg);
       return;
     }
     if (isRackWarehouse && selectedRackIds.length === 0) {
-      setSeatError(isEn ? "Please pick at least one rack." : "Vui lòng chọn ít nhất một kệ.");
+      const msg = isEn ? "Please pick at least one rack." : "Vui lòng chọn ít nhất một kệ.";
+      setSeatError(msg);
+      toast.error(msg);
       return;
     }
     if (!selectedSlotName) {
-      setDateError(
-        isEn ? "Please choose a check-in time slot." : "Vui lòng chọn khung giờ nhận phòng."
-      );
+      const msg = isEn
+        ? "Please choose a check-in time slot."
+        : "Vui lòng chọn khung giờ nhận phòng.";
+      setDateError(msg);
+      toast.error(msg);
       return;
     }
     if (isLockerOrRack && checkInDateKey === getTodayDateInput(0)) {
       const selectedSlot = slotsQuery.data?.find((s) => s.slotName === selectedSlotName);
       const startTime = selectedSlot?.startTime || selectedSlotName.split("-")[0]?.trim();
       if (!isSlotAtLeast3HoursAway(startTime)) {
-        setDateError(
-          isEn
-            ? "For Locker and Warehouse Rack units, check-in time must be at least 3 hours from now."
-            : "Đối với loại tủ Locker và Kệ kho, thời gian nhận phòng phải cách thời điểm hiện tại ít nhất 3 giờ."
-        );
+        const msg = isEn
+          ? "For Locker and Warehouse Rack units, check-in time must be at least 3 hours from now."
+          : "Đối với loại tủ Locker và Kệ kho, thời gian nhận phòng phải cách thời điểm hiện tại ít nhất 3 giờ.";
+        setDateError(msg);
+        toast.error(msg);
         return;
       }
     }
     if (!termsAccepted) {
-      setTermsError(
-        isEn
-          ? "Please accept the booking terms & policy."
-          : "Vui lòng đồng ý Điều khoản & Chính sách đặt chỗ."
-      );
+      const msg = isEn
+        ? "Please accept the booking terms & policy."
+        : "Vui lòng đồng ý Điều khoản & Chính sách đặt chỗ.";
+      setTermsError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -529,21 +535,10 @@ export function CreateReservationView({
       4
     );
 
-    return uniqueDays.map((days) => {
-      if (days % 30 === 0) {
-        const months = days / 30;
-        return {
-          days,
-          label: isEn
-            ? `${months} ${months === 1 ? "month" : "months"} (${days} days)`
-            : `${months} tháng (${days} ngày)`,
-        };
-      }
-      return {
-        days,
-        label: isEn ? `${days} ${days === 1 ? "day" : "days"}` : `${days} ngày`,
-      };
-    });
+    return uniqueDays.map((days) => ({
+      days,
+      label: isEn ? `${days} ${days === 1 ? "day" : "days"}` : `${days} ngày`,
+    }));
   }, [minRentalDays, isEn]);
 
   const selectedAmenityCount = useMemo(() => {
@@ -551,7 +546,11 @@ export function CreateReservationView({
   }, [availableAmenities, amenityQuantities]);
 
   return (
-    <ScrollView contentContainerClassName="p-4 pb-16 gap-4" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      contentContainerClassName="p-4 pb-16 gap-4"
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+    >
       {/* ── Section 1.1: Selected Facility & Offering Summary ── */}
       <View
         key="section-1-facility"
@@ -738,8 +737,7 @@ export function CreateReservationView({
                   <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
                     {selectedOffering.unitType.dimensions.length}m ×{" "}
                     {selectedOffering.unitType.dimensions.width}m ×{" "}
-                    {selectedOffering.unitType.dimensions.height}m ({selectedOffering.unitType.area}{" "}
-                    m²)
+                    {selectedOffering.unitType.dimensions.height}m
                   </Text>
                 </View>
               ) : null}
@@ -1049,7 +1047,7 @@ export function CreateReservationView({
               <Minus size={16} color="#0F172A" />
             </Pressable>
 
-            <View className="flex-1 flex-row items-center justify-between rounded-xl border border-brand/40 bg-brand-light/20 px-3.5 py-2">
+            <View className="flex-1 flex-row items-center justify-center rounded-xl border border-brand/40 bg-brand-light/20 px-3.5 py-2">
               <TextInput
                 value={String(rentalDuration || "")}
                 onChangeText={(txt) => {
@@ -1058,11 +1056,8 @@ export function CreateReservationView({
                   setDurationError(null);
                 }}
                 keyboardType="number-pad"
-                className="text-base font-extrabold text-brand py-0 min-w-[48px]"
+                className="flex-1 text-center text-base font-extrabold text-brand py-0"
               />
-              <Text className="text-xs font-bold text-brand">
-                {formatRentalDurationDays(rentalDuration, currentLocale)}
-              </Text>
             </View>
 
             <Pressable
@@ -1296,7 +1291,7 @@ export function CreateReservationView({
                   : `Giá thuê kệ (${selectedRacks.length} kệ):`
                 : isEn
                   ? "Base Storage Price:"
-                  : "Giá thuê kho cơ bản (basePrice):"}
+                  : "Giá thuê kho cơ bản:"}
             </Text>
             <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
               {formatVnd(basePrice)}{" "}
@@ -1306,9 +1301,7 @@ export function CreateReservationView({
 
           <View className="flex-row justify-between">
             <Text variant="muted" className="text-xs">
-              {isEn
-                ? `Deposit Amount (×${depositMultiplier}):`
-                : `Tiền đặt cọc giữ kho (×${depositMultiplier}):`}
+              {isEn ? `Deposit Amount (×${depositMultiplier}):` : `Tiền đặt cọc giữ kho:`}
             </Text>
             <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
               {formatVnd(depositAmount)}
@@ -1324,13 +1317,13 @@ export function CreateReservationView({
                 {formatVnd(amenitiesTotal)}
               </Text>
             </View>
-            {amenitiesTotal > 0 ? (
+            {/* {amenitiesTotal > 0 ? (
               <Text className="text-[10px] text-neutral-500 dark:text-neutral-400 italic">
                 {isEn
                   ? "• Reserved — Pay with 1st period rent upon check-in"
                   : "• Đã giữ chỗ — Thanh toán cùng tiền thuê kỳ đầu khi nhận kho"}
               </Text>
-            ) : null}
+            ) : null} */}
           </View>
 
           <View className="flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 pt-2.5 mt-1">
@@ -1356,16 +1349,21 @@ export function CreateReservationView({
               setTermsAccepted((value) => !value);
               setTermsError(null);
             }}
-            className="flex-row items-center gap-2.5 active:opacity-70"
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            className="flex-row items-center gap-2.5 py-1.5 active:opacity-70"
           >
             <View
+              pointerEvents="none"
               className={`h-5 w-5 items-center justify-center rounded-md border ${
                 termsAccepted ? "border-brand bg-brand" : "border-neutral-300 bg-white"
               }`}
             >
               {termsAccepted ? <Check size={13} color="#FFFFFF" /> : null}
             </View>
-            <Text className="flex-1 text-xs font-semibold text-neutral-dark dark:text-neutral-100">
+            <Text
+              pointerEvents="none"
+              className="flex-1 text-xs font-semibold text-neutral-dark dark:text-neutral-100"
+            >
               {isEn
                 ? "I agree to the Booking Terms & Cancellation Policy"
                 : "Tôi đồng ý Điều khoản & Chính sách đặt chỗ, huỷ cọc"}
@@ -1375,10 +1373,23 @@ export function CreateReservationView({
         </View>
 
         <Pressable
-          onPress={handleSubmit}
+          key={termsAccepted ? "btn-submit-active" : "btn-submit-disabled"}
+          onPress={() => {
+            if (!termsAccepted) {
+              const msg = isEn
+                ? "Please accept the booking terms & policy."
+                : "Vui lòng đồng ý Điều khoản & Chính sách đặt chỗ.";
+              setTermsError(msg);
+              toast.error(msg);
+              return;
+            }
+            void handleSubmit();
+          }}
           disabled={createMutation.isPending || !selectedOffering}
-          className={`flex-row items-center justify-center gap-2 rounded-2xl bg-cta py-4 shadow-sm active:opacity-90 ${
-            createMutation.isPending || !selectedOffering ? "opacity-50" : ""
+          className={`flex-row items-center justify-center gap-2 rounded-2xl py-4 ${
+            !termsAccepted || createMutation.isPending || !selectedOffering
+              ? "bg-neutral-300 dark:bg-neutral-700 opacity-60"
+              : "bg-cta shadow-sm active:opacity-90"
           }`}
         >
           {createMutation.isPending ? (

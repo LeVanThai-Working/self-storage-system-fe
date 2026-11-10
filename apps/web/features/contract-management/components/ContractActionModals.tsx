@@ -1051,7 +1051,7 @@ export const RenewContractModal: React.FC<RenewContractModalProps> = ({
               <DialogTitle className="text-lg font-extrabold text-slate-900">
                 {isEn
                   ? `Create Renewal Addendum • ${contract.contractCode}`
-                  : `Tạo Phụ lục Gia hạn (RENEW) • ${contract.contractCode}`}
+                  : `Tạo Phụ lục Gia hạn • ${contract.contractCode}`}
               </DialogTitle>
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
@@ -2007,18 +2007,18 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
                 {isRenew
                   ? isEn
                     ? `Manager Confirm & Sign Renewal • ${addendum.addendumCode}`
-                    : `Quản lý Ký xác nhận & Kích hoạt gia hạn • ${addendum.addendumCode}`
+                    : `Ký xác nhận & Kích hoạt gia hạn • ${addendum.addendumCode}`
                   : isUnitChange
                     ? isEn
                       ? `Manager Confirm & Sign Unit Transfer • ${addendum.addendumCode}`
-                      : `Quản lý Ký xác nhận & Kích hoạt đổi kho • ${addendum.addendumCode}`
+                      : `Ký xác nhận & Kích hoạt đổi kho • ${addendum.addendumCode}`
                     : isRemove
                       ? isEn
                         ? `Manager Confirm Removal & Sign • ${addendum.addendumCode}`
-                        : `Quản lý Nghiệm thu tháo dỡ & Ký phụ lục • ${addendum.addendumCode}`
+                        : `Ký xác nhận & Kích hoạt tháo dỡ • ${addendum.addendumCode}`
                       : isEn
                         ? `Manager Confirm Installation & Sign • ${addendum.addendumCode}`
-                        : `Quản lý Bàn giao lắp đặt & Ký phụ lục • ${addendum.addendumCode}`}
+                        : `Ký xác nhận & Kích hoạt lắp đặt • ${addendum.addendumCode}`}
               </DialogTitle>
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
@@ -2370,7 +2370,7 @@ export const CancelContractAddendumModal: React.FC<CancelContractAddendumModalPr
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
                   ? "Can only cancel addendums in pending_approval or draft status."
-                  : "Áp dụng cho phụ lục đang ở trạng thái chờ duyệt (pending_approval) hoặc chờ ký (draft)."}
+                  : "Áp dụng cho phụ lục đang ở trạng thái chờ duyệt hoặc chờ ký."}
               </p>
             </div>
           </div>

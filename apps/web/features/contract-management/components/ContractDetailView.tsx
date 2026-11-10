@@ -88,7 +88,11 @@ import {
   ContractStatusBadge,
   ContractTerminationBadge,
 } from "./ContractStatusBadge";
-import { extractSignedContractFileUrls } from "@self-storage-system-fe/shared";
+import {
+  extractSignedContractFileUrls,
+  extractSignedAddendumFileUrls,
+} from "@self-storage-system-fe/shared";
+import { ContractSignedDocumentsCard } from "./ContractSignedDocumentsCard";
 
 interface ContractDetailViewProps {
   contractId: string;
@@ -477,7 +481,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 <ClipboardCheck className="w-5 h-5 text-emerald-600" />
                 {isEn
                   ? "Step 1 Action Panel: Deposit Verification & Dual-Party Signing (Check-in)"
-                  : "Bảng Thao tác Bước 1: Kiểm tra Tiền cọc & Ký 2 chiều Bàn giao Kho (Check-in)"}
+                  : "Bảng Thao tác Bước 1: Kiểm tra Tiền cọc & Ký 2 chiều Bàn giao Kho"}
               </h3>
               <p className="text-xs text-slate-500">
                 {isEn
@@ -1310,6 +1314,13 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
             )}
           </div>
 
+          {/* Digitized Paper Contract Scans (Extracted to separate component) */}
+          <ContractSignedDocumentsCard
+            signedContractUrls={signedContractUrls}
+            contract={contract}
+            locale={locale}
+          />
+
           {/* Active Add-on Amenities Table (Modified only via Contract Addendums) */}
           <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -1599,34 +1610,6 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                         </div>
                       )}
 
-                      {/* Signed Addendum Documents */}
-                      {addendum.signedAddendumFileUrls &&
-                        addendum.signedAddendumFileUrls.length > 0 && (
-                          <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-2.5 space-y-2">
-                            <p className="font-extrabold text-[11px] text-slate-700 flex items-center gap-1.5">
-                              <FileCheck className="w-3.5 h-3.5 text-emerald-600" />
-                              {isEn ? "Signed Addendum Documents:" : "Tài liệu phụ lục đã ký sống:"}
-                              <span className="font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded-full text-[10px]">
-                                {addendum.signedAddendumFileUrls.length} {isEn ? "files" : "file"}
-                              </span>
-                            </p>
-                            <div className="flex flex-wrap gap-2">
-                              {addendum.signedAddendumFileUrls.map((url, fIdx) => (
-                                <a
-                                  key={`${url}-${fIdx}`}
-                                  href={url}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 text-[11px] font-semibold transition-colors shadow-xs"
-                                >
-                                  <FileText className="w-3.5 h-3.5 text-emerald-600" />
-                                  {isEn ? `Scan ${fIdx + 1}` : `Bản scan ${fIdx + 1}`}
-                                </a>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
                       {/* Metadata & Reasons */}
                       <div className="flex items-center justify-between gap-2 flex-wrap text-[11px] text-slate-500">
                         <div>
@@ -1785,55 +1768,6 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                       </div>
                     )}
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Digitized Paper Contract Scans */}
-          {signedContractUrls.length > 0 && (
-            <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileCheck className="w-4 h-4 text-emerald-600" />
-                  <h3 className="text-sm font-extrabold text-slate-900">
-                    {isEn ? "Signed contract scans" : "Bản scan hợp đồng"}
-                  </h3>
-                </div>
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                  {signedContractUrls.length} {isEn ? "files" : "trang scan"}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {signedContractUrls.map((url, idx) => (
-                  <a
-                    key={`${url}-${idx}`}
-                    href={url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group relative rounded-2xl overflow-hidden border border-slate-200 aspect-[3/4] bg-slate-50 flex flex-col items-center justify-center p-2 text-center hover:border-emerald-500 hover:shadow-md transition-all block"
-                  >
-                    {url.toLowerCase().endsWith(".pdf") ? (
-                      <div className="flex flex-col items-center justify-center h-full">
-                        <FileText className="w-10 h-10 text-emerald-600 mb-2" />
-                        <span className="text-[11px] font-bold text-slate-700 truncate max-w-[100px]">
-                          PDF Document
-                        </span>
-                      </div>
-                    ) : (
-                      <img
-                        src={url}
-                        alt={`Signed contract scan page ${idx + 1}`}
-                        className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-2xl">
-                      <ExternalLink className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="absolute bottom-2 inset-x-2 bg-black/70 text-[10px] font-bold text-white py-0.5 rounded-lg truncate px-1.5 text-center">
-                      {isEn ? `Page ${idx + 1}` : `Trang ${idx + 1}`}
-                    </span>
-                  </a>
                 ))}
               </div>
             </div>

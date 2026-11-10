@@ -245,7 +245,7 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
                   ? "Initialize a DRAFT contract directly for walk-in customers, then collect deposit & check in."
-                  : "Khởi tạo hợp đồng nháp (DRAFT) trực tiếp cho khách tại quầy, sau đó thu cọc và bàn giao kho."}
+                  : "Khởi tạo hợp đồng nháp trực tiếp cho khách tại quầy, sau đó thu cọc và bàn giao kho."}
               </p>
             </div>
           </div>

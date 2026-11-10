@@ -6,6 +6,7 @@ import {
   RentalTargetTypeEnum,
   RentalUnitEnum,
   UnitTypeCategoryEnum,
+  type ContractAddendumResponse,
   type ContractResponse,
   type MessageLocale,
 } from "@self-storage-system-fe/shared";
@@ -205,6 +206,93 @@ export function getSignedContractFiles(
   return results;
 }
 
+/**
+ * Extracts and normalizes signed addendum documents from either addendum or contract.
+ */
+export function getSignedAddendumFiles(
+  addendum?: Partial<ContractAddendumResponse> | null,
+  contract?: Partial<ContractResponse> | null
+): NormalizedSignedContractFile[] {
+  if (!addendum && !contract) return [];
+  const results: NormalizedSignedContractFile[] = [];
+  const seenUrls = new Set<string>();
+
+  const addUrl = (val: unknown) => {
+    if (!val) return;
+    if (typeof val === "string") {
+      const trimmed = val.trim();
+      if (!trimmed || seenUrls.has(trimmed)) return;
+      if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) {
+            for (const item of parsed) addUrl(item);
+            return;
+          }
+        } catch {
+          // ignore
+        }
+      }
+      seenUrls.add(trimmed);
+      results.push({ url: trimmed });
+    } else if (typeof val === "object") {
+      const obj = val as Record<string, unknown>;
+      const u =
+        typeof obj.url === "string"
+          ? obj.url.trim()
+          : typeof obj.fileUrl === "string"
+            ? obj.fileUrl.trim()
+            : typeof obj.secure_url === "string"
+              ? obj.secure_url.trim()
+              : typeof obj.path === "string"
+                ? obj.path.trim()
+                : null;
+      if (u && !seenUrls.has(u)) {
+        seenUrls.add(u);
+        results.push({
+          url: u,
+          fileHash: typeof obj.fileHash === "string" ? obj.fileHash : null,
+          uploadedAt: typeof obj.uploadedAt === "string" ? obj.uploadedAt : null,
+        });
+      }
+    }
+  };
+
+  const processSource = (source: unknown) => {
+    if (!source) return;
+    if (Array.isArray(source)) {
+      for (const item of source) addUrl(item);
+    } else {
+      addUrl(source);
+    }
+  };
+
+  if (addendum) {
+    const rawAdd = addendum as Record<string, unknown>;
+    processSource(rawAdd.signedAddendumFileUrls);
+    processSource(rawAdd.signedAddendumFiles);
+    processSource(rawAdd.signedFiles);
+    processSource(rawAdd.signedFileUrls);
+    processSource(rawAdd.fileUrls);
+    processSource(rawAdd.files);
+    processSource(rawAdd.documents);
+    processSource(rawAdd.documentUrls);
+    processSource(rawAdd.scanFiles);
+    processSource(rawAdd.scanUrls);
+    processSource(rawAdd.signedDocumentUrls);
+    processSource(rawAdd.attachments);
+  }
+
+  if (results.length === 0 && contract) {
+    const rawC = contract as Record<string, unknown>;
+    processSource(rawC.signedAddendumFileUrls);
+    processSource(rawC.signedAddendumFiles);
+    processSource(rawC.signedAddendumUrls);
+  }
+
+  return results;
+}
+
 export function getContractAddendumStatusMeta(
   status: ContractAddendumStatusEnum | string,
   locale: MessageLocale = "vi"
@@ -226,7 +314,7 @@ export function getContractAddendumStatusMeta(
       };
     case ContractAddendumStatusEnum.DRAFT:
       return {
-        label: isEn ? "Pending Signatures (DRAFT)" : "Chờ ký 2 bên (DRAFT)",
+        label: isEn ? "Pending Signatures" : "Chờ ký 2 bên",
         description: isEn
           ? "Approved. Waiting for both Customer and Staff to sign."
           : "Đã duyệt. Chờ Khách hàng và Nhân viên ký xác nhận nghiệm thu.",
@@ -273,11 +361,20 @@ export function getContractAddendumTypeMeta(
   locale: MessageLocale = "vi"
 ) {
   const isEn = locale === "en";
-  const isRemove = String(type).toLowerCase() === ContractAddendumTypeEnum.REMOVE;
-  if (isRemove) {
+  const normalized = String(type).toLowerCase();
+  if (normalized === ContractAddendumTypeEnum.RENEW || normalized === "renew") {
+    return {
+      isRemove: false,
+      label: isEn ? "Contract Renewal" : "Gia hạn hợp đồng",
+      badgeBgClass: "bg-teal-50 dark:bg-teal-950/40",
+      badgeBorderClass: "border-teal-300 dark:border-teal-800",
+      badgeTextClass: "text-teal-700 dark:text-teal-300",
+    };
+  }
+  if (normalized === ContractAddendumTypeEnum.REMOVE || normalized === "remove") {
     return {
       isRemove: true,
-      label: isEn ? "Remove / Return Amenity" : "Tháo dỡ / Trả bớt tiện ích",
+      label: isEn ? "Remove / Return Amenity" : "Tháo dỡ tiện ích",
       badgeBgClass: "bg-amber-50 dark:bg-amber-950/40",
       badgeBorderClass: "border-amber-300 dark:border-amber-800",
       badgeTextClass: "text-amber-700 dark:text-amber-300",

@@ -395,9 +395,9 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
                   }
                   className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition-all cursor-pointer font-semibold"
                 >
-                  <option value={FacilityStatusEnum.ACTIVE}>Đang hoạt động (Active)</option>
-                  <option value={FacilityStatusEnum.INACTIVE}>Tạm ngưng (Inactive)</option>
-                  <option value={FacilityStatusEnum.CLOSED}>Đóng cửa (Closed)</option>
+                  <option value={FacilityStatusEnum.ACTIVE}>Đang hoạt động</option>
+                  <option value={FacilityStatusEnum.INACTIVE}>Tạm ngưng</option>
+                  <option value={FacilityStatusEnum.CLOSED}>Đóng cửa</option>
                 </select>
               </div>
 

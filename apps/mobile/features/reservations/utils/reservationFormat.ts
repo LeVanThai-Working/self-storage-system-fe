@@ -42,6 +42,27 @@ export function formatVnd(amount?: number | null): string {
 }
 
 /**
+ * Calculates total add-on amenities fee for a reservation.
+ */
+export function getReservationAmenitiesTotal(reservation?: ReservationResponse | null): number {
+  if (!reservation?.amenities?.length) return 0;
+  return reservation.amenities.reduce(
+    (sum, item) => sum + (item.totalPrice ?? (item.pricePerUnit || 0) * (item.quantity || 0)),
+    0
+  );
+}
+
+/**
+ * Calculates total reservation order value (`depositAmount + amenitiesTotal`).
+ */
+export function getReservationTotalAmount(reservation?: ReservationResponse | null): number {
+  if (!reservation) return 0;
+  const depositAmount = Number(reservation.depositAmount ?? 0);
+  const amenitiesTotal = getReservationAmenitiesTotal(reservation);
+  return depositAmount + amenitiesTotal;
+}
+
+/**
  * Formats an ISO string into `DD/MM/YYYY`.
  */
 export function formatDateShort(isoStr?: string | null): string {
@@ -260,9 +281,7 @@ export function getStorageUnitStatusLabel(
 /**
  * Formats `rentalDuration` / `minRentalDays` (which Backend always stores in DAYS).
  * Example:
- * - `30` -> `"30 ngày (1 tháng)"` / `"30 days (1 month)"`
- * - `90` -> `"90 ngày (3 tháng)"` / `"90 days (3 months)"`
- * - `45` -> `"45 ngày (≈ 1.5 tháng)"` / `"45 days (≈ 1.5 months)"`
+ * - `30` -> `"30 ngày"` / `"30 days"`
  * - `7`  -> `"7 ngày"` / `"7 days"`
  */
 export function formatRentalDurationDays(
@@ -272,17 +291,6 @@ export function formatRentalDurationDays(
   const safeDays = Math.max(0, Number(days ?? 0));
   const isEn = locale === "en";
   const dayUnit = isEn ? (safeDays === 1 ? "day" : "days") : "ngày";
-
-  if (safeDays >= 30) {
-    if (safeDays % 30 === 0) {
-      const months = safeDays / 30;
-      const monthUnit = isEn ? (months === 1 ? "month" : "months") : "tháng";
-      return `${safeDays} ${dayUnit} (${months} ${monthUnit})`;
-    }
-    const approxMonths = Math.round((safeDays / 30) * 10) / 10;
-    const monthUnit = isEn ? "months" : "tháng";
-    return `${safeDays} ${dayUnit} (≈ ${approxMonths} ${monthUnit})`;
-  }
 
   return `${safeDays} ${dayUnit}`;
 }

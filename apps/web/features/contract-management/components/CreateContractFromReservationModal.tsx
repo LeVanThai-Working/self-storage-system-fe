@@ -124,7 +124,7 @@ export const CreateContractFromReservationModal: React.FC<
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
                   ? `Initialize DRAFT contract from reservation #${reservation.reservationCode}`
-                  : `Khởi tạo hợp đồng nháp (DRAFT) từ khách đặt chỗ #${reservation.reservationCode}`}
+                  : `Khởi tạo hợp đồng nháp từ khách đặt chỗ #${reservation.reservationCode}`}
               </p>
             </div>
           </div>
