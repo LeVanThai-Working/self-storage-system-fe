@@ -146,7 +146,7 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               color="bg-indigo-600"
             />
             <ProgressItem
-              label="Đặt trước chờ check-in"
+              label="Đặt trước chờ nhận"
               value={occupancy.storageRacks.reserved}
               total={occupancy.storageRacks.total}
               color="bg-amber-500"

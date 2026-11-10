@@ -5,7 +5,6 @@ import Image from "next/image";
 import {
   Search,
   Users,
-  Settings,
   LayoutDashboard,
   ScrollText,
   Trash2,
@@ -111,12 +110,6 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
       label: locale === "en" ? "Refund Management" : "Quản trị hoàn tiền",
       icon: RotateCcw,
     },
-    {
-      href: `/${locale}/system-admin/settings`,
-      exact: false,
-      label: t("nav.settings"),
-      icon: Settings,
-    },
   ];
 
   return (
@@ -184,7 +177,7 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
                   <div className="text-sm font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
                     {currentUser?.name ?? "Admin"}
                   </div>
-                  <div className="text-xs text-slate-400">System Admin</div>
+                  <div className="text-xs text-slate-400">{t("userTable.roles.systemAdmin")}</div>
                 </div>
                 {currentUser?.avatarUrl ? (
                   <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white ring-2 ring-emerald-50 shadow-sm">

@@ -761,15 +761,13 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
             <div>
               <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-600" />
-                {isEn
-                  ? "Active Lease Operations: Renew, Amenities & Check-out"
-                  : "Quản lý Hợp đồng Đang thuê: Gia hạn, Tiện ích & Trả kho Check-out"}
+                {isEn ? "Lease actions" : "Thao tác hợp đồng"}
               </h3>
               {isOverdue && (
                 <p className="text-xs text-slate-500 mt-0.5">
                   {isEn
                     ? "This contract is currently OVERDUE. Please renew the lease or perform Check-out settlement."
-                    : "Hợp đồng đang quá hạn trả kho. Vui lòng gia hạn hợp đồng hoặc làm thủ tục Check-out thanh lý."}
+                    : "Hợp đồng đang quá hạn trả kho. Vui lòng gia hạn hợp đồng hoặc làm thủ tục trả kho."}
                 </p>
               )}
             </div>
@@ -1235,9 +1233,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
           <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-4">
             <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
               <Boxes className="w-4 h-4 text-emerald-600" />
-              {isEn
-                ? "Storage Unit, Schedule & Staff Assignment"
-                : "Thông tin Phòng kho, Thời hạn thuê & Nhân sự phụ trách"}
+              {isEn ? "Rental details" : "Thông tin thuê kho"}
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -1252,10 +1248,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                       }${storageUnit.zone ? ` • ${storageUnit.zone}` : ""})`
                     : contract.storageUnitId}
                 </p>
-                <p className="text-slate-500">
-                  {contract.facility?.name ? `${contract.facility.name} • ` : ""}
-                  ID: <span className="font-mono">{contract.storageUnitId}</span>
-                </p>
+                <p className="text-slate-500">{contract.facility?.name}</p>
               </div>
 
               <div className="rounded-2xl bg-slate-50 border border-slate-200/70 p-4 space-y-1.5">

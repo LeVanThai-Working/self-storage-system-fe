@@ -17,11 +17,10 @@ export interface SigningAuthorizationFacilityRef {
 
 export interface SigningAuthorizationLegalEntityRef {
   _id: string;
-  name: string;
+  companyName: string;
   taxCode: string;
-  address: string;
-  representativeName?: string;
-  representativePosition?: string;
+  registeredAddress: string;
+  legalRepresentative?: { name: string; title: string };
 }
 
 export interface SigningAuthorizationResponse {

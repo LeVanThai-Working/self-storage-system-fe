@@ -107,7 +107,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-            {isEn ? "Payment Transactions" : "Quản lý Đơn Thanh Toán"}
+            {isEn ? "Payment Transactions" : "Quản lý thanh toán"}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             {isEn
@@ -279,9 +279,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                 </th>
                 <th className="px-4 py-3.5 whitespace-nowrap">{isEn ? "Method" : "Hình thức"}</th>
                 <th className="px-4 py-3.5 whitespace-nowrap">{isEn ? "Status" : "Trạng thái"}</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">
-                  {isEn ? "Created / Expires" : "Ngày tạo / Hạn"}
-                </th>
+                <th className="px-4 py-3.5 whitespace-nowrap">{isEn ? "Created" : "Ngày tạo"}</th>
                 <th className="px-4 py-3.5 text-right whitespace-nowrap">
                   {isEn ? "Actions" : "Thao tác"}
                 </th>
@@ -379,13 +377,17 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                       {payment.status === PaymentStatusEnum.PENDING && payment.expiresAt && (
                         <div className="text-amber-600 font-semibold mt-0.5 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          <span>{formatDateTime(payment.expiresAt, locale)}</span>
+                          <span>
+                            {isEn ? "Due" : "Hạn"}: {formatDateTime(payment.expiresAt, locale)}
+                          </span>
                         </div>
                       )}
                       {payment.status === PaymentStatusEnum.PAID && payment.paidAt && (
                         <div className="text-emerald-600 font-semibold mt-0.5 flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" />
-                          <span>{formatDateTime(payment.paidAt, locale)}</span>
+                          <span>
+                            {isEn ? "Paid" : "Đã trả"}: {formatDateTime(payment.paidAt, locale)}
+                          </span>
                         </div>
                       )}
                     </td>

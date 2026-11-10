@@ -50,8 +50,6 @@ const ACTION_COLORS: Record<string, string> = {
   mark_overdue: "bg-orange-50 text-orange-700",
 };
 
-const ALL_ACTIONS = Object.keys(ACTION_COLORS);
-
 const LIMIT = 15;
 
 // ─── Helper: format ISO date/time based on locale ─────────────────────────────
@@ -85,6 +83,8 @@ const SkeletonRow = () => (
 // ─── Main component ───────────────────────────────────────────────────────────
 export const AuditLogTable = () => {
   const t = useTranslations("systemAdmin.auditLog");
+  const tRole = useTranslations("incidentDesk.detail.role");
+  const allActions = Object.keys(t.raw("actions") as Record<string, string>);
   const locale = useLocale();
 
   const [search, setSearch] = useState("");
@@ -175,7 +175,7 @@ export const AuditLogTable = () => {
             className="bg-slate-50 border-none rounded-full py-2 px-4 text-sm text-slate-700 focus:ring-2 focus:ring-emerald-500 outline-none cursor-pointer"
           >
             <option value="">{t("allActions")}</option>
-            {ALL_ACTIONS.map((a) => (
+            {allActions.map((a) => (
               <option key={a} value={a}>
                 {t(`actions.${a}` as Parameters<typeof t>[0])}
               </option>
@@ -323,8 +323,8 @@ export const AuditLogTable = () => {
                               {log.actorEmail}
                             </div>
                             {log.actorRole && (
-                              <div className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 mt-1 uppercase tracking-wider">
-                                {log.actorRole.replace(/_/g, " ")}
+                              <div className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 mt-1">
+                                {tRole.has(log.actorRole) ? tRole(log.actorRole) : log.actorRole}
                               </div>
                             )}
                           </div>
@@ -348,7 +348,7 @@ export const AuditLogTable = () => {
                       {/* Action badge */}
                       <td className="px-5 py-2">
                         <span
-                          className={`inline-flex items-center whitespace-nowrap shrink-0 px-2.5 py-1 rounded-md text-xs font-medium capitalize ${colorClass}`}
+                          className={`inline-flex items-center whitespace-nowrap shrink-0 px-2.5 py-1 rounded-md text-xs font-medium ${colorClass}`}
                         >
                           {actionLabel}
                         </span>

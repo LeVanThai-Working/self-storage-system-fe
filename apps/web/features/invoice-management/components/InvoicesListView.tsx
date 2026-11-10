@@ -21,6 +21,7 @@ import { useAuthStore } from "@/features/auth/store";
 import { useMyFacility } from "@/features/storage-unit-management/hooks";
 import { RoleEnum } from "@self-storage-system-fe/shared";
 import {
+  useInvoiceDetail,
   useInvoices,
   useTriggerOverdueScan,
   useTriggerRecurringScan,
@@ -130,6 +131,8 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
   // Modals state
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceResponse | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  // List rows are not populated; the detail endpoint returns customer/contract/facility names.
+  const { data: invoiceDetail } = useInvoiceDetail(selectedInvoice?.id, isDetailOpen);
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
@@ -188,11 +191,11 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
     try {
       const res = await overdueScanMutation.mutateAsync();
       setJobFeedback(
-        `Quét quá hạn hoàn tất: Đã quét ${res.scannedCount}, đánh dấu quá hạn ${res.markedOverdueCount}, khóa nợ ${res.contractsLockedCount} hợp đồng.`
+        `Đã kiểm tra ${res.scannedCount} hóa đơn, ${res.markedOverdueCount} hóa đơn chuyển sang quá hạn, khóa ${res.contractsLockedCount} hợp đồng.`
       );
       setTimeout(() => setJobFeedback(null), 5000);
     } catch {
-      setJobFeedback("Kích hoạt quét quá hạn thất bại.");
+      setJobFeedback("Không xử lý được hóa đơn quá hạn, vui lòng thử lại.");
       setTimeout(() => setJobFeedback(null), 4000);
     }
   };
@@ -200,12 +203,10 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
   const handleTriggerRemindersScan = async () => {
     try {
       const res = await remindersScanMutation.mutateAsync();
-      setJobFeedback(
-        `Gửi nhắc hạn hoàn tất: Tổng ${res.totalRemindedCount} nhắc hạn (T-3: ${res.remindedT3Count}, T-1: ${res.remindedT1Count}, T-0: ${res.remindedT0Count}).`
-      );
+      setJobFeedback(`Đã gửi ${res.totalRemindedCount} nhắc thanh toán.`);
       setTimeout(() => setJobFeedback(null), 5000);
     } catch {
-      setJobFeedback("Kích hoạt quét nhắc nợ thất bại.");
+      setJobFeedback("Không gửi được nhắc nợ, vui lòng thử lại.");
       setTimeout(() => setJobFeedback(null), 4000);
     }
   };
@@ -238,10 +239,10 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
                 onClick={handleTriggerOverdueScan}
                 disabled={overdueScanMutation.isPending}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-xs font-bold text-rose-800 disabled:opacity-50 shadow-sm"
-                title="Kích hoạt job quét quá hạn sau 3 ngày ân hạn và khóa hợp đồng"
+                title="Chuyển các hóa đơn đã trễ hạn quá 3 ngày sang quá hạn và khóa hợp đồng liên quan. Hệ thống cũng tự chạy việc này hằng ngày."
               >
                 <Clock className="w-3.5 h-3.5 text-rose-600" />
-                Quét quá hạn
+                Xử lý quá hạn
               </button>
 
               <button
@@ -249,7 +250,7 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
                 onClick={handleTriggerRemindersScan}
                 disabled={remindersScanMutation.isPending}
                 className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 text-xs font-bold text-amber-800 disabled:opacity-50 shadow-sm"
-                title="Kích hoạt mẻ gửi thông báo nhắc hạn thanh toán T-3, T-1, T-0"
+                title="Gửi nhắc thanh toán cho các hóa đơn còn 3 ngày, 1 ngày và đến hạn hôm nay. Hệ thống cũng tự chạy việc này hằng ngày."
               >
                 <PlayCircle className="w-3.5 h-3.5 text-amber-600" />
                 Gửi nhắc nợ
@@ -263,7 +264,7 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-md shadow-amber-500/20"
           >
             <Plus className="w-4 h-4" />
-            Tạo HĐ phụ phí
+            Tạo hóa đơn phụ phí
           </button>
         </div>
       </div>
@@ -319,7 +320,7 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
                 setSearchInput(e.target.value);
                 setPage(1);
               }}
-              placeholder="Mã HĐ, mã HĐồng, khách hàng..."
+              placeholder="Mã hóa đơn, mã hợp đồng, khách hàng..."
               className="w-full pl-9 pr-3 py-2 bg-slate-50 focus:bg-white rounded-xl border border-slate-200 focus:border-teal-500 outline-none"
             />
           </div>
@@ -622,7 +623,11 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
           setIsDetailOpen(false);
           setSelectedInvoice(null);
         }}
-        invoice={selectedInvoice}
+        invoice={
+          invoiceDetail && invoiceDetail.id === selectedInvoice?.id
+            ? invoiceDetail
+            : selectedInvoice
+        }
         onOpenPaymentQr={(inv) => {
           setSelectedInvoice(inv);
           setIsPaymentQrOpen(true);

@@ -135,7 +135,7 @@ export function getPaymentMethodConfig(method: PaymentMethodEnum | string, local
     case PaymentMethodEnum.SEPAY_QR:
     case PaymentMethodEnum.QR_CODE:
       return {
-        label: isEn ? "VietQR (SePay)" : "Quét mã VietQR (SePay)",
+        label: isEn ? "VietQR" : "Quét mã VietQR",
         badgeClass: "bg-sky-50 text-sky-700 border-sky-200",
       };
     case PaymentMethodEnum.CASH:

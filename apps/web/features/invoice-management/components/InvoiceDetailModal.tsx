@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { getBillingUnitLabel } from "@/features/contract-management/utils";
 import { InvoiceStatusBadge } from "./InvoiceStatusBadge";
 import { InvoiceTypeBadge } from "./InvoiceTypeBadge";
 import {
@@ -59,6 +60,10 @@ const formatDateOnly = (isoString?: string | null) => {
   }
 };
 
+// shortcut: BE builds "... (month)" into the item description; translate the unit here until BE sends it separately.
+const localizeDescription = (text: string) =>
+  text.replace(/\((day|month|one_time)\)$/, (_, unit: string) => `(${getBillingUnitLabel(unit)})`);
+
 const getEntityName = (entity?: EntitySummary | null) => {
   if (!entity) return "—";
   return entity.name || entity.email || entity.code || entity.id;
@@ -93,8 +98,7 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
                 <InvoiceTypeBadge type={invoice.type} />
               </div>
               <p className="text-xs text-slate-500 mt-1">
-                Kỳ thanh toán số #{invoice.billingPeriodIndex} • Ngày tạo:{" "}
-                {formatDate(invoice.createdAt)}
+                Kỳ {invoice.billingPeriodIndex} • Ngày tạo: {formatDate(invoice.createdAt)}
               </p>
             </div>
             {onOpenPdf && (
@@ -197,7 +201,9 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
                       <td className="py-2.5 px-3">
                         <p className="font-semibold text-slate-800">{item.name}</p>
                         {item.description && (
-                          <p className="text-[11px] text-slate-400">{item.description}</p>
+                          <p className="text-[11px] text-slate-400">
+                            {localizeDescription(item.description)}
+                          </p>
                         )}
                       </td>
                       <td className="py-2.5 px-3">
@@ -233,7 +239,7 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
           <div className="flex justify-end">
             <div className="w-full sm:w-80 space-y-2 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
               <div className="flex justify-between text-slate-600">
-                <span>Tạm tính (Subtotal):</span>
+                <span>Tạm tính:</span>
                 <span className="font-semibold text-slate-800">{formatVND(invoice.subtotal)}</span>
               </div>
               {invoice.discountAmount > 0 && (
@@ -289,11 +295,11 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
           {/* Maker-Checker & Audit Trail */}
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-2 text-xs text-slate-600">
             <h4 className="font-bold uppercase tracking-wider text-[11px] text-slate-400">
-              Thông tin kiểm soát & Người thực hiện (Maker-Checker)
+              Người thực hiện
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <span className="text-slate-400 block text-[11px]">Người lập hóa đơn (Maker):</span>
+                <span className="text-slate-400 block text-[11px]">Người lập hóa đơn:</span>
                 <span className="font-semibold text-slate-800">
                   {getEntityName(invoice.createdBy)}
                 </span>
@@ -302,9 +308,7 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
                 </span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[11px]">
-                  Người duyệt thu tiền (Checker):
-                </span>
+                <span className="text-slate-400 block text-[11px]">Người duyệt thu tiền:</span>
                 <span className="font-semibold text-slate-800">
                   {getEntityName(invoice.confirmedBy)}
                 </span>
