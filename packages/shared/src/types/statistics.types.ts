@@ -1,4 +1,14 @@
-import { FacilityKpiTierEnum, StatisticsGranularityEnum } from "../enums/statistics.enum";
+import {
+  FacilityKpiTierEnum,
+  StatisticsGranularityEnum,
+  RagQueryComplexityEnum,
+  RagGroundingStatusEnum,
+  AiInsightCategoryEnum,
+  AiInsightPriorityEnum,
+  AiInsightFocusAreaEnum,
+  AiAdvisorProviderEnum,
+  RagChunkTypeEnum,
+} from "../enums/statistics.enum";
 import { BillingUnitEnum, InvoiceItemTypeEnum } from "../enums/billing.enum";
 import { PaymentMethodEnum, PaymentTransactionResultEnum } from "../enums/payment.enum";
 import { RefundRequestReasonEnum } from "../enums/refundRequest.enum";
@@ -343,4 +353,89 @@ export interface ProductAndOperationsResponse {
       adjustCount: number;
     };
   };
+}
+
+export interface RagChunkCitation {
+  chunkId: string;
+  category: RagChunkTypeEnum;
+  title: string;
+  excerpt: string;
+  relevanceScore: number;
+}
+
+export interface AiRecommendationItem {
+  id: string;
+  category: AiInsightCategoryEnum;
+  priority: AiInsightPriorityEnum;
+  title: string;
+  dataEvidence: string;
+  actionSteps: string[];
+  expectedProfitImpact: string;
+  estimatedImpactVnd: number;
+  targetFacilityCodes: string[];
+}
+
+export interface RagOpportunityMetrics {
+  recoverableOverdueVnd: number;
+  maintenanceRevenueLossVnd: number;
+  idleCapacityOpportunityVnd: number;
+  totalOpportunityVnd: number;
+}
+
+export interface RagAdvisorResponse {
+  period: {
+    fromDate: string;
+    toDate: string;
+    scopedFacilityId: string | null;
+    focusArea: AiInsightFocusAreaEnum;
+  };
+  queryInfo: {
+    question: string;
+    normalizedQuestion: string;
+    groundingStatus: RagGroundingStatusEnum;
+    router: {
+      complexity: RagQueryComplexityEnum;
+      selectedModel: string;
+      provider: AiAdvisorProviderEnum;
+      reason: string;
+    };
+    cached: boolean;
+    generatedAt: string;
+  };
+  answer: string;
+  opportunityMetrics: RagOpportunityMetrics;
+  recommendations: AiRecommendationItem[];
+  citations: RagChunkCitation[];
+  retrievedChunkIds: string[];
+}
+
+export interface RagEvalCaseResult {
+  caseId: string;
+  category: string;
+  question: string;
+  expectedComplexity: RagQueryComplexityEnum;
+  actualComplexity: RagQueryComplexityEnum;
+  expectedGroundingStatus: RagGroundingStatusEnum;
+  actualGroundingStatus: RagGroundingStatusEnum;
+  expectedChunkIds: string[];
+  retrievedChunkIds: string[];
+  retrievalHit: boolean;
+  citationFaithful: boolean;
+  routerMatched: boolean;
+  guardrailPassed: boolean;
+  passed: boolean;
+}
+
+export interface RagEvalResponse {
+  summary: {
+    totalCases: number;
+    passedCases: number;
+    retrievalHitRatePercent: number;
+    citationFaithfulnessPercent: number;
+    routerAccuracyPercent: number;
+    guardrailDefenseRatePercent: number;
+    overallPassRatePercent: number;
+    evaluatedAt: string;
+  };
+  cases: RagEvalCaseResult[];
 }

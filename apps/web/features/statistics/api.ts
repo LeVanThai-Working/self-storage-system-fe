@@ -11,6 +11,9 @@ import type {
   RentalTrendsQuery,
   RentalTrendsResponse,
   StatisticsBaseQuery,
+  RagAdvisorRequest,
+  RagAdvisorResponse,
+  RagEvalResponse,
 } from "./types";
 
 /**
@@ -70,5 +73,24 @@ export async function fetchProductAndOperations(
     "/statistics/product-and-operations",
     { params }
   );
+  return data.data;
+}
+
+/**
+ * POST /statistics/ai-rag-advisor - Gửi câu hỏi cho Trợ lý RAG phân tích số liệu, trả về cơ hội dòng tiền, khuyến nghị và trích dẫn nguồn
+ */
+export async function askRagAdvisor(payload: RagAdvisorRequest): Promise<RagAdvisorResponse> {
+  const { data } = await api.post<ApiResponse<RagAdvisorResponse>>(
+    "/statistics/ai-rag-advisor",
+    payload
+  );
+  return data.data;
+}
+
+/**
+ * GET /statistics/ai-rag-eval - Chạy bộ kiểm định chất lượng tự động 10 kịch bản (Golden Dataset) đo lường độ chính xác RAG
+ */
+export async function fetchRagEval(): Promise<RagEvalResponse> {
+  const { data } = await api.get<ApiResponse<RagEvalResponse>>("/statistics/ai-rag-eval");
   return data.data;
 }

@@ -1,9 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
+  askRagAdvisor,
   fetchFacilitiesKpi,
   fetchFinancialAnalytics,
   fetchOverviewStatistics,
   fetchProductAndOperations,
+  fetchRagEval,
   fetchRentalTrends,
 } from "./api";
 import type {
@@ -12,6 +14,7 @@ import type {
   ProductAndOperationsQuery,
   RentalTrendsQuery,
   StatisticsBaseQuery,
+  RagAdvisorRequest,
 } from "./types";
 
 export const statisticsKeys = {
@@ -25,6 +28,7 @@ export const statisticsKeys = {
     [...statisticsKeys.all, "financial-analytics", params] as const,
   productAndOperations: (params?: ProductAndOperationsQuery) =>
     [...statisticsKeys.all, "product-and-operations", params] as const,
+  ragEval: () => [...statisticsKeys.all, "rag-eval"] as const,
 };
 
 export const useOverviewStatistics = (
@@ -84,5 +88,19 @@ export const useProductAndOperations = (
     queryFn: () => fetchProductAndOperations(params),
     enabled: options?.enabled ?? true,
     refetchInterval: options?.refetchInterval,
+  });
+};
+
+export const useRagAdvisor = () => {
+  return useMutation({
+    mutationFn: (payload: RagAdvisorRequest) => askRagAdvisor(payload),
+  });
+};
+
+export const useRagEval = (options?: { enabled?: boolean }) => {
+  return useQuery({
+    queryKey: statisticsKeys.ragEval(),
+    queryFn: () => fetchRagEval(),
+    enabled: options?.enabled ?? false,
   });
 };
