@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Boxes, Coins, LayoutDashboard, TrendingUp, Trophy } from "lucide-react";
 import {
   FacilityKpiSortByEnum,
@@ -15,12 +15,14 @@ import {
   useProductAndOperations,
   useRentalTrends,
 } from "../hooks";
+import { useStatisticsFilterStore } from "../store";
 import { StatisticsFilterBar } from "./StatisticsFilterBar";
 import { OverviewTab } from "./OverviewTab";
 import { RentalTrendsTab } from "./RentalTrendsTab";
 import { FacilitiesKpiTab } from "./FacilitiesKpiTab";
 import { FinancialAnalyticsTab } from "./FinancialAnalyticsTab";
 import { ProductOperationsTab } from "./ProductOperationsTab";
+import { RagAdvisorChatWidget } from "./RagAdvisorChatWidget";
 
 interface StatisticsDashboardViewProps {
   role: StatisticsUserRole;
@@ -71,6 +73,16 @@ export function StatisticsDashboardView({
   const [kpiSortOrder, setKpiSortOrder] = useState<"asc" | "desc">("desc");
 
   const effectiveFacilityId = lockedFacilityId || facilityId;
+
+  // Sync active filters to store so external widgets can access them
+  const setStoreFilters = useStatisticsFilterStore((s) => s.setFilters);
+  useEffect(() => {
+    setStoreFilters({
+      fromDate,
+      toDate,
+      facilityId: effectiveFacilityId,
+    });
+  }, [fromDate, toDate, effectiveFacilityId, setStoreFilters]);
 
   // Base query
   const baseQuery = useMemo(
@@ -293,6 +305,16 @@ export function StatisticsDashboardView({
           <ProductOperationsTab data={productQuery.data} isLoading={productQuery.isLoading} />
         )}
       </div>
+
+      {/* Floating AI RAG Profit Advisor Widget for system_admin and facility_manager (Business ops has it via Layout) */}
+      {role !== "business_ops_manager" && (
+        <RagAdvisorChatWidget
+          role={role}
+          fromDate={fromDate}
+          toDate={toDate}
+          facilityId={effectiveFacilityId}
+        />
+      )}
     </div>
   );
 }

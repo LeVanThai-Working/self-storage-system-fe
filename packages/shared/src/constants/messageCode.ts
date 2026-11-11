@@ -337,6 +337,7 @@ export const MESSAGE_CODE = {
 
   // Statistics Message Codes
   MESSAGE_CODE_820: "MESSAGE_CODE_820",
+  MESSAGE_CODE_821: "MESSAGE_CODE_821",
 } as const;
 
 export type MessageCode = (typeof MESSAGE_CODE)[keyof typeof MESSAGE_CODE];
@@ -553,6 +554,7 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
 
   // Statistics
   MESSAGE_CODE_820: "Invalid Statistics Date Range Or Exceeds Maximum Allowed Days",
+  MESSAGE_CODE_821: "Prompt Injection Or Unsafe Instruction Detected In AI Query",
 };
 
 /**
@@ -769,6 +771,8 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
 
   // Statistics
   MESSAGE_CODE_820: "Khoảng thời gian thống kê không hợp lệ hoặc vượt quá số ngày tối đa cho phép",
+  MESSAGE_CODE_821:
+    "Phát hiện lệnh can thiệp trái phép (Prompt Injection) hoặc chỉ thị không an toàn",
 };
 
 export const MESSAGE_DICTIONARY = MESSAGE_DICTIONARY_EN;

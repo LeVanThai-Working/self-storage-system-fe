@@ -26,6 +26,7 @@ import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { useAuthStore } from "@/features/auth/store";
 import { LocaleSwitcher } from "@/components/common/LocaleSwitcher";
 import { NotificationBell } from "@/features/notification/components/NotificationBell";
+import { RagAdvisorChatWidget } from "@/features/statistics";
 
 interface BusinessOpsLayoutProps {
   children: React.ReactNode;
@@ -235,6 +236,9 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
 
         {/* Page Content */}
         <main className="flex-1 p-8 overflow-y-auto">{children}</main>
+
+        {/* Floating AI RAG Profit Advisor Widget for Business Operations Manager */}
+        <RagAdvisorChatWidget role="business_ops_manager" />
       </div>
     </div>
   );

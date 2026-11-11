@@ -332,9 +332,11 @@ export {
   facilitiesKpiQuerySchema,
   financialAnalyticsQuerySchema,
   productAndOperationsQuerySchema,
+  ragAdvisorRequestSchema,
   type StatisticsBaseQuery,
   type RentalTrendsQuery,
   type FacilitiesKpiQuery,
   type FinancialAnalyticsQuery,
   type ProductAndOperationsQuery,
+  type RagAdvisorRequest,
 } from "./request/statistics.request.schema";
