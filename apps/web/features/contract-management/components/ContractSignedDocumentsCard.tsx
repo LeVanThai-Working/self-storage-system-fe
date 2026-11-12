@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import { ExternalLink, FileCheck, FileSignature, FileText } from "lucide-react";
+import { InfoTooltip } from "@/components/ui/tooltip";
 import {
   extractSignedAddendumFileUrls,
   ContractAddendumTypeEnum,
@@ -65,19 +66,19 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
       <div className="flex items-center justify-between gap-2 flex-wrap pb-1 border-b border-slate-100">
         <div className="flex items-center gap-2">
           <FileCheck className="w-5 h-5 text-emerald-600" />
-          <div>
-            <h3 className="text-sm font-extrabold text-slate-900">
-              {isEn ? "Signed Legal Documents" : "Hồ sơ & Tài liệu Ký sống"}
-            </h3>
-            <p className="text-[11px] text-slate-500">
-              {isEn
-                ? "Scanned paper contract & addendums with live signatures, verified and stored for compliance."
-                : "Bản scan tài liệu hợp đồng và phụ lục có chữ ký sống của 2 bên đã được số hóa lưu vết toàn vẹn."}
-            </p>
-          </div>
+          <h3 className="text-sm font-extrabold text-slate-900">
+            {isEn ? "Signed documents" : "Hồ sơ đã ký"}
+          </h3>
+          <InfoTooltip
+            content={
+              isEn
+                ? "Scanned paper contract & addendums signed by both parties."
+                : "Bản scan hợp đồng và phụ lục có chữ ký tay của 2 bên."
+            }
+          />
         </div>
         <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-          {totalFiles} {isEn ? "files in total" : "tổng tài liệu"}
+          {totalFiles} {isEn ? "files" : "tài liệu"}
         </span>
       </div>
 
@@ -85,14 +86,12 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
       {signedContractUrls && signedContractUrls.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <h4 className="text-xs font-extrabold text-slate-700 flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5 text-emerald-600" />
-              {isEn
-                ? "1. Original Contract Scans (Check-in)"
-                : "1. Tài liệu Hợp đồng chính (Lúc nhận kho)"}
+              {isEn ? "Main contract (signed at check-in)" : "Hợp đồng chính, ký lúc check-in"}
             </h4>
             <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
-              {signedContractUrls.length} {isEn ? "pages" : "trang scan"}
+              {signedContractUrls.length} {isEn ? "pages" : "trang"}
             </span>
           </div>
 
@@ -109,7 +108,7 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
                   <div className="flex flex-col items-center justify-center h-full">
                     <FileText className="w-10 h-10 text-emerald-600 mb-2" />
                     <span className="text-[11px] font-bold text-slate-700 truncate max-w-[100px]">
-                      PDF Document
+                      {isEn ? "PDF file" : "Tệp PDF"}
                     </span>
                   </div>
                 ) : (
@@ -135,9 +134,9 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
       {addendumDocuments.length > 0 && (
         <div className="space-y-3 pt-2 border-t border-slate-100">
           <div className="flex items-center justify-between">
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <h4 className="text-xs font-extrabold text-slate-700 flex items-center gap-1.5">
               <FileSignature className="w-3.5 h-3.5 text-teal-600" />
-              {isEn ? "2. Signed Addendum Scans" : "2. Tài liệu Phụ lục đã ký"}
+              {isEn ? "Signed addendums" : "Phụ lục đã ký"}
             </h4>
             <span className="text-[11px] font-bold text-teal-700 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full">
               {totalAddendumFiles} {isEn ? "files" : "bản scan"}

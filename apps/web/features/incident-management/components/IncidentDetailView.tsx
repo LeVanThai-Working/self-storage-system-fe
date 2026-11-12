@@ -90,7 +90,7 @@ export function IncidentDetailView({ id, portalBase }: { id: string; portalBase:
         </div>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[1.5fr_1fr]">
+      <div className="grid gap-5 lg:has-[>aside]:grid-cols-[1.5fr_1fr]">
         <div className="space-y-5">
           <ReportCard incident={incident} />
           <TimelineCard incident={incident} />
@@ -124,11 +124,16 @@ function ReportCard({ incident }: { incident: IncidentResponse }) {
           {reporter?.phoneNumber ? <p className="text-slate-500">{reporter.phoneNumber}</p> : null}
         </div>
         <div className="rounded-lg bg-slate-50 p-3 text-sm">
-          <p className="text-xs text-slate-500">{t("contract")}</p>
-          <p className="font-mono font-semibold text-teal-700">
-            {incident.contract?.contractCode ?? "—"}
-          </p>
-          <p className="text-slate-500">{location || t("commonArea")}</p>
+          <p className="text-xs text-slate-500">{t("location")}</p>
+          <p className="font-semibold">{location || t("commonArea")}</p>
+          {incident.contract?.contractCode ? (
+            <p className="text-slate-500">
+              {t("contract")}:{" "}
+              <span className="font-mono font-semibold text-teal-700">
+                {incident.contract.contractCode}
+              </span>
+            </p>
+          ) : null}
         </div>
       </div>
       <p className="my-3 whitespace-pre-line text-sm text-slate-600">{incident.description}</p>
@@ -294,6 +299,17 @@ function ActionPanel({
   const canClose = isManager && status === IncidentStatusEnum.RESOLVED;
   const canCancel =
     isManager && (status === IncidentStatusEnum.REPORTED || status === IncidentStatusEnum.ASSIGNED);
+
+  if (
+    !canAssign &&
+    !canInvestigate &&
+    !canResolve &&
+    !canClose &&
+    !canCancel &&
+    !incident.resolution
+  ) {
+    return null;
+  }
 
   const submitInvestigate = () => {
     const payload = {
@@ -542,15 +558,6 @@ function ActionPanel({
             {t("cancel")}
           </button>
         </div>
-      ) : null}
-
-      {!canAssign &&
-      !canInvestigate &&
-      !canResolve &&
-      !canClose &&
-      !canCancel &&
-      !incident.resolution ? (
-        <p className="text-sm text-slate-500">{t("nothingToDo")}</p>
       ) : null}
 
       {error ? (

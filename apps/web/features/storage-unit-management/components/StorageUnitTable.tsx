@@ -55,7 +55,7 @@ import { StorageUnitMapView } from "./StorageUnitMapView";
 import { UnitMaintenanceDialog } from "./UnitMaintenanceDialog";
 import { StorageRackManagementModal } from "./StorageRackManagementModal";
 import { ReconcileStorageUnitsButton } from "./ReconcileStorageUnitsButton";
-import { ActionTooltip } from "@/components/ui/tooltip";
+import { ActionTooltip, TruncatedText } from "@/components/ui/tooltip";
 
 const PAGE_SIZE = 10;
 
@@ -364,7 +364,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
       {/* Filter and Search Bar */}
       <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3">
         {/* Search Input */}
-        <div className="flex-1 relative max-w-md">
+        <div className="flex-1 relative min-w-[240px] max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
@@ -403,7 +403,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
               setUnitTypeId(e.target.value);
               setPage(1);
             }}
-            className={`${FILTER_CONTROL} cursor-pointer`}
+            className={`${FILTER_CONTROL} cursor-pointer max-w-[200px] truncate`}
           >
             <option value="ALL">{t("unitTypeFilterAll")}</option>
             {offerings.map((offering) => (
@@ -419,7 +419,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
               setSelectedStatus(e.target.value);
               setPage(1);
             }}
-            className={`${FILTER_CONTROL} cursor-pointer`}
+            className={`${FILTER_CONTROL} cursor-pointer max-w-[180px] truncate`}
           >
             <option value="ALL">{t("statusFilter.all")}</option>
             {Object.values(StorageUnitStatusEnum).map((status) => (
@@ -574,14 +574,10 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                               <div className="font-bold text-slate-900 group-hover:text-teal-700 transition-colors font-mono">
                                 {unit.unitNumber}
                               </div>
-                              {unit.notes && (
-                                <p
-                                  title={unit.notes}
-                                  className="text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-xs"
-                                >
-                                  {unit.notes}
-                                </p>
-                              )}
+                              <TruncatedText
+                                text={unit.notes}
+                                className="text-xs text-slate-400 mt-0.5 max-w-xs"
+                              />
                             </div>
                           </div>
                         </td>

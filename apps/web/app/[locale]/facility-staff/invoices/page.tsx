@@ -8,8 +8,8 @@ export default function FacilityStaffInvoicesPage() {
     <FacilityStaffLayout>
       <InvoicesListView
         portalBase="facility-staff"
-        pageTitle="Tra cứu Hóa đơn & Thu quầy"
-        pageSubtitle="Tra cứu hóa đơn thuộc cơ sở phân công, lấy mã SePay VietQR và xác nhận thu tiền mặt tại quầy"
+        pageTitle="Quản lý hóa đơn"
+        pageSubtitle="Tra cứu hóa đơn của cơ sở, lấy mã VietQR và xác nhận thu tiền tại quầy."
       />
     </FacilityStaffLayout>
   );

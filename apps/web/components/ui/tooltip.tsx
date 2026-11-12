@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
+import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 function TooltipProvider({
@@ -51,7 +52,7 @@ function TooltipContent({
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
           className={cn(
-            "z-50 overflow-hidden rounded-lg bg-slate-900/95 px-2.5 py-1 text-xs font-medium text-white shadow-md animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 select-none pointer-events-none",
+            "z-50 max-w-xs overflow-hidden rounded-lg bg-slate-900/95 px-2.5 py-1 text-xs font-medium text-white shadow-md animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 select-none pointer-events-none",
             className
           )}
           {...props}
@@ -92,4 +93,47 @@ function ActionTooltip({
   );
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, TooltipPortal, ActionTooltip };
+/** Small "i" icon next to a label; holds helper text that used to be printed on screen. */
+function InfoTooltip({
+  content,
+  side = "top",
+  className,
+}: {
+  content: React.ReactNode;
+  side?: "top" | "bottom" | "left" | "right";
+  className?: string;
+}) {
+  return (
+    <ActionTooltip content={content} side={side}>
+      <span
+        className={cn(
+          "inline-flex shrink-0 cursor-help align-middle text-slate-400 hover:text-slate-600",
+          className
+        )}
+      >
+        <Info className="h-3.5 w-3.5" />
+      </span>
+    </ActionTooltip>
+  );
+}
+
+/** Single-line text cut with "..." that shows the full value on hover. */
+function TruncatedText({ text, className }: { text?: string | null; className?: string }) {
+  if (!text) return null;
+  return (
+    <ActionTooltip content={text}>
+      <span className={cn("block truncate", className)}>{text}</span>
+    </ActionTooltip>
+  );
+}
+
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  TooltipPortal,
+  ActionTooltip,
+  InfoTooltip,
+  TruncatedText,
+};

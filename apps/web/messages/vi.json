@@ -1873,7 +1873,7 @@
       "noFacility": "Chưa được gán cơ sở"
     },
     "storageUnits": {
-      "title": "Quản lý Phòng kho",
+      "title": "Phòng kho",
       "subtitle": "Danh sách phòng kho của cơ sở: vị trí, loại kho và trạng thái.",
       "addUnit": "+ Thêm phòng kho",
       "searchPlaceholder": "Tìm theo số phòng...",
@@ -2162,8 +2162,10 @@
         "paymentSuccessful": "Đã cọc",
         "confirmed": "Đã xác nhận",
         "closed": "Đã hoàn tất",
-        "pendingPayment": "Chờ cọc (15p)",
-        "overdue": "Quá hạn (Ân hạn)",
+        "pendingPayment": "Chờ cọc",
+        "pendingPaymentHint": "Khách có 15 phút để đặt cọc, quá thời gian đơn sẽ hết hạn",
+        "overdue": "Quá hạn",
+        "overdueHint": "Khách chưa đến nhận kho đúng hẹn, đơn đang trong thời gian ân hạn",
         "completed": "Đã hoàn tất",
         "cancelled": "Đã hủy",
         "expired": "Hết hạn"
@@ -2831,6 +2833,8 @@
       "status": "Trạng thái"
     },
     "empty": "Không có yêu cầu nào",
+    "loadError": "Không tải được danh sách yêu cầu.",
+    "retry": "Thử lại",
     "pageInfo": "Trang {page}/{pages} · {total} yêu cầu",
     "sheet": {
       "kicker": "Chi tiết yêu cầu",
@@ -2934,6 +2938,7 @@
       "reporter": "Người báo",
       "contract": "Hợp đồng",
       "commonArea": "Khu vực chung",
+      "location": "Vị trí",
       "unit": "Phòng {unit}",
       "rack": "Kệ {rack}",
       "tier": "Tầng T{tier}",
@@ -3006,6 +3011,11 @@
     "title": "Phòng {unit} · Kho kệ thuê chung",
     "floor": "Tầng {floor}",
     "zone": "Khu {zone}",
+    "zones": {
+      "PRIME": "Vị trí đắc địa",
+      "STANDARD": "Tiêu chuẩn",
+      "ECONOMY": "Tiết kiệm"
+    },
     "tabs": {
       "structure": "Cấu trúc kệ",
       "goods": "Hàng hoá"
@@ -3194,7 +3204,7 @@
   },
   "accessScheduleDesk": {
     "title": "Lịch vào kho",
-    "subtitle": "Quét QR hoặc nhập OTP khi khách đến cổng; theo dõi các lượt vào kho của cơ sở.",
+    "subtitle": "Theo dõi lượt vào kho của cơ sở.",
     "back": "Lịch vào kho",
     "view": "Xem",
     "empty": "Chưa có lịch vào kho nào",
@@ -3250,6 +3260,7 @@
     },
     "gate": {
       "title": "Check-in tại cổng",
+      "hint": "Khi khách đến cổng, quét mã QR hoặc nhập mã OTP 6 số trong lịch hẹn của khách",
       "codePlaceholder": "Quét QR hoặc nhập OTP 6 số",
       "notesPlaceholder": "Ghi chú (không bắt buộc)",
       "codeRequired": "Vui lòng quét mã QR hoặc nhập mã OTP 6 số",

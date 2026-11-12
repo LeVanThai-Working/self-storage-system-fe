@@ -1873,7 +1873,7 @@
       "noFacility": "No facility assigned"
     },
     "storageUnits": {
-      "title": "Storage Unit Management",
+      "title": "Storage units",
       "subtitle": "Storage units at your facility: location, unit type and status.",
       "addUnit": "+ Add storage unit",
       "searchPlaceholder": "Search by unit number...",
@@ -2162,8 +2162,10 @@
         "paymentSuccessful": "Deposit paid",
         "confirmed": "Confirmed",
         "closed": "Completed",
-        "pendingPayment": "Awaiting deposit (15m)",
-        "overdue": "Overdue (Grace period)",
+        "pendingPayment": "Awaiting deposit",
+        "pendingPaymentHint": "The customer has 15 minutes to pay the deposit before the reservation expires",
+        "overdue": "Overdue",
+        "overdueHint": "The customer missed the move-in time; the reservation is in its grace period",
         "completed": "Completed",
         "cancelled": "Cancelled",
         "expired": "Expired"
@@ -2831,6 +2833,8 @@
       "status": "Status"
     },
     "empty": "No requests",
+    "loadError": "Could not load requests.",
+    "retry": "Retry",
     "pageInfo": "Page {page}/{pages} · {total} requests",
     "sheet": {
       "kicker": "Request details",
@@ -2934,6 +2938,7 @@
       "reporter": "Reporter",
       "contract": "Contract",
       "commonArea": "Common area",
+      "location": "Location",
       "unit": "Unit {unit}",
       "rack": "Rack {rack}",
       "tier": "Tier T{tier}",
@@ -3006,6 +3011,11 @@
     "title": "Unit {unit} · Shared rack warehouse",
     "floor": "Floor {floor}",
     "zone": "Zone {zone}",
+    "zones": {
+      "PRIME": "Prime",
+      "STANDARD": "Standard",
+      "ECONOMY": "Economy"
+    },
     "tabs": {
       "structure": "Rack structure",
       "goods": "Goods"
@@ -3194,7 +3204,7 @@
   },
   "accessScheduleDesk": {
     "title": "Warehouse visits",
-    "subtitle": "Scan the QR code or enter the OTP when customers arrive; track facility visits.",
+    "subtitle": "Track facility visits.",
     "back": "Warehouse visits",
     "view": "View",
     "empty": "No warehouse visits yet",
@@ -3250,6 +3260,7 @@
     },
     "gate": {
       "title": "Gate check-in",
+      "hint": "When the customer arrives, scan their QR code or enter the 6-digit OTP from their booking",
       "codePlaceholder": "Scan QR or enter 6-digit OTP",
       "notesPlaceholder": "Notes (optional)",
       "codeRequired": "Please scan the QR code or enter the 6-digit OTP",

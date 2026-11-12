@@ -182,7 +182,7 @@ export const ConfirmReservationModal: React.FC<ConfirmReservationModalProps> = (
               <span className="font-bold text-slate-800">{t("assignedUnitLabel")}:</span>
               <span className="font-mono font-bold text-emerald-700">
                 {reservation.storageUnit?.unitNumber
-                  ? `#${reservation.storageUnit.unitNumber}`
+                  ? `${reservation.storageUnit.unitNumber}`
                   : "Chưa phân bổ"}
               </span>
             </div>
@@ -645,7 +645,7 @@ export const ReassignStorageUnitModal: React.FC<ReassignStorageUnitModalProps> =
               <option value="">Chọn phòng kho trống...</option>
               {units.map((u) => (
                 <option key={u.id} value={u.id}>
-                  #{u.unitNumber} • Tầng {u.floor} {u.zone ? `(Khu ${u.zone})` : ""}
+                  {u.unitNumber} • Tầng {u.floor} {u.zone ? `(Khu ${u.zone})` : ""}
                 </option>
               ))}
             </select>

@@ -167,7 +167,7 @@ export const CreateContractFromReservationModal: React.FC<
                   </p>
                   <p className="font-extrabold text-emerald-700">
                     {reservation.storageUnit
-                      ? `#${reservation.storageUnit.unitNumber} (${
+                      ? `${reservation.storageUnit.unitNumber} (${
                           isEn
                             ? `Floor ${reservation.storageUnit.floor}`
                             : `Tầng ${reservation.storageUnit.floor}`

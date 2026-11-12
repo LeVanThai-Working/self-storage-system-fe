@@ -31,6 +31,7 @@ import {
   IncidentStatusBadge,
 } from "./IncidentBadges";
 import { ReportIncidentDialog } from "./ReportIncidentDialog";
+import { TruncatedText } from "@/components/ui/tooltip";
 
 const PAGE_SIZE = 10;
 const SELECT = "rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm";
@@ -260,8 +261,8 @@ export function IncidentListView({ portalBase }: { portalBase: FacilityPortal })
                     <td className="px-4 py-3">
                       <IncidentCategoryLabel category={incident.category} />
                     </td>
-                    <td className="max-w-[240px] truncate px-4 py-3 font-semibold text-slate-800">
-                      {incident.title}
+                    <td className="px-4 py-3 font-semibold text-slate-800">
+                      <TruncatedText text={incident.title} className="max-w-[240px]" />
                     </td>
                     <td className="px-4 py-3 text-slate-600">{location(incident)}</td>
                     <td className="px-4 py-3 text-slate-600">

@@ -271,9 +271,7 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
           className="text-sm flex items-center justify-between"
           onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
         >
-          <span className="text-slate-600">
-            {sortOrder === "desc" ? "Giảm dần (Mới nhất)" : "Tăng dần (Cũ nhất)"}
-          </span>
+          <span className="text-slate-600">{sortOrder === "desc" ? "Mới nhất" : "Cũ nhất"}</span>
           <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
         </Button>
       </div>
@@ -386,9 +384,7 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
         {/* Pagination Bar */}
         <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 bg-slate-50/50 text-xs text-slate-500">
           <div>
-            Hiển thị trang <strong>{pagination.page}</strong> trên tổng số{" "}
-            <strong>{pagination.totalPages || 1}</strong> trang ({pagination.totalItems || 0} yêu
-            cầu)
+            <strong>{pagination.totalItems || 0}</strong> yêu cầu
           </div>
 
           <div className="flex items-center gap-1">
@@ -401,6 +397,9 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
+            <span className="px-2 font-semibold text-slate-600">
+              {pagination.page} / {pagination.totalPages || 1}
+            </span>
             <Button
               variant="outline"
               size="sm"

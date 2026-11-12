@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import {
   RackStatusEnum,
   RackZoneEnum,
+  formatCurrency,
   formatShortMillion,
   getRackPrice,
   groupRacksByAisle,
@@ -29,7 +30,7 @@ import { CreateRackDialog } from "./CreateRackDialog";
 import { RackDetailSheet } from "./RackDetailSheet";
 
 const ZONE_STYLE: Record<RackZoneEnum, { border: string; text: string }> = {
-  [RackZoneEnum.PRIME]: { border: "border-amber-500", text: "text-amber-700" },
+  [RackZoneEnum.PRIME]: { border: "border-violet-500", text: "text-violet-700" },
   [RackZoneEnum.STANDARD]: { border: "border-teal-600", text: "text-teal-700" },
   [RackZoneEnum.ECONOMY]: { border: "border-slate-400", text: "text-slate-500" },
 };
@@ -215,9 +216,11 @@ export function RackStructureView({
                 <div key={aisle.aisle} className="flex gap-4">
                   <div className={cn("w-32 shrink-0", zoneStyle?.text ?? "text-slate-500")}>
                     <p className="text-lg font-extrabold">{aisle.aisle}</p>
-                    {aisle.zone ? <p className="text-xs font-bold">{aisle.zone}</p> : null}
+                    {aisle.zone ? (
+                      <p className="text-xs font-bold">{t(`zones.${aisle.zone}`)}</p>
+                    ) : null}
                     <p className="text-[10px] text-slate-500">
-                      {t("perMonth", { price: formatShortMillion(price) })}
+                      {t("perMonth", { price: formatCurrency(price) })}
                     </p>
                   </div>
                   <div className="flex flex-1 flex-wrap gap-2">

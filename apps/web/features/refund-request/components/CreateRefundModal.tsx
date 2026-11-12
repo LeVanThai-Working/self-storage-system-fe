@@ -19,12 +19,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, AlertCircle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
+import { InfoTooltip } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/features/auth/store";
+import { useContracts } from "@/features/contract-management/hooks";
+import { useManagerReservations } from "@/features/reservation-management/hooks";
 import { useCreateRefundRequest } from "../hooks";
 import { RefundRequestReasonEnum } from "../types";
 import { getRefundReasonLabel } from "./RefundReasonBadge";
+
+const REASON_ITEMS: Record<string, string> = Object.fromEntries(
+  Object.values(RefundRequestReasonEnum).map((r) => [r, getRefundReasonLabel(r)])
+);
+
+const NATIVE_SELECT =
+  "h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
 interface CreateRefundModalProps {
   isOpen: boolean;
@@ -61,8 +71,9 @@ export const CreateRefundModal: React.FC<CreateRefundModalProps> = ({
   );
   const [reservationId, setReservationId] = useState(defaultReservationId || "");
   const [contractId, setContractId] = useState(defaultContractId || "");
-  const [facilityId, setFacilityId] = useState(userFacilityId);
-  const [customerId, setCustomerId] = useState(defaultCustomerId || "");
+  const [facilityInput, setFacilityInput] = useState("");
+  // Read the user facility on every render: the modal mounts before the profile has loaded.
+  const facilityId = userFacilityId || facilityInput;
   const [amount, setAmount] = useState<number | "">(defaultAmount || "");
   const [reason, setReason] = useState<RefundRequestReasonEnum>(
     RefundRequestReasonEnum.CUSTOMER_CANCEL
@@ -74,23 +85,43 @@ export const CreateRefundModal: React.FC<CreateRefundModalProps> = ({
 
   const createMutation = useCreateRefundRequest();
 
+  const listParams = facilityId.trim()
+    ? { facilityId: facilityId.trim(), limit: 100, sortOrder: "desc" as const }
+    : null;
+  const reservationsQuery = useManagerReservations(
+    isOpen && linkType === "reservation" ? listParams : null
+  );
+  const contractsQuery = useContracts(
+    listParams ? { ...listParams, sortBy: "createdAt" } : null,
+    isOpen && linkType === "contract"
+  );
+  const reservations = reservationsQuery.data?.items ?? [];
+  const contracts = contractsQuery.data?.items ?? [];
+
+  // The customer always comes from the linked reservation / contract.
+  const linked =
+    linkType === "reservation"
+      ? reservations.find((r) => r.id === reservationId)
+      : contracts.find((c) => c.id === contractId);
+  const customerId = linked?.customerId || defaultCustomerId || "";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!facilityId.trim()) {
-      toast.error("Vui lòng nhập hoặc chọn Cơ sở (Facility ID)");
-      return;
-    }
-    if (!customerId.trim()) {
-      toast.error("Vui lòng nhập Mã khách hàng (Customer ID)");
+      toast.error("Chưa xác định được cơ sở");
       return;
     }
     if (linkType === "reservation" && !reservationId.trim()) {
-      toast.error("Vui lòng nhập Mã đơn đặt chỗ liên kết");
+      toast.error("Vui lòng chọn đơn đặt chỗ");
       return;
     }
     if (linkType === "contract" && !contractId.trim()) {
-      toast.error("Vui lòng nhập Mã hợp đồng liên kết");
+      toast.error("Vui lòng chọn hợp đồng");
+      return;
+    }
+    if (!customerId) {
+      toast.error("Không xác định được khách hàng của đơn đã chọn");
       return;
     }
     if (!amount || Number(amount) <= 0) {
@@ -101,7 +132,7 @@ export const CreateRefundModal: React.FC<CreateRefundModalProps> = ({
     try {
       await createMutation.mutateAsync({
         facilityId: facilityId.trim(),
-        customerId: customerId.trim(),
+        customerId,
         reservationId: linkType === "reservation" ? reservationId.trim() : undefined,
         contractId: linkType === "contract" ? contractId.trim() : undefined,
         amount: Math.round(Number(amount)),
@@ -126,42 +157,29 @@ export const CreateRefundModal: React.FC<CreateRefundModalProps> = ({
         <DialogHeader>
           <div className="flex items-center gap-2 text-emerald-600">
             <PlusCircle className="w-5 h-5" />
-            <DialogTitle>Tạo yêu cầu hoàn tiền mới (Maker)</DialogTitle>
+            <DialogTitle>Tạo yêu cầu hoàn tiền</DialogTitle>
+            <InfoTooltip content="Yêu cầu sẽ được chuyển cho người duyệt. Bạn không thể tự duyệt yêu cầu do chính mình tạo." />
           </div>
-          <DialogDescription>
-            Khởi tạo yêu cầu hoàn tiền cho khách hàng. Yêu cầu sẽ được chuyển đến người kiểm duyệt
-            (Checker).
+          <DialogDescription className="sr-only">
+            Tạo yêu cầu hoàn tiền cho khách hàng
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 py-2">
-          {/* Facility ID & Customer ID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Facility roles get their facility automatically; ops/admin still type it in */}
+          {!userFacilityId && (
             <div className="space-y-1.5">
               <Label htmlFor="facility-id">
                 Mã cơ sở <span className="text-rose-500">*</span>
               </Label>
               <Input
                 id="facility-id"
-                placeholder="24 ký tự hex"
-                value={facilityId}
-                onChange={(e) => setFacilityId(e.target.value)}
+                value={facilityInput}
+                onChange={(e) => setFacilityInput(e.target.value)}
                 required
               />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="customer-id">
-                Mã khách hàng <span className="text-rose-500">*</span>
-              </Label>
-              <Input
-                id="customer-id"
-                placeholder="24 ký tự hex"
-                value={customerId}
-                onChange={(e) => setCustomerId(e.target.value)}
-                required
-              />
-            </div>
-          </div>
+          )}
 
           {/* Reference Type Toggle */}
           <div className="space-y-1.5">
@@ -176,7 +194,7 @@ export const CreateRefundModal: React.FC<CreateRefundModalProps> = ({
                   checked={linkType === "reservation"}
                   onChange={() => setLinkType("reservation")}
                 />
-                <span>Đơn đặt chỗ (Reservation)</span>
+                <span>Đơn đặt chỗ</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer text-sm">
                 <input
@@ -185,7 +203,7 @@ export const CreateRefundModal: React.FC<CreateRefundModalProps> = ({
                   checked={linkType === "contract"}
                   onChange={() => setLinkType("contract")}
                 />
-                <span>Hợp đồng (Contract)</span>
+                <span>Hợp đồng</span>
               </label>
             </div>
           </div>
@@ -194,28 +212,46 @@ export const CreateRefundModal: React.FC<CreateRefundModalProps> = ({
           {linkType === "reservation" ? (
             <div className="space-y-1.5">
               <Label htmlFor="reservation-id">
-                Mã đơn đặt chỗ <span className="text-rose-500">*</span>
+                Đơn đặt chỗ <span className="text-rose-500">*</span>
               </Label>
-              <Input
+              <select
                 id="reservation-id"
-                placeholder="Mã hex 24 ký tự của Reservation"
                 value={reservationId}
                 onChange={(e) => setReservationId(e.target.value)}
                 required
-              />
+                className={NATIVE_SELECT}
+              >
+                <option value="">
+                  {reservationsQuery.isLoading ? "Đang tải..." : "Chọn đơn đặt chỗ"}
+                </option>
+                {reservations.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {[r.reservationCode, r.customer?.name].filter(Boolean).join(" · ")}
+                  </option>
+                ))}
+              </select>
             </div>
           ) : (
             <div className="space-y-1.5">
               <Label htmlFor="contract-id">
-                Mã hợp đồng <span className="text-rose-500">*</span>
+                Hợp đồng <span className="text-rose-500">*</span>
               </Label>
-              <Input
+              <select
                 id="contract-id"
-                placeholder="Mã hex 24 ký tự của Contract"
                 value={contractId}
                 onChange={(e) => setContractId(e.target.value)}
                 required
-              />
+                className={NATIVE_SELECT}
+              >
+                <option value="">
+                  {contractsQuery.isLoading ? "Đang tải..." : "Chọn hợp đồng"}
+                </option>
+                {contracts.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {[c.contractCode, c.customer?.name].filter(Boolean).join(" · ")}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 
@@ -241,6 +277,7 @@ export const CreateRefundModal: React.FC<CreateRefundModalProps> = ({
                 Lý do hoàn <span className="text-rose-500">*</span>
               </Label>
               <Select
+                items={REASON_ITEMS}
                 value={reason}
                 onValueChange={(val) => setReason(val as RefundRequestReasonEnum)}
               >
@@ -313,14 +350,6 @@ export const CreateRefundModal: React.FC<CreateRefundModalProps> = ({
               onChange={(e) => setNote(e.target.value)}
               maxLength={1000}
             />
-          </div>
-
-          <div className="flex items-start gap-1.5 text-xs text-slate-500 bg-amber-50/70 p-2.5 rounded border border-amber-200">
-            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-            <span>
-              Theo quy tắc Maker-Checker, bạn không được tự duyệt yêu cầu hoàn tiền do chính mình
-              tạo ra.
-            </span>
           </div>
 
           <DialogFooter className="gap-2 sm:gap-0 pt-2">

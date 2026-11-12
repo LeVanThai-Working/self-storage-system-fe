@@ -21,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { TruncatedText } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/features/auth/store";
 import { useFacilities } from "@/features/facility-management/hooks";
 import { useMyFacility, useStorageUnits } from "@/features/storage-unit-management/hooks";
@@ -267,16 +268,20 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
-            {isEn ? "Storage Lease Contracts & Handover" : "Quản lý Hợp đồng Thuê kho & Bàn giao"}
+            {isEn ? "Storage contracts" : "Hợp đồng thuê kho"}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             {isEn
               ? isOpsOrAdmin
                 ? "Track storage lease contracts, billing cycles and handovers across all facilities."
-                : "Manage rental contracts, handover and move-out at your facility."
+                : isStaff
+                  ? "Contracts assigned to you: handover and move-out at your facility."
+                  : "Manage rental contracts, handover and move-out at your facility."
               : isOpsOrAdmin
                 ? "Theo dõi hợp đồng thuê kho, kỳ thu phí và bàn giao ở tất cả cơ sở."
-                : "Quản lý hợp đồng thuê kho, bàn giao và trả kho tại cơ sở."}
+                : isStaff
+                  ? "Hợp đồng được giao cho bạn: bàn giao và trả kho tại cơ sở."
+                  : "Quản lý hợp đồng thuê kho, bàn giao và trả kho tại cơ sở."}
           </p>
         </div>
 
@@ -314,14 +319,14 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all"
             >
               <UserPlus className="w-4 h-4" />
-              {isEn ? "+ Create Walk-in Contract" : "+ Tạo hợp đồng Walk-in"}
+              {isEn ? "Create Walk-in Contract" : "Tạo hợp đồng Walk-in"}
             </button>
           )}
         </div>
       </div>
 
-      {/* Scope Segmented Toggle: Staff only sees "Được giao cho tôi", Manager can switch */}
-      {!isOpsOrAdmin && (
+      {/* Scope toggle: managers only; staff are always scoped to their own contracts */}
+      {!isOpsOrAdmin && !isStaff && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-100 shadow-sm">
           <div className="inline-flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl">
             <button
@@ -514,7 +519,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             <option value="">{isEn ? "All Storage Units" : "Tất cả phòng kho"}</option>
             {(unitsQuery.data?.items ?? []).map((u) => (
               <option key={u.id} value={u.id}>
-                #{u.unitNumber} ({isEn ? `Fl. ${u.floor}` : `Tầng ${u.floor}`})
+                {u.unitNumber} ({isEn ? `Fl. ${u.floor}` : `Tầng ${u.floor}`})
               </option>
             ))}
           </select>
@@ -651,8 +656,8 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             </p>
             <p className="text-xs text-slate-500 max-w-md mx-auto">
               {isEn
-                ? "Create a contract from a confirmed reservation or click '+ Create Walk-in Contract' above."
-                : "Bạn có thể tạo hợp đồng từ khách đặt chỗ đã xác nhận hoặc nhấn '+ Tạo hợp đồng Walk-in' ở góc trên."}
+                ? "Create a contract from a confirmed reservation or click 'Create Walk-in Contract' above."
+                : "Bạn có thể tạo hợp đồng từ khách đặt chỗ đã xác nhận hoặc nhấn 'Tạo hợp đồng Walk-in' ở góc trên."}
             </p>
           </div>
         ) : (
@@ -680,13 +685,13 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                     {isEn ? "Total & Deposit" : "Giá thuê & Cọc"}
                   </th>
                   <th className="py-3.5 px-4 whitespace-nowrap">
-                    {isEn ? "Assigned Staff" : "NV phụ trách"}
+                    {isEn ? "Assigned to" : "Phụ trách"}
                   </th>
                   <th className="py-3.5 px-4 whitespace-nowrap">
                     {isEn ? "Status" : "Trạng thái"}
                   </th>
                   <th className="py-3.5 px-4 text-right whitespace-nowrap">
-                    {isEn ? "Quick Actions" : "Hành động nhanh"}
+                    {isEn ? "Actions" : "Thao tác"}
                   </th>
                 </tr>
               </thead>
@@ -777,7 +782,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                           <Boxes className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                           <span>
                             {resolvedUnit
-                              ? `#${resolvedUnit.unitNumber}`
+                              ? `${resolvedUnit.unitNumber}`
                               : `#${contract.storageUnitId.slice(-6)}`}
                           </span>
                         </div>
@@ -823,7 +828,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                       <td className="py-3.5 px-4">
                         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold text-[11px] whitespace-nowrap shrink-0">
                           <UserCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          <span className="truncate max-w-[140px]">{resolvedStaffName}</span>
+                          <TruncatedText text={resolvedStaffName} className="max-w-[140px]" />
                         </div>
                       </td>
 
