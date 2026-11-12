@@ -25,6 +25,8 @@ import { useFacilityAmenityOfferings } from "@/features/request-center/hooks";
 import { useAvailableStorageUnitsForAssignment } from "@/features/reservation-management/hooks";
 import { useFacilityOfferings } from "@/features/storage-unit-management/hooks";
 import { useCreateContract, useFacilityStaffs } from "../hooks";
+import { CustomerPicker } from "./CustomerPicker";
+import { TruncatedText } from "@/components/ui/tooltip";
 import {
   BillingUnitEnum,
   ContractSourceEnum,
@@ -77,7 +79,8 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
   );
   const staffList = useMemo(() => staffsQuery.data?.items ?? [], [staffsQuery.data?.items]);
 
-  const [customerId, setCustomerId] = useState("");
+  const [customer, setCustomer] =
+    useState<React.ComponentProps<typeof CustomerPicker>["value"]>(null);
   const [selectedOfferingId, setSelectedOfferingId] = useState("");
   const [selectedStorageUnitId, setSelectedStorageUnitId] = useState("");
   const [startDateInput, setStartDateInput] = useState(() => getDateInputWithOffset(0));
@@ -185,7 +188,7 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
 
     const candidatePayload = {
       source: ContractSourceEnum.WALK_IN,
-      customerId: customerId.trim(),
+      customerId: customer?.id ?? "",
       facilityId,
       storageUnitId: effectiveUnitId,
       facilityUnitTypeOfferingId: activeOffering.id,
@@ -206,7 +209,7 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
         firstIssue?.message ||
           (isEn
             ? "Please check all required Walk-in contract fields."
-            : "Vui lòng kiểm tra lại đầy đủ thông tin hợp đồng Walk-in (Mã khách hàng 24 ký tự hex, ngày bắt đầu/kết thúc, ô kho).")
+            : "Vui lòng kiểm tra lại khách hàng, ngày bắt đầu, ngày kết thúc và ô kho.")
       );
       return;
     }
@@ -238,9 +241,7 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
             </div>
             <div>
               <DialogTitle className="text-lg font-extrabold text-slate-900">
-                {isEn
-                  ? "Create Walk-in Contract at Counter"
-                  : "Tạo Hợp đồng Khách vãng lai (Walk-in) tại Quầy"}
+                {isEn ? "Create Walk-in Contract" : "Tạo hợp đồng Walk-in"}
               </DialogTitle>
               <p className="text-xs text-slate-500 mt-0.5">
                 {isEn
@@ -256,20 +257,15 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                {isEn
-                  ? "Customer ID (24-hex ObjectId) *"
-                  : "Mã tài khoản Khách hàng (Customer ID) *"}
+                {isEn ? "Customer *" : "Khách hàng *"}
               </label>
-              <input
-                type="text"
-                required
-                value={customerId}
-                onChange={(e) => {
-                  setCustomerId(e.target.value);
+              <CustomerPicker
+                value={customer}
+                onChange={(c) => {
+                  setCustomer(c);
                   setErrorMsg(null);
                 }}
-                placeholder="VD: 67f1a2b3c4d5e6f7a8b9c0d1"
-                className="w-full font-mono bg-slate-50 focus:bg-white text-xs text-slate-800 px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none"
+                isEn={isEn}
               />
             </div>
 
@@ -302,8 +298,7 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
                   {isEn ? "Assigned Check-in Staff" : "Nhân viên phụ trách"}
                 </label>
                 <div className="bg-emerald-50/70 border border-emerald-200 text-emerald-800 text-xs font-bold px-3.5 py-2.5 rounded-xl">
-                  {currentUser?.name ?? "Facility Staff"} (
-                  {isEn ? "Assigned to me" : "Tự phụ trách"})
+                  {currentUser?.name ?? "Facility Staff"}
                 </div>
               </div>
             )}
@@ -355,8 +350,8 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
                 ) : (
                   availableUnits.map((unit) => (
                     <option key={unit.id} value={unit.id}>
-                      #{unit.unitNumber} — {isEn ? `Floor ${unit.floor}` : `Tầng ${unit.floor}`}
-                      {unit.zone ? ` • ${isEn ? `Zone ${unit.zone}` : `Dãy ${unit.zone}`}` : ""}
+                      {unit.unitNumber} — {isEn ? `Floor ${unit.floor}` : `Tầng ${unit.floor}`}
+                      {unit.zone ? ` • ${unit.zone}` : ""}
                     </option>
                   ))
                 )}
@@ -473,7 +468,10 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
                       }`}
                     >
                       <div className="min-w-0">
-                        <p className="font-bold text-slate-800 truncate">{item.amenity.name}</p>
+                        <TruncatedText
+                          text={item.amenity.name}
+                          className="font-bold text-slate-800"
+                        />
                         <p className="text-[11px] text-slate-500">
                           {formatVnd(item.pricePerUnit)} •{" "}
                           {isEn ? `Stock: ${maxQty}` : `Còn: ${maxQty}`}

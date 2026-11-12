@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 
 import { useAuthStore } from "@/features/auth/store";
+import { InfoTooltip, TruncatedText } from "@/components/ui/tooltip";
 import { ContractSourceEnum, RoleEnum } from "@self-storage-system-fe/shared";
 import { useFacilityOfferings, useMyFacility } from "@/features/storage-unit-management/hooks";
 import { useFacility } from "@/features/facility-management/hooks";
@@ -371,6 +372,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
     count: number;
     icon: React.ComponentType<{ className?: string }>;
     accent: string;
+    hint?: string;
   }[] = [
     {
       key: "ALL",
@@ -383,6 +385,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
       key: "PENDING_PAYMENT",
       label: t("quickTabs.pendingPayment"),
       count: stats.pendingPayment,
+      hint: t("quickTabs.pendingPaymentHint"),
       icon: Clock,
       accent: "text-orange-700 bg-orange-50",
     },
@@ -404,6 +407,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
       key: "OVERDUE",
       label: t("quickTabs.overdue"),
       count: stats.overdue,
+      hint: t("quickTabs.overdueHint"),
       icon: AlertTriangle,
       accent: "text-amber-700 bg-amber-50",
     },
@@ -509,11 +513,12 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                 </span>
               </div>
               <p
-                className={`text-[11px] font-bold line-clamp-1 ${
+                className={`flex items-center gap-1 text-[11px] font-bold ${
                   isActive ? "text-slate-900" : "text-slate-500"
                 }`}
               >
-                {tab.label}
+                <span className="line-clamp-1">{tab.label}</span>
+                {tab.hint && <InfoTooltip content={tab.hint} />}
               </p>
             </button>
           );
@@ -522,7 +527,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
 
       {/* Detailed Filter Bar */}
       <div className="bg-white rounded-3xl border border-slate-200/80 p-4 shadow-sm space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
           {/* 1. Code Search */}
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -584,7 +589,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
           </div>
 
           {/* 4. Start Date Range */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 sm:col-span-2">
             <input
               type="date"
               value={startDateFromInput}
@@ -614,7 +619,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                 setSortBy(e.target.value as ReservationSortBy);
                 setPage(1);
               }}
-              className={`${FILTER_CONTROL} flex-1`}
+              className={`${FILTER_CONTROL} min-w-0 flex-1`}
             >
               <option value="createdAt">{t("filters.sortBy.createdAt")}</option>
               <option value="startDate">{t("filters.sortBy.startDate")}</option>
@@ -708,12 +713,10 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
 
                       {/* 3. Package & Schedule */}
                       <td className="py-4 px-4">
-                        <div
-                          className="font-semibold text-slate-800 max-w-[200px] truncate"
-                          title={unitName}
-                        >
-                          {unitName}
-                        </div>
+                        <TruncatedText
+                          text={unitName}
+                          className="font-semibold text-slate-800 max-w-[200px]"
+                        />
                         <div className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1">
                           <Calendar className="w-3 h-3 text-slate-400" />
                           <span>
@@ -728,7 +731,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                         {r.storageUnit ? (
                           <div>
                             <span className="font-mono font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200">
-                              #{r.storageUnit.unitNumber}
+                              {r.storageUnit.unitNumber}
                             </span>
                             <span className="text-[11px] text-slate-400 block mt-0.5">
                               Tầng {r.storageUnit.floor}{" "}

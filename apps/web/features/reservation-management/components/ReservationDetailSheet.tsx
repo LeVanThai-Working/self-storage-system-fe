@@ -364,7 +364,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                 <span className="text-slate-400 block text-[11px]">Phòng kho vật lý</span>
                 <span className="font-bold text-slate-800 text-sm">
                   {reservation.storageUnit
-                    ? `#${reservation.storageUnit.unitNumber}`
+                    ? `${reservation.storageUnit.unitNumber}`
                     : "Chưa chọn kho"}
                 </span>
                 {reservation.storageUnit && (

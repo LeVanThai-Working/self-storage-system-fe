@@ -3,6 +3,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { InfoTooltip } from "@/components/ui/tooltip";
 import { useLocale } from "next-intl";
 import {
   AlertCircle,
@@ -342,7 +343,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
             className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-emerald-600 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            {isEn ? "Back to Contracts List" : "Quay lại Danh sách Hợp đồng"}
+            {isEn ? "Back to contracts" : "Quay lại danh sách hợp đồng"}
           </Link>
 
           <div className="flex items-center gap-3 flex-wrap">
@@ -374,7 +375,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
             <FileText
               className={`w-4 h-4 text-emerald-600 ${isExportingPdf ? "animate-spin" : ""}`}
             />
-            {isEn ? "Draft Contract PDF" : "Bản in Hợp đồng (PDF)"}
+            {isEn ? "Contract PDF" : "In hợp đồng PDF"}
           </button>
 
           <button
@@ -1117,7 +1118,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                     {isEn ? "Storage Unit:" : "Phòng kho vật lý:"}
                   </span>{" "}
                   <strong className="text-emerald-700">
-                    {storageUnit ? `#${storageUnit.unitNumber}` : contract.storageUnitId}
+                    {storageUnit ? `${storageUnit.unitNumber}` : contract.storageUnitId}
                   </strong>
                 </p>
                 <p>
@@ -1247,7 +1248,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 </p>
                 <p className="text-sm font-extrabold text-emerald-700">
                   {storageUnit
-                    ? `#${storageUnit.unitNumber} (${
+                    ? `${storageUnit.unitNumber} (${
                         isEn ? `Floor ${storageUnit.floor}` : `Tầng ${storageUnit.floor}`
                       }${storageUnit.zone ? ` • ${storageUnit.zone}` : ""})`
                     : contract.storageUnitId}
@@ -1269,7 +1270,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 )}
                 <p className="font-semibold text-teal-700 flex items-center gap-1.5">
                   <UserCheck className="w-3.5 h-3.5 text-teal-600" />
-                  {isEn ? "Staff:" : "NV Check-in:"} {assignedStaffName}
+                  {isEn ? "Check-in staff:" : "Nhân viên check-in:"} {assignedStaffName}
                 </p>
               </div>
 
@@ -1327,7 +1328,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-emerald-600" />
                 <h3 className="text-sm font-extrabold text-slate-900">
-                  {isEn ? "Active Rented Amenities" : "Danh sách Tiện ích đang thuê"} (
+                  {isEn ? "Active Rented Amenities" : "Tiện ích đang thuê"} (
                   {contract.amenities?.length ?? 0})
                 </h3>
               </div>
@@ -1408,7 +1409,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition-colors"
                   >
                     <Calendar className="w-3.5 h-3.5" />
-                    {isEn ? "+ Renew Lease" : "+ Phụ lục Gia hạn"}
+                    {isEn ? "Renew Lease" : "Phụ lục gia hạn"}
                   </button>
 
                   <button
@@ -1417,7 +1418,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-colors"
                   >
                     <ArrowRightLeft className="w-3.5 h-3.5" />
-                    {isEn ? "+ Unit Transfer" : "+ Đổi kho sự cố"}
+                    {isEn ? "Unit Transfer" : "Đổi kho sự cố"}
                   </button>
                 </div>
               )}
@@ -1513,11 +1514,11 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                               {isEn ? "Unit Transfer:" : "Chuyển từ:"}
                             </span>{" "}
                             <strong className="text-rose-700">
-                              #{addendum.previousStorageUnit?.unitNumber || contract.storageUnitId}
+                              {addendum.previousStorageUnit?.unitNumber || contract.storageUnitId}
                             </strong>
                             {" → "}
                             <strong className="text-emerald-700">
-                              #{addendum.newStorageUnit?.unitNumber || addendum.newStorageUnitId}
+                              {addendum.newStorageUnit?.unitNumber || addendum.newStorageUnitId}
                             </strong>
                           </p>
                           <p className="text-[11px] text-indigo-600">
@@ -1778,7 +1779,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
         <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-4 self-start">
           <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-emerald-600" />
-            {isEn ? "Financial Breakdown" : "Chi tiết Tài chính Hợp đồng"}
+            {isEn ? "Financial Breakdown" : "Chi tiết tài chính"}
           </h3>
 
           <div className="space-y-3 text-xs">
@@ -1809,14 +1810,14 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
             {/* One-time Purchased Amenities */}
             {oneTimeAmenitiesTotal > 0 && (
               <div className="flex items-center justify-between py-1.5 border-b border-slate-100">
-                <div className="flex flex-col">
-                  <span className="text-slate-600 font-medium">
-                    {isEn ? "One-time Amenities (Period 1):" : "Tiện ích mua 1 lần (thu kỳ 1):"}
-                  </span>
-                  <span className="text-[10px] text-slate-400">
-                    {isEn ? "Not billed in future cycles" : "Không tính vào chu kỳ các tháng sau"}
-                  </span>
-                </div>
+                <span className="flex items-center gap-1 text-slate-600 font-medium">
+                  {isEn ? "One-time Amenities (Period 1):" : "Tiện ích mua 1 lần (thu kỳ 1):"}
+                  <InfoTooltip
+                    content={
+                      isEn ? "Not billed in future cycles" : "Không tính vào chu kỳ các tháng sau"
+                    }
+                  />
+                </span>
                 <strong className="text-amber-700">+{formatVnd(oneTimeAmenitiesTotal)}</strong>
               </div>
             )}
@@ -1895,12 +1896,15 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                     }`}
                   >
                     {isEn ? "First Period Rent:" : "Tiền thuê kỳ đầu:"}
+                    {oneTimeAmenitiesTotal > 0 && (
+                      <InfoTooltip
+                        className="ml-1"
+                        content={
+                          isEn ? "Includes one-time amenities" : "Bao gồm tiện ích mua 1 lần"
+                        }
+                      />
+                    )}
                   </span>
-                  {oneTimeAmenitiesTotal > 0 && (
-                    <span className="text-[10px] text-slate-500 font-normal">
-                      {isEn ? "(Includes one-time amenities)" : "(Bao gồm tiện ích mua 1 lần)"}
-                    </span>
-                  )}
                 </div>
                 <span
                   className={`text-base font-extrabold ${

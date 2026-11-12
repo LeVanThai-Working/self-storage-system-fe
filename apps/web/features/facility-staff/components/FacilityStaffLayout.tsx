@@ -30,6 +30,7 @@ interface FacilityStaffLayoutProps {
 
 const getInitials = (name?: string) =>
   (name ?? "")
+    .replace(/\(.*?\)/g, "") // seed names carry a "(Kho Q7)" suffix
     .split(/\s+/)
     .filter(Boolean)
     .slice(-2)
@@ -112,7 +113,7 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
   return (
     <div className="min-h-screen bg-slate-50/70 font-sans flex text-slate-800">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-100 flex-shrink-0 flex flex-col hidden md:flex relative z-10 shadow-sm">
+      <aside className="w-64 h-screen sticky top-0 overflow-y-auto bg-white border-r border-slate-100 flex-shrink-0 flex flex-col hidden md:flex z-10 shadow-sm">
         <div className="p-6 border-b border-slate-50">
           <Link href={`/${locale}/facility-staff/contracts`} className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-500/20">
@@ -159,21 +160,6 @@ export const FacilityStaffLayout = ({ children }: FacilityStaffLayoutProps) => {
               );
             })}
           </nav>
-        </div>
-
-        {/* Bottom Banner: assigned facility */}
-        <div className="mt-auto p-4 m-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-orange-500/10 border border-emerald-100/60">
-          <div className="flex items-center gap-2 text-emerald-700 font-semibold text-xs mb-1">
-            <Building2 className="w-4 h-4 text-emerald-600" />
-            <span>{t("sidebar.assignedFacility")}</span>
-          </div>
-          <p className="text-[11px] text-slate-500 leading-relaxed">
-            {facility
-              ? `${facility.name} · ${facility.city}`
-              : locale === "en"
-                ? "Assigned facility"
-                : "Cơ sở phân công"}
-          </p>
         </div>
       </aside>
 

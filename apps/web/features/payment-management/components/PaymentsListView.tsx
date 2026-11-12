@@ -41,6 +41,8 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
 }) => {
   const locale = useLocale();
   const isEn = locale === "en";
+  // Scoped to one facility: the facility column would repeat the same name on every row.
+  const showFacility = !initialFacilityId;
 
   const [filters, setFilters] = useState<PaymentFilterState>({
     page: 1,
@@ -273,7 +275,9 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                 <th className="px-4 py-3.5 whitespace-nowrap">
                   {isEn ? "Customer" : "Khách hàng"}
                 </th>
-                <th className="px-4 py-3.5 whitespace-nowrap">{isEn ? "Facility" : "Cơ sở"}</th>
+                {showFacility && (
+                  <th className="px-4 py-3.5 whitespace-nowrap">{isEn ? "Facility" : "Cơ sở"}</th>
+                )}
                 <th className="px-4 py-3.5 text-right whitespace-nowrap">
                   {isEn ? "Amount" : "Số tiền"}
                 </th>
@@ -296,9 +300,11 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                     <td className="px-4 py-3.5">
                       <Skeleton className="h-4 w-32 rounded" />
                     </td>
-                    <td className="px-4 py-3.5">
-                      <Skeleton className="h-4 w-24 rounded" />
-                    </td>
+                    {showFacility && (
+                      <td className="px-4 py-3.5">
+                        <Skeleton className="h-4 w-24 rounded" />
+                      </td>
+                    )}
                     <td className="px-4 py-3.5 text-right">
                       <Skeleton className="h-4 w-20 ml-auto rounded" />
                     </td>
@@ -318,7 +324,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                 ))
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-12 text-slate-400">
+                  <td colSpan={showFacility ? 8 : 7} className="text-center py-12 text-slate-400">
                     <Receipt className="w-8 h-8 mx-auto mb-2 text-slate-300 stroke-[1.5]" />
                     <p className="font-semibold">
                       {isEn ? "No payments found." : "Chưa có đơn thanh toán nào."}
@@ -355,10 +361,12 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                       </div>
                     </td>
 
-                    <td className="px-4 py-3.5 text-slate-700">
-                      <div className="font-semibold">{payment.facility?.name || "—"}</div>
-                      <div className="text-[11px] text-slate-400">{payment.facility?.city}</div>
-                    </td>
+                    {showFacility && (
+                      <td className="px-4 py-3.5 text-slate-700">
+                        <div className="font-semibold">{payment.facility?.name || "—"}</div>
+                        <div className="text-[11px] text-slate-400">{payment.facility?.city}</div>
+                      </td>
+                    )}
 
                     <td className="px-4 py-3.5 text-right font-black text-slate-900">
                       {formatVnd(payment.amount)}

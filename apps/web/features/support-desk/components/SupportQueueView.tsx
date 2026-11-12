@@ -34,6 +34,7 @@ import { useAuthStore } from "@/features/auth/store";
 import { useContractDetail, useFacilityStaffs } from "@/features/contract-management/hooks";
 import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { fetchSupportTickets } from "../api";
+import { TruncatedText } from "@/components/ui/tooltip";
 import {
   supportDeskKeys,
   useCompleteSupportTicket,
@@ -261,6 +262,19 @@ export function SupportQueueView({ portalBase }: { portalBase: FacilityPortal })
                   </td>
                 </tr>
               ))
+            ) : listQuery.isError ? (
+              <tr>
+                <td colSpan={9} className="px-4 py-10 text-center text-sm text-rose-600">
+                  {t("loadError")}{" "}
+                  <button
+                    type="button"
+                    onClick={() => void listQuery.refetch()}
+                    className="font-semibold text-teal-700 hover:underline"
+                  >
+                    {t("retry")}
+                  </button>
+                </td>
+              </tr>
             ) : items.length === 0 ? (
               <tr>
                 <td colSpan={9} className="px-4 py-10 text-center text-sm text-slate-500">
@@ -281,8 +295,8 @@ export function SupportQueueView({ portalBase }: { portalBase: FacilityPortal })
                   </td>
                   <td className="px-4 py-3">{refName(ticket.customer) ?? "—"}</td>
                   <td className="px-4 py-3 text-slate-600">{t(`category.${ticket.category}`)}</td>
-                  <td className="max-w-[280px] truncate px-4 py-3 font-semibold text-slate-800">
-                    {ticket.title}
+                  <td className="px-4 py-3 font-semibold text-slate-800">
+                    <TruncatedText text={ticket.title} className="max-w-[280px]" />
                   </td>
                   <td className="px-4 py-3">
                     <Pill className={TICKET_PRIORITY_STYLE[ticket.priority]}>

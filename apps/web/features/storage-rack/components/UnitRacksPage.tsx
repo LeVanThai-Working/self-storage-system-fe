@@ -59,11 +59,7 @@ export function UnitRacksPage({
         </h1>
         {unit ? (
           <p className="mt-1 text-sm text-slate-500">
-            {[
-              t("floor", { floor: unit.floor }),
-              unit.zone && t("zone", { zone: unit.zone }),
-              unit.unitType?.name,
-            ]
+            {[t("floor", { floor: unit.floor }), unit.zone, unit.unitType?.name]
               .filter(Boolean)
               .join(" · ")}
           </p>

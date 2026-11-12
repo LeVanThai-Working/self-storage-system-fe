@@ -9,7 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { InfoTooltip } from "@/components/ui/tooltip";
 import { useApiErrorMessage } from "@/features/auth/error-message";
+import { useContracts } from "@/features/contract-management/hooks";
+import { useMyFacility } from "@/features/storage-unit-management/hooks";
 import { useCreateManualInvoice } from "../hooks";
 import {
   InvoiceItemTypeEnum,
@@ -36,6 +39,18 @@ export const CreateManualInvoiceModal: React.FC<CreateManualInvoiceModalProps> =
   const createMutation = useCreateManualInvoice();
 
   const [contractId, setContractId] = useState(defaultContractId);
+  // Facility roles only see their facility's contracts; ops/admin have no facility and see all.
+  const myFacilityQuery = useMyFacility();
+  const contractsQuery = useContracts(
+    {
+      facilityId: myFacilityQuery.data?.id,
+      limit: 100,
+      sortBy: "createdAt",
+      sortOrder: "desc",
+    },
+    isOpen && !myFacilityQuery.isLoading
+  );
+  const contracts = contractsQuery.data?.items ?? [];
   const [periodStartDate, setPeriodStartDate] = useState(
     () => new Date().toISOString().split("T")[0]
   );
@@ -144,31 +159,38 @@ export const CreateManualInvoiceModal: React.FC<CreateManualInvoiceModalProps> =
               <Wrench className="w-5 h-5" />
             </div>
             <div>
-              <DialogTitle className="text-lg font-extrabold text-slate-900">
-                Lập hóa đơn phụ phí phát sinh (INCIDENTAL)
+              <DialogTitle className="flex items-center gap-1.5 text-lg font-extrabold text-slate-900">
+                Lập hóa đơn phụ phí phát sinh
+                <InfoTooltip content="Thu tiền bồi thường, phạt quá hạn hoặc tiện ích phát sinh ngoài chu kỳ thuê" />
               </DialogTitle>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Tạo hóa đơn phụ thu tiền bồi thường, phạt quá hạn hoặc các tiện ích phát sinh ngoài
-                chu kỳ
-              </p>
             </div>
           </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Contract ID */}
+          {/* Contract */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-              Mã hợp đồng (Contract ID) *
+              Hợp đồng *
             </label>
-            <input
-              type="text"
+            <select
               required
               value={contractId}
               onChange={(e) => setContractId(e.target.value)}
-              placeholder="VD: 6724a1b2c3d4e5f6a7b8c9d0"
-              className="w-full font-mono text-xs text-slate-800 bg-slate-50 focus:bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
-            />
+              disabled={contractsQuery.isLoading}
+              className="w-full text-xs text-slate-800 bg-slate-50 focus:bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-amber-500 outline-none"
+            >
+              <option value="">
+                {contractsQuery.isLoading ? "Đang tải hợp đồng..." : "Chọn hợp đồng"}
+              </option>
+              {contracts.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {[c.contractCode, c.customer?.name, c.storageUnit?.unitNumber]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Dates row */}
@@ -198,8 +220,8 @@ export const CreateManualInvoiceModal: React.FC<CreateManualInvoiceModalProps> =
               />
             </div>
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Hạn thanh toán (Due Date) *
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5 whitespace-nowrap">
+                Hạn thanh toán *
               </label>
               <input
                 type="date"

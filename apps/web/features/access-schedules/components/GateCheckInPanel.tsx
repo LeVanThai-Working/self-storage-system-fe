@@ -10,6 +10,7 @@ import {
   type AccessScheduleCheckInResponse,
 } from "@self-storage-system-fe/shared";
 import { Button } from "@/components/ui/button";
+import { InfoTooltip } from "@/components/ui/tooltip";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { useCheckInAccessSchedule } from "../hooks";
@@ -67,6 +68,7 @@ export function GateCheckInPanel({ portalBase }: { portalBase: FacilityPortal })
         <div className="flex items-center gap-2">
           <QrCode className="h-5 w-5 text-teal-700" />
           <p className="text-sm font-bold text-slate-800">{t("title")}</p>
+          <InfoTooltip content={t("hint")} />
         </div>
         <input
           value={code}
