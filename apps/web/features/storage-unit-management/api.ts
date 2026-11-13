@@ -20,6 +20,8 @@ import type {
   UpdateStorageUnitRequest,
 } from "./types";
 
+const STORAGE_UNITS_MAX_PAGE_SIZE = 100;
+
 /**
  * Lấy cơ sở mà Facility Manager hiện tại đang phụ trách.
  * Endpoint: GET /my-facility
@@ -40,7 +42,7 @@ export const fetchStorageUnits = async (
   const params: StorageUnitQuery = {
     facilityId,
     page: filters.page,
-    limit: filters.limit,
+    limit: Math.min(filters.limit, STORAGE_UNITS_MAX_PAGE_SIZE),
     sortBy: filters.sortBy,
     sortOrder: filters.sortBy === "createdAt" ? "desc" : "asc",
   };
@@ -55,6 +57,25 @@ export const fetchStorageUnits = async (
     params,
   });
   return data.data;
+};
+
+/** Full facility lookup for selectors: fetch every page without exceeding the API page-size cap. */
+export const fetchAllStorageUnits = async (
+  facilityId: string,
+  filters: Omit<StorageUnitFilters, "page" | "limit"> = { sortBy: "unitNumber" }
+): Promise<StorageUnitResponse[]> => {
+  const items: StorageUnitResponse[] = [];
+  let page = 1;
+  while (true) {
+    const result = await fetchStorageUnits(facilityId, {
+      ...filters,
+      page,
+      limit: STORAGE_UNITS_MAX_PAGE_SIZE,
+    });
+    items.push(...result.items);
+    if (!result.pagination.hasNextPage) return items;
+    page += 1;
+  }
 };
 
 /**

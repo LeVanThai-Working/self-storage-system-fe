@@ -18,7 +18,13 @@ import {
   AlertCircle,
   Clock,
 } from "lucide-react-native";
-import { NotificationTypeEnum } from "@self-storage-system-fe/shared";
+import {
+  NotificationTypeEnum,
+  getAccessScheduleNotificationId,
+} from "@self-storage-system-fe/shared";
+import { useRouter } from "expo-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { accessScheduleKeys } from "@/features/access-schedules/hooks/useAccessSchedules";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
 import {
@@ -41,6 +47,7 @@ function getNotificationIcon(type: NotificationTypeEnum) {
     case NotificationTypeEnum.CONTRACT:
       return <FileText size={18} color="#0B927E" />;
     case NotificationTypeEnum.RESERVATION:
+    case NotificationTypeEnum.ACCESS_SCHEDULE:
       return <CalendarClock size={18} color="#FF702E" />;
     case NotificationTypeEnum.STORAGE_UNIT:
       return <Warehouse size={18} color="#0B927E" />;
@@ -77,6 +84,8 @@ function formatNotificationTime(dateString?: string): string {
 }
 
 export function NotificationModal({ visible, onClose }: NotificationModalProps) {
+  const router = useRouter();
+  const client = useQueryClient();
   const { t } = useTranslation();
   const {
     data: infiniteData,
@@ -84,7 +93,6 @@ export function NotificationModal({ visible, onClose }: NotificationModalProps) 
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    refetch,
   } = useInfiniteNotifications(15, visible);
 
   const { data: unreadCount = 0 } = useUnreadCount(visible);
@@ -98,6 +106,12 @@ export function NotificationModal({ visible, onClose }: NotificationModalProps) 
   const handleItemPress = (item: NotificationResponse) => {
     if (!item.isRead) {
       markAsReadMutation.mutate(item.id);
+    }
+    const scheduleId = getAccessScheduleNotificationId(item);
+    if (scheduleId) {
+      void client.invalidateQueries({ queryKey: accessScheduleKeys.detail(scheduleId) });
+      onClose();
+      router.push({ pathname: "/access-schedules/[id]", params: { id: scheduleId } });
     }
   };
 

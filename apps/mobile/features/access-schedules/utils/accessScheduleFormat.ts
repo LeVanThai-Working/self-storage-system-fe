@@ -22,16 +22,18 @@ export const ACCESS_SCHEDULE_ERROR = {
   DUPLICATE_SLOT: MESSAGE_CODE.MESSAGE_CODE_657,
 } as const;
 
-/** Start of the slot as a local date: `scheduledDate` "YYYY-MM-DD" plus `startTime` "HH:mm". */
+/** Slot times belong to the facility's Vietnam date, regardless of device timezone. */
 export function getSlotStart(scheduledDate: string, startTime: string): Date {
-  const [year, month, day] = scheduledDate.split("-").map(Number);
-  const [hours, minutes] = startTime.split(":").map(Number);
-  return new Date(year, (month ?? 1) - 1, day ?? 1, hours ?? 0, minutes ?? 0);
+  return new Date(`${scheduledDate}T${startTime}:00+07:00`);
 }
 
 function formatClock(date: Date): string {
-  const pad = (value: number) => String(value).padStart(2, "0");
-  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(date);
 }
 
 /** Gate check-in window around the slot start, e.g. { from: "07:30", to: "08:45" }. */

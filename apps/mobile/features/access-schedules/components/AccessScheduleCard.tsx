@@ -22,8 +22,8 @@ export function AccessScheduleCard({ schedule, onPress }: AccessScheduleCardProp
       <View className="h-11 w-11 items-center justify-center rounded-2xl bg-brand-bg dark:bg-brand/10">
         <CalendarClock size={20} color="#0B927E" />
       </View>
-      <View className="flex-1 gap-0.5">
-        <View className="flex-row items-center gap-2">
+      <View className="flex-1 min-w-0 gap-0.5">
+        <View className="flex-row flex-wrap items-center gap-2">
           <Text className="font-mono text-[11px] font-bold text-neutral-dark dark:text-neutral-100">
             {schedule.scheduleCode}
           </Text>
@@ -42,6 +42,11 @@ export function AccessScheduleCard({ schedule, onPress }: AccessScheduleCardProp
           })}
           {" · "}
           {t("accessSchedule.peopleCount", { count: schedule.numberOfPeople })}
+        </Text>
+        <Text numberOfLines={2} variant="muted" className="text-[11px]">
+          {schedule.assignedStaffId === null
+            ? t("accessSchedule.detail.unassigned")
+            : `${t("accessSchedule.detail.assignedStaff")}: ${schedule.assignedStaffName ?? t("accessSchedule.detail.staffNameUnavailable")}`}
         </Text>
       </View>
       <ChevronRight size={16} color="#94A3B8" />

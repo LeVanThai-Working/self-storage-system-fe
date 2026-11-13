@@ -3,15 +3,17 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { CheckCircle2, Loader2, QrCode } from "lucide-react";
+import { CheckCircle2, Loader2, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import {
   checkInAccessScheduleSchema,
+  RoleEnum,
   type AccessScheduleCheckInResponse,
 } from "@self-storage-system-fe/shared";
 import { Button } from "@/components/ui/button";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { useApiErrorMessage } from "@/features/auth/error-message";
+import { useAuthStore } from "@/features/auth/store";
 import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { useCheckInAccessSchedule } from "../hooks";
 import { formatScheduleDate } from "../utils";
@@ -20,18 +22,20 @@ const INPUT =
   "w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-teal-400";
 
 /**
- * Gate check-in: a handheld scanner types the QR payload into the field (like a keyboard),
- * or the guard types the 6-digit OTP the customer reads out. Either one is accepted.
+ * Staff enters the OTP supplied by the customer. The backend atomically claims an unassigned visit.
  */
 export function GateCheckInPanel({ portalBase }: { portalBase: FacilityPortal }) {
   const t = useTranslations("accessScheduleDesk.gate");
   const locale = useLocale();
   const getErrorMessage = useApiErrorMessage();
   const checkIn = useCheckInAccessSchedule();
+  const currentUser = useAuthStore((state) => state.currentUser);
   const [code, setCode] = useState("");
   const [staffNotes, setStaffNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AccessScheduleCheckInResponse | null>(null);
+
+  if (portalBase !== "facility-staff" || currentUser?.role !== RoleEnum.FACILITY_STAFF) return null;
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -66,15 +70,19 @@ export function GateCheckInPanel({ portalBase }: { portalBase: FacilityPortal })
     >
       <form onSubmit={(event) => void handleSubmit(event)} className="space-y-3">
         <div className="flex items-center gap-2">
-          <QrCode className="h-5 w-5 text-teal-700" />
+          <KeyRound className="h-5 w-5 text-teal-700" />
           <p className="text-sm font-bold text-slate-800">{t("title")}</p>
           <InfoTooltip content={t("hint")} />
         </div>
         <input
           value={code}
-          onChange={(event) => setCode(event.target.value)}
+          onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+          aria-label={t("codePlaceholder")}
+          inputMode="numeric"
+          pattern="[0-9]{6}"
+          maxLength={6}
           placeholder={t("codePlaceholder")}
-          autoComplete="off"
+          autoComplete="one-time-code"
           autoFocus
           className={`${INPUT} font-mono`}
         />
@@ -111,6 +119,9 @@ export function GateCheckInPanel({ portalBase }: { portalBase: FacilityPortal })
               <span className="font-semibold">{schedule.customerName ?? "—"}</span>
               {" · "}
               {schedule.contractCode ?? "—"}
+            </p>
+            <p className="text-slate-600">
+              {t("responsibleStaff", { name: schedule.assignedStaffName ?? "—" })}
             </p>
             <p className="text-slate-600">
               {formatScheduleDate(schedule.scheduledDate)} · {schedule.timeSlotSnapshot.slotName} (

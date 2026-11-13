@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Alert, Pressable, RefreshControl, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import QRCode from "react-native-qrcode-svg";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import {
   ArrowLeft,
   CalendarDays,
@@ -16,6 +15,7 @@ import {
 import {
   AccessScheduleStatusEnum,
   formatDate,
+  getAccessScheduleOtp,
   type MessageLocale,
 } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
@@ -29,7 +29,6 @@ import {
   useAccessSchedule,
   useCancelAccessSchedule,
 } from "@/features/access-schedules/hooks/useAccessSchedules";
-import { useAccessOtpStore } from "@/features/access-schedules/stores/accessOtp.store";
 import {
   ACCESS_SCHEDULE_STATUS_TONE,
   canCancelAccessSchedule,
@@ -51,7 +50,7 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
   );
 }
 
-/** A booked warehouse visit: the gate QR and OTP, the time window, and cancelling. */
+/** A booked warehouse visit: the current gate OTP, responsible staff and visit status. */
 export default function AccessScheduleDetailScreen() {
   const router = useRouter();
   const { t, locale } = useTranslation();
@@ -60,7 +59,14 @@ export default function AccessScheduleDetailScreen() {
 
   const scheduleQuery = useAccessSchedule(id);
   const schedule = scheduleQuery.data;
-  const otp = useAccessOtpStore((state) => state.otpByScheduleId[id]);
+  const { refetch } = scheduleQuery;
+  useFocusEffect(
+    useCallback(() => {
+      void refetch();
+    }, [refetch])
+  );
+  const otp =
+    !scheduleQuery.isFetching && !scheduleQuery.isError ? getAccessScheduleOtp(schedule) : null;
   const cancelMutation = useCancelAccessSchedule();
 
   const handleCancel = () => {
@@ -130,7 +136,7 @@ export default function AccessScheduleDetailScreen() {
         }
       >
         <View className="items-center gap-3 rounded-3xl border border-neutral-border bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-          <View className="flex-row items-center gap-2">
+          <View className="flex-row flex-wrap items-center justify-center gap-2">
             <Text className="font-mono text-sm font-extrabold text-neutral-dark dark:text-neutral-100">
               {schedule.scheduleCode}
             </Text>
@@ -139,17 +145,6 @@ export default function AccessScheduleDetailScreen() {
               tone={ACCESS_SCHEDULE_STATUS_TONE[schedule.status]}
             />
           </View>
-
-          {pending && schedule.qrPayload ? (
-            <>
-              <View className="rounded-2xl bg-white p-3">
-                <QRCode value={schedule.qrPayload} size={190} />
-              </View>
-              <Text variant="muted" className="text-center text-xs">
-                {t("accessSchedule.detail.qrHint")}
-              </Text>
-            </>
-          ) : null}
 
           {pending ? (
             otp ? (
@@ -164,18 +159,27 @@ export default function AccessScheduleDetailScreen() {
                   {otp}
                 </Text>
                 <Text variant="muted" className="text-center text-[11px]">
-                  {t("accessSchedule.detail.otpOnce")}
+                  {t("accessSchedule.detail.otpHint")}
                 </Text>
               </View>
             ) : (
               <Text variant="muted" className="text-center text-[11px]">
-                {t("accessSchedule.detail.otpHidden")}
+                {t(scheduleQuery.isFetching ? "common.loading" : "accessSchedule.detail.otpHidden")}
               </Text>
             )
           ) : null}
         </View>
 
         <View className="rounded-3xl border border-neutral-border bg-white px-4 py-2 dark:border-neutral-800 dark:bg-neutral-900">
+          <InfoRow
+            icon={<Users size={15} color="#647B80" />}
+            label={t("accessSchedule.detail.assignedStaff")}
+            value={
+              schedule.assignedStaffId === null
+                ? t("accessSchedule.detail.unassigned")
+                : (schedule.assignedStaffName ?? t("accessSchedule.detail.staffNameUnavailable"))
+            }
+          />
           <InfoRow
             icon={<CalendarDays size={15} color="#647B80" />}
             label={t("accessSchedule.detail.date")}

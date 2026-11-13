@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "@/features/auth/stores/auth.store";
 import { useReservationHandoffStore } from "@/features/storage-explore/stores/reservationHandoff.store";
 import { GlobalToast } from "@/components/ui/toast";
+import { useNotificationRealtime } from "@/features/notifications/hooks/useNotificationRealtime";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -58,6 +59,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  useNotificationRealtime();
   const { colorScheme } = useColorScheme();
   const router = useRouter();
   const segments = useSegments();

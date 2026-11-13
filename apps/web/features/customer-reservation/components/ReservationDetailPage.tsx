@@ -23,16 +23,16 @@ import { ReservationStatusBadge } from "./ReservationStatusBadge";
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex justify-between gap-4 py-2.5 text-sm">
-      <dt className="text-neutral-muted">{label}</dt>
-      <dd className="text-right font-medium">{value}</dd>
+    <div className="grid min-w-0 grid-cols-1 gap-1 py-2.5 text-sm sm:grid-cols-2 sm:gap-4">
+      <dt className="min-w-0 text-neutral-muted">{label}</dt>
+      <dd className="min-w-0 font-medium [overflow-wrap:anywhere] sm:text-right">{value}</dd>
     </div>
   );
 }
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-neutral-border bg-white p-5">
+    <section className="min-w-0 rounded-2xl border border-neutral-border bg-white p-5 [overflow-wrap:anywhere]">
       <h2 className="mb-2 text-lg font-semibold">{title}</h2>
       <dl className="divide-y divide-neutral-border">{children}</dl>
     </section>

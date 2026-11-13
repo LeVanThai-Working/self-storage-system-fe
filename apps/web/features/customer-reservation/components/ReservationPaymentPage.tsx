@@ -15,7 +15,7 @@ import { formatCountdown, isAwaitingDeposit, secondsUntil } from "../utils";
 
 function Panel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-xl rounded-2xl border border-neutral-border bg-white p-6 text-center">
+    <div className="mx-auto min-w-0 max-w-xl rounded-2xl border border-neutral-border bg-white p-6 text-center [overflow-wrap:anywhere]">
       {children}
     </div>
   );
@@ -23,9 +23,9 @@ function Panel({ children }: { children: React.ReactNode }) {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-4 py-2 text-sm">
-      <dt className="text-neutral-muted">{label}</dt>
-      <dd className="text-right font-semibold break-all">{value}</dd>
+    <div className="grid min-w-0 grid-cols-1 gap-1 py-2 text-sm sm:grid-cols-2 sm:gap-4">
+      <dt className="min-w-0 text-neutral-muted">{label}</dt>
+      <dd className="min-w-0 font-semibold [overflow-wrap:anywhere] sm:text-right">{value}</dd>
     </div>
   );
 }
@@ -107,7 +107,7 @@ export function ReservationPaymentPage({ id }: { id: string }) {
         <p className="mt-2 text-neutral-muted">
           {cancelled ? t("cancelled.body") : t("expired.body")}
         </p>
-        <div className="mt-6 flex justify-center gap-3">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link href={`/${locale}/customer/search`} className={buttonVariants()}>
             {t("bookAgain")}
           </Link>
@@ -123,7 +123,7 @@ export function ReservationPaymentPage({ id }: { id: string }) {
   const partial = payment?.status === PaymentStatusEnum.PARTIALLY_PAID;
 
   return (
-    <div className="mx-auto max-w-xl space-y-5">
+    <div className="mx-auto min-w-0 max-w-xl space-y-5 [overflow-wrap:anywhere]">
       <div>
         <h1 className="text-3xl font-bold">{t("title")}</h1>
         <p className="mt-1 text-neutral-muted">{t("subtitle", { code: r.reservationCode })}</p>
@@ -164,7 +164,7 @@ export function ReservationPaymentPage({ id }: { id: string }) {
               <img
                 src={payment.qrUrl}
                 alt={t("qrAlt")}
-                className="mx-auto size-64 rounded-xl border border-neutral-border object-contain"
+                className="mx-auto aspect-square w-64 max-w-full rounded-xl border border-neutral-border object-contain"
               />
             )}
             <p className="mt-3 text-center text-sm text-neutral-muted">{t("scanHint")}</p>

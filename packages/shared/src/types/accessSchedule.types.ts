@@ -26,7 +26,14 @@ export interface RentedRackItemResponse {
   zone?: string | null;
 }
 
-export interface AccessScheduleDetailResponse {
+export interface AccessScheduleAssignmentFields {
+  assignedStaffId: string | null;
+  assignedStaffName: string | null;
+  assignedAt: string | null;
+  assignmentVersion: number;
+}
+
+export interface AccessScheduleDetailResponse extends AccessScheduleAssignmentFields {
   id: string;
   scheduleCode: string;
   status: AccessScheduleStatusEnum;
@@ -46,9 +53,7 @@ export interface AccessScheduleDetailResponse {
   vehicleType?: string | null;
   vehiclePlate?: string | null;
   purpose?: string | null;
-  /** Value the customer shows as a QR code at the gate. */
-  qrPayload?: string | null;
-  /** 6-digit OTP, only returned to the customer right after booking. */
+  /** Current six-digit OTP, returned only when the customer is allowed to view it. */
   rawOtpCode?: string | null;
   expiresAt: string;
   checkedInAt?: string | null;
@@ -63,7 +68,7 @@ export interface AccessScheduleDetailResponse {
   updatedAt: string;
 }
 
-export interface AccessScheduleListItemResponse {
+export interface AccessScheduleListItemResponse extends AccessScheduleAssignmentFields {
   id: string;
   scheduleCode: string;
   status: AccessScheduleStatusEnum;

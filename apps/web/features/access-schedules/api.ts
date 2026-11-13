@@ -6,6 +6,8 @@ import {
   type AccessScheduleDetailResponse,
   type AccessScheduleListItemResponse,
   type AccessScheduleQuery,
+  type AssignAccessScheduleRequest,
+  type UnassignAccessScheduleRequest,
   type ApiResponse as Envelope,
   type CheckInAccessScheduleRequest,
   type CheckOutAccessScheduleRequest,
@@ -31,7 +33,7 @@ export const fetchAccessSchedule = async (id: string): Promise<AccessScheduleDet
   return data.data;
 };
 
-/** POST /access-schedules/check-in — `code` is the scanned QR payload or the 6-digit OTP. */
+/** POST /access-schedules/check-in — `code` is the customer's six-digit OTP. */
 export const checkInAccessSchedule = async (
   payload: CheckInAccessScheduleRequest
 ): Promise<AccessScheduleCheckInResponse> => {
@@ -49,6 +51,35 @@ export const checkOutAccessSchedule = async (
 ): Promise<AccessScheduleDetailResponse> => {
   const { data } = await api.post<Envelope<AccessScheduleDetailResponse>>(
     ACCESS_SCHEDULE_ENDPOINTS.CHECK_OUT(id),
+    payload
+  );
+  return data.data;
+};
+
+export const claimAccessSchedule = async (id: string): Promise<AccessScheduleDetailResponse> => {
+  const { data } = await api.post<Envelope<AccessScheduleDetailResponse>>(
+    ACCESS_SCHEDULE_ENDPOINTS.CLAIM(id)
+  );
+  return data.data;
+};
+
+export const assignAccessSchedule = async (
+  id: string,
+  payload: AssignAccessScheduleRequest
+): Promise<AccessScheduleDetailResponse> => {
+  const { data } = await api.post<Envelope<AccessScheduleDetailResponse>>(
+    ACCESS_SCHEDULE_ENDPOINTS.ASSIGN(id),
+    payload
+  );
+  return data.data;
+};
+
+export const unassignAccessSchedule = async (
+  id: string,
+  payload: UnassignAccessScheduleRequest
+): Promise<AccessScheduleDetailResponse> => {
+  const { data } = await api.post<Envelope<AccessScheduleDetailResponse>>(
+    ACCESS_SCHEDULE_ENDPOINTS.UNASSIGN(id),
     payload
   );
   return data.data;

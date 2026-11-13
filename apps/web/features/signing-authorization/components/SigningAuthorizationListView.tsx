@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -239,13 +241,15 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
           </select>
 
           {/* Sort Order Toggle */}
-          <button
-            onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
-            className="w-9 h-9 rounded-2xl border border-slate-200 bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50"
-            title="Đổi chiều sắp xếp"
-          >
-            <ArrowUpDown className="w-3.5 h-3.5" />
-          </button>
+          <IconActionTooltip label="Đổi chiều sắp xếp">
+            <button
+              onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+              className="w-9 h-9 rounded-2xl border border-slate-200 bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50"
+              title="Đổi chiều sắp xếp"
+            >
+              <ArrowUpDown className="w-3.5 h-3.5" />
+            </button>
+          </IconActionTooltip>
         </div>
       </div>
 
@@ -395,37 +399,43 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
                       <td className="py-3.5 px-4 text-right whitespace-nowrap">
                         <div className="inline-flex items-center gap-1">
                           {/* Detail Button */}
-                          <button
-                            type="button"
-                            onClick={() => setDetailItem(item)}
-                            className="p-1.5 rounded-xl text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors"
-                            title={t("modals.detailTitle")}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
+                          <IconActionTooltip label={t("modals.detailTitle")}>
+                            <button
+                              type="button"
+                              onClick={() => setDetailItem(item)}
+                              className="p-1.5 rounded-xl text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+                              title={t("modals.detailTitle")}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
 
                           {/* Edit Button (active only, manage only) */}
                           {canManage && item.status === "active" && (
-                            <button
-                              type="button"
-                              onClick={() => setEditItem(item)}
-                              className="p-1.5 rounded-xl text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
-                              title={t("modals.editTitle")}
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
+                            <IconActionTooltip label={t("modals.editTitle")}>
+                              <button
+                                type="button"
+                                onClick={() => setEditItem(item)}
+                                className="p-1.5 rounded-xl text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                                title={t("modals.editTitle")}
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                            </IconActionTooltip>
                           )}
 
                           {/* Revoke Button (active only, manage only) */}
                           {canManage && item.status === "active" && (
-                            <button
-                              type="button"
-                              onClick={() => setRevokeItem(item)}
-                              className="p-1.5 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                              title={t("modals.revokeTitle")}
-                            >
-                              <Ban className="w-4 h-4" />
-                            </button>
+                            <IconActionTooltip label={t("modals.revokeTitle")}>
+                              <button
+                                type="button"
+                                onClick={() => setRevokeItem(item)}
+                                className="p-1.5 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                                title={t("modals.revokeTitle")}
+                              >
+                                <Ban className="w-4 h-4" />
+                              </button>
+                            </IconActionTooltip>
                           )}
                         </div>
                       </td>

@@ -6,6 +6,7 @@ export enum NotificationTypeEnum {
   RESERVATION = "reservation",
   CONTRACT = "contract",
   PAYMENT = "payment",
+  ACCESS_SCHEDULE = "access_schedule",
 }
 
 export enum NotificationPriorityEnum {

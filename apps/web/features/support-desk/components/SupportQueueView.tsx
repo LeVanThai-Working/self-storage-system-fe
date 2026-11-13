@@ -34,7 +34,7 @@ import { useAuthStore } from "@/features/auth/store";
 import { useContractDetail, useFacilityStaffs } from "@/features/contract-management/hooks";
 import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { fetchSupportTickets } from "../api";
-import { TruncatedText } from "@/components/ui/tooltip";
+import { IconActionTooltip, TruncatedText } from "@/components/ui/tooltip";
 import {
   supportDeskKeys,
   useCompleteSupportTicket,
@@ -328,22 +328,26 @@ export function SupportQueueView({ portalBase }: { portalBase: FacilityPortal })
               })}
             </span>
             <div className="flex gap-1">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={!data.pagination.hasPrevPage}
-                onClick={() => setPage((value) => value - 1)}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={!data.pagination.hasNextPage}
-                onClick={() => setPage((value) => value + 1)}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <IconActionTooltip action="previousPage">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!data.pagination.hasPrevPage}
+                  onClick={() => setPage((value) => value - 1)}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </IconActionTooltip>
+              <IconActionTooltip action="nextPage">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!data.pagination.hasNextPage}
+                  onClick={() => setPage((value) => value + 1)}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </IconActionTooltip>
             </div>
           </div>
         ) : null}

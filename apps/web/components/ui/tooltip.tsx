@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 function TooltipProvider({
@@ -93,6 +94,25 @@ function ActionTooltip({
   );
 }
 
+/** Accessible labels and hover/focus tooltips for table icon actions, including disabled buttons. */
+function IconActionTooltip({
+  label,
+  action,
+  children,
+}: {
+  label?: string;
+  action?: "previousPage" | "nextPage" | "close";
+  children: React.ReactElement<{ disabled?: boolean; "aria-label"?: string; title?: string }>;
+}) {
+  const t = useTranslations("common");
+  const content = label ?? (action ? t(action) : children.props["aria-label"]);
+  return (
+    <ActionTooltip content={content} disabled={children.props.disabled}>
+      {React.cloneElement(children, { "aria-label": content, title: undefined })}
+    </ActionTooltip>
+  );
+}
+
 /** Small "i" icon next to a label; holds helper text that used to be printed on screen. */
 function InfoTooltip({
   content,
@@ -134,6 +154,7 @@ export {
   TooltipProvider,
   TooltipPortal,
   ActionTooltip,
+  IconActionTooltip,
   InfoTooltip,
   TruncatedText,
 };

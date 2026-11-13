@@ -49,7 +49,7 @@ export const SEARCH_FIELDS = [
   {
     id: "type",
     icon: LayoutGrid,
-    options: ["all", "locker", "standard", "climate_controlled", "commercial"],
+    options: ["all"],
   },
   {
     id: "size",

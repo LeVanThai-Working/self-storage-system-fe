@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Pressable, TextInput } from "react-native";
-import { ChevronDown, ChevronUp, Lock, PackageOpen } from "lucide-react-native";
+import { Lock, PackageOpen } from "lucide-react-native";
 import { stockMoveRequestSchema, type MessageLocale } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
@@ -19,6 +19,8 @@ import { FieldError, FieldLabel, InventoryFormSheet } from "./InventoryFormSheet
 import { PositionCard } from "./PositionCard";
 import { QuantityStepper } from "./QuantityStepper";
 import { SkuSelectField } from "./SkuSelect";
+
+const REASON_MIN_LENGTH = 5;
 
 /** `undefined` = no destination chosen yet, `null` = floor. */
 type Destination = string | null | undefined;
@@ -49,10 +51,10 @@ export function StockMoveModal({
   const [pickingDestination, setPickingDestination] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [reason, setReason] = useState("");
-  const [showReason, setShowReason] = useState(false);
   const [destinationError, setDestinationError] = useState<string | null>(null);
   const [skuError, setSkuError] = useState<string | null>(null);
   const [quantityError, setQuantityError] = useState<string | null>(null);
+  const [reasonError, setReasonError] = useState<string | null>(null);
 
   const floorLabel = t("rackMap.form.floor");
   const sourceLabel = getPositionLabel(tree, target.tierId, floorLabel);
@@ -68,6 +70,9 @@ export function StockMoveModal({
     if (destination === undefined) {
       setDestinationError(t("rackMap.form.destinationRequired"));
       valid = false;
+    } else if (destination === target.tierId) {
+      setDestinationError(t("rackMap.form.samePosition"));
+      valid = false;
     }
     if (!item) {
       setSkuError(t("rackMap.form.skuRequired"));
@@ -80,6 +85,11 @@ export function StockMoveModal({
       );
       valid = false;
     }
+    const trimmedReason = reason.trim();
+    if (trimmedReason.length < REASON_MIN_LENGTH) {
+      setReasonError(t("rackMap.form.reasonMin"));
+      valid = false;
+    }
     if (!valid || destination === undefined || !item) return;
 
     const parsed = stockMoveRequestSchema.safeParse({
@@ -88,10 +98,18 @@ export function StockMoveModal({
       fromRackTierId: target.tierId,
       toRackTierId: destination,
       quantity,
-      reason: reason.trim() || undefined,
+      reason: trimmedReason,
     });
     if (!parsed.success) {
-      setDestinationError(t("rackMap.form.samePosition"));
+      for (const issue of parsed.error.issues) {
+        if (issue.path.includes("toRackTierId")) {
+          setDestinationError(t("rackMap.form.samePosition"));
+        } else if (issue.path.includes("reason")) {
+          setReasonError(issue.message);
+        } else {
+          toast.error(issue.message);
+        }
+      }
       return;
     }
 
@@ -257,22 +275,14 @@ export function StockMoveModal({
         <FieldError message={quantityError} />
       </View>
 
-      <Pressable
-        onPress={() => setShowReason((prev) => !prev)}
-        className="flex-row items-center gap-1.5 self-start"
-      >
-        {showReason ? (
-          <ChevronUp size={14} color="#0B927E" />
-        ) : (
-          <ChevronDown size={14} color="#0B927E" />
-        )}
-        <Text className="text-xs font-bold text-brand">{t("rackMap.form.addReason")}</Text>
-      </Pressable>
-
-      {showReason ? (
+      <View className="gap-2">
+        <FieldLabel>{t("rackMap.form.reason")}</FieldLabel>
         <TextInput
           value={reason}
-          onChangeText={(val) => setReason(val.slice(0, 1000))}
+          onChangeText={(val) => {
+            setReason(val.slice(0, 1000));
+            setReasonError(null);
+          }}
           multiline
           numberOfLines={2}
           textAlignVertical="top"
@@ -280,7 +290,8 @@ export function StockMoveModal({
           placeholderTextColor="#94A3B8"
           className="min-h-[64px] rounded-xl border border-neutral-border bg-white p-3.5 text-xs text-neutral-dark dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
         />
-      ) : null}
+        <FieldError message={reasonError} />
+      </View>
     </InventoryFormSheet>
   );
 }

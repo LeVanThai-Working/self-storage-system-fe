@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState, useMemo } from "react";
 import { useAuditLogs } from "../hooks";
 import type { AuditLogAction, AuditLogQueryParams, AuditLogStatus } from "../types";
@@ -400,16 +402,18 @@ export const AuditLogTable = () => {
 
                       {/* View Details Action */}
                       <td className="px-5 py-2 text-right">
-                        <button
-                          onClick={() => {
-                            setSelectedLogId(log.id);
-                            setIsDetailModalOpen(true);
-                          }}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
-                          title={t("viewDetails")}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
+                        <IconActionTooltip label={t("viewDetails")}>
+                          <button
+                            onClick={() => {
+                              setSelectedLogId(log.id);
+                              setIsDetailModalOpen(true);
+                            }}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                            title={t("viewDetails")}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </IconActionTooltip>
                       </td>
                     </tr>
                   );

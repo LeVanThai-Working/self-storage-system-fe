@@ -63,7 +63,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-4 rounded-2xl border border-neutral-border bg-white p-5">
+    <section className="min-w-0 space-y-4 rounded-2xl border border-neutral-border bg-white p-4 [overflow-wrap:anywhere] sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{title}</h2>
         {headerExtra}
@@ -286,15 +286,15 @@ export function ReservationFormPage({
     <>
       {back}
 
-      <header className="space-y-1">
+      <header className="min-w-0 space-y-1 [overflow-wrap:anywhere]">
         <h1 className="text-2xl font-bold tracking-tight text-neutral-main">{t("title")}</h1>
         <p className="text-sm text-neutral-muted">
           {facility.name} · {offering.unitType.name}
         </p>
       </header>
 
-      <form onSubmit={onSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <form onSubmit={onSubmit} className="grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-3">
+        <div className="min-w-0 space-y-6 xl:col-span-2">
           <Section title={t("unit.title")}>
             <UnitSeatMapWeb
               units={mapUnits}
@@ -458,9 +458,9 @@ export function ReservationFormPage({
           </Section>
         </div>
 
-        <aside className="h-fit space-y-4 rounded-2xl border border-neutral-border bg-white p-5 lg:sticky lg:top-28">
+        <aside className="min-w-0 h-fit space-y-4 rounded-2xl border border-neutral-border bg-white p-4 [overflow-wrap:anywhere] sm:p-5 xl:sticky xl:top-28">
           <h2 className="text-lg font-semibold">{t("summary.title")}</h2>
-          <dl className="space-y-2 text-sm">
+          <dl className="space-y-2 text-sm [&_dt]:min-w-0 [&_dd]:min-w-0 [&_dd]:text-right [&_dd]:tabular-nums">
             <div className="flex justify-between gap-3">
               <dt className="text-neutral-muted">
                 {isRackBooking

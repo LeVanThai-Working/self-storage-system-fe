@@ -287,6 +287,9 @@ export const MESSAGE_CODE = {
   MESSAGE_CODE_658: "MESSAGE_CODE_658",
   // Invalid Or Expired Access QR Token Or OTP
   MESSAGE_CODE_659: "MESSAGE_CODE_659",
+  MESSAGE_CODE_660: "MESSAGE_CODE_660",
+  MESSAGE_CODE_661: "MESSAGE_CODE_661",
+  MESSAGE_CODE_662: "MESSAGE_CODE_662",
   // Incident Not Found
   MESSAGE_CODE_700: "MESSAGE_CODE_700",
   // Invalid Incident Status Transition
@@ -520,7 +523,10 @@ export const MESSAGE_DICTIONARY_EN: Record<string, string> = {
   MESSAGE_CODE_656: "Cannot Cancel Access Schedule Too Close To Start Time",
   MESSAGE_CODE_657: "Customer Already Has An Active Schedule In This Time Slot",
   MESSAGE_CODE_658: "Access Schedule Does Not Belong To Facility",
-  MESSAGE_CODE_659: "Invalid Or Expired Access QR Token Or OTP",
+  MESSAGE_CODE_659: "Invalid Or Expired Access OTP",
+  MESSAGE_CODE_660: "Access Schedule Assignment Changed Or Unavailable",
+  MESSAGE_CODE_661: "Staff Has Conflicting Access Schedule",
+  MESSAGE_CODE_662: "Only The Responsible Staff Can Perform This Action",
   MESSAGE_CODE_700: "Incident Not Found",
   MESSAGE_CODE_701: "Invalid Incident Status Transition",
   MESSAGE_CODE_702: "Storage Unit Not Owned By Contract",
@@ -737,7 +743,11 @@ export const MESSAGE_DICTIONARY_VI: Record<string, string> = {
   MESSAGE_CODE_656: "Không thể hủy lịch hẹn sát giờ (phải hủy trước tối thiểu 1 giờ)",
   MESSAGE_CODE_657: "Bạn đã có một lịch hẹn trong khung giờ này",
   MESSAGE_CODE_658: "Lịch hẹn không thuộc cơ sở chi nhánh này",
-  MESSAGE_CODE_659: "Mã QR hoặc mã OTP không hợp lệ hoặc đã hết hạn",
+  MESSAGE_CODE_659: "OTP không hợp lệ hoặc đã hết hiệu lực",
+  MESSAGE_CODE_660:
+    "Phân công đã thay đổi hoặc lịch không còn khả dụng. Vui lòng kiểm tra dữ liệu mới nhất.",
+  MESSAGE_CODE_661: "Nhân viên có lịch trùng giờ hoặc đang giám sát khách khác",
+  MESSAGE_CODE_662: "Chỉ nhân viên phụ trách được thực hiện thao tác này",
   MESSAGE_CODE_700: "Không tìm thấy sự cố",
   MESSAGE_CODE_701: "Trạng thái sự cố không cho phép thao tác này",
   MESSAGE_CODE_702: "Phòng kho không thuộc hợp đồng này",

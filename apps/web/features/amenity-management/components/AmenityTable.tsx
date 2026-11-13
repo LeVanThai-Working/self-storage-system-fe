@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -277,14 +279,16 @@ export const AmenityTable = () => {
           </select>
 
           {/* Refresh Button */}
-          <button
-            type="button"
-            onClick={() => refetch()}
-            title={t("refresh")}
-            className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
-          >
-            <RotateCw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
-          </button>
+          <IconActionTooltip label={t("refresh")}>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              title={t("refresh")}
+              className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
+            >
+              <RotateCw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
+            </button>
+          </IconActionTooltip>
         </div>
       </div>
 
@@ -416,46 +420,54 @@ export const AmenityTable = () => {
                     <td className="py-4 px-6 text-right whitespace-nowrap">
                       <div className="inline-flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                         {/* View Details */}
-                        <button
-                          type="button"
-                          onClick={() => setDetailAmenity(amenity)}
-                          title={t("actions.viewDetails")}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
+                        <IconActionTooltip label={t("actions.viewDetails")}>
+                          <button
+                            type="button"
+                            onClick={() => setDetailAmenity(amenity)}
+                            title={t("actions.viewDetails")}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </IconActionTooltip>
 
                         {/* Edit Button */}
-                        <button
-                          type="button"
-                          onClick={() => setEditingAmenityId(amenity.id)}
-                          title={t("actions.edit")}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
+                        <IconActionTooltip label={t("actions.edit")}>
+                          <button
+                            type="button"
+                            onClick={() => setEditingAmenityId(amenity.id)}
+                            title={t("actions.edit")}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                        </IconActionTooltip>
 
                         {/* Restore Button (khi inactive) */}
                         {amenity.status === AmenityStatusEnum.INACTIVE && (
-                          <button
-                            type="button"
-                            onClick={() => setRestoringAmenity(amenity)}
-                            title={t("actions.restore")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
-                          >
-                            <RotateCcw className="w-4 h-4" />
-                          </button>
+                          <IconActionTooltip label={t("actions.restore")}>
+                            <button
+                              type="button"
+                              onClick={() => setRestoringAmenity(amenity)}
+                              title={t("actions.restore")}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
                         )}
 
                         {/* Delete Button */}
-                        <button
-                          type="button"
-                          onClick={() => setDeletingAmenity(amenity)}
-                          title={t("actions.delete")}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <IconActionTooltip label={t("actions.delete")}>
+                          <button
+                            type="button"
+                            onClick={() => setDeletingAmenity(amenity)}
+                            title={t("actions.delete")}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </IconActionTooltip>
                       </div>
                     </td>
                   </tr>
@@ -545,13 +557,15 @@ export const AmenityTable = () => {
                 >
                   <ExternalLink className="w-4 h-4" />
                 </a>
-                <button
-                  type="button"
-                  onClick={() => setPreviewImage(null)}
-                  className="p-2 rounded-xl bg-black/60 hover:bg-black/80 text-white transition-colors cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <IconActionTooltip action="close">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewImage(null)}
+                    className="p-2 rounded-xl bg-black/60 hover:bg-black/80 text-white transition-colors cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </IconActionTooltip>
               </div>
             </div>
           </DialogContent>

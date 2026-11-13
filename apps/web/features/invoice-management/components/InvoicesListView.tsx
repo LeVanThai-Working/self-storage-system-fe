@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useMemo, useState } from "react";
 import {
   ArrowUpDown,
@@ -372,14 +374,16 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
               <option value="totalAmount">Xếp theo: Tổng tiền</option>
               <option value="status">Xếp theo: Trạng thái</option>
             </select>
-            <button
-              type="button"
-              onClick={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
-              className="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700"
-              title="Đảo chiều sắp xếp"
-            >
-              <ArrowUpDown className="w-4 h-4" />
-            </button>
+            <IconActionTooltip label="Đảo chiều sắp xếp">
+              <button
+                type="button"
+                onClick={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
+                className="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700"
+                title="Đảo chiều sắp xếp"
+              >
+                <ArrowUpDown className="w-4 h-4" />
+              </button>
+            </IconActionTooltip>
           </div>
         </div>
       </div>
@@ -526,45 +530,51 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
                           {/* Row 2: Secondary Icon Actions */}
                           <div className="flex items-center justify-end gap-1">
                             {/* PDF View / Print */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedInvoice(inv);
-                                setIsPdfOpen(true);
-                              }}
-                              className="w-7 h-7 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
-                              title="Xem và In PDF A4"
-                            >
-                              <Printer className="w-3.5 h-3.5" />
-                            </button>
-
-                            {/* Cancel */}
-                            {isCancellable && (
+                            <IconActionTooltip label="Xem và In PDF A4">
                               <button
                                 type="button"
                                 onClick={() => {
                                   setSelectedInvoice(inv);
-                                  setIsCancelModalOpen(true);
+                                  setIsPdfOpen(true);
                                 }}
-                                className="w-7 h-7 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors"
-                                title="Hủy hóa đơn"
+                                className="w-7 h-7 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
+                                title="Xem và In PDF A4"
                               >
-                                <XCircle className="w-3.5 h-3.5" />
+                                <Printer className="w-3.5 h-3.5" />
                               </button>
+                            </IconActionTooltip>
+
+                            {/* Cancel */}
+                            {isCancellable && (
+                              <IconActionTooltip label="Hủy hóa đơn">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedInvoice(inv);
+                                    setIsCancelModalOpen(true);
+                                  }}
+                                  className="w-7 h-7 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors"
+                                  title="Hủy hóa đơn"
+                                >
+                                  <XCircle className="w-3.5 h-3.5" />
+                                </button>
+                              </IconActionTooltip>
                             )}
 
                             {/* Detail */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedInvoice(inv);
-                                setIsDetailOpen(true);
-                              }}
-                              className="w-7 h-7 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
-                              title="Xem chi tiết"
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                            </button>
+                            <IconActionTooltip label="Xem chi tiết">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedInvoice(inv);
+                                  setIsDetailOpen(true);
+                                }}
+                                className="w-7 h-7 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
+                                title="Xem chi tiết"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                              </button>
+                            </IconActionTooltip>
                           </div>
                         </div>
                       </td>

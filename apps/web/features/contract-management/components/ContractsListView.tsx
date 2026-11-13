@@ -24,7 +24,7 @@ import { toast } from "sonner";
 import { TruncatedText } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/features/auth/store";
 import { useFacilities } from "@/features/facility-management/hooks";
-import { useMyFacility, useStorageUnits } from "@/features/storage-unit-management/hooks";
+import { useMyFacility, useAllStorageUnits } from "@/features/storage-unit-management/hooks";
 import {
   useContractStats,
   useContracts,
@@ -183,11 +183,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
 
   // Load staffs & units to display friendly names in table
   const staffsQuery = useFacilityStaffs({ status: UserStatusEnum.ACTIVE, limit: 100 }, isManager);
-  const unitsQuery = useStorageUnits(facilityId, {
-    page: 1,
-    limit: 200,
-    sortBy: "unitNumber",
-  });
+  const unitsQuery = useAllStorageUnits(facilityId);
 
   const staffNameMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -202,11 +198,11 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
 
   const unitLabelMap = useMemo(() => {
     const map = new Map<string, { unitNumber: string; floor: number; zone?: string | null }>();
-    for (const u of unitsQuery.data?.items ?? []) {
+    for (const u of unitsQuery.data ?? []) {
       map.set(u.id, { unitNumber: u.unitNumber, floor: u.floor, zone: u.zone });
     }
     return map;
-  }, [unitsQuery.data?.items]);
+  }, [unitsQuery.data]);
 
   const rawItems = contractsQuery.data?.items;
 
@@ -517,7 +513,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             className={FILTER_CONTROL}
           >
             <option value="">{isEn ? "All Storage Units" : "Tất cả phòng kho"}</option>
-            {(unitsQuery.data?.items ?? []).map((u) => (
+            {(unitsQuery.data ?? []).map((u) => (
               <option key={u.id} value={u.id}>
                 {u.unitNumber} ({isEn ? `Fl. ${u.floor}` : `Tầng ${u.floor}`})
               </option>

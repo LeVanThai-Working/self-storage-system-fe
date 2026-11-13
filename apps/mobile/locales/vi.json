@@ -103,7 +103,11 @@
     "MESSAGE_CODE_121": "Người dùng phải có vai trò {0}",
     "MESSAGE_CODE_122": "Bạn không có quyền quản lý {0}",
     "MESSAGE_CODE_200": "{0} không được để trống",
-    "MESSAGE_CODE_201": "Mã token không hợp lệ hoặc đã hết hạn"
+    "MESSAGE_CODE_201": "Mã token không hợp lệ hoặc đã hết hạn",
+    "MESSAGE_CODE_659": "OTP không hợp lệ hoặc đã hết hiệu lực",
+    "MESSAGE_CODE_660": "Phân công đã thay đổi hoặc lịch không còn khả dụng. Vui lòng kiểm tra dữ liệu mới nhất.",
+    "MESSAGE_CODE_661": "Nhân viên có lịch trùng giờ hoặc đang giám sát khách khác",
+    "MESSAGE_CODE_662": "Chỉ nhân viên phụ trách được thực hiện thao tác này"
   },
   "settings": {
     "title": "Cài đặt & Tài khoản",
@@ -407,7 +411,7 @@
     "skuButton": "Mã hàng",
     "preCreateSkuTitle": "Tạo trước mã hàng (SKU)",
     "preCreateSkuHint": "Bạn chưa có mã hàng nào lưu kho. Tạo mã hàng trước để thuận tiện khi báo gửi hàng và sắp xếp lên kệ.",
-    "createSkuButton": "+ Tạo mã hàng mới",
+    "createSkuButton": "Tạo mã hàng mới",
     "viewSkuList": "Xem danh mục",
     "unitSubtitle": "%{facility} · Phòng %{unit}",
     "contractLabel": "HĐ #%{code}",
@@ -499,7 +503,7 @@
       "reason": "Lý do (bắt buộc)",
       "reasonOptional": "Lý do (tùy chọn)",
       "reasonPlaceholder": "Nhập lý do...",
-      "reasonMin": "Lý do cần tối thiểu 3 ký tự",
+      "reasonMin": "Lý do cần tối thiểu 5 ký tự",
       "addReason": "Thêm lý do",
       "referenceCode": "Mã tham chiếu",
       "notes": "Ghi chú",
@@ -1033,7 +1037,7 @@
       "slotLeft": "Còn %{count} chỗ",
       "slotFull": "Đầy",
       "noSlots": "Cơ sở chưa mở khung giờ nào cho ngày này",
-      "windowHint": "Bạn được vào cổng sớm tối đa %{early} phút và trễ tối đa %{late} phút so với giờ bắt đầu.",
+      "windowHint": "Mặc định cho phép check-in sớm %{early} phút và trễ %{late} phút. Backend quyết định khung giờ áp dụng.",
       "people": "Số người vào kho",
       "vehicleType": "Loại xe (không bắt buộc)",
       "vehicleTypePlaceholder": "Xe tải 1.5T, xe ba gác...",
@@ -1047,12 +1051,10 @@
     },
     "detail": {
       "title": "Lịch vào kho",
-      "qrHint": "Đưa mã QR này cho bảo vệ khi đến cổng",
       "otpLabel": "Mã OTP vào cổng",
-      "otpOnce": "Mã OTP chỉ hiện một lần, hãy ghi lại hoặc dùng mã QR",
-      "otpHidden": "Mã OTP chỉ hiện ngay sau khi đặt. Hãy dùng mã QR để vào cổng.",
+      "otpHidden": "Hiện chưa có OTP khả dụng cho lịch này.",
       "date": "Ngày, ca",
-      "window": "Giờ vào cổng",
+      "window": "Giờ mặc định",
       "windowValue": "%{from} – %{to}",
       "people": "Số người",
       "vehicle": "Phương tiện",
@@ -1061,7 +1063,11 @@
       "contract": "Hợp đồng",
       "checkedIn": "Vào kho lúc %{time}",
       "checkedOut": "Rời kho lúc %{time}",
-      "cancelled": "Đã hủy lúc %{time}"
+      "cancelled": "Đã hủy lúc %{time}",
+      "otpHint": "Đọc mã này cho nhân viên khi đến kho. Mã hiện tại được lấy từ chi tiết lịch hẹn.",
+      "assignedStaff": "Phụ trách",
+      "unassigned": "Chưa có nhân viên phụ trách",
+      "staffNameUnavailable": "Đã phân công, chưa có tên nhân viên"
     },
     "cancel": {
       "button": "Hủy lịch",

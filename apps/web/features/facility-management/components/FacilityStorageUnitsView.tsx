@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -517,13 +519,15 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
               className="w-full bg-slate-50 hover:bg-slate-100/60 focus:bg-white text-xs sm:text-sm text-slate-800 placeholder-slate-400 pl-10 pr-4 py-2.5 rounded-xl border border-slate-200/80 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none transition-all"
             />
             {searchInput && (
-              <button
-                type="button"
-                onClick={() => setSearchInput("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+              <IconActionTooltip action="close">
+                <button
+                  type="button"
+                  onClick={() => setSearchInput("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </IconActionTooltip>
             )}
           </div>
 
@@ -789,17 +793,19 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                       )}
                     </div>
 
-                    <button
-                      type="button"
-                      aria-label="Toggle group collapse"
-                      className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-                    >
-                      {isCollapsed ? (
-                        <ChevronDown className="w-5 h-5" />
-                      ) : (
-                        <ChevronUp className="w-5 h-5" />
-                      )}
-                    </button>
+                    <IconActionTooltip label="Toggle group collapse">
+                      <button
+                        type="button"
+                        aria-label="Toggle group collapse"
+                        className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                      >
+                        {isCollapsed ? (
+                          <ChevronDown className="w-5 h-5" />
+                        ) : (
+                          <ChevronUp className="w-5 h-5" />
+                        )}
+                      </button>
+                    </IconActionTooltip>
                   </div>
                 </div>
 
@@ -954,13 +960,15 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                   <p className="text-xs text-slate-400">{facility.name}</p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setInspectUnit(null)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <IconActionTooltip action="close">
+                <button
+                  type="button"
+                  onClick={() => setInspectUnit(null)}
+                  className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </IconActionTooltip>
             </div>
 
             {/* Modal Content */}
@@ -1108,14 +1116,16 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setSelectedRackUnit(null)}
-                className="p-2.5 rounded-2xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                aria-label="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <IconActionTooltip label="Close">
+                <button
+                  type="button"
+                  onClick={() => setSelectedRackUnit(null)}
+                  className="p-2.5 rounded-2xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </IconActionTooltip>
             </div>
 
             {/* Modal Scrollable Content */}

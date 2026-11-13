@@ -556,10 +556,10 @@ export function CreateReservationView({
         key="section-1-facility"
         className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm"
       >
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center gap-2">
-            <Building2 size={18} color="#0B927E" />
-            <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
+        <View className="flex-row items-start justify-between gap-2 mb-3">
+          <View className="flex-1 min-w-0 flex-row items-center gap-2">
+            <Building2 size={18} color="#0B927E" className="shrink-0" />
+            <Text className="flex-1 min-w-0 text-sm font-bold text-neutral-dark dark:text-neutral-100">
               {isEn ? "1. Facility & Storage Package" : "1. Cơ sở & Gói kho đã chọn"}
             </Text>
           </View>
@@ -571,7 +571,7 @@ export function CreateReservationView({
                 clearHandoffPayload();
                 setCustomRentalDuration(null);
               }}
-              className="flex-row items-center gap-1 rounded-lg border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-2.5 py-1"
+              className="shrink-0 flex-row items-center gap-1 rounded-lg border border-neutral-border dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-2.5 py-1"
             >
               <RefreshCw size={11} color="#647B80" />
               <Text className="text-[11px] font-semibold text-neutral-600 dark:text-neutral-300">
@@ -694,13 +694,16 @@ export function CreateReservationView({
         {selectedOffering ? (
           <View
             key="selected-offering-summary"
-            className="rounded-2xl border border-brand/40 bg-brand-light/25 dark:bg-brand/15 p-3.5 gap-2"
+            className="min-w-0 rounded-2xl border border-brand/40 bg-brand-light/25 dark:bg-brand/15 p-3.5 gap-2"
           >
-            <View className="flex-row items-center justify-between">
-              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100 flex-1">
+            <View className="flex-row items-start justify-between gap-2">
+              <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100 flex-1 min-w-0">
                 {resolvedFacilityName}
               </Text>
-              <Badge variant="outline" className="border-brand/40 bg-white dark:bg-neutral-900">
+              <Badge
+                variant="outline"
+                className="max-w-[40%] shrink border-brand/40 bg-white dark:bg-neutral-900"
+              >
                 <Text className="text-[10px] font-bold text-brand">
                   {getUnitCategoryLabel(selectedOffering.unitType.category, t)}
                 </Text>
@@ -708,33 +711,33 @@ export function CreateReservationView({
             </View>
 
             {resolvedFacilityAddress ? (
-              <Text variant="muted" className="text-[11px]" numberOfLines={1}>
+              <Text variant="muted" className="text-[11px]">
                 {resolvedFacilityAddress}
               </Text>
             ) : null}
 
             <View className="border-t border-brand/20 pt-2 mt-0.5 gap-1.5">
-              <View className="flex-row items-center justify-between">
+              <View className="min-w-0 gap-1">
                 <View className="flex-row items-center gap-1.5">
                   <Boxes size={13} color="#0B927E" />
                   <Text variant="muted" className="text-xs">
                     {isEn ? "Package:" : "Loại kho:"}
                   </Text>
                 </View>
-                <Text className="text-xs font-extrabold text-brand">
+                <Text className="min-w-0 text-xs font-extrabold text-brand">
                   {selectedOffering.unitType.name}
                 </Text>
               </View>
 
               {selectedOffering.unitType.dimensions ? (
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center gap-1.5">
+                <View className="flex-row items-start justify-between gap-3">
+                  <View className="flex-1 min-w-0 flex-row items-start gap-1.5">
                     <Ruler size={13} color="#647B80" />
-                    <Text variant="muted" className="text-xs">
+                    <Text variant="muted" className="flex-1 min-w-0 text-xs">
                       {isEn ? "Dimensions:" : "Kích thước:"}
                     </Text>
                   </View>
-                  <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
+                  <Text className="flex-1 min-w-0 text-right text-xs font-semibold text-neutral-dark dark:text-neutral-200">
                     {selectedOffering.unitType.dimensions.length}m ×{" "}
                     {selectedOffering.unitType.dimensions.width}m ×{" "}
                     {selectedOffering.unitType.dimensions.height}m
@@ -742,33 +745,33 @@ export function CreateReservationView({
                 </View>
               ) : null}
 
-              <View className="flex-row items-center justify-between">
-                <Text variant="muted" className="text-xs">
+              <View className="flex-row items-start justify-between gap-3">
+                <Text variant="muted" className="flex-1 min-w-0 text-xs">
                   {isEn ? "Unit Price:" : "Đơn giá thuê:"}
                 </Text>
-                <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
+                <Text className="flex-1 min-w-0 text-right text-xs font-bold text-neutral-dark dark:text-neutral-100">
                   {formatVnd(selectedOffering.pricePerUnit)}{" "}
                   {getBillingUnitSuffix(selectedOffering.billingUnit, t)}
                 </Text>
               </View>
 
-              <View className="flex-row items-center justify-between">
-                <Text variant="muted" className="text-xs">
+              <View className="flex-row items-start justify-between gap-3">
+                <Text variant="muted" className="flex-1 min-w-0 text-xs">
                   {isEn ? "Minimum Rental:" : "Thuê tối thiểu:"}
                 </Text>
-                <Text className="text-xs font-semibold text-neutral-dark dark:text-neutral-200">
+                <Text className="flex-1 min-w-0 text-right text-xs font-semibold text-neutral-dark dark:text-neutral-200">
                   {formatRentalDurationDays(minRentalDays, currentLocale)}
                 </Text>
               </View>
 
-              <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center gap-1.5">
+              <View className="flex-row items-start justify-between gap-3">
+                <View className="flex-1 min-w-0 flex-row items-start gap-1.5">
                   <ShieldCheck size={13} color="#0B927E" />
-                  <Text variant="muted" className="text-xs">
+                  <Text variant="muted" className="flex-1 min-w-0 text-xs">
                     {isEn ? "Deposit Required:" : "Tiền cọc giữ chỗ:"}
                   </Text>
                 </View>
-                <Text className="text-xs font-extrabold text-brand">
+                <Text className="flex-1 min-w-0 text-right text-xs font-extrabold text-brand">
                   {formatVnd(depositAmount)} (×{depositMultiplier})
                 </Text>
               </View>

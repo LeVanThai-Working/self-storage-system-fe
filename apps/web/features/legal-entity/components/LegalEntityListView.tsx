@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState } from "react";
 import { useLocale } from "next-intl";
 import {
@@ -376,14 +378,16 @@ export const LegalEntityListView: React.FC = () => {
                         </button>
 
                         {isSystemAdmin && (
-                          <button
-                            type="button"
-                            onClick={() => setDeletingEntity(item)}
-                            className="p-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors"
-                            title={isEn ? "Delete" : "Xóa"}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          <IconActionTooltip label={isEn ? "Delete" : "Xóa"}>
+                            <button
+                              type="button"
+                              onClick={() => setDeletingEntity(item)}
+                              className="p-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 transition-colors"
+                              title={isEn ? "Delete" : "Xóa"}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </IconActionTooltip>
                         )}
                       </div>
                     </td>

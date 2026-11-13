@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 
 import { useAuthStore } from "@/features/auth/store";
-import { InfoTooltip, TruncatedText } from "@/components/ui/tooltip";
+import { IconActionTooltip, InfoTooltip, TruncatedText } from "@/components/ui/tooltip";
 import { ContractSourceEnum, RoleEnum } from "@self-storage-system-fe/shared";
 import { useFacilityOfferings, useMyFacility } from "@/features/storage-unit-management/hooks";
 import { useFacility } from "@/features/facility-management/hooks";
@@ -539,13 +539,15 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
               className={`${FILTER_CONTROL} w-full pl-9`}
             />
             {codeInput && (
-              <button
-                type="button"
-                onClick={() => setCodeInput("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+              <IconActionTooltip action="close">
+                <button
+                  type="button"
+                  onClick={() => setCodeInput("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </IconActionTooltip>
             )}
           </div>
 
@@ -627,17 +629,19 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
               <option value="updatedAt">{t("filters.sortBy.updatedAt")}</option>
             </select>
 
-            <button
-              type="button"
-              onClick={() => {
-                setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-                setPage(1);
-              }}
-              className="p-2.5 rounded-xl border border-slate-200/80 bg-slate-50 hover:bg-slate-100 text-slate-700"
-              title={t("filters.toggleSortOrder")}
-            >
-              <ArrowUpDown className="w-4 h-4" />
-            </button>
+            <IconActionTooltip label={t("filters.toggleSortOrder")}>
+              <button
+                type="button"
+                onClick={() => {
+                  setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+                  setPage(1);
+                }}
+                className="p-2.5 rounded-xl border border-slate-200/80 bg-slate-50 hover:bg-slate-100 text-slate-700"
+                title={t("filters.toggleSortOrder")}
+              >
+                <ArrowUpDown className="w-4 h-4" />
+              </button>
+            </IconActionTooltip>
 
             {hasActiveFilters && (
               <button
@@ -905,89 +909,105 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                           <div className="flex items-center justify-end gap-1">
                             {/* PAYMENT_SUCCESSFUL: Manager reassign unit */}
                             {st === ReservationStatusEnum.PAYMENT_SUCCESSFUL && isManager && (
-                              <button
-                                type="button"
-                                onClick={() => setReassignTarget(r)}
-                                className="w-7 h-7 rounded-xl border border-sky-200 text-sky-700 hover:bg-sky-50 flex items-center justify-center transition-colors"
-                                title="Đổi phòng kho"
-                              >
-                                <Boxes className="w-3.5 h-3.5" />
-                              </button>
+                              <IconActionTooltip label="Đổi phòng kho">
+                                <button
+                                  type="button"
+                                  onClick={() => setReassignTarget(r)}
+                                  className="w-7 h-7 rounded-xl border border-sky-200 text-sky-700 hover:bg-sky-50 flex items-center justify-center transition-colors"
+                                  title="Đổi phòng kho"
+                                >
+                                  <Boxes className="w-3.5 h-3.5" />
+                                </button>
+                              </IconActionTooltip>
                             )}
 
                             {/* CONFIRMED: Manager icon actions */}
                             {st === ReservationStatusEnum.CONFIRMED && isManager && (
                               <>
-                                <button
-                                  type="button"
-                                  onClick={() => setAssignStaffTarget(r)}
-                                  className="w-7 h-7 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
-                                  title="Đổi nhân viên tiếp đón"
-                                >
-                                  <UserCheck className="w-3.5 h-3.5" />
-                                </button>
+                                <IconActionTooltip label="Đổi nhân viên tiếp đón">
+                                  <button
+                                    type="button"
+                                    onClick={() => setAssignStaffTarget(r)}
+                                    className="w-7 h-7 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
+                                    title="Đổi nhân viên tiếp đón"
+                                  >
+                                    <UserCheck className="w-3.5 h-3.5" />
+                                  </button>
+                                </IconActionTooltip>
 
-                                <button
-                                  type="button"
-                                  onClick={() => setExtendGraceTarget(r)}
-                                  className="w-7 h-7 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 flex items-center justify-center transition-colors"
-                                  title="Gia hạn ân hạn"
-                                >
-                                  <Clock className="w-3.5 h-3.5" />
-                                </button>
+                                <IconActionTooltip label="Gia hạn ân hạn">
+                                  <button
+                                    type="button"
+                                    onClick={() => setExtendGraceTarget(r)}
+                                    className="w-7 h-7 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 flex items-center justify-center transition-colors"
+                                    title="Gia hạn ân hạn"
+                                  >
+                                    <Clock className="w-3.5 h-3.5" />
+                                  </button>
+                                </IconActionTooltip>
 
-                                <button
-                                  type="button"
-                                  onClick={() => setReassignTarget(r)}
-                                  className="w-7 h-7 rounded-xl border border-sky-200 text-sky-700 hover:bg-sky-50 flex items-center justify-center transition-colors"
-                                  title="Đổi kho sự cố"
-                                >
-                                  <Boxes className="w-3.5 h-3.5" />
-                                </button>
+                                <IconActionTooltip label="Đổi kho sự cố">
+                                  <button
+                                    type="button"
+                                    onClick={() => setReassignTarget(r)}
+                                    className="w-7 h-7 rounded-xl border border-sky-200 text-sky-700 hover:bg-sky-50 flex items-center justify-center transition-colors"
+                                    title="Đổi kho sự cố"
+                                  >
+                                    <Boxes className="w-3.5 h-3.5" />
+                                  </button>
+                                </IconActionTooltip>
 
-                                <button
-                                  type="button"
-                                  onClick={() => setForceCancelTarget(r)}
-                                  className="w-7 h-7 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 flex items-center justify-center transition-colors"
-                                  title="Hủy khẩn cấp sự cố"
-                                >
-                                  <Flame className="w-3.5 h-3.5" />
-                                </button>
+                                <IconActionTooltip label="Hủy khẩn cấp sự cố">
+                                  <button
+                                    type="button"
+                                    onClick={() => setForceCancelTarget(r)}
+                                    className="w-7 h-7 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 flex items-center justify-center transition-colors"
+                                    title="Hủy khẩn cấp sự cố"
+                                  >
+                                    <Flame className="w-3.5 h-3.5" />
+                                  </button>
+                                </IconActionTooltip>
                               </>
                             )}
 
                             {/* OVERDUE: Manager icon actions */}
                             {st === ReservationStatusEnum.OVERDUE && isManager && (
                               <>
-                                <button
-                                  type="button"
-                                  onClick={() => setExtendGraceTarget(r)}
-                                  className="w-7 h-7 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 flex items-center justify-center transition-colors"
-                                  title="Gia hạn ân hạn"
-                                >
-                                  <Clock className="w-3.5 h-3.5" />
-                                </button>
+                                <IconActionTooltip label="Gia hạn ân hạn">
+                                  <button
+                                    type="button"
+                                    onClick={() => setExtendGraceTarget(r)}
+                                    className="w-7 h-7 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 flex items-center justify-center transition-colors"
+                                    title="Gia hạn ân hạn"
+                                  >
+                                    <Clock className="w-3.5 h-3.5" />
+                                  </button>
+                                </IconActionTooltip>
 
-                                <button
-                                  type="button"
-                                  onClick={() => setForceCancelTarget(r)}
-                                  className="w-7 h-7 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 flex items-center justify-center transition-colors"
-                                  title="Hủy khẩn cấp"
-                                >
-                                  <Flame className="w-3.5 h-3.5" />
-                                </button>
+                                <IconActionTooltip label="Hủy khẩn cấp">
+                                  <button
+                                    type="button"
+                                    onClick={() => setForceCancelTarget(r)}
+                                    className="w-7 h-7 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 flex items-center justify-center transition-colors"
+                                    title="Hủy khẩn cấp"
+                                  >
+                                    <Flame className="w-3.5 h-3.5" />
+                                  </button>
+                                </IconActionTooltip>
                               </>
                             )}
 
                             {/* Detail button (always available) */}
-                            <button
-                              type="button"
-                              onClick={() => setDetailTarget(r)}
-                              className="w-7 h-7 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
-                              title="Xem chi tiết"
-                            >
-                              <Eye className="w-3.5 h-3.5" />
-                            </button>
+                            <IconActionTooltip label="Xem chi tiết">
+                              <button
+                                type="button"
+                                onClick={() => setDetailTarget(r)}
+                                className="w-7 h-7 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors"
+                                title="Xem chi tiết"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                              </button>
+                            </IconActionTooltip>
                           </div>
                         </div>
                       </td>

@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft, Info, Loader2, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import {
-  AccessScheduleStatusEnum,
+  getAccessSchedulePermissions,
   type AccessScheduleDetailResponse,
 } from "@self-storage-system-fe/shared";
 import { Button } from "@/components/ui/button";
@@ -14,28 +14,39 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { formatDateTime } from "@/features/support-desk/utils";
-import { useAccessSchedule, useCheckOutAccessSchedule } from "../hooks";
+import { useAccessSchedule, useAccessScheduleCaller, useCheckOutAccessSchedule } from "../hooks";
 import { formatScheduleDate, getCheckInWindow } from "../utils";
 import { AccessScheduleStatusBadge } from "./AccessScheduleStatusBadge";
+import { AccessScheduleAssignmentActions } from "./AccessScheduleAssignmentActions";
 
 function Row({ label, value }: { label: string; value?: string | number | null }) {
   return (
-    <div className="flex justify-between gap-4 border-b border-slate-100 py-2.5 text-sm last:border-0">
-      <dt className="text-slate-500">{label}</dt>
-      <dd className="text-right font-semibold text-slate-900">{value ?? "—"}</dd>
+    <div className="grid grid-cols-1 gap-1 border-b border-slate-100 py-2.5 text-sm last:border-0 sm:grid-cols-2 sm:gap-4">
+      <dt className="min-w-0 text-slate-500">{label}</dt>
+      <dd className="min-w-0 font-semibold text-slate-900 [overflow-wrap:anywhere] sm:text-right">
+        {value ?? "—"}
+      </dd>
     </div>
   );
 }
 
 /** Check-out for a visit inside the warehouse; other statuses only get a short hint. */
-function GateActions({ schedule }: { schedule: AccessScheduleDetailResponse }) {
+function GateActions({
+  schedule,
+  refreshing,
+}: {
+  schedule: AccessScheduleDetailResponse;
+  refreshing: boolean;
+}) {
   const t = useTranslations("accessScheduleDesk.checkOut");
   const getErrorMessage = useApiErrorMessage();
   const checkOut = useCheckOutAccessSchedule();
+  const caller = useAccessScheduleCaller();
+  const permissions = getAccessSchedulePermissions(schedule, caller);
   const [staffNotes, setStaffNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  if (schedule.status === AccessScheduleStatusEnum.PENDING) {
+  if (permissions.canCheckIn) {
     return (
       <p className="flex items-start gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
@@ -43,7 +54,7 @@ function GateActions({ schedule }: { schedule: AccessScheduleDetailResponse }) {
       </p>
     );
   }
-  if (schedule.status !== AccessScheduleStatusEnum.CHECKED_IN) return null;
+  if (!permissions.canCheckOut) return null;
 
   const handleCheckOut = async () => {
     setError(null);
@@ -76,7 +87,7 @@ function GateActions({ schedule }: { schedule: AccessScheduleDetailResponse }) {
       ) : null}
       <Button
         onClick={() => void handleCheckOut()}
-        disabled={checkOut.isPending}
+        disabled={checkOut.isPending || refreshing}
         className="w-full bg-sky-600 text-white hover:bg-sky-700"
       >
         {checkOut.isPending ? (
@@ -153,6 +164,14 @@ export function AccessScheduleDetailView({
           <p className="mb-2 text-sm font-bold text-slate-800">{t("detail.visit")}</p>
           <dl>
             <Row label={t("detail.customer")} value={schedule.customerName} />
+            <Row
+              label={t("assignment.title")}
+              value={
+                schedule.assignedStaffId === null
+                  ? t("assignment.unassigned")
+                  : (schedule.assignedStaffName ?? "—")
+              }
+            />
             <Row label={t("detail.phone")} value={schedule.customerPhone} />
             <Row label={t("detail.contract")} value={schedule.contractCode} />
             <Row
@@ -219,7 +238,8 @@ export function AccessScheduleDetailView({
             )}
           </section>
 
-          <GateActions schedule={schedule} />
+          <AccessScheduleAssignmentActions schedule={schedule} refreshing={query.isFetching} />
+          <GateActions schedule={schedule} refreshing={query.isFetching} />
         </div>
       </div>
     </div>

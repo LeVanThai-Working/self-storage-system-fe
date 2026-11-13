@@ -1,5 +1,8 @@
 {
   "common": {
+    "previousPage": "Trang trước",
+    "nextPage": "Trang sau",
+    "close": "Đóng",
     "save": "Lưu",
     "cancel": "Hủy",
     "loading": "Đang tải...",
@@ -134,9 +137,22 @@
     "MESSAGE_CODE_505": "Đơn chưa ở bước chờ thanh toán hoặc đã được thanh toán xong",
     "MESSAGE_CODE_506": "Xác thực giao dịch thanh toán thất bại",
     "MESSAGE_CODE_507": "Khoản thanh toán đã hoàn tất trước đó",
-    "MESSAGE_CODE_629": "Không thể đổi trạng thái bảo trì hoặc mở kho khi vẫn còn hàng tồn kho của khách bên trong"
+    "MESSAGE_CODE_629": "Không thể đổi trạng thái bảo trì hoặc mở kho khi vẫn còn hàng tồn kho của khách bên trong",
+    "MESSAGE_CODE_659": "OTP không hợp lệ hoặc đã hết hiệu lực",
+    "MESSAGE_CODE_660": "Phân công đã thay đổi hoặc lịch không còn khả dụng. Vui lòng kiểm tra dữ liệu mới nhất.",
+    "MESSAGE_CODE_661": "Nhân viên có lịch trùng giờ hoặc đang giám sát khách khác",
+    "MESSAGE_CODE_662": "Chỉ nhân viên phụ trách được thực hiện thao tác này"
   },
   "systemAdmin": {
+    "checkInTimeValidation": {
+      "title": "Kiểm tra khung giờ check-in",
+      "description": "Áp dụng cho check-in lịch vào kho. Tắt để demo ngoài khung giờ đã hẹn; vẫn phải đúng ngày, đúng OTP và nhân viên phụ trách.",
+      "enabled": "Đang bật",
+      "disabled": "Đang tắt · Demo",
+      "loading": "Đang tải...",
+      "retry": "Thử lại",
+      "demoNotice": "Chế độ demo: cho phép check-in ngoài khung giờ trong ngày hẹn và tạm dừng tự động đánh dấu vắng mặt. Bật lại sau khi demo."
+    },
     "nav": {
       "overview": "Tổng quan",
       "userManagement": "Quản lý Người dùng",
@@ -2042,7 +2058,7 @@
     "requests": {
       "title": "Trung tâm Yêu cầu Đề xuất",
       "subtitle": "Tra cứu danh mục loại kho, tiện ích hiện có tại cơ sở và gửi đề xuất đến bộ phận Vận hành.",
-      "createRequest": "+ Tạo đề xuất mới",
+      "createRequest": "Tạo đề xuất",
       "catalogSectionTitle": "Danh mục hiện có tại cơ sở",
       "requestsSectionTitle": "Yêu cầu đã gửi",
       "empty": "Bạn chưa gửi yêu cầu đề xuất nào.",
@@ -3237,7 +3253,8 @@
       "vehicle": "Biển số",
       "checkedIn": "Vào kho",
       "checkedOut": "Rời kho",
-      "status": "Trạng thái"
+      "status": "Trạng thái",
+      "assignee": "Phụ trách"
     },
     "detail": {
       "visit": "Thông tin lượt vào kho",
@@ -3246,7 +3263,7 @@
       "contract": "Hợp đồng",
       "facility": "Cơ sở",
       "slot": "Ngày · ca",
-      "window": "Giờ được vào cổng",
+      "window": "Khung giờ mặc định",
       "people": "Số người",
       "vehicle": "Phương tiện",
       "purpose": "Mục đích",
@@ -3260,10 +3277,10 @@
     },
     "gate": {
       "title": "Check-in tại cổng",
-      "hint": "Khi khách đến cổng, quét mã QR hoặc nhập mã OTP 6 số trong lịch hẹn của khách",
-      "codePlaceholder": "Quét QR hoặc nhập OTP 6 số",
+      "hint": "Nhập OTP 6 chữ số do khách cung cấp. Nếu lịch chưa có người nhận, hệ thống sẽ nhận lịch và check-in trong cùng thao tác. Backend quyết định điều kiện thời gian và lịch làm việc.",
+      "codePlaceholder": "Nhập OTP 6 chữ số",
       "notesPlaceholder": "Ghi chú (không bắt buộc)",
-      "codeRequired": "Vui lòng quét mã QR hoặc nhập mã OTP 6 số",
+      "codeRequired": "Vui lòng nhập đúng OTP 6 chữ số",
       "submit": "Xác nhận vào kho",
       "success": "Đã check-in lịch {code}",
       "resultTitle": "Đã check-in {code}",
@@ -3271,14 +3288,42 @@
       "racks": "Kệ khách thuê, điều phối xe tới",
       "aisle": "Dãy {aisle}",
       "bay": "Khoang {bay}",
-      "openDetail": "Xem chi tiết lượt vào kho"
+      "openDetail": "Xem chi tiết lượt vào kho",
+      "responsibleStaff": "Nhân viên phụ trách: {name}"
     },
     "checkOut": {
       "title": "Khách đang trong kho",
       "notesPlaceholder": "Ghi chú khi rời kho (không bắt buộc)",
       "submit": "Xác nhận rời kho",
       "success": "Đã check-out lịch {code}",
-      "pendingHint": "Lịch đang chờ khách đến. Check-in bằng QR hoặc OTP ở trang Lịch vào kho."
+      "pendingHint": "Nhập OTP khách cung cấp tại trang Lịch vào kho để check-in. Bạn phải giám sát khách và thực hiện check-out cho lượt vào kho này."
+    },
+    "assignment": {
+      "title": "Nhân viên phụ trách",
+      "unassigned": "Chưa có nhân viên phụ trách",
+      "filter": "Phân công",
+      "scope": {
+        "unassigned": "Chưa có người nhận",
+        "mine": "Lịch của tôi",
+        "all": "Tất cả"
+      },
+      "claim": "Nhận lịch",
+      "claimed": "Đã nhận lịch",
+      "assign": "Phân công",
+      "assigned": "Đã phân công nhân viên",
+      "unassign": "Gỡ phân công",
+      "unassignedSuccess": "Đã gỡ phân công, lịch hẹn vẫn được giữ nguyên",
+      "assignHint": "Chọn nhân viên cùng cơ sở. Hệ thống kiểm tra lịch trùng và khối lượng công việc khi phân công.",
+      "unassignHint": "Lịch, OTP và giờ hẹn được giữ nguyên. Muốn đổi nhân viên, hãy gỡ người hiện tại rồi phân công người mới.",
+      "staff": "Nhân viên",
+      "chooseStaff": "Chọn nhân viên phụ trách",
+      "reason": "Lý do gỡ phân công",
+      "staffRequired": "Vui lòng chọn nhân viên hợp lệ và tải lại lịch nếu dữ liệu đã thay đổi.",
+      "reasonRequired": "Vui lòng nhập lý do từ 1 đến 500 ký tự và dùng dữ liệu lịch mới nhất.",
+      "changed": "Phân công hoặc trạng thái lịch đã thay đổi. Hãy kiểm tra thông tin mới nhất trước khi thao tác.",
+      "contactManager": "Nếu không thể tiếp khách, hãy liên hệ Quản lý cơ sở để gỡ phân công. Nhân viên không tự gỡ lịch.",
+      "cancel": "Đóng",
+      "confirm": "Xác nhận"
     }
   }
 }

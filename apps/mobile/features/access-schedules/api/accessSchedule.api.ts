@@ -13,7 +13,7 @@ import {
   type PaginatedData,
 } from "@self-storage-system-fe/shared";
 
-/** Books a warehouse visit; the response carries the QR payload and the one-time OTP. */
+/** Books a warehouse visit; authorized customer responses include the current OTP. */
 export async function createAccessScheduleApi(
   payload: CreateAccessScheduleRequest
 ): Promise<AccessScheduleDetailResponse> {
