@@ -1,5 +1,7 @@
 import {
   UnitTypeCategoryEnum,
+  UnitTypeStatusEnum,
+  FacilityUnitTypeOfferingStatusEnum,
   type FacilityResponse,
   type PublicUnitTypeOfferingResponse,
 } from "@self-storage-system-fe/shared";
@@ -42,7 +44,13 @@ const LANDING_PRICE_BUCKETS: Record<string, [string, string]> = {
 export function filtersFromLandingParams(params: { type?: string; price?: string }): SearchFilters {
   const [minPrice, maxPrice] = LANDING_PRICE_BUCKETS[params.price ?? ""] ?? ["", ""];
   const isCategory = Object.values<string>(UnitTypeCategoryEnum).includes(params.type ?? "");
-  return { ...EMPTY_FILTERS, category: isCategory ? params.type! : "", minPrice, maxPrice };
+  return {
+    ...EMPTY_FILTERS,
+    category: isCategory ? params.type! : "",
+    unitTypeId: /^[a-f\d]{24}$/i.test(params.type ?? "") ? params.type! : "",
+    minPrice,
+    maxPrice,
+  };
 }
 
 const inRange = (value: number, min: string, max: string) =>
@@ -51,6 +59,8 @@ const inRange = (value: number, min: string, max: string) =>
 /** Only rooms that can actually be booked, narrowed by the user's filters. */
 export function matchesFilters(o: PublicUnitTypeOfferingResponse, f: SearchFilters): boolean {
   return (
+    o.status === FacilityUnitTypeOfferingStatusEnum.ACTIVE &&
+    o.unitType.status === UnitTypeStatusEnum.ACTIVE &&
     o.availableUnitsCount > 0 &&
     (f.unitTypeId === "" || o.unitTypeId === f.unitTypeId) &&
     (f.category === "" || o.unitType.category === f.category) &&

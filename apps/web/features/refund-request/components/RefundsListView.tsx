@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState } from "react";
 import {
   Table,
@@ -388,27 +390,31 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
           </div>
 
           <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1 || isLoading}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="h-8 px-2"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
+            <IconActionTooltip action="previousPage">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page <= 1 || isLoading}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className="h-8 px-2"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+            </IconActionTooltip>
             <span className="px-2 font-semibold text-slate-600">
               {pagination.page} / {pagination.totalPages || 1}
             </span>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= (pagination.totalPages || 1) || isLoading}
-              onClick={() => setPage((p) => p + 1)}
-              className="h-8 px-2"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+            <IconActionTooltip action="nextPage">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= (pagination.totalPages || 1) || isLoading}
+                onClick={() => setPage((p) => p + 1)}
+                className="h-8 px-2"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </IconActionTooltip>
           </div>
         </div>
       </div>

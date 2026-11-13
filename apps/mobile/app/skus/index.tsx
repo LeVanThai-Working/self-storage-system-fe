@@ -39,7 +39,7 @@ import { SKU_CATEGORY_PRESETS } from "@/features/customer-sku/utils/skuFormat";
 const FILTER_ALL = "all";
 const FILTER_INACTIVE = "inactive";
 
-/** C10 — the customer's personal SKU catalog. Shows only the customer's own SKUs with easy create buttons. */
+/** C10 — the customer's personal SKU catalog. Shows only the customer's own SKUs. */
 export default function SkuCatalogScreen() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -193,7 +193,7 @@ export default function SkuCatalogScreen() {
       <FlatList
         data={skus}
         keyExtractor={(item) => item.id}
-        contentContainerClassName="gap-3 p-4 pb-28"
+        contentContainerClassName="gap-3 p-4 pb-8"
         renderItem={({ item }) => (
           <SkuListItem
             sku={item}
@@ -211,16 +211,6 @@ export default function SkuCatalogScreen() {
         ListFooterComponent={
           listQuery.isFetchingNextPage ? (
             <ActivityIndicator color="#0B927E" className="py-3" />
-          ) : skus.length > 0 ? (
-            <View className="pt-2 pb-4">
-              <Pressable
-                onPress={() => router.push("/skus/new")}
-                className="flex-row items-center justify-center gap-2 rounded-2xl border border-dashed border-brand/50 bg-brand-light/30 py-3.5 active:opacity-70 dark:bg-brand/10"
-              >
-                <Plus size={16} color="#0B927E" />
-                <Text className="text-xs font-bold text-brand">{t("sku.createMore")}</Text>
-              </Pressable>
-            </View>
           ) : null
         }
         refreshControl={
@@ -231,14 +221,6 @@ export default function SkuCatalogScreen() {
           />
         }
       />
-
-      <Pressable
-        onPress={() => router.push("/skus/new")}
-        accessibilityLabel={t("sku.form.createTitle")}
-        className="absolute bottom-8 right-5 h-14 w-14 items-center justify-center rounded-full bg-cta shadow-lg active:opacity-80"
-      >
-        <Plus size={26} color="#FFFFFF" />
-      </Pressable>
     </SafeAreaView>
   );
 }

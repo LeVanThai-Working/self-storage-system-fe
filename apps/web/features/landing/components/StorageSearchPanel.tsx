@@ -13,6 +13,7 @@ import {
   type SearchFieldId,
 } from "@/features/landing/constants";
 import { useClickOutside } from "@/features/landing/hooks/useClickOutside";
+import { usePublicUnitTypes } from "@/features/customer-explore/hooks";
 
 type SearchFilters = Record<SearchFieldId, string>;
 
@@ -27,6 +28,7 @@ export function StorageSearchPanel() {
   const t = useTranslations("landing.search");
   const locale = useLocale();
   const router = useRouter();
+  const unitTypes = usePublicUnitTypes();
   const panelRef = useRef<HTMLFormElement>(null);
   const [filters, setFilters] = useState<SearchFilters>(INITIAL_FILTERS);
   const [activeDropdown, setActiveDropdown] = useState<SearchFieldId | null>(null);
@@ -55,12 +57,17 @@ export function StorageSearchPanel() {
       if (value !== SEARCH_FILTER_ALL) params.set(key, value);
     }
     const query = params.toString();
-    // TODO: the /search results page is not implemented yet.
     router.push(`/${locale}/customer/search${query ? `?${query}` : ""}`);
   };
 
   const getValueLabel = (field: SearchFieldId) => {
     const value = filters[field];
+    if (field === "type" && value !== SEARCH_FILTER_ALL) {
+      return (
+        unitTypes.data?.find((unitType) => unitType.id === value)?.name ??
+        t("options.type.all.label")
+      );
+    }
     if (field === "location" && value === SEARCH_FILTER_ALL) return t("locationPlaceholder");
     return t(`options.${field}.${value}.label`);
   };
@@ -124,8 +131,18 @@ export function StorageSearchPanel() {
                       aria-label={t(`fields.${field.id}`)}
                       className="max-h-64 overflow-y-auto px-1"
                     >
-                      {field.options.map((option) => {
+                      {(field.id === "type"
+                        ? [
+                            SEARCH_FILTER_ALL,
+                            ...(unitTypes.data ?? []).map((unitType) => unitType.id),
+                          ]
+                        : field.options
+                      ).map((option) => {
                         const isSelected = filters[field.id] === option;
+                        const unitType =
+                          field.id === "type" && option !== SEARCH_FILTER_ALL
+                            ? unitTypes.data?.find((item) => item.id === option)
+                            : undefined;
                         return (
                           <li key={option}>
                             <button
@@ -139,13 +156,15 @@ export function StorageSearchPanel() {
                                   : "text-neutral-main"
                               )}
                             >
-                              <div>
+                              <div className="min-w-0 [overflow-wrap:anywhere]">
                                 <div className="text-xs font-medium sm:text-sm">
-                                  {t(`options.${field.id}.${option}.label`)}
+                                  {unitType?.name ?? t(`options.${field.id}.${option}.label`)}
                                 </div>
-                                <div className="mt-0.5 text-[11px] font-normal text-neutral-muted">
-                                  {t(`options.${field.id}.${option}.sublabel`)}
-                                </div>
+                                {!unitType && (
+                                  <div className="mt-0.5 text-[11px] font-normal text-neutral-muted">
+                                    {t(`options.${field.id}.${option}.sublabel`)}
+                                  </div>
+                                )}
                               </div>
                               {isSelected && <Check className="size-4 shrink-0 text-brand" />}
                             </button>

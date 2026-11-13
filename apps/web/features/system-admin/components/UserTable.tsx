@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState } from "react";
 import { useUsers, useCreateUser, useUpdateUser, useUser, useDeleteUser } from "../hooks";
 import { USER_ROLE, RoleEnum } from "@self-storage-system-fe/shared";
@@ -567,36 +569,48 @@ export const UserTable = () => {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => setEditingUserId(user.id)}
-                          className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                          title={t("userTable.edit")}
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleToggleStatus(user)}
-                          disabled={updateUser.isPending}
-                          className={`p-2 transition-colors rounded-lg ${user.status === "active" ? "text-slate-400 hover:text-red-600 hover:bg-red-50" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"} disabled:opacity-50`}
-                          title={
+                        <IconActionTooltip label={t("userTable.edit")}>
+                          <button
+                            onClick={() => setEditingUserId(user.id)}
+                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                            title={t("userTable.edit")}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                        </IconActionTooltip>
+                        <IconActionTooltip
+                          label={
                             user.status === "active"
                               ? t("userTable.lockAccount")
                               : t("userTable.unlockAccount")
                           }
                         >
-                          {user.status === "active" ? (
-                            <Lock className="w-4 h-4" />
-                          ) : (
-                            <Unlock className="w-4 h-4" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => setDeletingUser({ id: user.id, name: user.name })}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title={t("userTable.deleteAccount")}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                          <button
+                            onClick={() => handleToggleStatus(user)}
+                            disabled={updateUser.isPending}
+                            className={`p-2 transition-colors rounded-lg ${user.status === "active" ? "text-slate-400 hover:text-red-600 hover:bg-red-50" : "text-slate-400 hover:text-emerald-600 hover:bg-emerald-50"} disabled:opacity-50`}
+                            title={
+                              user.status === "active"
+                                ? t("userTable.lockAccount")
+                                : t("userTable.unlockAccount")
+                            }
+                          >
+                            {user.status === "active" ? (
+                              <Lock className="w-4 h-4" />
+                            ) : (
+                              <Unlock className="w-4 h-4" />
+                            )}
+                          </button>
+                        </IconActionTooltip>
+                        <IconActionTooltip label={t("userTable.deleteAccount")}>
+                          <button
+                            onClick={() => setDeletingUser({ id: user.id, name: user.name })}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title={t("userTable.deleteAccount")}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </IconActionTooltip>
                       </div>
                     </td>
                   </tr>

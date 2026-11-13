@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -311,14 +313,16 @@ export const ApprovalTable = () => {
             />
             <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
               {searchInput && (
-                <button
-                  type="button"
-                  onClick={handleClearSearch}
-                  className="p-1 text-slate-400 hover:text-slate-600 rounded-md transition-colors cursor-pointer"
-                  title={t("clearSearch")}
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <IconActionTooltip label={t("clearSearch")}>
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className="p-1 text-slate-400 hover:text-slate-600 rounded-md transition-colors cursor-pointer"
+                    title={t("clearSearch")}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </IconActionTooltip>
               )}
               <button
                 type="submit"
@@ -416,16 +420,18 @@ export const ApprovalTable = () => {
             </div>
 
             {/* Refresh Button */}
-            <button
-              type="button"
-              onClick={handleRefresh}
-              title={t("refresh")}
-              className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
-            >
-              <RotateCw
-                className={`w-4 h-4 ${isFetching ? "animate-spin text-emerald-600" : ""}`}
-              />
-            </button>
+            <IconActionTooltip label={t("refresh")}>
+              <button
+                type="button"
+                onClick={handleRefresh}
+                title={t("refresh")}
+                className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
+              >
+                <RotateCw
+                  className={`w-4 h-4 ${isFetching ? "animate-spin text-emerald-600" : ""}`}
+                />
+              </button>
+            </IconActionTooltip>
           </div>
         </div>
 

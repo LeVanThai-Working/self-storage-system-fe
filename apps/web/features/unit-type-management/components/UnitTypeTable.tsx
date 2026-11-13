@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState, useEffect, useTransition } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -327,14 +329,16 @@ export const UnitTypeTable = () => {
           </select>
 
           {/* Refresh Button */}
-          <button
-            type="button"
-            onClick={() => refetch()}
-            title={t("refresh")}
-            className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
-          >
-            <RotateCw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
-          </button>
+          <IconActionTooltip label={t("refresh")}>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              title={t("refresh")}
+              className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
+            >
+              <RotateCw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
+            </button>
+          </IconActionTooltip>
         </div>
       </div>
 
@@ -493,50 +497,58 @@ export const UnitTypeTable = () => {
                     <td className="py-4 px-6 text-right">
                       <div className="inline-flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                         {/* View Details Button (GET /unit-types/{id}) */}
-                        <button
-                          type="button"
-                          onClick={() => setDetailUnitTypeId(unitType.id)}
-                          title={t("actions.viewDetails")}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
+                        <IconActionTooltip label={t("actions.viewDetails")}>
+                          <button
+                            type="button"
+                            onClick={() => setDetailUnitTypeId(unitType.id)}
+                            title={t("actions.viewDetails")}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </IconActionTooltip>
 
                         {/* Edit Button */}
-                        <button
-                          type="button"
-                          onClick={() => setEditingUnitTypeId(unitType.id)}
-                          title={t("actions.edit")}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
+                        <IconActionTooltip label={t("actions.edit")}>
+                          <button
+                            type="button"
+                            onClick={() => setEditingUnitTypeId(unitType.id)}
+                            title={t("actions.edit")}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                        </IconActionTooltip>
 
                         {/* Delete / Deactivate Button (Active) */}
                         {unitType.status === UnitTypeStatusEnum.ACTIVE && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setDeletingUnitType({ id: unitType.id, name: unitType.name })
-                            }
-                            title={t("actions.delete")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          <IconActionTooltip label={t("actions.delete")}>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setDeletingUnitType({ id: unitType.id, name: unitType.name })
+                              }
+                              title={t("actions.delete")}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
                         )}
 
                         {/* Restore Button (Inactive) */}
                         {unitType.status === UnitTypeStatusEnum.INACTIVE && (
-                          <button
-                            type="button"
-                            onClick={() => restoreMutation.mutate(unitType.id)}
-                            disabled={restoreMutation.isPending}
-                            title={t("actions.restore")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
-                          >
-                            <RotateCcw className="w-4 h-4" />
-                          </button>
+                          <IconActionTooltip label={t("actions.restore")}>
+                            <button
+                              type="button"
+                              onClick={() => restoreMutation.mutate(unitType.id)}
+                              disabled={restoreMutation.isPending}
+                              title={t("actions.restore")}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
+                            >
+                              <RotateCcw className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
                         )}
                       </div>
                     </td>
@@ -652,13 +664,15 @@ export const UnitTypeTable = () => {
               {restoreMutation.isPending ? t("deleteModal.restoring") : t("deleteModal.undo")}
             </button>
 
-            <button
-              type="button"
-              onClick={() => setUndoBannerVisible(false)}
-              className="p-1 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
+            <IconActionTooltip action="close">
+              <button
+                type="button"
+                onClick={() => setUndoBannerVisible(false)}
+                className="p-1 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </IconActionTooltip>
           </div>
         </div>
       )}

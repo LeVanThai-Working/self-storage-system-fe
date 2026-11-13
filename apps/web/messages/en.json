@@ -1,5 +1,8 @@
 {
   "common": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "close": "Close",
     "save": "Save",
     "cancel": "Cancel",
     "loading": "Loading...",
@@ -134,9 +137,22 @@
     "MESSAGE_CODE_505": "Order is not awaiting payment or has already been settled",
     "MESSAGE_CODE_506": "Payment transaction verification failed",
     "MESSAGE_CODE_507": "Payment has already been settled",
-    "MESSAGE_CODE_629": "Cannot change maintenance status or clear unit while customer inventory items remain"
+    "MESSAGE_CODE_629": "Cannot change maintenance status or clear unit while customer inventory items remain",
+    "MESSAGE_CODE_659": "Invalid or expired access OTP",
+    "MESSAGE_CODE_660": "The assignment has changed or the schedule is unavailable. Please review the latest details.",
+    "MESSAGE_CODE_661": "The staff member has an overlapping visit or is still supervising another customer",
+    "MESSAGE_CODE_662": "Only the responsible staff member can perform this action"
   },
   "systemAdmin": {
+    "checkInTimeValidation": {
+      "title": "Validate check-in time window",
+      "description": "Applies to warehouse access appointments. Turn off for demos outside the booked time window; the scheduled date, OTP and assigned staff are still required.",
+      "enabled": "Enabled",
+      "disabled": "Disabled · Demo",
+      "loading": "Loading...",
+      "retry": "Retry",
+      "demoNotice": "Demo mode: check-in is allowed outside the time window on the scheduled day, and automatic no-show marking is paused. Enable again after the demo."
+    },
     "nav": {
       "overview": "Overview",
       "userManagement": "User Management",
@@ -2042,7 +2058,7 @@
     "requests": {
       "title": "Request Center",
       "subtitle": "Browse the unit types and amenities currently offered at your facility, and submit requests to Business Operations.",
-      "createRequest": "+ New Request",
+      "createRequest": "New Request",
       "catalogSectionTitle": "Available at this facility",
       "requestsSectionTitle": "Submitted Requests",
       "empty": "You haven't submitted any requests yet.",
@@ -3237,7 +3253,8 @@
       "vehicle": "Plate",
       "checkedIn": "Entered",
       "checkedOut": "Left",
-      "status": "Status"
+      "status": "Status",
+      "assignee": "Responsible staff"
     },
     "detail": {
       "visit": "Visit",
@@ -3246,7 +3263,7 @@
       "contract": "Contract",
       "facility": "Facility",
       "slot": "Date · slot",
-      "window": "Gate window",
+      "window": "Default check-in window",
       "people": "People",
       "vehicle": "Vehicle",
       "purpose": "Purpose",
@@ -3260,10 +3277,10 @@
     },
     "gate": {
       "title": "Gate check-in",
-      "hint": "When the customer arrives, scan their QR code or enter the 6-digit OTP from their booking",
-      "codePlaceholder": "Scan QR or enter 6-digit OTP",
+      "hint": "Enter the six-digit OTP supplied by the customer. An unassigned visit is claimed during check-in. The backend verifies the time window and workload.",
+      "codePlaceholder": "Enter six-digit OTP",
       "notesPlaceholder": "Notes (optional)",
-      "codeRequired": "Please scan the QR code or enter the 6-digit OTP",
+      "codeRequired": "Enter a valid six-digit OTP",
       "submit": "Check in",
       "success": "Checked in {code}",
       "resultTitle": "Checked in {code}",
@@ -3271,14 +3288,42 @@
       "racks": "Rented racks, direct the vehicle here",
       "aisle": "Aisle {aisle}",
       "bay": "Bay {bay}",
-      "openDetail": "Open visit details"
+      "openDetail": "Open visit details",
+      "responsibleStaff": "Responsible staff: {name}"
     },
     "checkOut": {
       "title": "Customer is inside",
       "notesPlaceholder": "Notes on leaving (optional)",
       "submit": "Check out",
       "success": "Checked out {code}",
-      "pendingHint": "Waiting for the customer. Check them in with the QR code or OTP on the Warehouse visits page."
+      "pendingHint": "Enter the customer’s OTP on the access schedules page to check in. You must supervise this visit and check the customer out."
+    },
+    "assignment": {
+      "title": "Responsible staff",
+      "unassigned": "No staff assigned",
+      "filter": "Assignment",
+      "scope": {
+        "unassigned": "Unassigned",
+        "mine": "My assignments",
+        "all": "All"
+      },
+      "claim": "Claim visit",
+      "claimed": "Visit claimed",
+      "assign": "Assign staff",
+      "assigned": "Staff assigned",
+      "unassign": "Remove assignment",
+      "unassignedSuccess": "Assignment removed; the appointment is unchanged",
+      "assignHint": "Choose staff from this facility. The backend verifies overlapping visits and workload.",
+      "unassignHint": "The appointment, OTP and time are unchanged. To change staff, remove the current assignment first, then assign again.",
+      "staff": "Staff",
+      "chooseStaff": "Choose responsible staff",
+      "reason": "Reason for removing assignment",
+      "staffRequired": "Choose valid staff and reload the appointment if its data has changed.",
+      "reasonRequired": "Enter a reason of 1–500 characters and use the latest appointment details.",
+      "changed": "The assignment or visit status has changed. Review the latest details before continuing.",
+      "contactManager": "Contact your Facility Manager if you cannot supervise the visit. Staff cannot remove their own assignment.",
+      "cancel": "Close",
+      "confirm": "Confirm"
     }
   }
 }

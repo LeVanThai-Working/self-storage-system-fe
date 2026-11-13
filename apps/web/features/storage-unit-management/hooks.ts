@@ -10,6 +10,7 @@ import {
   restoreStorageRack,
   deleteStorageUnit,
   fetchActiveOfferings,
+  fetchAllStorageUnits,
   fetchAvailableStorageUnits,
   fetchFacilityMapLayout,
   fetchMyFacility,
@@ -45,6 +46,7 @@ export const storageUnitKeys = {
   lists: () => [...storageUnitKeys.all, "list"] as const,
   list: (facilityId: string, filters: StorageUnitFilters) =>
     [...storageUnitKeys.lists(), facilityId, { filters }] as const,
+  allForFacility: (facilityId: string) => [...storageUnitKeys.lists(), facilityId, "all"] as const,
   detail: (id: string) => [...storageUnitKeys.all, "detail", id] as const,
   stats: (facilityId: string) => [...storageUnitKeys.all, "stats", facilityId] as const,
   mapLayout: (facilityId: string) => [...storageUnitKeys.all, "map-layout", facilityId] as const,
@@ -111,6 +113,14 @@ export const useStorageUnits = (facilityId: string | undefined, filters: Storage
     queryFn: () => fetchStorageUnits(facilityId!, filters),
     enabled: Boolean(facilityId),
     placeholderData: (previous) => previous,
+  });
+
+/** Entire unit lookup for contract labels and selectors, loaded in API-sized pages. */
+export const useAllStorageUnits = (facilityId: string | undefined) =>
+  useQuery({
+    queryKey: storageUnitKeys.allForFacility(facilityId ?? ""),
+    queryFn: () => fetchAllStorageUnits(facilityId!),
+    enabled: Boolean(facilityId),
   });
 
 export const useStorageUnitDetail = (id: string | undefined) =>

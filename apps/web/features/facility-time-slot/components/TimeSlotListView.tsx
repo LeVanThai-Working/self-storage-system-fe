@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState, useMemo } from "react";
 import { Clock, Users, Search, Edit3, Trash2, CheckCircle2, XCircle } from "lucide-react";
 import type { FacilityTimeSlot } from "../types";
@@ -168,22 +170,26 @@ export const TimeSlotListView: React.FC<TimeSlotListViewProps> = ({
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => onEditSlot(slot)}
-                          className="rounded-lg p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400 transition-colors"
-                          title="Sửa khung giờ"
-                        >
-                          <Edit3 className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onDeleteSlot(slot)}
-                          className="rounded-lg p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 dark:hover:text-red-400 transition-colors"
-                          title="Xóa khung giờ"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        <IconActionTooltip label="Sửa khung giờ">
+                          <button
+                            type="button"
+                            onClick={() => onEditSlot(slot)}
+                            className="rounded-lg p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400 transition-colors"
+                            title="Sửa khung giờ"
+                          >
+                            <Edit3 className="h-4 w-4" />
+                          </button>
+                        </IconActionTooltip>
+                        <IconActionTooltip label="Xóa khung giờ">
+                          <button
+                            type="button"
+                            onClick={() => onDeleteSlot(slot)}
+                            className="rounded-lg p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 dark:hover:text-red-400 transition-colors"
+                            title="Xóa khung giờ"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </IconActionTooltip>
                       </div>
                     </td>
                   </tr>

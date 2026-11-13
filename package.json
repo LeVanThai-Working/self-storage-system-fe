@@ -2,6 +2,7 @@
   "name": "self-storage-system-fe",
   "private": true,
   "scripts": {
+    "test:access-schedules": "vitest run tests/access-schedules",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=web",
@@ -19,7 +20,8 @@
     "lint-staged": "^17.6.0",
     "prettier": "3.9.6",
     "turbo": "^2.11.5",
-    "typescript": "7.0.2"
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
   },
   "packageManager": "pnpm@11.25.0",
   "engines": {

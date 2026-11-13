@@ -103,7 +103,11 @@
     "MESSAGE_CODE_121": "User must have role {0}",
     "MESSAGE_CODE_122": "You do not have permission to manage {0}",
     "MESSAGE_CODE_200": "{0} cannot be empty",
-    "MESSAGE_CODE_201": "Invalid or expired token"
+    "MESSAGE_CODE_201": "Invalid or expired token",
+    "MESSAGE_CODE_659": "Invalid or expired access OTP",
+    "MESSAGE_CODE_660": "The assignment has changed or the schedule is unavailable. Please review the latest details.",
+    "MESSAGE_CODE_661": "The staff member has an overlapping visit or is still supervising another customer",
+    "MESSAGE_CODE_662": "Only the responsible staff member can perform this action"
   },
   "settings": {
     "title": "Settings & Account",
@@ -407,7 +411,7 @@
     "skuButton": "SKUs",
     "preCreateSkuTitle": "Pre-create Item SKUs",
     "preCreateSkuHint": "You have no SKUs in storage yet. Create SKUs beforehand to easily notify inbound and place items on racks.",
-    "createSkuButton": "+ Create New SKU",
+    "createSkuButton": "Create New SKU",
     "viewSkuList": "View catalog",
     "unitSubtitle": "%{facility} · Unit %{unit}",
     "contractLabel": "Contract #%{code}",
@@ -499,7 +503,7 @@
       "reason": "Reason (required)",
       "reasonOptional": "Reason (optional)",
       "reasonPlaceholder": "Enter a reason...",
-      "reasonMin": "Reason must be at least 3 characters",
+      "reasonMin": "Reason must be at least 5 characters",
       "addReason": "Add a reason",
       "referenceCode": "Reference code",
       "notes": "Notes",
@@ -1036,7 +1040,7 @@
       "slotLeft": "%{count} left",
       "slotFull": "Full",
       "noSlots": "The facility has no time slots on this day",
-      "windowHint": "You can pass the gate up to %{early} minutes early and %{late} minutes late from the slot start.",
+      "windowHint": "Default check-in window: %{early} minutes early to %{late} minutes late. The backend determines the applicable window.",
       "people": "People entering",
       "vehicleType": "Vehicle type (optional)",
       "vehicleTypePlaceholder": "1.5T truck, cargo tricycle...",
@@ -1050,12 +1054,10 @@
     },
     "detail": {
       "title": "Warehouse visit",
-      "qrHint": "Show this QR code to the guard at the gate",
       "otpLabel": "Gate OTP",
-      "otpOnce": "The OTP is shown only once, note it down or use the QR code",
-      "otpHidden": "The OTP is only shown right after booking. Use the QR code at the gate.",
+      "otpHidden": "No access OTP is currently available for this appointment.",
       "date": "Date, slot",
-      "window": "Gate window",
+      "window": "Default window",
       "windowValue": "%{from} – %{to}",
       "people": "People",
       "vehicle": "Vehicle",
@@ -1064,7 +1066,11 @@
       "contract": "Contract",
       "checkedIn": "Entered at %{time}",
       "checkedOut": "Left at %{time}",
-      "cancelled": "Cancelled at %{time}"
+      "cancelled": "Cancelled at %{time}",
+      "otpHint": "Give this code to staff at the gate. The current code is loaded from your appointment details.",
+      "assignedStaff": "Responsible staff",
+      "unassigned": "No staff assigned",
+      "staffNameUnavailable": "Assigned; staff name unavailable"
     },
     "cancel": {
       "button": "Cancel visit",

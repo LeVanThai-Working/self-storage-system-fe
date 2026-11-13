@@ -17,6 +17,9 @@ export const ACCESS_SCHEDULE_ENDPOINTS = {
   CHECK_IN: "/access-schedules/check-in",
   PROCESS_NO_SHOW: "/access-schedules/process-no-show",
   DETAIL: (id: string) => `/access-schedules/${id}`,
+  CLAIM: (id: string) => `/access-schedules/${id}/claim`,
+  ASSIGN: (id: string) => `/access-schedules/${id}/assign`,
+  UNASSIGN: (id: string) => `/access-schedules/${id}/unassign`,
   CHECK_OUT: (id: string) => `/access-schedules/${id}/check-out`,
   CANCEL: (id: string) => `/access-schedules/${id}/cancel`,
 } as const;

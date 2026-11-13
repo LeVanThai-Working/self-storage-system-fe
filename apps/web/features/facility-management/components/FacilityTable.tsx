@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -183,13 +185,15 @@ export const FacilityTable = () => {
                 {restoreMutation.isPending ? "Đang khôi phục..." : "Hoàn tác / Khôi phục"}
               </span>
             </button>
-            <button
-              type="button"
-              onClick={() => setLastDeletedFacility(null)}
-              className="p-2 text-slate-400 hover:text-white rounded-xl transition-colors cursor-pointer"
-            >
-              <XCircle className="w-4 h-4" />
-            </button>
+            <IconActionTooltip action="close">
+              <button
+                type="button"
+                onClick={() => setLastDeletedFacility(null)}
+                className="p-2 text-slate-400 hover:text-white rounded-xl transition-colors cursor-pointer"
+              >
+                <XCircle className="w-4 h-4" />
+              </button>
+            </IconActionTooltip>
           </div>
         </div>
       )}
@@ -313,14 +317,16 @@ export const FacilityTable = () => {
           </select>
 
           {/* Refresh Button */}
-          <button
-            type="button"
-            onClick={() => refetch()}
-            title={t("refresh")}
-            className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-600 hover:text-teal-600 transition-colors cursor-pointer"
-          >
-            <RotateCcw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
-          </button>
+          <IconActionTooltip label={t("refresh")}>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              title={t("refresh")}
+              className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-600 hover:text-teal-600 transition-colors cursor-pointer"
+            >
+              <RotateCcw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
+            </button>
+          </IconActionTooltip>
         </div>
       </div>
 
@@ -499,71 +505,89 @@ export const FacilityTable = () => {
                           onClick={(e) => e.stopPropagation()}
                         >
                           {/* View Time Slots Action */}
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              router.push(
-                                `/${locale}/business-ops/facilities/${facility.id}/time-slots`
-                              );
-                            }}
-                            title={
+                          <IconActionTooltip
+                            label={
                               locale === "vi"
                                 ? "Cấu hình khung giờ tiếp đón"
                                 : "Configure time slots"
                             }
-                            className="p-2 rounded-xl text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
                           >
-                            <Clock className="w-4 h-4" />
-                          </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(
+                                  `/${locale}/business-ops/facilities/${facility.id}/time-slots`
+                                );
+                              }}
+                              title={
+                                locale === "vi"
+                                  ? "Cấu hình khung giờ tiếp đón"
+                                  : "Configure time slots"
+                              }
+                              className="p-2 rounded-xl text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                            >
+                              <Clock className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
 
                           {/* View Storage Units Action */}
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              router.push(`/${locale}/business-ops/facilities/${facility.id}`);
-                            }}
-                            title={locale === "vi" ? "Xem danh sách ô kho" : "View storage units"}
-                            className="p-2 rounded-xl text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                          <IconActionTooltip
+                            label={locale === "vi" ? "Xem danh sách ô kho" : "View storage units"}
                           >
-                            <Boxes className="w-4 h-4" />
-                          </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/${locale}/business-ops/facilities/${facility.id}`);
+                              }}
+                              title={locale === "vi" ? "Xem danh sách ô kho" : "View storage units"}
+                              className="p-2 rounded-xl text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                            >
+                              <Boxes className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
 
                           {/* Assign Manager Action */}
-                          <button
-                            type="button"
-                            onClick={() => setAssigningFacility(facility)}
-                            title={t("actions.assignManager")}
-                            className="p-2 rounded-xl text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
-                          >
-                            <UserCheck className="w-4 h-4" />
-                          </button>
+                          <IconActionTooltip label={t("actions.assignManager")}>
+                            <button
+                              type="button"
+                              onClick={() => setAssigningFacility(facility)}
+                              title={t("actions.assignManager")}
+                              className="p-2 rounded-xl text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                            >
+                              <UserCheck className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
 
                           {/* Edit Action */}
-                          <button
-                            type="button"
-                            onClick={() => setEditingFacilityId(facility.id)}
-                            title={t("actions.edit")}
-                            className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer"
-                          >
-                            <Edit3 className="w-4 h-4" />
-                          </button>
+                          <IconActionTooltip label={t("actions.edit")}>
+                            <button
+                              type="button"
+                              onClick={() => setEditingFacilityId(facility.id)}
+                              title={t("actions.edit")}
+                              className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
 
                           {/* Delete/Deactivate Action */}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setDeletingFacility({
-                                id: facility.id,
-                                name: facility.name,
-                              })
-                            }
-                            title={t("actions.delete")}
-                            className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          <IconActionTooltip label={t("actions.delete")}>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setDeletingFacility({
+                                  id: facility.id,
+                                  name: facility.name,
+                                })
+                              }
+                              title={t("actions.delete")}
+                              className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
                         </div>
                       </td>
                     </tr>

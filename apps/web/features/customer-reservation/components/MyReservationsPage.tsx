@@ -40,7 +40,7 @@ function ReservationCard({
   const base = `/${locale}/customer/reservations/${r.id}`;
 
   return (
-    <li className="rounded-2xl border border-neutral-border bg-white p-5 shadow-sm">
+    <li className="min-w-0 rounded-2xl border border-neutral-border bg-white p-5 shadow-sm [overflow-wrap:anywhere]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm text-neutral-muted">{r.reservationCode}</p>

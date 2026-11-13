@@ -1,4 +1,6 @@
 "use client";
+
+import { IconActionTooltip } from "@/components/ui/tooltip";
 import { useLocale } from "next-intl";
 
 import React, { useState } from "react";
@@ -325,22 +327,26 @@ export const UnmatchedTransactionsView: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                disabled={!pagination.hasPrevPage}
-                onClick={() => setFilters((p) => ({ ...p, page: p.page - 1 }))}
-                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                disabled={!pagination.hasNextPage}
-                onClick={() => setFilters((p) => ({ ...p, page: p.page + 1 }))}
-                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              <IconActionTooltip action="previousPage">
+                <button
+                  type="button"
+                  disabled={!pagination.hasPrevPage}
+                  onClick={() => setFilters((p) => ({ ...p, page: p.page - 1 }))}
+                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              </IconActionTooltip>
+              <IconActionTooltip action="nextPage">
+                <button
+                  type="button"
+                  disabled={!pagination.hasNextPage}
+                  onClick={() => setFilters((p) => ({ ...p, page: p.page + 1 }))}
+                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </IconActionTooltip>
             </div>
           </div>
         )}

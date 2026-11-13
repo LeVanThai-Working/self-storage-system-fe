@@ -49,6 +49,7 @@
     "react-native-svg": "15.15.5",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.1",
+    "socket.io-client": "4.8.4",
     "tailwind-merge": "^3.7.0",
     "tailwindcss-animate": "^1.0.7",
     "victory-native": "^37.3.6",

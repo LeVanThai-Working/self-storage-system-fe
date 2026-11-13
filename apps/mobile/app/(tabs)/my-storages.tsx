@@ -33,7 +33,6 @@ import {
   Search,
   X,
   Package,
-  Plus,
 } from "lucide-react-native";
 import {
   useMyContractsInfinite,
@@ -175,13 +174,6 @@ export default function MyStoragesScreen() {
             className="items-center justify-center self-stretch rounded-2xl border border-brand/40 bg-brand-light/30 px-3 active:opacity-80 dark:bg-brand/15"
           >
             <CalendarClock size={16} color="#0B927E" />
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/skus/new")}
-            accessibilityLabel={t("sku.createButton")}
-            className="items-center justify-center self-stretch rounded-2xl bg-brand px-3 active:opacity-80"
-          >
-            <Plus size={16} color="#FFFFFF" />
           </Pressable>
         </View>
 

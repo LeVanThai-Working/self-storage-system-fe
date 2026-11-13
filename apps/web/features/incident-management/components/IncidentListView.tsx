@@ -31,7 +31,7 @@ import {
   IncidentStatusBadge,
 } from "./IncidentBadges";
 import { ReportIncidentDialog } from "./ReportIncidentDialog";
-import { TruncatedText } from "@/components/ui/tooltip";
+import { IconActionTooltip, TruncatedText } from "@/components/ui/tooltip";
 
 const PAGE_SIZE = 10;
 const SELECT = "rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm";
@@ -312,22 +312,26 @@ export function IncidentListView({ portalBase }: { portalBase: FacilityPortal })
               })}
             </span>
             <div className="flex gap-1">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={!data.pagination.hasPrevPage}
-                onClick={() => setPage((value) => value - 1)}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={!data.pagination.hasNextPage}
-                onClick={() => setPage((value) => value + 1)}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <IconActionTooltip action="previousPage">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!data.pagination.hasPrevPage}
+                  onClick={() => setPage((value) => value - 1)}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </IconActionTooltip>
+              <IconActionTooltip action="nextPage">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!data.pagination.hasNextPage}
+                  onClick={() => setPage((value) => value + 1)}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </IconActionTooltip>
             </div>
           </div>
         ) : null}

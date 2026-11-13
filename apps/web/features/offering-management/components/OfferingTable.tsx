@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -323,14 +325,16 @@ export const OfferingTable = () => {
             />
             <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
               {searchInput && (
-                <button
-                  type="button"
-                  onClick={handleClearSearch}
-                  className="p-1 text-slate-400 hover:text-slate-600 rounded-md transition-colors cursor-pointer"
-                  title={t("clearSearch")}
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                <IconActionTooltip label={t("clearSearch")}>
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className="p-1 text-slate-400 hover:text-slate-600 rounded-md transition-colors cursor-pointer"
+                    title={t("clearSearch")}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </IconActionTooltip>
               )}
               <button
                 type="submit"
@@ -437,14 +441,16 @@ export const OfferingTable = () => {
             </div>
 
             {/* Refresh Button */}
-            <button
-              type="button"
-              onClick={() => refetch()}
-              title={t("refresh")}
-              className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
-            >
-              <RotateCw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
-            </button>
+            <IconActionTooltip label={t("refresh")}>
+              <button
+                type="button"
+                onClick={() => refetch()}
+                title={t("refresh")}
+                className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
+              >
+                <RotateCw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
+              </button>
+            </IconActionTooltip>
           </div>
         </div>
 
@@ -625,40 +631,48 @@ export const OfferingTable = () => {
                       {/* Actions Column */}
                       <td className="py-4 px-6 text-right whitespace-nowrap">
                         <div className="inline-flex items-center justify-end gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                          <button
-                            type="button"
-                            onClick={() => setViewingId(offering.id)}
-                            title={t("actions.view")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors cursor-pointer"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setEditingId(offering.id)}
-                            title={t("actions.edit")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </button>
+                          <IconActionTooltip label={t("actions.view")}>
+                            <button
+                              type="button"
+                              onClick={() => setViewingId(offering.id)}
+                              title={t("actions.view")}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors cursor-pointer"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
+                          <IconActionTooltip label={t("actions.edit")}>
+                            <button
+                              type="button"
+                              onClick={() => setEditingId(offering.id)}
+                              title={t("actions.edit")}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </button>
+                          </IconActionTooltip>
                           {offering.status === FacilityUnitTypeOfferingStatusEnum.INACTIVE ? (
-                            <button
-                              type="button"
-                              onClick={() => setRestoring(offering)}
-                              title={t("actions.restore")}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
-                            >
-                              <RotateCcw className="w-4 h-4" />
-                            </button>
+                            <IconActionTooltip label={t("actions.restore")}>
+                              <button
+                                type="button"
+                                onClick={() => setRestoring(offering)}
+                                title={t("actions.restore")}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                              </button>
+                            </IconActionTooltip>
                           ) : (
-                            <button
-                              type="button"
-                              onClick={() => setDeleting(offering)}
-                              title={t("actions.delete")}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            <IconActionTooltip label={t("actions.delete")}>
+                              <button
+                                type="button"
+                                onClick={() => setDeleting(offering)}
+                                title={t("actions.delete")}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </IconActionTooltip>
                           )}
                         </div>
                       </td>

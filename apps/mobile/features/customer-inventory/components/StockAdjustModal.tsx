@@ -12,7 +12,7 @@ import { PositionCard } from "./PositionCard";
 import { QuantityStepper } from "./QuantityStepper";
 import { SkuSelectField } from "./SkuSelect";
 
-const REASON_MIN_LENGTH = 3;
+const REASON_MIN_LENGTH = 5;
 const REASON_CHIP_KEYS = [
   "rackMap.reasonChip.periodic",
   "rackMap.reasonChip.damaged",

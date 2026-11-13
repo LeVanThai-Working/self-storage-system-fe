@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import { useState } from "react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -12,14 +14,25 @@ import {
   DoorOpen,
   UserX,
 } from "lucide-react";
-import { AccessScheduleStatusEnum } from "@self-storage-system-fe/shared";
+import {
+  AccessScheduleStatusEnum,
+  RoleEnum,
+  getAccessSchedulePermissions,
+  type AccessScheduleQuery,
+} from "@self-storage-system-fe/shared";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { formatDateTime } from "@/features/support-desk/utils";
 import { fetchAccessSchedules } from "../api";
-import { accessScheduleKeys, useAccessSchedules } from "../hooks";
+import {
+  accessScheduleKeys,
+  useAccessScheduleCaller,
+  useAccessSchedules,
+  useClaimAccessSchedule,
+} from "../hooks";
 import { formatScheduleDate } from "../utils";
 import { AccessScheduleStatusBadge } from "./AccessScheduleStatusBadge";
 import { GateCheckInPanel } from "./GateCheckInPanel";
@@ -59,12 +72,17 @@ export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPor
   const t = useTranslations("accessScheduleDesk");
   const locale = useLocale();
   const getErrorMessage = useApiErrorMessage();
+  const caller = useAccessScheduleCaller();
+  const claim = useClaimAccessSchedule();
+  const [assignmentScope, setAssignmentScope] =
+    useState<NonNullable<AccessScheduleQuery["assignmentScope"]>>("all");
   const [status, setStatus] = useState<AccessScheduleStatusEnum | "">("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [page, setPage] = useState(1);
 
   const listQuery = useAccessSchedules({
+    assignmentScope,
     status: status || undefined,
     startDate: startDate || undefined,
     endDate: endDate || undefined,
@@ -75,7 +93,7 @@ export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPor
   });
   const kpiQueries = useQueries({
     queries: KPIS.map(({ status: kpiStatus }) => {
-      const kpiQuery = { status: kpiStatus, page: 1, limit: 1 };
+      const kpiQuery = { status: kpiStatus, assignmentScope, page: 1, limit: 1 };
       return {
         queryKey: accessScheduleKeys.list(kpiQuery),
         queryFn: () => fetchAccessSchedules(kpiQuery),
@@ -86,6 +104,14 @@ export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPor
   const data = listQuery.data;
   const items = data?.items ?? [];
   const resetPage = () => setPage(1);
+  const handleClaim = async (id: string) => {
+    try {
+      await claim.mutateAsync(id);
+      toast.success(t("assignment.claimed"));
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
 
   return (
     <div className="space-y-5">
@@ -117,6 +143,27 @@ export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPor
 
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center gap-2 p-3">
+          {caller.role === RoleEnum.FACILITY_STAFF ? (
+            <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+              {t("assignment.filter")}
+              <select
+                className={FIELD}
+                value={assignmentScope}
+                onChange={(event) => {
+                  setAssignmentScope(
+                    event.target.value as NonNullable<AccessScheduleQuery["assignmentScope"]>
+                  );
+                  resetPage();
+                }}
+              >
+                {(["unassigned", "mine", "all"] as const).map((scope) => (
+                  <option key={scope} value={scope}>
+                    {t(`assignment.scope.${scope}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <select
             value={status}
             onChange={(event) => {
@@ -166,6 +213,7 @@ export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPor
                   "code",
                   "customer",
                   "contract",
+                  "assignee",
                   "slot",
                   "people",
                   "vehicle",
@@ -185,20 +233,20 @@ export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPor
             {listQuery.isLoading ? (
               Array.from({ length: 5 }).map((_, index) => (
                 <tr key={index}>
-                  <td colSpan={10} className="px-4 py-2">
+                  <td colSpan={11} className="px-4 py-2">
                     <Skeleton className="h-8 w-full" />
                   </td>
                 </tr>
               ))
             ) : listQuery.isError ? (
               <tr>
-                <td colSpan={10} className="px-4 py-10 text-center text-sm text-rose-700">
+                <td colSpan={11} className="px-4 py-10 text-center text-sm text-rose-700">
                   {getErrorMessage(listQuery.error)}
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={10} className="px-4 py-10 text-center text-sm text-slate-500">
+                <td colSpan={11} className="px-4 py-10 text-center text-sm text-slate-500">
                   {t("empty")}
                 </td>
               </tr>
@@ -213,6 +261,11 @@ export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPor
                   </td>
                   <td className="px-4 py-3 font-mono text-xs text-slate-600">
                     {schedule.contractCode ?? "—"}
+                  </td>
+                  <td className="px-4 py-3 text-slate-600">
+                    {schedule.assignedStaffId === null
+                      ? t("assignment.unassigned")
+                      : (schedule.assignedStaffName ?? "—")}
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                     {formatScheduleDate(schedule.scheduledDate)} · {schedule.startTime}–
@@ -230,11 +283,22 @@ export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPor
                     <AccessScheduleStatusBadge status={schedule.status} />
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link href={`/${locale}/${portalBase}/access-schedules/${schedule.id}`}>
-                      <Button size="sm" variant="outline">
-                        {t("view")}
-                      </Button>
-                    </Link>
+                    <div className="flex justify-end gap-2">
+                      {getAccessSchedulePermissions(schedule, caller).canClaim ? (
+                        <Button
+                          size="sm"
+                          disabled={claim.isPending || listQuery.isFetching}
+                          onClick={() => void handleClaim(schedule.id)}
+                        >
+                          {t("assignment.claim")}
+                        </Button>
+                      ) : null}
+                      <Link href={`/${locale}/${portalBase}/access-schedules/${schedule.id}`}>
+                        <Button size="sm" variant="outline">
+                          {t("view")}
+                        </Button>
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -251,22 +315,26 @@ export function AccessScheduleListView({ portalBase }: { portalBase: FacilityPor
               })}
             </span>
             <div className="flex gap-1">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={!data.pagination.hasPrevPage}
-                onClick={() => setPage((value) => value - 1)}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={!data.pagination.hasNextPage}
-                onClick={() => setPage((value) => value + 1)}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <IconActionTooltip action="previousPage">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!data.pagination.hasPrevPage}
+                  onClick={() => setPage((value) => value - 1)}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </IconActionTooltip>
+              <IconActionTooltip action="nextPage">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!data.pagination.hasNextPage}
+                  onClick={() => setPage((value) => value + 1)}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </IconActionTooltip>
             </div>
           </div>
         ) : null}

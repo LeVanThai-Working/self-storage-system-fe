@@ -55,7 +55,7 @@ import { StorageUnitMapView } from "./StorageUnitMapView";
 import { UnitMaintenanceDialog } from "./UnitMaintenanceDialog";
 import { StorageRackManagementModal } from "./StorageRackManagementModal";
 import { ReconcileStorageUnitsButton } from "./ReconcileStorageUnitsButton";
-import { ActionTooltip, TruncatedText } from "@/components/ui/tooltip";
+import { IconActionTooltip, ActionTooltip, TruncatedText } from "@/components/ui/tooltip";
 
 const PAGE_SIZE = 10;
 
@@ -847,13 +847,15 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
               {restoreMutation.isPending ? t("deleteModal.restoring") : t("deleteModal.undo")}
             </button>
 
-            <button
-              type="button"
-              onClick={() => setUndoBannerVisible(false)}
-              className="p-1 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
+            <IconActionTooltip action="close">
+              <button
+                type="button"
+                onClick={() => setUndoBannerVisible(false)}
+                className="p-1 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </IconActionTooltip>
           </div>
         </div>
       )}

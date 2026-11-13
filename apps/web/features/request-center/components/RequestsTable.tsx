@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Clock, CheckCircle2, XCircle, Ban, X, ChevronLeft, ChevronRight } from "lucide-react";
@@ -151,22 +153,26 @@ export const RequestsTable = () => {
             {t("table.page")} {pagination.page}/{pagination.totalPages}
           </span>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={!pagination.hasPrevPage}
-              onClick={() => setPage((p) => Math.max(p - 1, 1))}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              disabled={!pagination.hasNextPage}
-              onClick={() => setPage((p) => p + 1)}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+            <IconActionTooltip action="previousPage">
+              <button
+                type="button"
+                disabled={!pagination.hasPrevPage}
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+            </IconActionTooltip>
+            <IconActionTooltip action="nextPage">
+              <button
+                type="button"
+                disabled={!pagination.hasNextPage}
+                onClick={() => setPage((p) => p + 1)}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </IconActionTooltip>
           </div>
         </div>
       )}

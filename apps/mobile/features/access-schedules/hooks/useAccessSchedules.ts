@@ -17,7 +17,6 @@ import {
   getAccessSchedulesApi,
   getAvailableAccessSlotsApi,
 } from "../api/accessSchedule.api";
-import { useAccessOtpStore } from "../stores/accessOtp.store";
 
 const ACCESS_SCHEDULE_PAGE_SIZE = 20;
 
@@ -56,6 +55,9 @@ export function useAccessSchedule(id?: string) {
     queryKey: accessScheduleKeys.detail(id),
     queryFn: () => getAccessScheduleApi(id!),
     enabled: Boolean(id),
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
   });
 }
 
@@ -69,16 +71,10 @@ export function useAvailableAccessSlots(facilityId?: string, date?: string) {
 
 export function useCreateAccessSchedule() {
   const qc = useQueryClient();
-  const remember = useAccessOtpStore((state) => state.remember);
   return useMutation({
     mutationFn: (payload: CreateAccessScheduleRequest) => createAccessScheduleApi(payload),
     onSuccess: (schedule) => {
-      // The OTP is shown once: keep it in memory, never in the query cache.
-      if (schedule.rawOtpCode) remember(schedule.id, schedule.rawOtpCode);
-      qc.setQueryData(accessScheduleKeys.detail(schedule.id), {
-        ...schedule,
-        rawOtpCode: null,
-      });
+      qc.setQueryData(accessScheduleKeys.detail(schedule.id), schedule);
       qc.invalidateQueries({ queryKey: [...accessScheduleKeys.all, "list"] });
       qc.invalidateQueries({ queryKey: [...accessScheduleKeys.all, "slots"] });
     },
@@ -87,12 +83,10 @@ export function useCreateAccessSchedule() {
 
 export function useCancelAccessSchedule() {
   const qc = useQueryClient();
-  const forget = useAccessOtpStore((state) => state.forget);
   return useMutation({
     mutationFn: ({ id, payload }: { id: string; payload?: CancelAccessScheduleRequest }) =>
       cancelAccessScheduleApi(id, payload),
     onSuccess: (schedule) => {
-      forget(schedule.id);
       qc.setQueryData(accessScheduleKeys.detail(schedule.id), schedule);
       qc.invalidateQueries({ queryKey: [...accessScheduleKeys.all, "list"] });
       qc.invalidateQueries({ queryKey: [...accessScheduleKeys.all, "slots"] });

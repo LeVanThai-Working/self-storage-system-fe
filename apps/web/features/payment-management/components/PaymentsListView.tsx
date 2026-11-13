@@ -1,5 +1,7 @@
 "use client";
 
+import { IconActionTooltip } from "@/components/ui/tooltip";
+
 import React, { useState } from "react";
 import { useLocale } from "next-intl";
 import {
@@ -402,14 +404,16 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
 
                     <td className="px-4 py-3.5 text-right" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedPaymentId(payment.id)}
-                          className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
-                          title={isEn ? "View Details" : "Xem chi tiết"}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
+                        <IconActionTooltip label={isEn ? "View Details" : "Xem chi tiết"}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPaymentId(payment.id)}
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+                            title={isEn ? "View Details" : "Xem chi tiết"}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </IconActionTooltip>
 
                         {payment.status === PaymentStatusEnum.PENDING && (
                           <>
@@ -450,22 +454,26 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
             </div>
 
             <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                disabled={!pagination.hasPrevPage}
-                onClick={() => setFilters((p) => ({ ...p, page: p.page - 1 }))}
-                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                disabled={!pagination.hasNextPage}
-                onClick={() => setFilters((p) => ({ ...p, page: p.page + 1 }))}
-                className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              <IconActionTooltip action="previousPage">
+                <button
+                  type="button"
+                  disabled={!pagination.hasPrevPage}
+                  onClick={() => setFilters((p) => ({ ...p, page: p.page - 1 }))}
+                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              </IconActionTooltip>
+              <IconActionTooltip action="nextPage">
+                <button
+                  type="button"
+                  disabled={!pagination.hasNextPage}
+                  onClick={() => setFilters((p) => ({ ...p, page: p.page + 1 }))}
+                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </IconActionTooltip>
             </div>
           </div>
         )}

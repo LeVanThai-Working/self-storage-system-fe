@@ -16,7 +16,7 @@ import {
 } from "@self-storage-system-fe/shared";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ActionTooltip } from "@/components/ui/tooltip";
+import { IconActionTooltip, ActionTooltip } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useUpdateRack, useUpdateRackTier, useDeleteRack, useRestoreRack } from "../hooks";
@@ -423,33 +423,39 @@ function TierRow({ tier, readOnly }: { tier: RackTierResponse; readOnly: boolean
       <td className="px-2 py-2 text-right">
         {readOnly ? null : editing ? (
           <span className="inline-flex gap-1">
-            <button
-              type="button"
-              onClick={() => void save()}
-              disabled={updateTier.isPending}
-              className="text-teal-600"
-              aria-label={t("save")}
-            >
-              <Check className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditing(false)}
-              className="text-slate-400"
-              aria-label={t("close")}
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <IconActionTooltip label={t("save")}>
+              <button
+                type="button"
+                onClick={() => void save()}
+                disabled={updateTier.isPending}
+                className="text-teal-600"
+                aria-label={t("save")}
+              >
+                <Check className="h-4 w-4" />
+              </button>
+            </IconActionTooltip>
+            <IconActionTooltip label={t("close")}>
+              <button
+                type="button"
+                onClick={() => setEditing(false)}
+                className="text-slate-400"
+                aria-label={t("close")}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </IconActionTooltip>
           </span>
         ) : (
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="text-slate-400 hover:text-teal-600"
-            aria-label={t("edit")}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
+          <IconActionTooltip label={t("edit")}>
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="text-slate-400 hover:text-teal-600"
+              aria-label={t("edit")}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+          </IconActionTooltip>
         )}
       </td>
     </tr>

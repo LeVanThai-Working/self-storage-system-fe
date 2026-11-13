@@ -29,6 +29,8 @@ export const useFacilityPublicDetail = (id: string) =>
     queryKey: exploreKeys.detail(id),
     queryFn: () => fetchFacilityPublicDetail(id),
     enabled: Boolean(id),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
 /** Lowest/highest active offering price per facility id. */
@@ -65,7 +67,8 @@ export const usePublicUnitTypes = () =>
   useQuery({
     queryKey: ["explore", "unit-types"],
     queryFn: fetchPublicUnitTypes,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
 /**

@@ -39,6 +39,7 @@ export const useCreateUnitType = () => {
     mutationFn: (payload: CreateUnitTypeRequest) => createUnitType(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: unitTypeKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: ["explore"] });
     },
   });
 };
@@ -49,6 +50,7 @@ export const useUpdateUnitType = () => {
     mutationFn: ({ id, payload }: { id: string; payload: UpdateUnitTypeRequest }) =>
       updateUnitType(id, payload),
     onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["explore"] });
       queryClient.invalidateQueries({ queryKey: unitTypeKeys.lists() });
       queryClient.invalidateQueries({ queryKey: unitTypeKeys.detail(variables.id) });
     },
@@ -60,6 +62,7 @@ export const useDeleteUnitType = () => {
   return useMutation({
     mutationFn: (id: string) => deleteUnitType(id),
     onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ["explore"] });
       queryClient.invalidateQueries({ queryKey: unitTypeKeys.lists() });
       queryClient.invalidateQueries({ queryKey: unitTypeKeys.detail(id) });
     },
@@ -71,6 +74,7 @@ export const useRestoreUnitType = () => {
   return useMutation({
     mutationFn: (id: string) => restoreUnitType(id),
     onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ["explore"] });
       queryClient.invalidateQueries({ queryKey: unitTypeKeys.lists() });
       queryClient.invalidateQueries({ queryKey: unitTypeKeys.detail(id) });
     },

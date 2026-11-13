@@ -23,7 +23,6 @@ export const RequestCenterView = () => {
             </div>
             {t("title")}
           </h1>
-          <p className="text-slate-500 text-sm mt-1">{t("subtitle")}</p>
         </div>
         <button
           type="button"
