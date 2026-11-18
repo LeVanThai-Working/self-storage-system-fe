@@ -339,14 +339,14 @@ export const EditLegalEntityModal: React.FC<EditLegalEntityModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={updateMutation.isPending}
-              className="px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 font-bold transition-colors"
+              className="px-4 py-2.5 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 font-bold transition-colors"
             >
               {isEn ? "Cancel" : "Hủy"}
             </button>
             <button
               type="submit"
               disabled={updateMutation.isPending}
-              className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-md shadow-amber-500/20 flex items-center gap-2 transition-all disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-white font-bold flex items-center gap-2 transition-all disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {updateMutation.isPending ? (
                 <>

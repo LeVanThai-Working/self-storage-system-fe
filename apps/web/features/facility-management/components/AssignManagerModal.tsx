@@ -169,14 +169,14 @@ export const AssignManagerModal = ({ facility, isOpen, onClose }: AssignManagerM
               type="button"
               onClick={handleClose}
               disabled={assignMutation.isPending}
-              className="px-5 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors cursor-pointer disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors cursor-pointer disabled:opacity-50"
             >
               {t("cancel")}
             </button>
             <button
               type="submit"
               disabled={assignMutation.isPending || isLoadingManagers || managers.length === 0}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white text-sm font-bold shadow-md shadow-teal-500/25 hover:shadow-lg hover:shadow-teal-500/35 transition-all cursor-pointer disabled:opacity-50 active:scale-95 flex items-center gap-1.5"
+              className="px-6 py-2.5 rounded-md text-white text-sm font-bold transition-all cursor-pointer disabled:opacity-50 active:scale-95 flex items-center gap-1.5 bg-brand hover:bg-brand-hover"
             >
               {assignMutation.isPending && (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

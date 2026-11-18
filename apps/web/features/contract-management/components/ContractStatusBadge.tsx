@@ -2,20 +2,7 @@
 
 import React from "react";
 import { useLocale } from "next-intl";
-import {
-  AlertTriangle,
-  ArrowRightLeft,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  HelpCircle,
-  MinusCircle,
-  PlusCircle,
-  ShieldAlert,
-  Sparkles,
-  UserCheck,
-  XCircle,
-} from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import {
   ContractAddendumStatusEnum,
@@ -116,7 +103,7 @@ export const ContractStatusBadge: React.FC<ContractStatusBadgeProps> = ({ status
   return (
     <span
       className={cn(
-        "inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border",
+        "inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold border",
         tone.bg,
         tone.text,
         tone.border,
@@ -145,11 +132,6 @@ export const ContractSourceBadge: React.FC<ContractSourceBadgeProps> = ({ source
           : "bg-indigo-50 text-indigo-700 border-indigo-200/80"
       }`}
     >
-      {isReservation ? (
-        <Sparkles className="w-3 h-3 shrink-0" />
-      ) : (
-        <UserCheck className="w-3 h-3 shrink-0" />
-      )}
       {isReservation
         ? isEn
           ? "Reservation"
@@ -182,11 +164,6 @@ export const ContractDepositBadge: React.FC<ContractDepositBadgeProps> = ({
           : "bg-amber-50 text-amber-700 border-amber-200"
       }`}
     >
-      {isPaid ? (
-        <CheckCircle2 className="w-3 h-3 shrink-0" />
-      ) : (
-        <Clock className="w-3 h-3 shrink-0" />
-      )}
       {isFromReservation
         ? isEn
           ? "Deposit: Paid from Reservation"
@@ -216,42 +193,36 @@ export const ContractDepositStatusBadge: React.FC<ContractDepositStatusBadgeProp
     case ContractDepositStatusEnum.HELD:
       return (
         <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-blue-50 text-blue-700 border-blue-200">
-          <Clock className="w-3 h-3 shrink-0" />
           {isEn ? "Deposit Held" : "Đang giữ cọc"}
         </span>
       );
     case ContractDepositStatusEnum.APPLIED:
       return (
         <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-teal-50 text-teal-700 border-teal-200">
-          <CheckCircle2 className="w-3 h-3 shrink-0" />
           {isEn ? "Deposit Applied" : "Đã đối trừ cọc"}
         </span>
       );
     case ContractDepositStatusEnum.PARTIALLY_REFUNDED:
       return (
         <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-amber-50 text-amber-700 border-amber-200">
-          <AlertTriangle className="w-3 h-3 shrink-0" />
           {isEn ? "Partially Refunded" : "Hoàn trả một phần"}
         </span>
       );
     case ContractDepositStatusEnum.REFUNDED:
       return (
         <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200">
-          <CheckCircle2 className="w-3 h-3 shrink-0" />
           {isEn ? "Deposit Refunded" : "Đã hoàn cọc 100%"}
         </span>
       );
     case ContractDepositStatusEnum.FORFEITED:
       return (
         <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-rose-50 text-rose-700 border-rose-200">
-          <XCircle className="w-3 h-3 shrink-0" />
           {isEn ? "Deposit Forfeited" : "Tịch thu cọc 100%"}
         </span>
       );
     case ContractDepositStatusEnum.DISPUTED:
       return (
         <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-purple-50 text-purple-700 border-purple-200">
-          <HelpCircle className="w-3 h-3 shrink-0" />
           {isEn ? "Settlement Disputed" : "Đang khiếu nại tranh chấp"}
         </span>
       );
@@ -271,7 +242,6 @@ export const ContractAddendumTypeBadge: React.FC<ContractAddendumTypeBadgeProps>
   if (normalized === ContractAddendumTypeEnum.RENEW) {
     return (
       <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200">
-        <Calendar className="w-3 h-3 shrink-0" />
         {isEn ? "Renewal (RENEW)" : "Gia hạn hợp đồng"}
       </span>
     );
@@ -280,7 +250,6 @@ export const ContractAddendumTypeBadge: React.FC<ContractAddendumTypeBadgeProps>
   if (normalized === ContractAddendumTypeEnum.UNIT_CHANGE) {
     return (
       <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-indigo-50 text-indigo-700 border-indigo-200">
-        <ArrowRightLeft className="w-3 h-3 shrink-0" />
         {isEn ? "Unit Transfer (UNIT_CHANGE)" : "Điều chuyển kho sự cố"}
       </span>
     );
@@ -289,7 +258,6 @@ export const ContractAddendumTypeBadge: React.FC<ContractAddendumTypeBadgeProps>
   if (normalized === ContractAddendumTypeEnum.ADD) {
     return (
       <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-teal-50 text-teal-700 border-teal-200">
-        <PlusCircle className="w-3 h-3 shrink-0" />
         {isEn ? "Add Amenities" : "Thuê thêm tiện ích"}
       </span>
     );
@@ -297,7 +265,6 @@ export const ContractAddendumTypeBadge: React.FC<ContractAddendumTypeBadgeProps>
 
   return (
     <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-orange-50 text-orange-700 border-orange-200">
-      <MinusCircle className="w-3 h-3 shrink-0" />
       {isEn ? "Remove Amenities" : "Tháo dỡ / Trả bớt"}
     </span>
   );
@@ -405,7 +372,6 @@ export const ContractTerminationBadge: React.FC<ContractTerminationBadgeProps> =
         className
       )}
     >
-      <ShieldAlert className="w-3.5 h-3.5 text-rose-700 shrink-0" />
       <span>
         {terminationType === ContractTerminationTypeEnum.MUTUAL
           ? isEn

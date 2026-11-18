@@ -59,7 +59,7 @@ export function PricingSection() {
                 {cycle === "annual" && (
                   <span
                     className={cn(
-                      "rounded-full px-1.5 py-0.5 text-[10px] font-bold sm:text-xs",
+                      "rounded-md px-1.5 py-0.5 text-[10px] font-bold sm:text-xs",
                       isAnnual ? "bg-cta text-white" : "bg-cta-light text-cta"
                     )}
                   >
@@ -90,7 +90,7 @@ export function PricingSection() {
                 <div>
                   {popular && (
                     <div className="mb-4">
-                      <span className="inline-block rounded-full bg-cta px-3 py-1 text-[11px] font-bold text-white shadow-xs">
+                      <span className="inline-block rounded-md bg-cta px-3 py-1 text-[11px] font-bold text-white shadow-xs">
                         {t("popular")}
                       </span>
                     </div>

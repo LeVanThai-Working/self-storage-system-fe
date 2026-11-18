@@ -289,7 +289,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                       type="button"
                       onClick={() => setConfirmProvisionOpen(true)}
                       disabled={provisionMutation.isPending}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold transition shadow-xs cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold transition shadow-xs cursor-pointer"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       Khôi phục cấu trúc kệ
@@ -299,7 +299,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                     <button
                       type="button"
                       onClick={handleOpenCreate}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md text-white text-xs font-bold transition shadow-sm cursor-pointer bg-brand hover:bg-brand-hover"
                     >
                       <Plus className="w-4 h-4" />
                       Thêm kệ mới
@@ -321,7 +321,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+                  className="p-1 rounded-md text-slate-400 hover:text-slate-600"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -484,14 +484,14 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 font-semibold"
+                  className="px-3.5 py-2 rounded-md border border-slate-200 bg-white text-slate-600 font-semibold"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={createRackMutation.isPending}
-                  className="px-4 py-2 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700 transition"
+                  className="px-4 py-2 rounded-md text-white font-bold transition bg-brand hover:bg-brand-hover"
                 >
                   {createRackMutation.isPending ? "Đang tạo..." : "Xác nhận tạo kệ"}
                 </button>
@@ -515,7 +515,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                 <button
                   type="button"
                   onClick={() => refetch()}
-                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold"
+                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-md text-slate-700 font-semibold"
                 >
                   <RotateCw className="w-3.5 h-3.5" /> Thử lại
                 </button>
@@ -535,7 +535,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                       type="button"
                       onClick={() => setConfirmProvisionOpen(true)}
                       disabled={provisionMutation.isPending}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition shadow-xs cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md text-white text-xs font-bold transition shadow-xs cursor-pointer bg-brand hover:bg-brand-hover"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       Khôi phục cấu trúc kệ mặc định
@@ -620,7 +620,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                                     type="button"
                                     onClick={() => handleRestoreRack(rack.id)}
                                     disabled={restoreRackMutation.isPending}
-                                    className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition cursor-pointer"
+                                    className="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-md transition cursor-pointer"
                                   >
                                     <RotateCcw className="w-4 h-4 text-teal-600" />
                                   </button>
@@ -730,7 +730,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                   <button
                     type="button"
                     onClick={() => setEditingTier(null)}
-                    className="p-1 rounded-lg text-slate-400 hover:text-slate-600"
+                    className="p-1 rounded-md text-slate-400 hover:text-slate-600"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -802,7 +802,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                   <button
                     type="button"
                     onClick={() => setEditingTier(null)}
-                    className="px-3 py-1.5 rounded-xl border border-slate-200 font-semibold"
+                    className="px-3 py-1.5 rounded-md border border-slate-200 font-semibold"
                   >
                     Hủy
                   </button>
@@ -810,7 +810,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                     type="button"
                     disabled={updateTierMutation.isPending}
                     onClick={handleSaveTier}
-                    className="px-4 py-1.5 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700"
+                    className="px-4 py-1.5 rounded-md text-white font-bold bg-brand hover:bg-brand-hover"
                   >
                     {updateTierMutation.isPending ? "Đang lưu..." : "Lưu"}
                   </button>
@@ -867,7 +867,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                 type="button"
                 onClick={() => setConfirmProvisionOpen(false)}
                 disabled={provisionMutation.isPending}
-                className="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 cursor-pointer"
+                className="px-3.5 py-2 rounded-md border border-slate-200 text-slate-600 text-xs font-semibold hover:bg-slate-50 cursor-pointer"
               >
                 Hủy bỏ
               </button>
@@ -875,7 +875,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                 type="button"
                 onClick={() => void handleProvision()}
                 disabled={provisionMutation.isPending}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md text-white text-xs font-bold shadow-xs cursor-pointer bg-brand hover:bg-brand-hover"
               >
                 {provisionMutation.isPending ? (
                   <RotateCw className="w-3.5 h-3.5 animate-spin" />

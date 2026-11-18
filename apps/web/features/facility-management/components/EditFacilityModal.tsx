@@ -541,14 +541,14 @@ export const EditFacilityModal = ({ facilityId, isOpen, onClose }: EditFacilityM
                 type="button"
                 onClick={handleClose}
                 disabled={updateFacilityMutation.isPending}
-                className="px-5 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors cursor-pointer disabled:opacity-50"
+                className="px-5 py-2.5 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors cursor-pointer disabled:opacity-50"
               >
                 {t("cancel")}
               </button>
               <button
                 type="submit"
                 disabled={updateFacilityMutation.isPending}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-sm font-bold shadow-md shadow-orange-500/25 hover:shadow-lg hover:shadow-orange-500/35 transition-all cursor-pointer disabled:opacity-50 active:scale-95"
+                className="px-6 py-2.5 rounded-md text-white text-sm font-bold transition-all cursor-pointer disabled:opacity-50 active:scale-95 bg-brand hover:bg-brand-hover"
               >
                 {updateFacilityMutation.isPending ? t("saving") : t("submit")}
               </button>

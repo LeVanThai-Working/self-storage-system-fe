@@ -298,7 +298,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             type="button"
             onClick={() => contractsQuery.refetch()}
             disabled={contractsQuery.isFetching}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-sm transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-sm transition-colors"
           >
             <RefreshCw
               className={`w-4 h-4 text-emerald-600 ${contractsQuery.isFetching ? "animate-spin" : ""}`}
@@ -311,7 +311,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
               type="button"
               onClick={handleProcessOverdue}
               disabled={processOverdueMutation.isPending}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-orange-200 bg-orange-50 hover:bg-orange-100 text-xs font-bold text-orange-800 shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md border border-orange-200 bg-orange-50 hover:bg-orange-100 text-xs font-bold text-orange-800 shadow-sm transition-colors"
             >
               <Clock
                 className={`w-4 h-4 text-orange-600 ${processOverdueMutation.isPending ? "animate-spin" : ""}`}
@@ -324,7 +324,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             <button
               type="button"
               onClick={() => setIsWalkInModalOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-bold text-white transition-all bg-brand hover:bg-brand-hover"
             >
               <UserPlus className="w-4 h-4" />
               {isEn ? "Create Walk-in Contract" : "Tạo hợp đồng Walk-in"}
@@ -345,7 +345,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                 setScopeTab("ASSIGNED_TO_ME");
                 setPage(1);
               }}
-              className={`inline-flex items-center whitespace-nowrap shrink-0 gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+              className={`inline-flex items-center whitespace-nowrap shrink-0 gap-2 px-4 py-2 rounded-md text-xs font-bold transition-all ${
                 effectiveScope === "ASSIGNED_TO_ME"
                   ? "bg-white text-emerald-700 shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
@@ -362,7 +362,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                   setScopeTab("ALL");
                   setPage(1);
                 }}
-                className={`inline-flex items-center whitespace-nowrap shrink-0 gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                className={`inline-flex items-center whitespace-nowrap shrink-0 gap-2 px-4 py-2 rounded-md text-xs font-bold transition-all ${
                   effectiveScope === "ALL"
                     ? "bg-white text-emerald-700 shadow-sm"
                     : "text-slate-600 hover:text-slate-900"
@@ -421,7 +421,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
           <div key={tab.key} className={`p-3.5 rounded-2xl border text-left shadow-sm ${tab.tone}`}>
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-bold truncate">{tab.label}</span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-extrabold bg-white/90 border border-slate-200/80 text-slate-900">
+              <span className="px-2 py-0.5 rounded-md text-xs font-extrabold bg-white/90 border border-slate-200/80 text-slate-900">
                 {tab.count}
               </span>
             </div>
@@ -628,7 +628,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             <button
               type="button"
               onClick={handleResetFilters}
-              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors ml-auto"
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-md text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors ml-auto"
             >
               <X className="w-3.5 h-3.5" />
               {isEn ? "Clear All Filters" : "Xóa tất cả bộ lọc"}
@@ -653,7 +653,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
             <button
               type="button"
               onClick={() => contractsQuery.refetch()}
-              className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700"
+              className="px-4 py-2 rounded-md text-xs font-bold text-white bg-brand hover:bg-brand-hover"
             >
               {isEn ? "Retry" : "Thử lại"}
             </button>
@@ -839,7 +839,6 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                       {/* 7. Assigned Staff */}
                       <td className="py-3.5 px-4">
                         <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold text-xs whitespace-nowrap shrink-0 border border-slate-200">
-                          <UserCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                           <TruncatedText text={resolvedStaffName} className="max-w-[140px]" />
                         </div>
                       </td>
@@ -853,12 +852,10 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                             <>
                               {!contract.customerSigned ? (
                                 <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200">
-                                  <Clock className="w-2.5 h-2.5 text-slate-400 shrink-0" />
                                   <span>{isEn ? "Awaiting Customer Sign" : "Chờ khách ký"}</span>
                                 </span>
                               ) : !contract.staffSigned ? (
                                 <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
-                                  <Clock className="w-2.5 h-2.5 text-amber-600 shrink-0" />
                                   <span>
                                     {isEn ? "Awaiting Manager Check-in" : "Chờ Quản lý ký bàn giao"}
                                   </span>
@@ -885,7 +882,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                             <button
                               type="button"
                               onClick={() => setCollectDepositTarget(contract)}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-white hover:bg-amber-600 shadow-sm"
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-bold text-white shadow-sm bg-brand hover:bg-brand-hover"
                             >
                               <CreditCard className="w-3.5 h-3.5" />
                               {isEn ? "Collect Deposit" : "Thu tiền cọc tại quầy"}
@@ -901,7 +898,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                                 type="button"
                                 disabled={isBlockedByCheckInDate}
                                 onClick={() => setCheckInTarget(contract)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-xs font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed shadow-sm bg-brand hover:bg-brand-hover"
                               >
                                 <ClipboardCheck className="w-3.5 h-3.5" />
                                 {isEn ? "Handover & Sign" : "Bàn giao & Ký"}
@@ -911,7 +908,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
 
                           <Link
                             href={`/${locale}/${portalBase}/contracts/${contract.id}`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-sm transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-sm transition-colors"
                           >
                             <Eye className="w-3.5 h-3.5 text-emerald-600" />
                             {isEn ? "Detail" : "Chi tiết"}
@@ -939,7 +936,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                 type="button"
                 disabled={!pagination.hasPrevPage}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-700 disabled:opacity-40"
+                className="px-3.5 py-1.5 rounded-md border border-slate-200 bg-white font-bold text-slate-700 disabled:opacity-40"
               >
                 {isEn ? "Previous" : "Trước"}
               </button>
@@ -947,7 +944,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                 type="button"
                 disabled={!pagination.hasNextPage}
                 onClick={() => setPage((p) => p + 1)}
-                className="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-700 disabled:opacity-40"
+                className="px-3.5 py-1.5 rounded-md border border-slate-200 bg-white font-bold text-slate-700 disabled:opacity-40"
               >
                 {isEn ? "Next" : "Tiếp theo"}
               </button>

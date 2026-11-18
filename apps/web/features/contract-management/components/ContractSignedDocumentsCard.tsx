@@ -48,7 +48,7 @@ const SignedDocumentTile: React.FC<SignedDocumentTileProps> = ({ url, alt, label
     href={url}
     target="_blank"
     rel="noreferrer"
-    className="group relative rounded-2xl overflow-hidden border border-slate-200 aspect-[3/4] bg-slate-50 flex flex-col items-center justify-center p-2 text-center hover:border-emerald-500 hover:shadow-md transition-all block"
+    className="group relative rounded-md overflow-hidden border border-slate-200 aspect-[3/4] bg-slate-50 flex flex-col items-center justify-center p-2 text-center hover:border-emerald-500 hover:shadow-md transition-all block"
   >
     {isPdfUrl(url) ? (
       <div className="flex flex-col items-center justify-center h-full">

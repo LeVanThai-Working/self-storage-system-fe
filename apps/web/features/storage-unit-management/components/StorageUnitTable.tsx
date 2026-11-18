@@ -19,12 +19,12 @@ import {
   RotateCw,
   Search,
   SlidersHorizontal,
-  Sparkles,
   Trash2,
   Warehouse,
   Wrench,
   X,
   Archive,
+  Plus,
 } from "lucide-react";
 import { RoleEnum, UnitTypeCategoryEnum } from "@self-storage-system-fe/shared";
 import { useAuthStore } from "@/features/auth/store";
@@ -239,7 +239,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
         <button
           type="button"
           onClick={() => facilityQuery.refetch()}
-          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
         >
           <RotateCw className="w-3.5 h-3.5" />
           {t("retry")}
@@ -307,7 +307,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                 type="button"
                 onClick={() => setViewMode(value)}
                 aria-pressed={viewMode === value}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                   viewMode === value
                     ? "bg-white text-teal-700 shadow-sm"
                     : "text-slate-500 hover:text-slate-800"
@@ -325,9 +325,9 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
             <button
               type="button"
               onClick={() => setIsCreateOpen(true)}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md shadow-emerald-600/20 transition-all transform active:scale-95 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md text-white text-sm font-bold transition-all transform active:scale-95 cursor-pointer bg-brand hover:bg-brand-hover"
             >
-              <Sparkles className="w-4 h-4" />
+              <Plus className="w-4 h-4" />
               {t("addUnit")}
             </button>
           )}
@@ -450,7 +450,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
             <button
               type="button"
               onClick={resetFilters}
-              className="inline-flex items-center gap-1 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-3 py-2.5 rounded-md text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
               {t("clearFilters")}
@@ -461,7 +461,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
             <button
               type="button"
               onClick={handleRefresh}
-              className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
+              className="p-2.5 rounded-md bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
             >
               <RotateCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-teal-600" : ""}`} />
             </button>
@@ -535,7 +535,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                       <button
                         type="button"
                         onClick={() => refetch()}
-                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
                       >
                         <RotateCw className="w-3.5 h-3.5" />
                         {t("retry")}
@@ -629,7 +629,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                               <ActionTooltip content={t("actions.rackMap")}>
                                 <Link
                                   href={`/${locale}/${isManager ? "facility-manager" : "facility-staff"}/storage-units/${unit.id}/racks`}
-                                  className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+                                  className="p-1.5 rounded-md text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
                                 >
                                   <Warehouse className="w-4 h-4" />
                                 </Link>
@@ -650,7 +650,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                                 type="button"
                                 disabled={!canToggleMaintenance(unit.status)}
                                 onClick={() => setMaintenanceUnit(unit)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                                className="p-1.5 rounded-md text-slate-400 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
                               >
                                 <Wrench className="w-4 h-4" />
                               </button>
@@ -663,7 +663,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                                 <button
                                   type="button"
                                   onClick={() => setRackUnit(unit)}
-                                  className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
+                                  className="p-1.5 rounded-md text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
                                 >
                                   <Archive className="w-4 h-4" />
                                 </button>
@@ -676,7 +676,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                                   <button
                                     type="button"
                                     onClick={() => setEditingUnit(unit)}
-                                    className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                                    className="p-1.5 rounded-md text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
                                   >
                                     <Pencil className="w-4 h-4" />
                                   </button>
@@ -694,7 +694,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                                     onClick={() =>
                                       setDeletingUnit({ id: unit.id, unitNumber: unit.unitNumber })
                                     }
-                                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
+                                    className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-400 disabled:hover:bg-transparent"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                   </button>
@@ -733,7 +733,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                   type="button"
                   disabled={!pagination.hasPrevPage || isFetching}
                   onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
                   {t("pagination.prev")}
@@ -747,7 +747,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                   type="button"
                   disabled={!pagination.hasNextPage || isFetching}
                   onClick={() => setPage((prev) => prev + 1)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
                 >
                   {t("pagination.next")}
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -841,7 +841,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
               type="button"
               disabled={restoreMutation.isPending}
               onClick={handleUndoRestore}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               {restoreMutation.isPending ? t("deleteModal.restoring") : t("deleteModal.undo")}
@@ -851,7 +851,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
               <button
                 type="button"
                 onClick={() => setUndoBannerVisible(false)}
-                className="p-1 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+                className="p-1 text-slate-400 hover:text-white rounded-md transition-colors cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>

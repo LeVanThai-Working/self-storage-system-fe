@@ -105,7 +105,7 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
               <button
                 type="button"
                 onClick={() => onOpenPdf(invoice)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-sm"
               >
                 <Printer className="w-3.5 h-3.5 text-slate-500" />
                 Xem / In PDF A4
@@ -324,7 +324,7 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200/70"
+            className="px-4 py-2 rounded-md text-xs font-semibold text-slate-600 hover:bg-slate-200/70"
           >
             Đóng
           </button>
@@ -333,7 +333,7 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
             <button
               type="button"
               onClick={() => onOpenCancel(invoice)}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 border border-rose-200"
+              className="px-3.5 py-2 rounded-md text-xs font-bold text-rose-600 hover:bg-rose-50 border border-rose-200"
             >
               Hủy hóa đơn
             </button>
@@ -343,7 +343,7 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
             <button
               type="button"
               onClick={() => onOpenConfirmManual(invoice)}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 shadow-sm flex items-center gap-1.5"
+              className="px-4 py-2 rounded-md text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 shadow-sm flex items-center gap-1.5"
             >
               <Banknote className="w-4 h-4" />
               Thu tiền mặt tại quầy
@@ -354,7 +354,7 @@ export const InvoiceDetailModal: React.FC<InvoiceDetailModalProps> = ({
             <button
               type="button"
               onClick={() => onOpenPaymentQr(invoice)}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm flex items-center gap-1.5"
+              className="px-4 py-2 rounded-md text-xs font-bold text-white shadow-sm flex items-center gap-1.5 bg-brand hover:bg-brand-hover"
             >
               <QrCode className="w-4 h-4" />
               Mã VietQR thanh toán

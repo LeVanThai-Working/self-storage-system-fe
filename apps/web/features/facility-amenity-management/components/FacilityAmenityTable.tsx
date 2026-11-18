@@ -23,8 +23,6 @@ import {
   ArrowUpDown,
   Eye,
   Zap,
-  AlertCircle,
-  AlertTriangle,
 } from "lucide-react";
 import { AmenityTypeEnum } from "@self-storage-system-fe/shared";
 import { useFacilities } from "@/features/facility-management/hooks";
@@ -255,7 +253,7 @@ export const FacilityAmenityTable = () => {
           <button
             type="button"
             onClick={() => setIsLookupOpen(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold border border-slate-200/90 shadow-2xs transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold border border-slate-200/90 shadow-2xs transition-all cursor-pointer"
           >
             <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
             {t("quickLookup")}
@@ -268,7 +266,7 @@ export const FacilityAmenityTable = () => {
               setPresetAmenityId("");
               setIsCreateOpen(true);
             }}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-bold shadow-md shadow-emerald-600/20 transition-all transform active:scale-95 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md text-white text-sm font-bold transition-all transform active:scale-95 cursor-pointer bg-brand hover:bg-brand-hover"
           >
             <Plus className="w-4 h-4" />
             {t("addOffering")}
@@ -364,7 +362,7 @@ export const FacilityAmenityTable = () => {
               )}
               <button
                 type="submit"
-                className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-bold rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0"
+                className="px-3 py-1.5 text-white text-xs font-bold rounded-md shadow-xs transition-all active:scale-95 cursor-pointer flex items-center gap-1 whitespace-nowrap shrink-0 bg-brand hover:bg-brand-hover"
               >
                 <span>{t("searchButton")}</span>
               </button>
@@ -487,7 +485,7 @@ export const FacilityAmenityTable = () => {
                 type="button"
                 onClick={() => refetch()}
                 title={t("refresh")}
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
+                className="p-2.5 rounded-md bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
               >
                 <RotateCw
                   className={`w-4 h-4 ${isFetching ? "animate-spin text-emerald-600" : ""}`}
@@ -569,7 +567,7 @@ export const FacilityAmenityTable = () => {
                       <button
                         type="button"
                         onClick={handleClearSearch}
-                        className="mt-3.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                        className="mt-3.5 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
                       >
                         <X className="w-3.5 h-3.5" />
                         {t("clearFilter")}
@@ -675,17 +673,14 @@ export const FacilityAmenityTable = () => {
                             <div className="mt-1.5">
                               {available === 0 ? (
                                 <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border border-rose-200">
-                                  <AlertCircle className="w-2.5 h-2.5 shrink-0" />
                                   {t("stock.outOfStock")}
                                 </span>
                               ) : available <= 2 ? (
                                 <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200">
-                                  <AlertTriangle className="w-2.5 h-2.5 shrink-0" />
                                   {t("stock.lowStock")}
                                 </span>
                               ) : (
                                 <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                  <CheckCircle2 className="w-2.5 h-2.5 shrink-0" />
                                   {t("stock.inStock")}
                                 </span>
                               )}
@@ -697,7 +692,7 @@ export const FacilityAmenityTable = () => {
                       {/* Status Column */}
                       <td className="py-4 px-6 whitespace-nowrap">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 ${
+                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 ${
                             offering.status === FacilityAmenityOfferingStatusEnum.ACTIVE
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
                               : "bg-slate-100 text-slate-600 border border-slate-200/80"
@@ -722,7 +717,7 @@ export const FacilityAmenityTable = () => {
                               type="button"
                               onClick={() => setViewingId(offering.id)}
                               title={t("actions.view")}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-md text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
                             >
                               <Eye className="w-4 h-4" />
                             </button>
@@ -732,7 +727,7 @@ export const FacilityAmenityTable = () => {
                               type="button"
                               onClick={() => setEditingId(offering.id)}
                               title={t("actions.edit")}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-md text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-colors cursor-pointer"
                             >
                               <Pencil className="w-4 h-4" />
                             </button>
@@ -743,7 +738,7 @@ export const FacilityAmenityTable = () => {
                                 type="button"
                                 onClick={() => setRestoring(offering)}
                                 title={t("actions.restore")}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                                className="p-1.5 rounded-md text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
                               >
                                 <RotateCcw className="w-4 h-4" />
                               </button>
@@ -754,7 +749,7 @@ export const FacilityAmenityTable = () => {
                                 type="button"
                                 onClick={() => setDeleting(offering)}
                                 title={t("actions.delete")}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                                className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -785,7 +780,7 @@ export const FacilityAmenityTable = () => {
                 type="button"
                 disabled={!hasPrevPage || isFetching}
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 {t("pagination.prev")}
@@ -794,7 +789,7 @@ export const FacilityAmenityTable = () => {
                 type="button"
                 disabled={!hasNextPage || isFetching}
                 onClick={() => setPage((p) => p + 1)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
               >
                 {t("pagination.next")}
                 <ChevronRight className="w-3.5 h-3.5" />

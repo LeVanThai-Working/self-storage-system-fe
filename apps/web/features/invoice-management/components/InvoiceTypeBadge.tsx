@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useLocale } from "next-intl";
-import { Calendar, FileCheck, Layers, Wrench } from "lucide-react";
+
 import { InvoiceTypeEnum } from "../types";
 
 interface InvoiceTypeBadgeProps {
@@ -34,28 +34,23 @@ export const InvoiceTypeBadge: React.FC<InvoiceTypeBadgeProps> = ({ type, classN
   const locale = useLocale();
   const label = getInvoiceTypeLabel(type, locale);
 
-  let icon = <Layers className="w-3 h-3 text-slate-500" />;
   let toneClass = "bg-slate-50 text-slate-700 border-slate-200";
 
   switch (type) {
     case InvoiceTypeEnum.FIRST_PERIOD:
     case "first_period":
-      icon = <FileCheck className="w-3 h-3 text-teal-700" />;
       toneClass = "bg-teal-50 text-teal-700 border-teal-200";
       break;
     case InvoiceTypeEnum.RECURRING:
     case "recurring":
-      icon = <Calendar className="w-3 h-3 text-indigo-700" />;
       toneClass = "bg-indigo-50 text-indigo-700 border-indigo-200";
       break;
     case InvoiceTypeEnum.INCIDENTAL:
     case "incidental":
-      icon = <Wrench className="w-3 h-3 text-amber-700" />;
       toneClass = "bg-amber-50 text-amber-700 border-amber-200";
       break;
     case InvoiceTypeEnum.CHECK_OUT_SETTLEMENT:
     case "check_out_settlement":
-      icon = <FileCheck className="w-3 h-3 text-purple-700" />;
       toneClass = "bg-purple-50 text-purple-700 border-purple-200";
       break;
   }
@@ -64,7 +59,6 @@ export const InvoiceTypeBadge: React.FC<InvoiceTypeBadgeProps> = ({ type, classN
     <span
       className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold border ${toneClass} ${className}`}
     >
-      {icon}
       {label}
     </span>
   );

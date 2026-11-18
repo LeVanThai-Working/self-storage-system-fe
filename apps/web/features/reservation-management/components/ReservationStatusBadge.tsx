@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Clock } from "lucide-react";
+
 import { ReservationStatusEnum } from "../types";
 import { formatHoldCountdown, getReservationStatusTone } from "../utils";
 
@@ -57,15 +57,14 @@ export const ReservationStatusBadge: React.FC<ReservationStatusBadgeProps> = ({
 
       {countdown && (
         <span
-          className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${
+          className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md ${
             countdown.isExpired
               ? "bg-rose-50 text-rose-700 border border-rose-200"
               : countdown.isUrgent
                 ? "bg-amber-50 text-amber-700 border border-amber-200"
-                : "bg-slate-100 text-slate-600"
+                : "bg-slate-100 text-slate-600 border border-slate-200"
           }`}
         >
-          <Clock className="w-3 h-3 shrink-0" />
           {countdown.text}
         </span>
       )}

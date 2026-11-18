@@ -179,7 +179,7 @@
     "search": "Tìm kiếm...",
     "userTable": {
       "title": "Quản lý Người dùng",
-      "createAccount": "+ Tạo tài khoản mới",
+      "createAccount": "Tạo tài khoản mới",
       "searchPlaceholder": "Tìm kiếm người dùng...",
       "columns": {
         "user": "Người dùng",
@@ -890,7 +890,7 @@
     "facilities": {
       "title": "Quản lý Cơ sở & Mạng lưới chi nhánh",
       "subtitle": "Theo dõi danh sách toàn bộ cơ sở trong mạng lưới StorageHub, trạng thái vận hành và thông tin liên hệ.",
-      "addFacility": "+ Thêm cơ sở mới",
+      "addFacility": "Thêm cơ sở mới",
       "searchPlaceholder": "Tìm kiếm theo tên cơ sở hoặc địa chỉ...",
       "cityLabel": "Thành phố",
       "statusLabel": "Trạng thái",
@@ -1039,7 +1039,7 @@
     "unitTypes": {
       "title": "Danh mục Quy cách kho chuẩn",
       "subtitle": "Quản lý hệ thống phân loại, kích thước, diện tích và thể tích tiêu chuẩn của các loại kho.",
-      "addUnitType": "+ Thêm quy cách mới",
+      "addUnitType": "Thêm quy cách mới",
       "searchPlaceholder": "Tìm kiếm theo tên quy cách...",
       "categoryLabel": "Phân loại",
       "statusLabel": "Trạng thái",
@@ -1186,7 +1186,7 @@
     "amenities": {
       "title": "Danh mục Tiện ích & Dịch vụ chuẩn",
       "subtitle": "Quản lý hệ thống cơ sở vật chất và dịch vụ hỗ trợ áp dụng cho khách hàng trên toàn mạng lưới.",
-      "addAmenity": "+ Thêm tiện ích mới",
+      "addAmenity": "Thêm tiện ích mới",
       "searchPlaceholder": "Tìm kiếm theo tên tiện ích, dịch vụ...",
       "typeLabel": "Phân loại",
       "statusLabel": "Trạng thái",
@@ -1337,7 +1337,7 @@
     "offerings": {
       "title": "Bảng giá Loại kho theo Cơ sở",
       "subtitle": "Thiết lập loại kho được mở bán tại từng cơ sở kèm đơn giá, hệ số cọc và số ngày thuê tối thiểu.",
-      "addOffering": "+ Mở bán loại kho",
+      "addOffering": "Mở bán loại kho",
       "quickLookup": "Tra cứu nhanh",
       "refresh": "Làm mới",
       "searchPlaceholder": "Tìm theo tên cơ sở, loại kho...",
@@ -1500,7 +1500,7 @@
         "edit": "Chỉnh sửa",
         "notFoundTitle": "Chưa mở bán loại kho này tại cơ sở",
         "notFoundDescription": "Cơ sở này hiện chưa có cấu hình bảng giá cho loại kho được chọn.",
-        "createNow": "+ Mở bán loại kho này ngay",
+        "createNow": "Mở bán loại kho này ngay",
         "close": "Đóng"
       },
       "confirmModal": {
@@ -1517,7 +1517,7 @@
     "facilityAmenities": {
       "title": "Bảng phân bổ tiện ích cho từng cơ sở",
       "subtitle": "Quản lý tiện ích trang bị tại từng cơ sở, theo dõi tồn kho và đơn giá thuê.",
-      "addOffering": "+ Phân bổ tiện ích",
+      "addOffering": "Phân bổ tiện ích",
       "quickLookup": "Tra cứu nhanh",
       "refresh": "Làm mới",
       "searchPlaceholder": "Tìm theo tên cơ sở, tiện ích, mô tả...",
@@ -1706,7 +1706,7 @@
         "editOffering": "Chỉnh sửa",
         "notConfiguredTitle": "Chưa được phân bổ",
         "notConfiguredDescription": "Tiện ích này chưa được cấu hình tại cơ sở bạn đã chọn. Bạn có thể phân bổ ngay bên dưới.",
-        "createWithPreset": "+ Phân bổ tiện ích này ngay",
+        "createWithPreset": "Phân bổ tiện ích này ngay",
         "availableListTitle": "Tiện ích còn trống tại chi nhánh này",
         "loadingAvailable": "Đang tải danh sách còn trống...",
         "noAvailableAmenities": "Không có tiện ích nào còn trống tại cơ sở này.",
@@ -1903,7 +1903,7 @@
     "storageUnits": {
       "title": "Phòng kho",
       "subtitle": "Danh sách phòng kho của cơ sở: vị trí, loại kho và trạng thái.",
-      "addUnit": "+ Thêm phòng kho",
+      "addUnit": "Thêm phòng kho",
       "searchPlaceholder": "Tìm theo số phòng...",
       "floorPlaceholder": "Tầng",
       "zonePlaceholder": "Dãy",

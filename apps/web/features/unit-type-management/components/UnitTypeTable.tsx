@@ -17,16 +17,13 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
-  Warehouse,
-  Lock,
-  Box,
   Package,
   Ruler,
   Maximize2,
-  Sparkles,
   Eye,
   RotateCcw,
   X,
+  Plus,
 } from "lucide-react";
 import { useUnitTypes, useRestoreUnitType } from "../hooks";
 import { UnitTypeCategoryEnum, UnitTypeStatusEnum, type UnitTypeItem } from "../types";
@@ -120,28 +117,24 @@ export const UnitTypeTable = () => {
       case UnitTypeCategoryEnum.WAREHOUSE_RACK:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-cyan-50 text-cyan-700 border border-cyan-200/70">
-            <Warehouse className="w-3 h-3 text-cyan-600 shrink-0" />
             {t("categoryFilter.warehouse_rack")}
           </span>
         );
       case UnitTypeCategoryEnum.LOCKER:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-indigo-50 text-indigo-700 border border-indigo-200/70">
-            <Lock className="w-3 h-3 text-indigo-600 shrink-0" />
             {t("categoryFilter.locker")}
           </span>
         );
       case UnitTypeCategoryEnum.SMALL:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200/70">
-            <Box className="w-3 h-3 text-emerald-600 shrink-0" />
             {t("categoryFilter.small")}
           </span>
         );
       case UnitTypeCategoryEnum.LARGE:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-purple-50 text-purple-700 border border-purple-200/70">
-            <Boxes className="w-3 h-3 text-purple-600 shrink-0" />
             {t("categoryFilter.large")}
           </span>
         );
@@ -159,7 +152,7 @@ export const UnitTypeTable = () => {
     const isActive = status === UnitTypeStatusEnum.ACTIVE;
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 ${
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 ${
           isActive
             ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
             : "bg-slate-100 text-slate-600 border border-slate-200"
@@ -192,9 +185,9 @@ export const UnitTypeTable = () => {
         <button
           type="button"
           onClick={() => setIsCreateModalOpen(true)}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md shadow-emerald-600/20 transition-all transform active:scale-95 cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md text-white text-sm font-bold transition-all transform active:scale-95 cursor-pointer bg-brand hover:bg-brand-hover"
         >
-          <Sparkles className="w-4 h-4" />
+          <Plus className="w-4 h-4" />
           {t("addUnitType")}
         </button>
       </div>
@@ -334,7 +327,7 @@ export const UnitTypeTable = () => {
               type="button"
               onClick={() => refetch()}
               title={t("refresh")}
-              className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
+              className="p-2.5 rounded-md bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
             >
               <RotateCw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
             </button>
@@ -502,7 +495,7 @@ export const UnitTypeTable = () => {
                             type="button"
                             onClick={() => setDetailUnitTypeId(unitType.id)}
                             title={t("actions.viewDetails")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-md text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -514,7 +507,7 @@ export const UnitTypeTable = () => {
                             type="button"
                             onClick={() => setEditingUnitTypeId(unitType.id)}
                             title={t("actions.edit")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-md text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
@@ -529,7 +522,7 @@ export const UnitTypeTable = () => {
                                 setDeletingUnitType({ id: unitType.id, name: unitType.name })
                               }
                               title={t("actions.delete")}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -544,7 +537,7 @@ export const UnitTypeTable = () => {
                               onClick={() => restoreMutation.mutate(unitType.id)}
                               disabled={restoreMutation.isPending}
                               title={t("actions.restore")}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
+                              className="p-1.5 rounded-md text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer disabled:opacity-50"
                             >
                               <RotateCcw className="w-4 h-4" />
                             </button>
@@ -581,7 +574,7 @@ export const UnitTypeTable = () => {
                 type="button"
                 disabled={!pagination.hasPrevPage || isFetching}
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 {t("pagination.prev")}
@@ -595,7 +588,7 @@ export const UnitTypeTable = () => {
                 type="button"
                 disabled={!pagination.hasNextPage || isFetching}
                 onClick={() => setPage((prev) => prev + 1)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
               >
                 {t("pagination.next")}
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -658,7 +651,7 @@ export const UnitTypeTable = () => {
               type="button"
               disabled={restoreMutation.isPending}
               onClick={handleUndoRestore}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               {restoreMutation.isPending ? t("deleteModal.restoring") : t("deleteModal.undo")}
@@ -668,7 +661,7 @@ export const UnitTypeTable = () => {
               <button
                 type="button"
                 onClick={() => setUndoBannerVisible(false)}
-                className="p-1 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+                className="p-1 text-slate-400 hover:text-white rounded-md transition-colors cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>

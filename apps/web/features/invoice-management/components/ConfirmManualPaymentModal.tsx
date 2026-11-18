@@ -248,14 +248,14 @@ export const ConfirmManualPaymentModal: React.FC<ConfirmManualPaymentModalProps>
               type="button"
               onClick={onClose}
               disabled={confirmMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-semibold text-slate-600 hover:bg-slate-100"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={confirmMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {confirmMutation.isPending ? "Đang ghi nhận..." : "Xác nhận đã thu tiền"}
             </button>

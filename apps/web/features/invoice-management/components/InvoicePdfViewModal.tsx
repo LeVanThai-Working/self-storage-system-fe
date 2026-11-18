@@ -52,7 +52,7 @@ export const InvoicePdfViewModal: React.FC<InvoicePdfViewModalProps> = ({
               type="button"
               onClick={handlePrint}
               disabled={pdfQuery.isLoading || !pdfQuery.data?.html}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-teal-200 bg-teal-50 hover:bg-teal-100 text-xs font-bold text-teal-800 disabled:opacity-40 shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md border border-teal-200 bg-teal-50 hover:bg-teal-100 text-xs font-bold text-teal-800 disabled:opacity-40 shadow-sm"
             >
               <Printer className="w-3.5 h-3.5" />
               In ấn / Lưu PDF
@@ -85,7 +85,7 @@ export const InvoicePdfViewModal: React.FC<InvoicePdfViewModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200/70"
+            className="px-4 py-1.5 rounded-md text-xs font-semibold text-slate-600 hover:bg-slate-200/70"
           >
             Đóng
           </button>

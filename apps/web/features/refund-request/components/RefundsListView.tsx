@@ -30,7 +30,6 @@ import {
   RefreshCw,
   RotateCcw,
   Search,
-  ShieldAlert,
 } from "lucide-react";
 import { useAuthStore } from "@/features/auth/store";
 import { useRefundRequests } from "../hooks";
@@ -344,7 +343,6 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
                       </div>
                       {isOverThreshold && (
                         <span className="inline-flex items-center gap-1 text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200 mt-0.5">
-                          <ShieldAlert className="w-3 h-3 text-purple-600" />
                           &gt; 10M (Ops)
                         </span>
                       )}

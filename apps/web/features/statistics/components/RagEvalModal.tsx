@@ -148,7 +148,7 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                 <button
                   type="button"
                   onClick={() => setActiveFilter("all")}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
                     activeFilter === "all"
                       ? "bg-purple-50 text-purple-900"
                       : "text-slate-600 hover:bg-slate-100"
@@ -159,7 +159,7 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                 <button
                   type="button"
                   onClick={() => setActiveFilter("passed")}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
                     activeFilter === "passed"
                       ? "bg-emerald-50 text-emerald-900"
                       : "text-slate-600 hover:bg-slate-100"
@@ -170,7 +170,7 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                 <button
                   type="button"
                   onClick={() => setActiveFilter("failed")}
-                  className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
                     activeFilter === "failed"
                       ? "bg-rose-50 text-rose-900"
                       : "text-slate-600 hover:bg-slate-100"
@@ -210,7 +210,7 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                     </div>
 
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                      className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
                         testCase.passed
                           ? "bg-emerald-50 text-emerald-700"
                           : "bg-rose-50 text-rose-700"

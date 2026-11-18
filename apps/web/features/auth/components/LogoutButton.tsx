@@ -27,7 +27,7 @@ export function LogoutButton() {
       disabled={logout.isPending}
       aria-label={t("logout")}
       title={t("logout")}
-      className="p-2.5 text-slate-500 hover:text-red-600 transition-colors rounded-full hover:bg-slate-50 disabled:opacity-50"
+      className="p-2.5 text-slate-500 hover:text-red-600 transition-colors rounded-md hover:bg-slate-50 disabled:opacity-50"
     >
       <LogOut className="w-5 h-5" />
     </button>

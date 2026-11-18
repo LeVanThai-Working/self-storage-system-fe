@@ -29,7 +29,7 @@ export function CheckInDateValidationControl({
           aria-checked={enabled}
           aria-label={t("title")}
           onClick={toggle}
-          className={`inline-flex items-center gap-2.5 rounded-2xl border px-3.5 py-2 text-xs font-bold shadow-sm transition-all cursor-pointer ${
+          className={`inline-flex items-center gap-2.5 rounded-md border px-3.5 py-2 text-xs font-bold shadow-sm transition-all cursor-pointer ${
             enabled
               ? "border-emerald-200 bg-emerald-50/80 text-emerald-800 hover:bg-emerald-100/80"
               : "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
@@ -115,7 +115,7 @@ export function CheckInDateDemoBanner({ className = "" }: { className?: string }
       <button
         type="button"
         onClick={() => setEnabled(true)}
-        className="shrink-0 rounded-xl border border-amber-300 bg-white px-3 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100 transition-colors"
+        className="shrink-0 rounded-md border border-amber-300 bg-white px-3 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100 transition-colors"
       >
         {t("reEnable")}
       </button>

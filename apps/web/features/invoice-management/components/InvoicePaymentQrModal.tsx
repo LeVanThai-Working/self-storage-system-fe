@@ -136,7 +136,7 @@ export const InvoicePaymentQrModal: React.FC<InvoicePaymentQrModalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleCopy(accountNumber, "acc")}
-                      className="p-1 hover:bg-slate-200 rounded text-slate-500"
+                      className="p-1 hover:bg-slate-200 rounded-md text-slate-500"
                       title="Sao chép"
                     >
                       {copiedField === "acc" ? (
@@ -167,7 +167,7 @@ export const InvoicePaymentQrModal: React.FC<InvoicePaymentQrModalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleCopy(paymentCode, "code")}
-                      className="p-1 hover:bg-amber-100 rounded text-amber-700"
+                      className="p-1 hover:bg-amber-100 rounded-md text-amber-700"
                       title="Sao chép nội dung"
                     >
                       {copiedField === "code" ? (
@@ -192,7 +192,7 @@ export const InvoicePaymentQrModal: React.FC<InvoicePaymentQrModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200/70"
+            className="px-4 py-2 rounded-md text-xs font-semibold text-slate-600 hover:bg-slate-200/70"
           >
             Đóng
           </button>

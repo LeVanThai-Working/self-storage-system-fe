@@ -236,7 +236,7 @@ export const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                     isEn ? "Account Number" : "Số tài khoản"
                                   )
                                 }
-                                className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600"
+                                className="p-1 hover:bg-slate-100 rounded-md text-slate-400 hover:text-slate-600"
                               >
                                 <Copy className="w-3.5 h-3.5" />
                               </button>
@@ -269,7 +269,7 @@ export const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                   isEn ? "Transfer Code" : "Nội dung chuyển khoản"
                                 )
                               }
-                              className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600"
+                              className="p-1 hover:bg-slate-100 rounded-md text-slate-400 hover:text-slate-600"
                             >
                               <Copy className="w-3.5 h-3.5" />
                             </button>
@@ -454,7 +454,7 @@ export const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200/60"
+              className="px-4 py-2 rounded-md text-xs font-semibold text-slate-600 hover:bg-slate-200/60"
             >
               {isEn ? "Close" : "Đóng"}
             </button>
@@ -464,14 +464,14 @@ export const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsCancelModalOpen(true)}
-                  className="px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors"
+                  className="px-3 py-2 rounded-md text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors"
                 >
                   {isEn ? "Cancel Payment" : "Hủy đơn thanh toán"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsConfirmModalOpen(true)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm shadow-emerald-600/20 transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-md text-xs font-bold text-white shadow-sm transition-colors flex items-center gap-1.5 bg-brand hover:bg-brand-hover"
                 >
                   <Receipt className="w-3.5 h-3.5" />
                   <span>{isEn ? "Confirm at Counter" : "Thu tiền tại quầy"}</span>

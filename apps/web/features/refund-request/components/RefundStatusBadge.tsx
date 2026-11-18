@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Ban, CheckCircle2, Clock, DollarSign, XCircle } from "lucide-react";
+
 import { RefundRequestStatusEnum } from "../types";
 
 interface RefundStatusBadgeProps {
@@ -17,9 +17,8 @@ export const RefundStatusBadge: React.FC<RefundStatusBadgeProps> = ({ status, cl
       return (
         <Badge
           variant="outline"
-          className={`bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded-full ${className}`}
+          className={`bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-md ${className}`}
         >
-          <Clock className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "3s" }} />
           <span>Chờ duyệt</span>
         </Badge>
       );
@@ -28,9 +27,8 @@ export const RefundStatusBadge: React.FC<RefundStatusBadgeProps> = ({ status, cl
       return (
         <Badge
           variant="outline"
-          className={`bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded-full ${className}`}
+          className={`bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-md ${className}`}
         >
-          <CheckCircle2 className="w-3.5 h-3.5" />
           <span>Đã duyệt</span>
         </Badge>
       );
@@ -39,9 +37,8 @@ export const RefundStatusBadge: React.FC<RefundStatusBadgeProps> = ({ status, cl
       return (
         <Badge
           variant="outline"
-          className={`bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 font-semibold px-2.5 py-0.5 rounded-full ${className}`}
+          className={`bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-md ${className}`}
         >
-          <DollarSign className="w-3.5 h-3.5" />
           <span>Đã hoàn tiền</span>
         </Badge>
       );
@@ -50,9 +47,8 @@ export const RefundStatusBadge: React.FC<RefundStatusBadgeProps> = ({ status, cl
       return (
         <Badge
           variant="outline"
-          className={`bg-rose-50 text-rose-700 border-rose-200 flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded-full ${className}`}
+          className={`bg-rose-50 text-rose-700 border-rose-200 flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-md ${className}`}
         >
-          <XCircle className="w-3.5 h-3.5" />
           <span>Đã từ chối</span>
         </Badge>
       );
@@ -61,9 +57,8 @@ export const RefundStatusBadge: React.FC<RefundStatusBadgeProps> = ({ status, cl
       return (
         <Badge
           variant="outline"
-          className={`bg-slate-100 text-slate-600 border-slate-200 flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded-full ${className}`}
+          className={`bg-slate-100 text-slate-600 border-slate-200 flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-md ${className}`}
         >
-          <Ban className="w-3.5 h-3.5" />
           <span>Đã hủy</span>
         </Badge>
       );

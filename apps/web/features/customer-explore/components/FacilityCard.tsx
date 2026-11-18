@@ -21,7 +21,7 @@ export function FacilityCard({
   return (
     <Link
       href={`/${locale}/customer/facilities/${facility.id}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-neutral-border bg-white shadow-sm transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:outline-none"
+      className="group flex flex-col overflow-hidden rounded-md border border-neutral-border bg-white shadow-sm transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:outline-none"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

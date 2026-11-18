@@ -174,7 +174,7 @@ export const FacilityTable = () => {
               type="button"
               onClick={() => handleRestore(lastDeletedFacility.id)}
               disabled={restoreMutation.isPending}
-              className="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-all shadow-md shadow-orange-500/30 flex items-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-95"
+              className="px-4 py-2 rounded-md text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-95 bg-brand hover:bg-brand-hover"
             >
               {restoreMutation.isPending ? (
                 <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -189,7 +189,7 @@ export const FacilityTable = () => {
               <button
                 type="button"
                 onClick={() => setLastDeletedFacility(null)}
-                className="p-2 text-slate-400 hover:text-white rounded-xl transition-colors cursor-pointer"
+                className="p-2 text-slate-400 hover:text-white rounded-md transition-colors cursor-pointer"
               >
                 <XCircle className="w-4 h-4" />
               </button>
@@ -217,7 +217,7 @@ export const FacilityTable = () => {
           <button
             type="button"
             onClick={() => setIsCreateModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-sm shadow-md shadow-orange-500/25 hover:shadow-lg hover:shadow-orange-500/35 transition-all duration-200 active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-white font-bold text-sm transition-all duration-200 active:scale-95 cursor-pointer bg-brand hover:bg-brand-hover"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             {t("addFacility")}
@@ -322,7 +322,7 @@ export const FacilityTable = () => {
               type="button"
               onClick={() => refetch()}
               title={t("refresh")}
-              className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-600 hover:text-teal-600 transition-colors cursor-pointer"
+              className="p-2.5 rounded-md bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-600 hover:text-teal-600 transition-colors cursor-pointer"
             >
               <RotateCcw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
             </button>
@@ -391,7 +391,7 @@ export const FacilityTable = () => {
                         <button
                           type="button"
                           onClick={handleClearFilters}
-                          className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                          className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
                         >
                           <XCircle className="w-3.5 h-3.5" />
                           {t("empty.clearFilter")}
@@ -488,7 +488,6 @@ export const FacilityTable = () => {
                       {/* Operating Hours */}
                       <td className="py-4 px-6 whitespace-nowrap">
                         <div className="inline-flex items-center gap-1.5 text-xs text-slate-600 bg-slate-50 px-2.5 py-0.5 rounded-md border border-slate-100 whitespace-nowrap shrink-0">
-                          <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           <span className="font-medium">{operatingHoursText}</span>
                         </div>
                       </td>
@@ -542,7 +541,7 @@ export const FacilityTable = () => {
                                 router.push(`/${locale}/business-ops/facilities/${facility.id}`);
                               }}
                               title={locale === "vi" ? "Xem danh sách ô kho" : "View storage units"}
-                              className="p-2 rounded-xl text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                              className="p-2 rounded-md text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
                             >
                               <Boxes className="w-4 h-4" />
                             </button>
@@ -554,7 +553,7 @@ export const FacilityTable = () => {
                               type="button"
                               onClick={() => setAssigningFacility(facility)}
                               title={t("actions.assignManager")}
-                              className="p-2 rounded-xl text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                              className="p-2 rounded-md text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
                             >
                               <UserCheck className="w-4 h-4" />
                             </button>
@@ -566,7 +565,7 @@ export const FacilityTable = () => {
                               type="button"
                               onClick={() => setEditingFacilityId(facility.id)}
                               title={t("actions.edit")}
-                              className="p-2 rounded-xl text-slate-500 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer"
+                              className="p-2 rounded-md text-slate-500 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer"
                             >
                               <Edit3 className="w-4 h-4" />
                             </button>
@@ -583,7 +582,7 @@ export const FacilityTable = () => {
                                 })
                               }
                               title={t("actions.delete")}
-                              className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                              className="p-2 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -620,7 +619,7 @@ export const FacilityTable = () => {
                 type="button"
                 disabled={!pagination.hasPrevPage || isFetching}
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 {t("pagination.prev")}
@@ -634,7 +633,7 @@ export const FacilityTable = () => {
                 type="button"
                 disabled={!pagination.hasNextPage || isFetching}
                 onClick={() => setPage((prev) => prev + 1)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
               >
                 {t("pagination.next")}
                 <ChevronRight className="w-3.5 h-3.5" />

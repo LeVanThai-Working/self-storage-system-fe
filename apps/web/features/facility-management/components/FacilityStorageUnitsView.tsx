@@ -338,7 +338,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
         </p>
         <Link
           href={`/${locale}/business-ops/facilities`}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-semibold hover:bg-teal-700 transition-colors shadow-sm"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-white text-xs font-semibold transition-colors shadow-sm bg-brand hover:bg-brand-hover"
         >
           <ArrowLeft className="w-4 h-4" />
           {locale === "vi" ? "Quay lại danh sách cơ sở" : "Back to facilities"}
@@ -357,7 +357,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
       <div className="flex items-center gap-3">
         <Link
           href={`/${locale}/business-ops/facilities`}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-all shadow-xs"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-all shadow-xs"
         >
           <ArrowLeft className="w-4 h-4" />
           {locale === "vi" ? "Danh sách cơ sở" : "Facilities List"}
@@ -441,7 +441,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
             <button
               type="button"
               onClick={() => setViewMode("list")}
-              className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === "list"
                   ? "bg-white text-slate-800 shadow-xs"
                   : "text-slate-500 hover:text-slate-700"
@@ -453,7 +453,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
             <button
               type="button"
               onClick={() => setViewMode("map")}
-              className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === "map"
                   ? "bg-white text-slate-800 shadow-xs"
                   : "text-slate-500 hover:text-slate-700"
@@ -468,7 +468,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
             type="button"
             onClick={() => mapLayoutQuery.refetch()}
             disabled={mapLayoutQuery.isFetching}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
           >
             <RotateCw
               className={`w-3.5 h-3.5 ${mapLayoutQuery.isFetching ? "animate-spin" : ""}`}
@@ -591,7 +591,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
               <button
                 type="button"
                 onClick={resetFilters}
-                className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
               >
                 <XCircle className="w-3.5 h-3.5" />
                 {t("clearFilters")}
@@ -610,7 +610,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
             <button
               type="button"
               onClick={() => setSelectedUnitTypeId("ALL")}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                 selectedUnitTypeId === "ALL"
                   ? "bg-teal-600 text-white shadow-sm shadow-teal-500/20"
                   : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/70"
@@ -636,7 +636,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                   key={ut.id}
                   type="button"
                   onClick={() => setSelectedUnitTypeId(isSelected ? "ALL" : ut.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                     isSelected
                       ? "bg-teal-600 text-white shadow-sm shadow-teal-500/20"
                       : "bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/70"
@@ -691,7 +691,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
             <button
               type="button"
               onClick={resetFilters}
-              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold transition-colors cursor-pointer"
+              className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold transition-colors cursor-pointer"
             >
               <XCircle className="w-3.5 h-3.5" />
               {t("clearFilters")}
@@ -797,7 +797,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                       <button
                         type="button"
                         aria-label="Toggle group collapse"
-                        className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                        className="p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
                       >
                         {isCollapsed ? (
                           <ChevronDown className="w-5 h-5" />
@@ -906,7 +906,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                                         setSelectedRackUnit(unit);
                                       }}
                                       title={locale === "vi" ? "Xem sơ đồ kệ kho" : "View rack map"}
-                                      className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-lg text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/60 transition-colors text-xs font-semibold cursor-pointer"
+                                      className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-md text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/60 transition-colors text-xs font-semibold cursor-pointer"
                                     >
                                       <Warehouse className="w-3.5 h-3.5" />
                                       <span>{locale === "vi" ? "Sơ đồ kệ" : "Rack Map"}</span>
@@ -921,7 +921,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                                     title={
                                       locale === "vi" ? "Xem chi tiết ô kho" : "View unit details"
                                     }
-                                    className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-lg text-slate-500 hover:text-teal-700 hover:bg-teal-50 transition-colors text-xs font-semibold cursor-pointer"
+                                    className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-md text-slate-500 hover:text-teal-700 hover:bg-teal-50 transition-colors text-xs font-semibold cursor-pointer"
                                   >
                                     <Eye className="w-3.5 h-3.5" />
                                     <span>{locale === "vi" ? "Chi tiết" : "View"}</span>
@@ -964,7 +964,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                 <button
                   type="button"
                   onClick={() => setInspectUnit(null)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                  className="p-2 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1020,7 +1020,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                       setInspectUnit(null);
                       setSelectedRackUnit(u);
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs transition-colors shadow-xs cursor-pointer shrink-0"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-white font-bold text-xs transition-colors shadow-xs cursor-pointer shrink-0 bg-brand hover:bg-brand-hover"
                   >
                     <Warehouse className="w-3.5 h-3.5" />
                     <span>{locale === "vi" ? "Xem sơ đồ kệ" : "View Rack Map"}</span>
@@ -1078,7 +1078,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
               <button
                 type="button"
                 onClick={() => setInspectUnit(null)}
-                className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-md bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
               >
                 {locale === "vi" ? "Đóng" : "Close"}
               </button>
@@ -1120,7 +1120,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                 <button
                   type="button"
                   onClick={() => setSelectedRackUnit(null)}
-                  className="p-2.5 rounded-2xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                  className="p-2.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                   aria-label="Close"
                 >
                   <X className="w-5 h-5" />
@@ -1150,7 +1150,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
               <button
                 type="button"
                 onClick={() => setSelectedRackUnit(null)}
-                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer self-end sm:self-auto"
+                className="px-4 py-2 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer self-end sm:self-auto"
               >
                 {locale === "vi" ? "Đóng" : "Close"}
               </button>

@@ -35,7 +35,7 @@ export function CallToActionSection() {
           </Link>
           <a
             href={HOTLINE_HREF}
-            className="inline-flex w-full items-center justify-center rounded-full border border-[#1FB89D] px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-white/10 active:bg-white/20 sm:w-auto"
+            className="inline-flex w-full items-center justify-center rounded-md border border-[#1FB89D] px-8 py-3.5 text-sm font-semibold text-white transition-all hover:bg-white/10 active:bg-white/20 sm:w-auto"
           >
             {t("contact")}
           </a>

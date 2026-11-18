@@ -94,7 +94,7 @@ export function StatisticsFilterBar({
                 key={preset.label}
                 type="button"
                 onClick={() => setPreset(preset.days)}
-                className={`cursor-pointer rounded-lg px-2.5 py-1.5 transition-all ${
+                className={`cursor-pointer rounded-md px-2.5 py-1.5 transition-all ${
                   isActive
                     ? "bg-white text-teal-700 shadow-2xs"
                     : "hover:bg-white hover:text-slate-900"

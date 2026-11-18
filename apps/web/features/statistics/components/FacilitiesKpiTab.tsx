@@ -50,7 +50,7 @@ function getTierBadge(tier: FacilityKpiTierEnum) {
   return (
     <ActionTooltip content={badge.range}>
       <span
-        className={`cursor-help rounded-full px-2.5 py-0.5 text-xs font-black ${badge.className}`}
+        className={`cursor-help rounded-md px-2.5 py-0.5 text-xs font-black ${badge.className}`}
       >
         {badge.label}
       </span>
@@ -219,7 +219,7 @@ export function FacilitiesKpiTab({
           <button
             type="button"
             onClick={() => onTierChange(undefined)}
-            className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+            className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
               !selectedTier
                 ? "bg-slate-900 text-white"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -230,7 +230,7 @@ export function FacilitiesKpiTab({
           <button
             type="button"
             onClick={() => onTierChange(FacilityKpiTierEnum.EXCELLENT)}
-            className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+            className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
               selectedTier === FacilityKpiTierEnum.EXCELLENT
                 ? "bg-emerald-600 text-white"
                 : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
@@ -241,7 +241,7 @@ export function FacilitiesKpiTab({
           <button
             type="button"
             onClick={() => onTierChange(FacilityKpiTierEnum.GOOD)}
-            className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+            className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
               selectedTier === FacilityKpiTierEnum.GOOD
                 ? "bg-blue-600 text-white"
                 : "bg-blue-50 text-blue-800 hover:bg-blue-100"
@@ -252,7 +252,7 @@ export function FacilitiesKpiTab({
           <button
             type="button"
             onClick={() => onTierChange(FacilityKpiTierEnum.AVERAGE)}
-            className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+            className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
               selectedTier === FacilityKpiTierEnum.AVERAGE
                 ? "bg-amber-600 text-white"
                 : "bg-amber-50 text-amber-800 hover:bg-amber-100"
@@ -263,7 +263,7 @@ export function FacilitiesKpiTab({
           <button
             type="button"
             onClick={() => onTierChange(FacilityKpiTierEnum.NEEDS_IMPROVEMENT)}
-            className={`cursor-pointer rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+            className={`cursor-pointer rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
               selectedTier === FacilityKpiTierEnum.NEEDS_IMPROVEMENT
                 ? "bg-rose-600 text-white"
                 : "bg-rose-50 text-rose-800 hover:bg-rose-100"
@@ -290,7 +290,7 @@ export function FacilitiesKpiTab({
           <button
             type="button"
             onClick={() => onSortOrderChange(sortOrder === "desc" ? "asc" : "desc")}
-            className="cursor-pointer rounded-xl border border-slate-200 px-2.5 py-1.5 font-bold text-slate-700 hover:bg-slate-50"
+            className="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1.5 font-bold text-slate-700 hover:bg-slate-50"
           >
             {sortOrder === "desc" ? "Giảm dần ↓" : "Tăng dần ↑"}
           </button>

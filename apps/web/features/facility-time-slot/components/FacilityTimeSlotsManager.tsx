@@ -179,7 +179,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
               type="button"
               onClick={() => handleOpenCreateModal("ALL")}
               disabled={!selectedFacilityId}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 transition-all shrink-0"
+              className="inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-xs font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 transition-all shrink-0 bg-brand hover:bg-brand-hover"
             >
               <Plus className="h-4 w-4" />
               Thêm khung giờ
@@ -284,7 +284,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
           <button
             type="button"
             onClick={() => setViewMode("weekly")}
-            className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
+            className={`inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-xs font-bold transition-all ${
               viewMode === "weekly"
                 ? "bg-emerald-600 text-white shadow-2xs"
                 : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
@@ -296,7 +296,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
+            className={`inline-flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-xs font-bold transition-all ${
               viewMode === "list"
                 ? "bg-emerald-600 text-white shadow-2xs"
                 : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
@@ -325,7 +325,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
             <button
               type="button"
               onClick={() => handleOpenCreateModal("ALL")}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition-all"
+              className="inline-flex items-center gap-1.5 rounded-md px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all bg-brand hover:bg-brand-hover"
             >
               <Plus className="h-3.5 w-3.5" />
               Thêm khung giờ
@@ -370,7 +370,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
           <button
             type="button"
             onClick={() => handleOpenCreateModal("ALL")}
-            className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition-all"
+            className="mt-4 inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all bg-brand hover:bg-brand-hover"
           >
             <Plus className="h-4 w-4" />
             Tạo khung giờ đầu tiên

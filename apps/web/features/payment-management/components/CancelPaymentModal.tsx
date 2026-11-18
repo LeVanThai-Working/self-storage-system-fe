@@ -146,14 +146,14 @@ export const CancelPaymentModal: React.FC<CancelPaymentModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={cancelMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-semibold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Keep Pending" : "Giữ lại"}
             </button>
             <button
               type="submit"
               disabled={cancelMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm shadow-rose-600/20 disabled:opacity-50 transition-colors"
+              className="px-4 py-2 rounded-md text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm shadow-rose-600/20 disabled:opacity-50 transition-colors"
             >
               {cancelMutation.isPending
                 ? isEn

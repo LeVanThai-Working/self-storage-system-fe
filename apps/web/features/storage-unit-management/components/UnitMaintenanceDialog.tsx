@@ -195,7 +195,7 @@ export const UnitMaintenanceDialog = ({
               type="button"
               onClick={() => onEdit(unit)}
               disabled={toggleMutation.isPending}
-              className="sm:mr-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-slate-600 hover:text-teal-700 hover:bg-teal-50 text-xs font-bold transition-colors cursor-pointer"
+              className="sm:mr-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-md text-slate-600 hover:text-teal-700 hover:bg-teal-50 text-xs font-bold transition-colors cursor-pointer"
             >
               <Pencil className="w-3.5 h-3.5" />
               {t("actions.edit")}
@@ -205,7 +205,7 @@ export const UnitMaintenanceDialog = ({
             type="button"
             onClick={onClose}
             disabled={toggleMutation.isPending}
-            className="px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+            className="px-4 py-2.5 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
           >
             {tm("close")}
           </button>
@@ -214,7 +214,7 @@ export const UnitMaintenanceDialog = ({
               type="button"
               onClick={handleToggle}
               disabled={toggleMutation.isPending}
-              className={`px-5 py-2.5 rounded-xl text-white text-xs font-bold shadow-md transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 ${
+              className={`px-5 py-2.5 rounded-md text-white text-xs font-bold shadow-md transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 ${
                 isUnderMaintenance
                   ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20"
                   : isPendingClearance

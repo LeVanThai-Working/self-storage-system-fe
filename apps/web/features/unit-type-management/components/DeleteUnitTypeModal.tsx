@@ -81,7 +81,7 @@ export const DeleteUnitTypeModal = ({
             type="button"
             onClick={handleClose}
             disabled={deleteMutation.isPending}
-            className="px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+            className="px-4 py-2.5 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
           >
             {t("cancel")}
           </button>
@@ -89,7 +89,7 @@ export const DeleteUnitTypeModal = ({
             type="button"
             onClick={handleConfirmDelete}
             disabled={deleteMutation.isPending}
-            className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+            className="px-5 py-2.5 rounded-md bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
           >
             {deleteMutation.isPending && (
               <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -409,14 +409,14 @@ export const StorageUnitFormModal = ({
               type="button"
               onClick={onClose}
               disabled={isPending}
-              className="px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+              className="px-4 py-2.5 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
             >
               {t("cancel")}
             </button>
             <button
               type="submit"
               disabled={isPending || Boolean(successMessage)}
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+              className="px-5 py-2.5 rounded-md text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover"
             >
               {isPending && (
                 <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -184,14 +184,14 @@ export const AssignTransactionModal: React.FC<AssignTransactionModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={assignMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-semibold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Hủy bỏ"}
             </button>
             <button
               type="submit"
               disabled={assignMutation.isPending || !paymentCode.trim()}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm shadow-teal-600/20 disabled:opacity-50 transition-colors"
+              className="px-4 py-2 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 transition-colors bg-brand hover:bg-brand-hover"
             >
               {assignMutation.isPending
                 ? isEn

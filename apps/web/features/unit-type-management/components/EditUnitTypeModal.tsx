@@ -431,7 +431,7 @@ export const EditUnitTypeModal = ({ unitTypeId, isOpen, onClose }: EditUnitTypeM
                 <button
                   type="button"
                   onClick={handleAddFeature}
-                  className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   {t("addFeature")}
@@ -443,7 +443,7 @@ export const EditUnitTypeModal = ({ unitTypeId, isOpen, onClose }: EditUnitTypeM
                   {features.map((feat) => (
                     <span
                       key={feat}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-white text-slate-700 border border-slate-200/70 shadow-xs"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-white text-slate-700 border border-slate-200/70 shadow-xs"
                     >
                       <span>{feat}</span>
                       <button
@@ -493,14 +493,14 @@ export const EditUnitTypeModal = ({ unitTypeId, isOpen, onClose }: EditUnitTypeM
                 type="button"
                 onClick={handleClose}
                 disabled={updateMutation.isPending}
-                className="px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
               >
                 {t("cancel")}
               </button>
               <button
                 type="submit"
                 disabled={updateMutation.isPending}
-                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                className="px-5 py-2.5 rounded-md text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover"
               >
                 {updateMutation.isPending && (
                   <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

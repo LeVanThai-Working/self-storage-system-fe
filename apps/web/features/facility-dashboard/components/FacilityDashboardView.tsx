@@ -85,7 +85,7 @@ export function FacilityDashboardView() {
           <button
             type="button"
             onClick={() => setDashboardMode("statistics")}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-all cursor-pointer ${
               dashboardMode === "statistics"
                 ? "bg-teal-600 text-white shadow-2xs"
                 : "text-slate-600 hover:text-slate-900"
@@ -97,7 +97,7 @@ export function FacilityDashboardView() {
           <button
             type="button"
             onClick={() => setDashboardMode("live")}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-all cursor-pointer ${
               dashboardMode === "live"
                 ? "bg-teal-600 text-white shadow-2xs"
                 : "text-slate-600 hover:text-slate-900"

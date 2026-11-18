@@ -380,7 +380,7 @@ export function StatisticsDashboardView({
             <button
               type="button"
               onClick={handleRefresh}
-              className="shrink-0 cursor-pointer rounded-lg border border-rose-300 bg-white px-2.5 py-1 text-xs font-bold text-rose-700 hover:bg-rose-50"
+              className="shrink-0 cursor-pointer rounded-md border border-rose-300 bg-white px-2.5 py-1 text-xs font-bold text-rose-700 hover:bg-rose-50"
             >
               Thử lại
             </button>

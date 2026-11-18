@@ -40,7 +40,7 @@ export const ReconcileStorageUnitsButton: React.FC<{ className?: string }> = ({
         type="button"
         onClick={() => setIsConfirmOpen(true)}
         disabled={reconcileMutation.isPending}
-        className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all cursor-pointer disabled:opacity-50 ${className}`}
+        className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-white text-xs font-bold transition-all cursor-pointer disabled:opacity-50 ${className} bg-brand hover:bg-brand-hover`}
       >
         <RefreshCw className={`w-4 h-4 ${reconcileMutation.isPending ? "animate-spin" : ""}`} />
         {reconcileMutation.isPending ? "Đang đối soát..." : "Đối soát kho mồ côi"}
@@ -82,7 +82,7 @@ export const ReconcileStorageUnitsButton: React.FC<{ className?: string }> = ({
             <button
               type="button"
               onClick={() => setIsConfirmOpen(false)}
-              className="px-4 py-2.5 rounded-xl border border-neutral-border bg-white text-slate-700 text-xs font-semibold"
+              className="px-4 py-2.5 rounded-md border border-neutral-border bg-white text-slate-700 text-xs font-semibold"
             >
               Hủy
             </button>
@@ -90,7 +90,7 @@ export const ReconcileStorageUnitsButton: React.FC<{ className?: string }> = ({
               type="button"
               disabled={reconcileMutation.isPending}
               onClick={handleReconcile}
-              className="px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-sm"
+              className="px-4 py-2.5 rounded-md text-white text-xs font-bold shadow-sm bg-brand hover:bg-brand-hover"
             >
               {reconcileMutation.isPending ? "Đang quét..." : "Tiến hành đối soát"}
             </button>
@@ -152,7 +152,7 @@ export const ReconcileStorageUnitsButton: React.FC<{ className?: string }> = ({
               <button
                 type="button"
                 onClick={() => setResult(null)}
-                className="w-full px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700"
+                className="w-full px-4 py-2.5 rounded-md text-white text-xs font-bold bg-brand hover:bg-brand-hover"
               >
                 Đóng
               </button>

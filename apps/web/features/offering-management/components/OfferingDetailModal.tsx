@@ -116,7 +116,7 @@ export const OfferingDetailModal = ({
                   </div>
                 </div>
                 <span
-                  className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
+                  className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold ${
                     isActive ? "bg-white/20 text-white" : "bg-slate-900/30 text-slate-100"
                   }`}
                 >

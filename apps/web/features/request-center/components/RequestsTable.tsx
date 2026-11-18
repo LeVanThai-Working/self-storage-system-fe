@@ -115,7 +115,6 @@ export const RequestsTable = () => {
                       <span
                         className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold border ${badge.className}`}
                       >
-                        <BadgeIcon className="w-3.5 h-3.5" />
                         {t(`status.${req.status}`)}
                       </span>
                     </td>
@@ -132,7 +131,7 @@ export const RequestsTable = () => {
                           }}
                           disabled={cancellingId === req.id}
                           title={t("cancelRequest")}
-                          className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-3 py-1.5 rounded-lg text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
+                          className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-3 py-1.5 rounded-md text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
                         >
                           <X className="w-3.5 h-3.5" />
                           {t("cancelRequest")}
@@ -158,7 +157,7 @@ export const RequestsTable = () => {
                 type="button"
                 disabled={!pagination.hasPrevPage}
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
@@ -168,7 +167,7 @@ export const RequestsTable = () => {
                 type="button"
                 disabled={!pagination.hasNextPage}
                 onClick={() => setPage((p) => p + 1)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>

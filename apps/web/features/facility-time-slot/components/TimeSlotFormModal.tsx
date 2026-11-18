@@ -285,14 +285,14 @@ const TimeSlotFormContent: React.FC<InnerFormProps> = ({
           type="button"
           onClick={onClose}
           disabled={isLoading}
-          className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+          className="rounded-md px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
         >
           Hủy bỏ
         </button>
         <button
           type="submit"
           disabled={isLoading || Boolean(isTimeInvalid)}
-          className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-brand hover:bg-brand-hover"
         >
           {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
           {isEdit ? "Lưu thay đổi" : "Tạo khung giờ"}
@@ -338,7 +338,7 @@ export const TimeSlotFormModal: React.FC<TimeSlotFormModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-300 transition-colors"
+            className="rounded-md p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-300 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>

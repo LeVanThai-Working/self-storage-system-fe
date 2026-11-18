@@ -232,7 +232,7 @@ function WarehouseCard({
       </div>
       <Link
         href={`/${locale}/${portalBase}/storage-units/${unitId}/racks?tab=goods`}
-        className="mt-3 inline-flex items-center gap-2 rounded-lg border border-orange-300 bg-white px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-50"
+        className="mt-3 inline-flex items-center gap-2 rounded-md border border-orange-300 bg-white px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-50"
       >
         <Siren className="h-4 w-4" />
         {t("open", { rack: incident.storageRack.rackCode ?? "" })}

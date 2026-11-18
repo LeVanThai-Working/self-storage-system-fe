@@ -119,7 +119,7 @@ export const RestoreAmenityModal = ({ amenity, isOpen, onClose }: RestoreAmenity
             type="button"
             onClick={handleClose}
             disabled={isPending}
-            className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
+            className="px-4 py-2.5 rounded-md border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
           >
             {t("cancel")}
           </button>
@@ -127,7 +127,7 @@ export const RestoreAmenityModal = ({ amenity, isOpen, onClose }: RestoreAmenity
             type="button"
             onClick={handleRestore}
             disabled={isPending}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-md shadow-teal-600/20 transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-white text-xs font-semibold transition-all cursor-pointer disabled:opacity-50 bg-brand hover:bg-brand-hover"
           >
             {isPending ? (
               <>

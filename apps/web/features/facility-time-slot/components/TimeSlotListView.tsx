@@ -3,7 +3,7 @@
 import { IconActionTooltip } from "@/components/ui/tooltip";
 
 import React, { useState, useMemo } from "react";
-import { Clock, Users, Search, Edit3, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import { Clock, Users, Search, Edit3, Trash2 } from "lucide-react";
 import type { FacilityTimeSlot } from "../types";
 
 interface TimeSlotListViewProps {
@@ -61,7 +61,7 @@ export const TimeSlotListView: React.FC<TimeSlotListViewProps> = ({
           <button
             type="button"
             onClick={() => setStatusFilter("ALL")}
-            className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
+            className={`whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
               statusFilter === "ALL"
                 ? "bg-emerald-600 text-white shadow-2xs"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -72,7 +72,7 @@ export const TimeSlotListView: React.FC<TimeSlotListViewProps> = ({
           <button
             type="button"
             onClick={() => setStatusFilter("ACTIVE")}
-            className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
+            className={`whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
               statusFilter === "ACTIVE"
                 ? "bg-emerald-600 text-white shadow-2xs"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -83,7 +83,7 @@ export const TimeSlotListView: React.FC<TimeSlotListViewProps> = ({
           <button
             type="button"
             onClick={() => setStatusFilter("INACTIVE")}
-            className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
+            className={`whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
               statusFilter === "INACTIVE"
                 ? "bg-emerald-600 text-white shadow-2xs"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -149,17 +149,7 @@ export const TimeSlotListView: React.FC<TimeSlotListViewProps> = ({
                             : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
                         }`}
                       >
-                        {slot.isActive ? (
-                          <>
-                            <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
-                            Đang hoạt động
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="h-3 w-3 text-slate-400 shrink-0" />
-                            Tạm dừng
-                          </>
-                        )}
+                        {slot.isActive ? <>Đang hoạt động</> : <>Tạm dừng</>}
                       </span>
                     </td>
                     <td
@@ -174,7 +164,7 @@ export const TimeSlotListView: React.FC<TimeSlotListViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onEditSlot(slot)}
-                            className="rounded-lg p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400 transition-colors"
+                            className="rounded-md p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400 transition-colors"
                             title="Sửa khung giờ"
                           >
                             <Edit3 className="h-4 w-4" />
@@ -184,7 +174,7 @@ export const TimeSlotListView: React.FC<TimeSlotListViewProps> = ({
                           <button
                             type="button"
                             onClick={() => onDeleteSlot(slot)}
-                            className="rounded-lg p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 dark:hover:text-red-400 transition-colors"
+                            className="rounded-md p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 dark:hover:text-red-400 transition-colors"
                             title="Xóa khung giờ"
                           >
                             <Trash2 className="h-4 w-4" />
