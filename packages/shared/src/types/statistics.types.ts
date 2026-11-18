@@ -1,6 +1,7 @@
 import {
   FacilityKpiTierEnum,
   StatisticsGranularityEnum,
+  RentalTrendsGranularityEnum,
   RagQueryComplexityEnum,
   RagGroundingStatusEnum,
   AiInsightCategoryEnum,
@@ -73,33 +74,28 @@ export interface OverviewStatisticsResponse {
 }
 
 export interface RentalTrendPoint {
-  period: string;
+  period: string; // 'YYYY-MM' (month) hoặc 'YYYY-Qq' (quarter)
   reservationsCreated: number;
   completedReservations: number;
   cancelledReservations: number;
-  contractsCheckedIn: number;
+  contractsCheckedIn: number; // chỉ tính hợp đồng check-in từ đặt trước (reservation)
+  walkInContracts: number; // chỉ tính hợp đồng Walk-in (walk_in) check-in trong kỳ
   contractsEnded: number;
   collectedRevenue: number;
   varianceFromAvgPercent: number;
+  isPeak: boolean;
+  isLow: boolean;
 }
 
 export interface DayOfWeekItem {
   dayOfWeek: number; // 1 = Chủ Nhật, 2 = Thứ Hai ... 7 = Thứ Bảy
   dayName: string;
   reservationsCreated: number;
-  contractsCheckedIn: number;
-  accessSchedulesCount: number;
-  totalActivity: number;
 }
 
 export interface TimeSlotDemandItem {
   timeSlot: string;
   reservationCount: number;
-  completedReservationCount: number;
-  accessScheduleCount: number;
-  totalDemandCount: number;
-  configuredMaxCapacityPerDay: number;
-  demandSharePercent: number;
 }
 
 export interface HourOfDayItem {
@@ -112,21 +108,23 @@ export interface RentalTrendsResponse {
   period: {
     fromDate: string;
     toDate: string;
-    granularity: StatisticsGranularityEnum;
+    granularity: RentalTrendsGranularityEnum;
     scopedFacilityId: string | null;
   };
   timeSeries: RentalTrendPoint[];
   peakAndLowAnalysis: {
     averageReservationsPerPeriod: number;
-    peakPeriods: RentalTrendPoint[];
-    lowPeriods: RentalTrendPoint[];
+    peakPeriods: RentalTrendPoint[]; // tối đa 1 phần tử
+    lowPeriods: RentalTrendPoint[]; // tối đa 1 phần tử
   };
   dayOfWeekDistribution: {
     busiestDay: DayOfWeekItem | null;
-    quietestDay: DayOfWeekItem | null;
-    items: DayOfWeekItem[];
+    items: DayOfWeekItem[]; // luôn đủ 7 ngày từ Thứ Hai đến Chủ Nhật
   };
-  timeSlotDemand: TimeSlotDemandItem[];
+  timeSlotDemand: {
+    mostBookedTimeSlot: TimeSlotDemandItem | null;
+    items: TimeSlotDemandItem[];
+  };
   hourOfDayDistribution: HourOfDayItem[];
   durationBreakdown: {
     byBillingUnit: Array<{

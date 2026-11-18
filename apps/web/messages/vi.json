@@ -10,7 +10,8 @@
     "search": "Tìm kiếm",
     "confirm": "Xác nhận",
     "back": "Quay lại",
-    "language": "Ngôn ngữ"
+    "language": "Ngôn ngữ",
+    "networkError": "Không thể kết nối tới máy chủ. Vui lòng kiểm tra kết nối mạng."
   },
   "auth": {
     "login": "Đăng nhập",
@@ -152,6 +153,17 @@
       "loading": "Đang tải...",
       "retry": "Thử lại",
       "demoNotice": "Chế độ demo: cho phép check-in ngoài khung giờ trong ngày hẹn và tạm dừng tự động đánh dấu vắng mặt. Bật lại sau khi demo."
+    },
+    "checkInDateValidation": {
+      "title": "Kiểm tra ngày tới check-in",
+      "shortLabel": "Validate ngày check-in",
+      "description": "Áp dụng cho nút Đã đến / Lập hợp đồng trên đơn đặt chỗ (ngày hẹn nhận kho) và Bàn giao & Ký Check-in trên hợp đồng (ngày bắt đầu thuê). Tắt để demo check-in trước ngày hẹn.",
+      "enabled": "Đang bật",
+      "disabled": "Tắt · Demo",
+      "reEnable": "Bật lại validate",
+      "demoNotice": "Chế độ demo: đang tắt kiểm tra ngày check-in — cho phép bấm Đã đến, Lập hợp đồng và Bàn giao & Ký Check-in trước ngày hẹn. Hãy bật lại sau khi demo.",
+      "blockedReservation": "Chưa đến ngày hẹn nhận kho ({date}). Bật tắt \"Validate ngày check-in\" nếu cần demo trước ngày.",
+      "blockedContract": "Chưa đến ngày bắt đầu thuê / nhận kho ({date}). Bật tắt \"Validate ngày check-in\" nếu cần demo trước ngày."
     },
     "nav": {
       "overview": "Tổng quan",
@@ -2748,7 +2760,7 @@
     "subtitle": "Quản lý hoàn tiền tập trung với kiểm soát Maker-Checker",
     "status": {
       "pendingApproval": "Chờ duyệt",
-      "approved": "Đã duyệt (Chờ chi)",
+      "approved": "Đã duyệt",
       "paid": "Đã hoàn tất",
       "rejected": "Đã từ chối",
       "cancelled": "Đã hủy"

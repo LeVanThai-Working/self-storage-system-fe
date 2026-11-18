@@ -25,6 +25,7 @@ import {
 import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { accessScheduleKeys } from "@/features/access-schedules/hooks/useAccessSchedules";
+import { INVOICE_QUERY_KEYS } from "@/features/invoices/hooks/useInvoices";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
 import {
@@ -112,6 +113,14 @@ export function NotificationModal({ visible, onClose }: NotificationModalProps) 
       void client.invalidateQueries({ queryKey: accessScheduleKeys.detail(scheduleId) });
       onClose();
       router.push({ pathname: "/access-schedules/[id]", params: { id: scheduleId } });
+      return;
+    }
+
+    if (item.type === NotificationTypeEnum.PAYMENT) {
+      void client.invalidateQueries({ queryKey: INVOICE_QUERY_KEYS.all });
+      void client.invalidateQueries({ queryKey: ["my-payments"] });
+      onClose();
+      router.push("/(tabs)/payments" as any);
     }
   };
 

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { openRenewalAddendumPrintDocument } from "../utils/printContract";
 import {
   AlertCircle,
   AlertTriangle,
@@ -34,6 +35,12 @@ import {
   extractSignedContractFileUrls,
 } from "@self-storage-system-fe/shared";
 import { useFacilityAmenityOfferings } from "@/features/request-center/hooks";
+import {
+  formatVietnamDateLabel,
+  isBlockedByCheckInDateValidation,
+  useCheckInDateValidation,
+} from "@/features/system-admin/checkInDateValidation";
+import { CheckInDateBlockedBanner } from "@/features/system-admin/components/CheckInDateValidationControl";
 import {
   useApproveContractAddendum,
   useCancelContract,
@@ -485,6 +492,8 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
 }) => {
   const locale = useLocale() === "en" ? "en" : "vi";
   const isEn = locale === "en";
+  const tCheckInDate = useTranslations("systemAdmin.checkInDateValidation");
+  const { enabled: checkInDateValidationEnabled } = useCheckInDateValidation();
   const checkInMutation = useCheckInContract();
 
   const [verifiedIdentity, setVerifiedIdentity] = useState(true);
@@ -505,11 +514,24 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
   if (!contract) return null;
 
   const isCustomerSigned = contract.customerSigned === true;
+  const isBlockedByCheckInDate = isBlockedByCheckInDateValidation(
+    contract.startDate,
+    checkInDateValidationEnabled
+  );
   const isDateShifted = new Date().getTime() > new Date(contract.startDate).getTime();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+
+    if (isBlockedByCheckInDate) {
+      setErrorMsg(
+        tCheckInDate("blockedContract", {
+          date: formatVietnamDateLabel(contract.startDate),
+        })
+      );
+      return;
+    }
 
     if (!isCustomerSigned) {
       setErrorMsg(
@@ -583,11 +605,6 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
                   ? `Confirm Handover & Sign (Manager) • ${contract.contractCode}`
                   : `Xác nhận bàn giao kho & Ký Check-in • ${contract.contractCode}`}
               </DialogTitle>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {isEn
-                  ? "When both Customer (Mobile) and Manager (Web) have signed, contract becomes ACTIVE and unit becomes OCCUPIED."
-                  : "Sau khi Khách hàng (Mobile) và Quản lý (Web) đều đã ký, hợp đồng kích hoạt sang ACTIVE và kho sang OCCUPIED."}
-              </p>
             </div>
           </div>
         </DialogHeader>
@@ -617,7 +634,7 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
                       )})`
                     : isEn
                       ? "Pending customer signature on Mobile App"
-                      : "Chờ khách ký trên ứng dụng Mobile"}
+                      : "Chờ khách ký trên ứng dụng"}
                 </p>
               </div>
 
@@ -661,6 +678,10 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
               </div>
             )}
 
+            {isBlockedByCheckInDate && (
+              <CheckInDateBlockedBanner scheduledDate={contract.startDate} target="contract" />
+            )}
+
             {isDateShifted && (
               <div className="p-3 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900 text-xs space-y-1">
                 <p className="font-bold flex items-center gap-1.5 text-blue-950">
@@ -690,11 +711,7 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-slate-500">
-                {isEn
-                  ? "Upload clear photos or scans of all pages with signatures from both customer and manager (minimum 1 file, PDF/Image)."
-                  : "Chụp ảnh hoặc scan các trang hợp đồng giấy A4 có đầy đủ chữ ký 2 bên để hệ thống băm SHA-256 lưu vết tính toàn vẹn (tối thiểu 1 file)."}
-              </p>
+
               <CloudinaryUploader
                 folder={CloudinaryFolderEnum.CONTRACTS}
                 value={signedContractFileUrls}
@@ -802,12 +819,13 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
               type="submit"
               disabled={
                 checkInMutation.isPending ||
+                isBlockedByCheckInDate ||
                 !termsAccepted ||
                 !isCustomerSigned ||
                 !verifiedContractPaperSigned ||
                 signedContractFileUrls.length === 0
               }
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {checkInMutation.isPending
                 ? isEn
@@ -1664,7 +1682,7 @@ export const ApproveContractAddendumModal: React.FC<ApproveContractAddendumModal
                   : "Nhân viên phụ trách lắp đặt tiện ích"
                 : isEn
                   ? "Assign Staff for Removal & Inspection"
-                  : "Nhân viên phụ trách tháo dỡ & thu hồi"}
+                  : "Nhân viên phụ trách"}
             </label>
             <select
               value={assignedStaffId}
@@ -2054,7 +2072,7 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
                       )})`
                     : isEn
                       ? "Pending customer signature on Mobile App"
-                      : "Chờ khách ký trên ứng dụng Mobile"}
+                      : "Chờ khách ký trên ứng dụng"}
                 </p>
               </div>
 
@@ -2100,24 +2118,34 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
 
             {/* Signed Addendum Scans/Photos Upload (Required) */}
             <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-2.5">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
                   <FileText className="w-4 h-4 text-emerald-600" />
                   {isEn
                     ? "Signed Addendum Photos / Scans (Required) *"
                     : "Ảnh chụp / Scan phụ lục hợp đồng đã ký (Bắt buộc) *"}
                 </label>
-                {signedAddendumFileUrls.length > 0 && (
-                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-                    {signedAddendumFileUrls.length} {isEn ? "uploaded" : "file đã chọn"}
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  {isRenew && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openRenewalAddendumPrintDocument(contract, addendum, locale, setErrorMsg)
+                      }
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-[11px] font-bold text-slate-700 transition-colors"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                      {isEn ? "Print Addendum PDF" : "In phụ lục PDF"}
+                    </button>
+                  )}
+                  {signedAddendumFileUrls.length > 0 && (
+                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                      {signedAddendumFileUrls.length} {isEn ? "uploaded" : "file đã chọn"}
+                    </span>
+                  )}
+                </div>
               </div>
-              <p className="text-[11px] text-slate-500">
-                {isEn
-                  ? "Attach clear photos or PDF scans of the physical addendum with signatures from both customer and manager (minimum 1 file, Code 433)."
-                  : "Chụp ảnh hoặc scan phụ lục hợp đồng có chữ ký sống của 2 bên để lưu hồ sơ pháp lý và kích hoạt (tối thiểu 1 file, Mã 433)."}
-              </p>
+
               <CloudinaryUploader
                 folder={CloudinaryFolderEnum.CONTRACTS}
                 value={signedAddendumFileUrls}
@@ -2279,11 +2307,11 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
                   : isRenew
                     ? isEn
                       ? "Confirm & Activate Renewal"
-                      : "Quản lý ký kích hoạt gia hạn"
+                      : "Ký kích hoạt gia hạn"
                     : isUnitChange
                       ? isEn
                         ? "Confirm & Activate Transfer"
-                        : "Quản lý ký kích hoạt đổi kho"
+                        : "Ký kích hoạt đổi kho"
                       : isEn
                         ? "Confirm Installation & Sign"
                         : "Quản lý bàn giao lắp đặt & Ký"}
@@ -2555,7 +2583,7 @@ export const CheckOutContractModal: React.FC<CheckOutContractModalProps> = ({
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                {isEn ? "Inspection Notes" : "Biên bản kiểm tra kho khi trả (inspectionNotes)"}
+                {isEn ? "Inspection Notes" : "Biên bản kiểm tra kho khi trả"}
               </label>
               <textarea
                 rows={3}
@@ -2576,12 +2604,12 @@ export const CheckOutContractModal: React.FC<CheckOutContractModalProps> = ({
               <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
                 {isEn
                   ? "Automatic Settlement Preview (Real-time)"
-                  : "Bảng Tóm tắt Quyết toán Tự động (Real-time Preview)"}
+                  : "Bảng Tóm tắt Quyết toán Tự động"}
               </p>
 
               <div className="flex items-center justify-between py-1 border-b border-slate-200/70">
                 <span className="text-slate-600 font-medium">
-                  {isEn ? "Held Deposit (depositAmount):" : "Tiền cọc đã giữ (depositAmount):"}
+                  {isEn ? "Held Deposit (depositAmount):" : "Tiền cọc đã giữ:"}
                 </span>
                 <span className="font-bold text-emerald-700">
                   + {formatVnd(preview.depositAmount)}
@@ -2592,7 +2620,7 @@ export const CheckOutContractModal: React.FC<CheckOutContractModalProps> = ({
                 <span className="text-slate-600 font-medium">
                   {isEn
                     ? `Estimated Overdue Fee (${preview.overdueDays} days × 1.5 × daily rate):`
-                    : `Phí quá hạn dự kiến (${preview.overdueDays} ngày trễ × 1.5 × đơn giá ngày):`}
+                    : `Phí quá hạn dự kiến:`}
                 </span>
                 <span className="font-bold text-orange-600">
                   - {formatVnd(preview.estimatedOverdueFee)}
@@ -2601,7 +2629,7 @@ export const CheckOutContractModal: React.FC<CheckOutContractModalProps> = ({
 
               <div className="flex items-center justify-between py-1 border-b border-slate-200/70">
                 <span className="text-slate-600 font-medium">
-                  {isEn ? "Damage Fee (damageFee):" : "Phí hư hại nhập vào (damageFee):"}
+                  {isEn ? "Damage Fee (damageFee):" : "Phí hư hại:"}
                 </span>
                 <span className="font-bold text-rose-600">- {formatVnd(preview.damageFee)}</span>
               </div>
@@ -2609,9 +2637,7 @@ export const CheckOutContractModal: React.FC<CheckOutContractModalProps> = ({
               <div className="pt-2 space-y-2">
                 <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-200">
                   <span className="font-bold text-emerald-900">
-                    {isEn
-                      ? "Refund to Customer (refundAmount):"
-                      : "Số tiền hoàn trả khách (refundAmount):"}
+                    {isEn ? "Refund to Customer (refundAmount):" : "Số tiền hoàn trả khách:"}
                   </span>
                   <span className="text-sm font-extrabold text-emerald-700">
                     {formatVnd(preview.refundAmount)}
@@ -2620,9 +2646,7 @@ export const CheckOutContractModal: React.FC<CheckOutContractModalProps> = ({
 
                 <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 border border-amber-200">
                   <span className="font-bold text-amber-900">
-                    {isEn
-                      ? "Additional Payment Required:"
-                      : "Số tiền khách cần đóng thêm (additionalPaymentRequired):"}
+                    {isEn ? "Additional Payment Required:" : "Số tiền khách cần đóng thêm:"}
                   </span>
                   <span className="text-sm font-extrabold text-amber-800">
                     {formatVnd(preview.additionalPaymentRequired)}

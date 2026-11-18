@@ -29,7 +29,21 @@ import {
 } from "lucide-react";
 
 import { useAuthStore } from "@/features/auth/store";
-import { IconActionTooltip, InfoTooltip, TruncatedText } from "@/components/ui/tooltip";
+import {
+  ActionTooltip,
+  IconActionTooltip,
+  InfoTooltip,
+  TruncatedText,
+} from "@/components/ui/tooltip";
+import {
+  formatVietnamDateLabel,
+  isBlockedByCheckInDateValidation,
+  useCheckInDateValidation,
+} from "@/features/system-admin/checkInDateValidation";
+import {
+  CheckInDateDemoBanner,
+  CheckInDateValidationControl,
+} from "@/features/system-admin/components/CheckInDateValidationControl";
 import { ContractSourceEnum, RoleEnum } from "@self-storage-system-fe/shared";
 import { useFacilityOfferings, useMyFacility } from "@/features/storage-unit-management/hooks";
 import { useFacility } from "@/features/facility-management/hooks";
@@ -83,10 +97,12 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
   portalBase = "facility-manager",
 }) => {
   const t = useTranslations("facilityManager.reservations");
+  const tCheckInDate = useTranslations("systemAdmin.checkInDateValidation");
 
   const tStatuses = useTranslations("facilityManager.reservations.statuses");
 
   const locale = useLocale() === "en" ? "en" : "vi";
+  const { enabled: checkInDateValidationEnabled } = useCheckInDateValidation();
 
   const currentUser = useAuthStore((s) => s.currentUser);
   const isStaff = portalBase === "facility-staff" || currentUser?.role === RoleEnum.FACILITY_STAFF;
@@ -239,6 +255,14 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
   const [creatingContractId, setCreatingContractId] = useState<string | null>(null);
 
   const handleCreateContractDirectly = async (r: ReservationResponse) => {
+    if (isBlockedByCheckInDateValidation(r.checkInDate, checkInDateValidationEnabled, nowMs)) {
+      showFeedback(
+        "error",
+        tCheckInDate("blockedReservation", { date: formatVietnamDateLabel(r.checkInDate) })
+      );
+      return;
+    }
+
     if (!r.storageUnitId) {
       showFeedback(
         "error",
@@ -451,20 +475,25 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            void listQuery.refetch();
-          }}
-          disabled={listQuery.isFetching}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-slate-200/80 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition-all disabled:opacity-50"
-        >
-          <RefreshCw
-            className={`w-3.5 h-3.5 ${listQuery.isFetching ? "animate-spin text-teal-600" : ""}`}
-          />
-          {t("refresh")}
-        </button>
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <CheckInDateValidationControl variant="compact" />
+          <button
+            type="button"
+            onClick={() => {
+              void listQuery.refetch();
+            }}
+            disabled={listQuery.isFetching}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-slate-200/80 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition-all disabled:opacity-50"
+          >
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${listQuery.isFetching ? "animate-spin text-teal-600" : ""}`}
+            />
+            {t("refresh")}
+          </button>
+        </div>
       </div>
+
+      <CheckInDateDemoBanner />
 
       {/* Feedback Banner */}
       {feedback && (
@@ -690,6 +719,16 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                     offeringMap.get(r.facilityUnitTypeOfferingId) ??
                     r.offering?.unitTypeId ??
                     t("table.standardPackage");
+                  const isBlockedByCheckInDate = isBlockedByCheckInDateValidation(
+                    r.checkInDate,
+                    checkInDateValidationEnabled,
+                    nowMs
+                  );
+                  const blockedCheckInDateMsg = isBlockedByCheckInDate
+                    ? tCheckInDate("blockedReservation", {
+                        date: formatVietnamDateLabel(r.checkInDate),
+                      })
+                    : undefined;
 
                   return (
                     <tr key={r.id} className="hover:bg-slate-50/60 transition-colors">
@@ -825,62 +864,44 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                             </div>
                           )}
 
-                          {/* CONFIRMED */}
-                          {st === ReservationStatusEnum.CONFIRMED && (
+                          {/* CONFIRMED / OVERDUE */}
+                          {(st === ReservationStatusEnum.CONFIRMED ||
+                            st === ReservationStatusEnum.OVERDUE) && (
                             <div className="flex items-center justify-end gap-1.5">
                               {!r.arrivedAt ? (
-                                <button
-                                  type="button"
-                                  onClick={() => setMarkArrivedTarget(r)}
-                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm flex items-center gap-1 transition-colors"
+                                <ActionTooltip
+                                  content={blockedCheckInDateMsg}
+                                  disabled={isBlockedByCheckInDate}
                                 >
-                                  <UserCheck className="w-3 h-3" />
-                                  Đã đến
-                                </button>
+                                  <button
+                                    type="button"
+                                    disabled={isBlockedByCheckInDate}
+                                    onClick={() => setMarkArrivedTarget(r)}
+                                    className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm flex items-center gap-1 transition-colors"
+                                  >
+                                    <UserCheck className="w-3 h-3" />
+                                    Đã đến
+                                  </button>
+                                </ActionTooltip>
                               ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => void handleCreateContractDirectly(r)}
-                                  disabled={creatingContractId === r.id}
-                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 shadow-sm flex items-center gap-1 transition-colors"
+                                <ActionTooltip
+                                  content={blockedCheckInDateMsg}
+                                  disabled={isBlockedByCheckInDate}
                                 >
-                                  {creatingContractId === r.id ? (
-                                    <RefreshCw className="w-3 h-3 animate-spin" />
-                                  ) : (
-                                    <FileCheck2 className="w-3 h-3" />
-                                  )}
-                                  Lập HĐ
-                                </button>
-                              )}
-                            </div>
-                          )}
-
-                          {/* OVERDUE */}
-                          {st === ReservationStatusEnum.OVERDUE && (
-                            <div className="flex items-center justify-end gap-1.5">
-                              {!r.arrivedAt ? (
-                                <button
-                                  type="button"
-                                  onClick={() => setMarkArrivedTarget(r)}
-                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm flex items-center gap-1 transition-colors"
-                                >
-                                  <UserCheck className="w-3 h-3" />
-                                  Đã đến
-                                </button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  onClick={() => void handleCreateContractDirectly(r)}
-                                  disabled={creatingContractId === r.id}
-                                  className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 shadow-sm flex items-center gap-1 transition-colors"
-                                >
-                                  {creatingContractId === r.id ? (
-                                    <RefreshCw className="w-3 h-3 animate-spin" />
-                                  ) : (
-                                    <FileCheck2 className="w-3 h-3" />
-                                  )}
-                                  Lập HĐ
-                                </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => void handleCreateContractDirectly(r)}
+                                    disabled={creatingContractId === r.id || isBlockedByCheckInDate}
+                                    className="px-2.5 py-1 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm flex items-center gap-1 transition-colors"
+                                  >
+                                    {creatingContractId === r.id ? (
+                                      <RefreshCw className="w-3 h-3 animate-spin" />
+                                    ) : (
+                                      <FileCheck2 className="w-3 h-3" />
+                                    )}
+                                    Lập HĐ
+                                  </button>
+                                </ActionTooltip>
                               )}
                             </div>
                           )}

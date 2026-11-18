@@ -46,7 +46,7 @@ export function getUnitCategoryLabel(
   t: (key: string) => string
 ): string {
   if (!category) return t("storageExplore.category_small");
-  switch (category) {
+  switch (String(category).toLowerCase()) {
     case UnitTypeCategoryEnum.LOCKER:
       return t("storageExplore.category_locker");
     case UnitTypeCategoryEnum.SMALL:
@@ -57,6 +57,8 @@ export function getUnitCategoryLabel(
       return t("storageExplore.category_large");
     case UnitTypeCategoryEnum.CLIMATE_CONTROLLED:
       return t("storageExplore.category_climate_controlled");
+    case UnitTypeCategoryEnum.WAREHOUSE_RACK:
+      return t("storageExplore.category_warehouse_rack");
     default:
       return String(category);
   }

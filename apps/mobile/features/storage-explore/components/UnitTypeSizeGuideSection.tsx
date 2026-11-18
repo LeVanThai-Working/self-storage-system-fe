@@ -20,6 +20,7 @@ const CATEGORIES: (UnitTypeCategoryEnum | "ALL")[] = [
   UnitTypeCategoryEnum.MEDIUM,
   UnitTypeCategoryEnum.LARGE,
   UnitTypeCategoryEnum.CLIMATE_CONTROLLED,
+  UnitTypeCategoryEnum.WAREHOUSE_RACK,
 ];
 
 export function UnitTypeSizeGuideSection(_props: UnitTypeSizeGuideSectionProps) {
@@ -60,7 +61,7 @@ export function UnitTypeSizeGuideSection(_props: UnitTypeSizeGuideSectionProps) 
           {t("storageExplore.sizeGuideSubtitle")}
         </Text>
 
-        {/* Category Filter Chips (Tất cả, Tủ Locker, Kho Nhỏ, Kho Vừa, Kho Lớn, Kho Điều hòa) */}
+        {/* Category Filter Chips (Tất cả, Tủ Locker, Kho Nhỏ, Kho Vừa, Kho Lớn, Kho Điều hòa, Kệ kho) */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}

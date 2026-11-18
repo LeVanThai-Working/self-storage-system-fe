@@ -31,7 +31,7 @@ export const RefundStatusBadge: React.FC<RefundStatusBadgeProps> = ({ status, cl
           className={`bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1.5 font-medium px-2.5 py-0.5 rounded-full ${className}`}
         >
           <CheckCircle2 className="w-3.5 h-3.5" />
-          <span>Đã duyệt (Chờ chi)</span>
+          <span>Đã duyệt</span>
         </Badge>
       );
     case RefundRequestStatusEnum.PAID:

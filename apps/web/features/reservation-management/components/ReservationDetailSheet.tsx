@@ -19,7 +19,14 @@ import {
   XCircle,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { ActionTooltip } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/features/auth/store";
+import {
+  formatVietnamDateLabel,
+  isBlockedByCheckInDateValidation,
+  useCheckInDateValidation,
+} from "@/features/system-admin/checkInDateValidation";
+import { CheckInDateBlockedBanner } from "@/features/system-admin/components/CheckInDateValidationControl";
 import { RoleEnum } from "@self-storage-system-fe/shared";
 import { useReservationDetail } from "../hooks";
 import {
@@ -80,8 +87,10 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
   onOpenCreateContract,
 }) => {
   const t = useTranslations("facilityManager.reservations.detailSheet");
+  const tCheckInDate = useTranslations("systemAdmin.checkInDateValidation");
 
   const locale = useLocale() === "en" ? "en" : "vi";
+  const { enabled: checkInDateValidationEnabled } = useCheckInDateValidation();
 
   const currentUser = useAuthStore((s) => s.currentUser);
   const isStaff = portalBase === "facility-staff" || currentUser?.role === RoleEnum.FACILITY_STAFF;
@@ -108,6 +117,16 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
     (status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE) &&
     Boolean(reservation.storageUnitId) &&
     Boolean(reservation.arrivedAt);
+  const isBlockedByCheckInDate = isBlockedByCheckInDateValidation(
+    reservation.checkInDate,
+    checkInDateValidationEnabled,
+    nowMs
+  );
+  const blockedCheckInDateMsg = isBlockedByCheckInDate
+    ? tCheckInDate("blockedReservation", {
+        date: formatVietnamDateLabel(reservation.checkInDate),
+      })
+    : undefined;
   const canAssignStaff =
     isManager &&
     (status === ReservationStatusEnum.CONFIRMED || status === ReservationStatusEnum.OVERDUE) &&
@@ -442,6 +461,13 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
               </div>
             )}
           </div>
+
+          {isBlockedByCheckInDate && (canMarkArrived || canCreateContract) && (
+            <CheckInDateBlockedBanner
+              scheduledDate={reservation.checkInDate}
+              target="reservation"
+            />
+          )}
         </div>
 
         {/* Footer Actions */}
@@ -467,30 +493,35 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
           )}
 
           {canMarkArrived && onOpenMarkArrived && (
-            <button
-              type="button"
-              onClick={() => onOpenMarkArrived(reservation)}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm flex items-center gap-1.5"
-            >
-              <UserCheck className="w-3.5 h-3.5" />
-              Khách đã đến
-            </button>
+            <ActionTooltip content={blockedCheckInDateMsg} disabled={isBlockedByCheckInDate}>
+              <button
+                type="button"
+                disabled={isBlockedByCheckInDate}
+                onClick={() => onOpenMarkArrived(reservation)}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm flex items-center gap-1.5"
+              >
+                <UserCheck className="w-3.5 h-3.5" />
+                Khách đã đến
+              </button>
+            </ActionTooltip>
           )}
 
           {canCreateContract && onOpenCreateContract && (
-            <button
-              type="button"
-              onClick={() => onOpenCreateContract(reservation)}
-              disabled={isCreatingContract}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 shadow-sm flex items-center gap-1.5"
-            >
-              {isCreatingContract ? (
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <FileCheck2 className="w-3.5 h-3.5" />
-              )}
-              {isCreatingContract ? "Đang tạo hợp đồng..." : "Lập hợp đồng nháp"}
-            </button>
+            <ActionTooltip content={blockedCheckInDateMsg} disabled={isBlockedByCheckInDate}>
+              <button
+                type="button"
+                onClick={() => onOpenCreateContract(reservation)}
+                disabled={isCreatingContract || isBlockedByCheckInDate}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm flex items-center gap-1.5"
+              >
+                {isCreatingContract ? (
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <FileCheck2 className="w-3.5 h-3.5" />
+                )}
+                {isCreatingContract ? "Đang tạo hợp đồng..." : "Lập hợp đồng nháp"}
+              </button>
+            </ActionTooltip>
           )}
 
           {canAssignStaff && onOpenAssignStaff && (

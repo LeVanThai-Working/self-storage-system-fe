@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
   ArrowUpDown,
@@ -21,8 +21,17 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
-import { TruncatedText } from "@/components/ui/tooltip";
+import { ActionTooltip, TruncatedText } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/features/auth/store";
+import {
+  formatVietnamDateLabel,
+  isBlockedByCheckInDateValidation,
+  useCheckInDateValidation,
+} from "@/features/system-admin/checkInDateValidation";
+import {
+  CheckInDateDemoBanner,
+  CheckInDateValidationControl,
+} from "@/features/system-admin/components/CheckInDateValidationControl";
 import { useFacilities } from "@/features/facility-management/hooks";
 import { useMyFacility, useAllStorageUnits } from "@/features/storage-unit-management/hooks";
 import {
@@ -32,7 +41,6 @@ import {
   useProcessOverdueContracts,
 } from "../hooks";
 import {
-  BillingUnitEnum,
   ContractSourceEnum,
   ContractStatusEnum,
   RoleEnum,
@@ -44,6 +52,7 @@ import {
   type ContractSortBy,
 } from "../types";
 import {
+  calculateContractFinancialSummary,
   canCheckInContract,
   formatDateOnly,
   formatDateTime,
@@ -74,6 +83,8 @@ interface ContractsListViewProps {
 export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase }) => {
   const locale = useLocale() === "en" ? "en" : "vi";
   const isEn = locale === "en";
+  const tCheckInDate = useTranslations("systemAdmin.checkInDateValidation");
+  const { enabled: checkInDateValidationEnabled } = useCheckInDateValidation();
   const currentUser = useAuthStore((s) => s.currentUser);
   const isAuthLoading = useAuthStore((s) => s.isLoading);
   const currentUserId = getCurrentUserId(currentUser);
@@ -282,6 +293,7 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
+          <CheckInDateValidationControl variant="compact" />
           <button
             type="button"
             onClick={() => contractsQuery.refetch()}
@@ -320,6 +332,8 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
           )}
         </div>
       </div>
+
+      <CheckInDateDemoBanner />
 
       {/* Scope toggle: managers only; staff are always scoped to their own contracts */}
       {!isOpsOrAdmin && !isStaff && (
@@ -712,20 +726,22 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                     !contract.depositPaidAt;
 
                   const canQuickCheckIn = canCheckInContract(contract, currentUser?.role);
+                  const isBlockedByCheckInDate = isBlockedByCheckInDateValidation(
+                    contract.startDate,
+                    checkInDateValidationEnabled
+                  );
+                  const blockedCheckInDateMsg = isBlockedByCheckInDate
+                    ? tCheckInDate("blockedContract", {
+                        date: formatVietnamDateLabel(contract.startDate),
+                      })
+                    : undefined;
 
                   const durationDays = getContractDurationDays(
                     contract.startDate,
                     contract.endDate
                   );
 
-                  const recurringAmenitiesTotal = (contract.amenities || [])
-                    .filter((a) => a.billingUnit !== BillingUnitEnum.ONE_TIME)
-                    .reduce((sum, a) => sum + (a.totalPrice ?? a.pricePerUnit * a.quantity), 0);
-
-                  const displayPeriodicPrice =
-                    contract.status === ContractStatusEnum.ACTIVE
-                      ? contract.totalPeriodicPrice
-                      : contract.rentalPrice + recurringAmenitiesTotal;
+                  const { displayPeriodicPrice } = calculateContractFinancialSummary(contract);
 
                   return (
                     <tr key={contract.id} className="hover:bg-slate-50/80 transition-colors group">
@@ -877,14 +893,20 @@ export const ContractsListView: React.FC<ContractsListViewProps> = ({ portalBase
                           )}
 
                           {canQuickCheckIn && (
-                            <button
-                              type="button"
-                              onClick={() => setCheckInTarget(contract)}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
+                            <ActionTooltip
+                              content={blockedCheckInDateMsg}
+                              disabled={isBlockedByCheckInDate}
                             >
-                              <ClipboardCheck className="w-3.5 h-3.5" />
-                              {isEn ? "Handover & Sign" : "Bàn giao & Ký"}
-                            </button>
+                              <button
+                                type="button"
+                                disabled={isBlockedByCheckInDate}
+                                onClick={() => setCheckInTarget(contract)}
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+                              >
+                                <ClipboardCheck className="w-3.5 h-3.5" />
+                                {isEn ? "Handover & Sign" : "Bàn giao & Ký"}
+                              </button>
+                            </ActionTooltip>
                           )}
 
                           <Link
