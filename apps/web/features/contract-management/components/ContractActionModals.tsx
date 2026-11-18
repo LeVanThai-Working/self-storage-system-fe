@@ -120,6 +120,8 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
   const [proofImageUrl, setProofImageUrl] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  // While confirming cash/transfer at the counter, the pending payment created for it must not surface as a QR session.
+  const [isManualSubmitting, setIsManualSubmitting] = useState(false);
 
   if (!contract) return null;
 
@@ -195,6 +197,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
       return;
     }
 
+    setIsManualSubmitting(true);
     try {
       let paymentId = existingPendingPayment?.id;
       if (!paymentId) {
@@ -203,7 +206,6 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
           method,
           purpose,
         });
-        setCreatedSession(created);
         paymentId = created.id;
       }
 
@@ -218,8 +220,12 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
           : "Xác nhận thu tiền cọc hợp đồng thành công!"
       );
       onSuccess?.();
-      setTimeout(onClose, 700);
+      setTimeout(() => {
+        setIsManualSubmitting(false);
+        onClose();
+      }, 700);
     } catch (err: unknown) {
+      setIsManualSubmitting(false);
       setErrorMsg(resolveContractErrorMessage(err, locale));
     }
   };
@@ -232,6 +238,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
           setErrorMsg(null);
           setSuccessMsg(null);
           setCreatedSession(null);
+          setIsManualSubmitting(false);
           onClose();
         }
       }}
@@ -300,7 +307,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
                 </button>
               </div>
 
-              {existingPendingPayment?.qrUrl && (
+              {existingPendingPayment?.qrUrl && !isManualSubmitting && (
                 <div className="flex flex-col sm:flex-row items-center gap-4 pt-2 border-t border-slate-200/70">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
