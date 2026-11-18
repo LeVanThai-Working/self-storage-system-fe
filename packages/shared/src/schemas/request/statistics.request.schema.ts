@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   StatisticsGranularityEnum,
+  RentalTrendsGranularityEnum,
   FacilityKpiTierEnum,
   FacilityKpiSortByEnum,
   AiInsightFocusAreaEnum,
@@ -28,13 +29,8 @@ export const statisticsBaseQuerySchema = z.object({
 
 export const rentalTrendsQuerySchema = statisticsBaseQuerySchema.extend({
   granularity: z
-    .enum([
-      StatisticsGranularityEnum.DAY,
-      StatisticsGranularityEnum.WEEK,
-      StatisticsGranularityEnum.MONTH,
-      StatisticsGranularityEnum.QUARTER,
-    ])
-    .default(StatisticsGranularityEnum.DAY)
+    .enum([RentalTrendsGranularityEnum.MONTH, RentalTrendsGranularityEnum.QUARTER])
+    .default(RentalTrendsGranularityEnum.MONTH)
     .optional(),
 });
 
