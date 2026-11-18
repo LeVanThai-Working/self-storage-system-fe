@@ -358,7 +358,7 @@ export function ReservationFormPage({
               </Field>
             </div>
 
-            <Field label={t("schedule.duration", { unit: tBilling(offering.billingUnit) })}>
+            <Field label={t("schedule.duration", { unit: tBilling("day") })}>
               <div className="relative">
                 <Input
                   type="number"
@@ -369,7 +369,7 @@ export function ReservationFormPage({
                   onChange={(e) => setDuration(e.target.value)}
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-neutral-muted">
-                  {tBilling(offering.billingUnit)}
+                  {tBilling("day")}
                 </span>
               </div>
             </Field>
