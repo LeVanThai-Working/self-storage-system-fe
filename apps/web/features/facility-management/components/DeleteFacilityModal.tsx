@@ -50,7 +50,7 @@ export const DeleteFacilityModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-md rounded-3xl p-6 border border-slate-100 shadow-2xl bg-white">
+      <DialogContent className="max-w-md rounded-xl p-6 border border-neutral-border shadow-2xl bg-white">
         <DialogHeader>
           <div className="flex items-center gap-3.5 mb-2">
             <div className="w-11 h-11 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-100 shadow-sm">
@@ -86,7 +86,7 @@ export const DeleteFacilityModal = ({
             type="button"
             onClick={handleClose}
             disabled={deleteMutation.isPending}
-            className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors cursor-pointer disabled:opacity-50"
+            className="px-5 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors cursor-pointer disabled:opacity-50"
           >
             {t("cancel")}
           </button>

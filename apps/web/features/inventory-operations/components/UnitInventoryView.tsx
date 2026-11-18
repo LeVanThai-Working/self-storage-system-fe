@@ -120,7 +120,7 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
       ) : null}
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_380px]">
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
           <div className="mb-4 rounded-b-[40%] bg-gradient-to-b from-slate-100 to-slate-200 py-2 text-center text-[10px] font-bold tracking-wider text-slate-500">
             {t("entrance")}
           </div>
@@ -161,7 +161,7 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
           {rack ? (
             <>
               <div className="mb-3 flex items-center justify-between gap-2">
@@ -182,7 +182,7 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
                     return (
                       <div key={tier.id} className="border-b-[6px] border-amber-700/50 pb-1.5">
                         <div className="flex items-center gap-2">
-                          <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-600">
+                          <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
                             {tierLabel(tier.tierNumber)}
                           </span>
                           <div className="flex min-h-[44px] flex-1 flex-wrap items-end gap-1.5">
@@ -203,7 +203,7 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
                                         tierNumber: tier.tierNumber,
                                       })
                                     }
-                                    className={`rounded-md border px-2 py-1 text-left text-[11px] ${
+                                    className={`rounded-md border px-2.5 py-0.5 text-left text-xs ${
                                       active
                                         ? "border-teal-500 bg-teal-50"
                                         : "border-sky-200 bg-sky-50"
@@ -229,7 +229,7 @@ export function UnitInventoryView({ unitId }: { unitId: string }) {
           )}
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
           {selected ? (
             <div className="space-y-4">
               <div>

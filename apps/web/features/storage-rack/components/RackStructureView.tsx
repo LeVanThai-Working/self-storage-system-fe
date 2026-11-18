@@ -144,7 +144,7 @@ export function RackStructureView({
         {kpis.map(({ key, value, icon: Icon, tone }) => (
           <div
             key={key}
-            className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+            className="flex items-center gap-3 rounded-xl border border-neutral-border bg-white p-4 shadow-sm"
           >
             <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${tone}`}>
               <Icon className="h-5 w-5" />
@@ -157,7 +157,7 @@ export function RackStructureView({
         ))}
       </div>
 
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
         <p className="mb-3 text-sm font-bold text-slate-800">
           {t("mapTitle", { unit: unitNumber })}
         </p>

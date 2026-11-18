@@ -26,7 +26,7 @@ function TrashTab({ tabId }: { tabId: TrashTabId }) {
 
   if (isError) {
     return (
-      <div className="rounded-2xl border border-slate-100 bg-white p-8 text-center">
+      <div className="rounded-xl border border-neutral-border bg-white p-8 text-center">
         <p className="text-slate-500">{t("loadFailed")}</p>
         <Button className="mt-4" onClick={() => refetch()}>
           {t("retry")}
@@ -37,7 +37,7 @@ function TrashTab({ tabId }: { tabId: TrashTabId }) {
 
   if (entries.length === 0) {
     return (
-      <p className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-slate-500">
+      <p className="rounded-xl border border-neutral-border bg-white p-8 text-center text-slate-500">
         {t("empty")}
       </p>
     );

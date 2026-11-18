@@ -11,7 +11,7 @@ export function BenefitsSection() {
           {BENEFIT_ITEMS.map(({ id, icon: Icon }) => (
             <article
               key={id}
-              className="group flex flex-col rounded-2xl border border-neutral-border bg-white p-6 text-left shadow-benefit transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg"
+              className="group flex flex-col rounded-xl border border-neutral-border bg-white p-6 text-left shadow-benefit transition-all duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg"
             >
               <div className="mb-5 flex size-13 items-center justify-center rounded-2xl bg-linear-to-br from-[#E8FAF4] to-brand-light shadow-xs transition-transform duration-300 group-hover:scale-105">
                 <Icon className="size-6 stroke-[2.2] text-brand" />

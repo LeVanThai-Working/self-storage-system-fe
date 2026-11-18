@@ -196,7 +196,7 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
               }}
               className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 isActive
-                  ? "border-emerald-600 text-emerald-600"
+                  ? "border-emerald-600 text-emerald-700"
                   : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
               }`}
             >
@@ -207,7 +207,7 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
       </div>
 
       {/* Filter Toolbar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-white p-4 rounded-xl border border-neutral-border shadow-xs">
         {/* Search */}
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -279,7 +279,7 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-xs overflow-hidden">
         <Table>
           <TableHeader className="bg-slate-50/80">
             <TableRow>
@@ -343,7 +343,7 @@ export const RefundsListView: React.FC<RefundsListViewProps> = ({
                         {formatVND(item.amount)}
                       </div>
                       {isOverThreshold && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200 mt-0.5">
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200 mt-0.5">
                           <ShieldAlert className="w-3 h-3 text-purple-600" />
                           &gt; 10M (Ops)
                         </span>

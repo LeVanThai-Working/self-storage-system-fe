@@ -71,7 +71,7 @@ export const FacilityAmenityDetailModal = ({
   const getStockStatusBadge = (available: number, total: number) => {
     if (total === 0 || available === 0) {
       return (
-        <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+        <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
           <AlertCircle className="w-3 h-3" />
           {t("stock.outOfStock")}
         </span>
@@ -79,14 +79,14 @@ export const FacilityAmenityDetailModal = ({
     }
     if (available <= 2) {
       return (
-        <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+        <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
           <AlertTriangle className="w-3 h-3" />
           {t("stock.lowStock")}
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+      <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
         <CheckCircle2 className="w-3 h-3" />
         {t("stock.inStock")}
       </span>
@@ -132,7 +132,7 @@ export const FacilityAmenityDetailModal = ({
                   <span className="font-extrabold text-base text-slate-900">
                     {offering.amenity.name}
                   </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
+                  <span className="text-xs font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
                     {offering.amenity.type}
                   </span>
                 </div>
@@ -146,7 +146,7 @@ export const FacilityAmenityDetailModal = ({
               <div className="shrink-0 flex items-center gap-2">
                 {getStockStatusBadge(offering.availableQuantity ?? 0, offering.totalQuantity ?? 0)}
                 <span
-                  className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
+                  className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
                     offering.status === FacilityAmenityOfferingStatusEnum.ACTIVE
                       ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                       : "bg-slate-100 text-slate-600 border-slate-200"
@@ -158,7 +158,7 @@ export const FacilityAmenityDetailModal = ({
             </div>
 
             {/* Inventory Card */}
-            <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
+            <div className="p-4 rounded-xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                   <Layers className="w-3.5 h-3.5 text-slate-400" />
@@ -263,7 +263,7 @@ export const FacilityAmenityDetailModal = ({
                     {offering.amenity.tags.map((tag: string) => (
                       <span
                         key={tag}
-                        className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600"
+                        className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600"
                       >
                         <Tag className="w-2.5 h-2.5 text-slate-400" />
                         {tag}

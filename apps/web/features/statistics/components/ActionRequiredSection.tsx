@@ -45,7 +45,7 @@ export function ActionRequiredSection({ actionRequired, role }: ActionRequiredSe
       icon: FileCheck2,
       href: `${basePath}/approvals`,
       color: "text-amber-700 bg-amber-50 border-amber-200",
-      badgeColor: "bg-amber-100 text-amber-800",
+      badgeColor: "bg-amber-50 text-amber-700",
     },
     {
       key: "refunds",
@@ -55,7 +55,7 @@ export function ActionRequiredSection({ actionRequired, role }: ActionRequiredSe
       icon: RotateCcw,
       href: `${basePath}/refunds`,
       color: "text-rose-700 bg-rose-50 border-rose-200",
-      badgeColor: "bg-rose-100 text-rose-800",
+      badgeColor: "bg-rose-50 text-rose-700",
     },
     {
       key: "sepay",
@@ -65,7 +65,7 @@ export function ActionRequiredSection({ actionRequired, role }: ActionRequiredSe
       icon: Unplug,
       href: `${basePath}/reconciliation`,
       color: "text-blue-700 bg-blue-50 border-blue-200",
-      badgeColor: "bg-blue-100 text-blue-800",
+      badgeColor: "bg-blue-50 text-blue-700",
     },
     {
       key: "incidents",
@@ -75,7 +75,7 @@ export function ActionRequiredSection({ actionRequired, role }: ActionRequiredSe
       icon: AlertTriangle,
       href: `${basePath}/incidents`,
       color: "text-red-700 bg-red-50 border-red-200",
-      badgeColor: "bg-red-100 text-red-800",
+      badgeColor: "bg-red-50 text-red-700",
     },
   ];
 

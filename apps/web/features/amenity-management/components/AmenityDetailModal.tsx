@@ -143,7 +143,7 @@ export const AmenityDetailModal = ({ amenity, isOpen, onClose }: AmenityDetailMo
                   {amenity.tags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200"
                     >
                       #{tag}
                     </span>
@@ -157,7 +157,7 @@ export const AmenityDetailModal = ({ amenity, isOpen, onClose }: AmenityDetailMo
               <div className="flex items-center gap-2">
                 <Layers className="w-4 h-4 text-slate-400" />
                 <span>Mã định danh:</span>
-                <code className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-[11px]">
+                <code className="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-xs">
                   {amenity.id}
                 </code>
               </div>

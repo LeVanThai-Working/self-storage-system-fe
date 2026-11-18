@@ -493,7 +493,7 @@ export const EditUnitTypeModal = ({ unitTypeId, isOpen, onClose }: EditUnitTypeM
                 type="button"
                 onClick={handleClose}
                 disabled={updateMutation.isPending}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
               >
                 {t("cancel")}
               </button>

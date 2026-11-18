@@ -36,7 +36,7 @@ export function RagOpportunityMetricsCard({ metrics }: RagOpportunityMetricsCard
             </div>
           </div>
         </div>
-        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+        <span className="rounded-md bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
           Tiềm năng tối ưu
         </span>
       </div>

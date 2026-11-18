@@ -109,7 +109,7 @@ export function AccessScheduleAssignmentActions({
   };
 
   return (
-    <section className="space-y-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="space-y-3 rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
       <h2 className="flex items-center gap-2 text-sm font-bold text-slate-800">
         <UserRound className="size-4" />
         {t("title")}

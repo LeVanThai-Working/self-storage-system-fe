@@ -77,7 +77,7 @@ export function StorageSearchPanel() {
       <form
         ref={panelRef}
         onSubmit={handleSubmit}
-        className="grid grid-cols-1 items-stretch gap-3 rounded-3xl border border-neutral-border bg-white p-3 shadow-search-panel sm:p-4 md:grid-cols-2 xl:flex xl:flex-row xl:items-center xl:justify-between xl:gap-2 xl:p-3"
+        className="grid grid-cols-1 items-stretch gap-3 rounded-xl border border-neutral-border bg-white p-3 shadow-search-panel sm:p-4 md:grid-cols-2 xl:flex xl:flex-row xl:items-center xl:justify-between xl:gap-2 xl:p-3"
       >
         {SEARCH_FIELDS.map((field, index) => {
           const Icon = field.icon;

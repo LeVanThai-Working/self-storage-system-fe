@@ -150,7 +150,7 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                   onClick={() => setActiveFilter("all")}
                   className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                     activeFilter === "all"
-                      ? "bg-purple-100 text-purple-900"
+                      ? "bg-purple-50 text-purple-900"
                       : "text-slate-600 hover:bg-slate-100"
                   }`}
                 >
@@ -161,7 +161,7 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                   onClick={() => setActiveFilter("passed")}
                   className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                     activeFilter === "passed"
-                      ? "bg-emerald-100 text-emerald-900"
+                      ? "bg-emerald-50 text-emerald-900"
                       : "text-slate-600 hover:bg-slate-100"
                   }`}
                 >
@@ -172,7 +172,7 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                   onClick={() => setActiveFilter("failed")}
                   className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                     activeFilter === "failed"
-                      ? "bg-rose-100 text-rose-900"
+                      ? "bg-rose-50 text-rose-900"
                       : "text-slate-600 hover:bg-slate-100"
                   }`}
                 >
@@ -203,7 +203,7 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                         <span className="font-mono text-[10px] font-bold text-slate-500 mr-2">
                           {testCase.caseId}
                         </span>
-                        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700">
+                        <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
                           {testCase.category}
                         </span>
                       </div>
@@ -212,8 +212,8 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                     <span
                       className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                         testCase.passed
-                          ? "bg-emerald-100 text-emerald-800"
-                          : "bg-rose-100 text-rose-800"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-rose-50 text-rose-700"
                       }`}
                     >
                       {testCase.passed ? "Đạt" : "Không đạt"}
@@ -230,8 +230,8 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                     <span
                       className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 ${
                         testCase.retrievalHit
-                          ? "bg-teal-50 border-teal-200 text-teal-800"
-                          : "bg-rose-50 border-rose-200 text-rose-800"
+                          ? "bg-teal-50 border-teal-200 text-teal-700"
+                          : "bg-rose-50 border-rose-200 text-rose-700"
                       }`}
                     >
                       <Target className="h-3 w-3" />
@@ -241,8 +241,8 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                     <span
                       className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 ${
                         testCase.citationFaithful
-                          ? "bg-blue-50 border-blue-200 text-blue-800"
-                          : "bg-rose-50 border-rose-200 text-rose-800"
+                          ? "bg-blue-50 border-blue-200 text-blue-700"
+                          : "bg-rose-50 border-rose-200 text-rose-700"
                       }`}
                     >
                       <ShieldCheck className="h-3 w-3" />
@@ -252,8 +252,8 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                     <span
                       className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 ${
                         testCase.routerMatched
-                          ? "bg-indigo-50 border-indigo-200 text-indigo-800"
-                          : "bg-amber-50 border-amber-200 text-amber-800"
+                          ? "bg-indigo-50 border-indigo-200 text-indigo-700"
+                          : "bg-amber-50 border-amber-200 text-amber-700"
                       }`}
                     >
                       Định tuyến:{" "}
@@ -263,8 +263,8 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                     <span
                       className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 ${
                         testCase.guardrailPassed
-                          ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-                          : "bg-rose-50 border-rose-200 text-rose-800"
+                          ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                          : "bg-rose-50 border-rose-200 text-rose-700"
                       }`}
                     >
                       Lá chắn an toàn: {testCase.guardrailPassed ? "Bảo vệ" : "Vi phạm"}

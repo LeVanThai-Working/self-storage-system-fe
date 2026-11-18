@@ -83,7 +83,7 @@ const EditSigningAuthorizationContent: React.FC<EditSigningAuthorizationContentP
   };
 
   return (
-    <DialogContent className="sm:max-w-2xl md:max-w-3xl w-full rounded-3xl p-0 border border-slate-100 shadow-2xl bg-white overflow-hidden max-h-[90vh] flex flex-col">
+    <DialogContent className="sm:max-w-2xl md:max-w-3xl w-full rounded-xl p-0 border border-neutral-border shadow-2xl bg-white overflow-hidden max-h-[90vh] flex flex-col">
       {/* Header */}
       <div className="p-6 pb-4 border-b border-slate-100 bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-slate-50">
         <DialogHeader>
@@ -176,7 +176,7 @@ const EditSigningAuthorizationContent: React.FC<EditSigningAuthorizationContentP
             placeholder={t("modals.notesPlaceholder")}
             maxLength={500}
             rows={3}
-            className="w-full p-3.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+            className="w-full p-3.5 rounded-xl border border-neutral-border bg-white text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
           />
         </div>
       </form>

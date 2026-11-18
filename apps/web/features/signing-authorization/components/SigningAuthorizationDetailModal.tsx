@@ -56,7 +56,7 @@ export const SigningAuthorizationDetailModal: React.FC<SigningAuthorizationDetai
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-full rounded-3xl p-0 border border-slate-100 shadow-2xl bg-white overflow-hidden max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-2xl md:max-w-3xl lg:max-w-4xl w-full rounded-xl p-0 border border-neutral-border shadow-2xl bg-white overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="p-6 pb-4 border-b border-slate-100 bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-slate-50">
           <DialogHeader>

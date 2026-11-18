@@ -13,7 +13,7 @@ const TONE: Record<Tone, { badge: string; dot: string }> = {
   green: { badge: "bg-emerald-50 text-emerald-700 border-emerald-200/80", dot: "bg-emerald-500" },
   red: { badge: "bg-rose-50 text-rose-700 border-rose-200/80", dot: "bg-rose-500" },
   gray: { badge: "bg-slate-100 text-slate-600 border-slate-200", dot: "bg-slate-400" },
-  brown: { badge: "bg-stone-100 text-stone-700 border-stone-200", dot: "bg-stone-500" },
+  brown: { badge: "bg-stone-50 text-stone-700 border-stone-200", dot: "bg-stone-500" },
 };
 
 const ITEM_TONE: Record<InventoryItemStatusEnum, Tone> = {
@@ -27,7 +27,7 @@ export function Pill({ tone, label }: { tone: Tone; label: string }) {
   const style = TONE[tone];
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold whitespace-nowrap ${style.badge}`}
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${style.badge}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
       {label}

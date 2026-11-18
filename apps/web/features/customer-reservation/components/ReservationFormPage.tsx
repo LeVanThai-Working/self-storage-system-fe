@@ -63,7 +63,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 space-y-4 rounded-2xl border border-neutral-border bg-white p-4 [overflow-wrap:anywhere] sm:p-5">
+    <section className="min-w-0 space-y-4 rounded-xl border border-neutral-border bg-white p-4 [overflow-wrap:anywhere] sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{title}</h2>
         {headerExtra}
@@ -163,7 +163,7 @@ export function ReservationFormPage({
     return (
       <>
         {back}
-        <p className="rounded-2xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
+        <p className="rounded-xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
           {t("missingParams")}
         </p>
       </>
@@ -188,7 +188,7 @@ export function ReservationFormPage({
     return (
       <>
         {back}
-        <p className="rounded-2xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
+        <p className="rounded-xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
           {t("offeringUnavailable")}
         </p>
       </>
@@ -458,7 +458,7 @@ export function ReservationFormPage({
           </Section>
         </div>
 
-        <aside className="min-w-0 h-fit space-y-4 rounded-2xl border border-neutral-border bg-white p-4 [overflow-wrap:anywhere] sm:p-5 xl:sticky xl:top-28">
+        <aside className="min-w-0 h-fit space-y-4 rounded-xl border border-neutral-border bg-white p-4 [overflow-wrap:anywhere] sm:p-5 xl:sticky xl:top-28">
           <h2 className="text-lg font-semibold">{t("summary.title")}</h2>
           <dl className="space-y-2 text-sm [&_dt]:min-w-0 [&_dd]:min-w-0 [&_dd]:text-right [&_dd]:tabular-nums">
             <div className="flex justify-between gap-3">

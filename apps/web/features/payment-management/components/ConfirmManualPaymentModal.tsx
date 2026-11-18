@@ -101,7 +101,7 @@ export const ConfirmManualPaymentModal: React.FC<ConfirmManualPaymentModalProps>
         }
       }}
     >
-      <DialogContent className="sm:max-w-lg max-h-[92vh] flex flex-col p-0 rounded-2xl border-slate-200 shadow-2xl overflow-hidden bg-white">
+      <DialogContent className="sm:max-w-lg max-h-[92vh] flex flex-col p-0 rounded-xl border-neutral-border shadow-2xl overflow-hidden bg-white">
         <DialogHeader className="p-5 pb-4 border-b border-slate-100 bg-gradient-to-r from-emerald-50 via-teal-50/40 to-white">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">

@@ -39,14 +39,14 @@ const getPriorityStyle = (priority: AiInsightPriorityEnum) => {
   switch (priority) {
     case AiInsightPriorityEnum.HIGH:
       return {
-        badge: "bg-rose-100 text-rose-800 border-rose-300",
+        badge: "bg-rose-50 text-rose-700 border-rose-200",
         container: "border-rose-200/80 bg-rose-50/20 hover:border-rose-300",
         label: "Ưu tiên cao",
         tagColor: "text-rose-700",
       };
     case AiInsightPriorityEnum.MEDIUM:
       return {
-        badge: "bg-amber-100 text-amber-800 border-amber-300",
+        badge: "bg-amber-50 text-amber-700 border-amber-200",
         container: "border-amber-200/80 bg-amber-50/20 hover:border-amber-300",
         label: "Ưu tiên trung bình",
         tagColor: "text-amber-700",
@@ -54,7 +54,7 @@ const getPriorityStyle = (priority: AiInsightPriorityEnum) => {
     case AiInsightPriorityEnum.LOW:
     default:
       return {
-        badge: "bg-blue-100 text-blue-800 border-blue-300",
+        badge: "bg-blue-50 text-blue-700 border-blue-200",
         container: "border-blue-200/80 bg-blue-50/20 hover:border-blue-300",
         label: "Ưu tiên thấp",
         tagColor: "text-blue-700",
@@ -101,11 +101,11 @@ export function RagRecommendationCard({ item, onCitationClick }: RagRecommendati
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-1.5 mb-1">
             <span
-              className={`rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${style.badge}`}
+              className={`rounded-md border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider ${style.badge}`}
             >
               {style.label}
             </span>
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700">
+            <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
               {getCategoryLabel(item.category)}
             </span>
           </div>

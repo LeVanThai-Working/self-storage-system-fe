@@ -109,7 +109,7 @@ export function GateCheckInPanel({ portalBase }: { portalBase: FacilityPortal })
       </form>
 
       {schedule ? (
-        <div className="rounded-lg border border-slate-200 bg-white p-4">
+        <div className="rounded-xl border border-neutral-border bg-white p-4">
           <div className="space-y-2 text-sm">
             <p className="flex items-center gap-2 font-bold text-emerald-700">
               <CheckCircle2 className="h-4 w-4" />
@@ -140,7 +140,7 @@ export function GateCheckInPanel({ portalBase }: { portalBase: FacilityPortal })
                 {result.rentedRacks.map((rack) => (
                   <li
                     key={rack.rackId}
-                    className="rounded-lg border border-teal-200 bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-800"
+                    className="rounded-md border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700"
                   >
                     {rack.rackCode}
                     {rack.aisle ? ` · ${t("aisle", { aisle: rack.aisle })}` : ""}

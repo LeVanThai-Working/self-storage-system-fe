@@ -93,7 +93,7 @@ export const ReviewConfirmModal = ({
           <div className="flex items-center gap-3">
             <div
               className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
-                isApprove ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+                isApprove ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
               }`}
             >
               {isApprove ? (

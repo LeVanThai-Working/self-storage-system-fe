@@ -21,7 +21,7 @@ export const SigningAuthorizationStatusBadge: React.FC<SigningAuthorizationStatu
           variant="outline"
           className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-50"
         >
-          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
           <span>{t("active")}</span>
         </Badge>
       );
@@ -31,7 +31,7 @@ export const SigningAuthorizationStatusBadge: React.FC<SigningAuthorizationStatu
           variant="outline"
           className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-50"
         >
-          <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+          <XCircle className="w-3.5 h-3.5 text-rose-700 shrink-0" />
           <span>{t("revoked")}</span>
         </Badge>
       );
@@ -41,7 +41,7 @@ export const SigningAuthorizationStatusBadge: React.FC<SigningAuthorizationStatu
           variant="outline"
           className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-50"
         >
-          <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+          <Clock className="w-3.5 h-3.5 text-amber-700 shrink-0" />
           <span>{t("expired")}</span>
         </Badge>
       );
@@ -49,7 +49,7 @@ export const SigningAuthorizationStatusBadge: React.FC<SigningAuthorizationStatu
       return (
         <Badge
           variant="outline"
-          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0 bg-slate-50 text-slate-600 border-slate-200"
+          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-50 text-slate-600 border-slate-200"
         >
           {status}
         </Badge>

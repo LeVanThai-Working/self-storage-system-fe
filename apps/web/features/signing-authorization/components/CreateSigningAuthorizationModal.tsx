@@ -150,7 +150,7 @@ export const CreateSigningAuthorizationModal: React.FC<CreateSigningAuthorizatio
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="w-[95vw] sm:max-w-4xl md:max-w-5xl lg:max-w-5xl max-h-[92vh] flex flex-col p-0 rounded-3xl border border-slate-100 shadow-2xl bg-white overflow-hidden">
+      <DialogContent className="w-[95vw] sm:max-w-4xl md:max-w-5xl lg:max-w-5xl max-h-[92vh] flex flex-col p-0 rounded-xl border border-neutral-border shadow-2xl bg-white overflow-hidden">
         {/* Header */}
         <div className="p-6 pb-4 border-b border-slate-100 bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-slate-50">
           <DialogHeader>
@@ -385,7 +385,7 @@ export const CreateSigningAuthorizationModal: React.FC<CreateSigningAuthorizatio
               placeholder={t("modals.notesPlaceholder")}
               maxLength={500}
               rows={3}
-              className="w-full p-3.5 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+              className="w-full p-3.5 rounded-xl border border-neutral-border bg-white text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
             />
           </div>
         </form>

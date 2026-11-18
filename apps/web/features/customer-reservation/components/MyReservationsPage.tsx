@@ -40,7 +40,7 @@ function ReservationCard({
   const base = `/${locale}/customer/reservations/${r.id}`;
 
   return (
-    <li className="min-w-0 rounded-2xl border border-neutral-border bg-white p-5 shadow-sm [overflow-wrap:anywhere]">
+    <li className="min-w-0 rounded-xl border border-neutral-border bg-white p-5 shadow-sm [overflow-wrap:anywhere]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-sm text-neutral-muted">{r.reservationCode}</p>
@@ -174,14 +174,14 @@ export function MyReservationsPage() {
             ))}
           </div>
         ) : isError ? (
-          <div className="rounded-2xl border border-neutral-border bg-white p-8 text-center">
+          <div className="rounded-xl border border-neutral-border bg-white p-8 text-center">
             <p className="text-neutral-muted">{t("error")}</p>
             <Button className="mt-4" onClick={() => refetch()}>
               {t("retry")}
             </Button>
           </div>
         ) : items.length === 0 ? (
-          <p className="rounded-2xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
+          <p className="rounded-xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
             {t("empty")}
           </p>
         ) : (

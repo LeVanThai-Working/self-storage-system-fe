@@ -334,7 +334,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
             </div>
 
             {/* Manual Confirmation at Counter */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 space-y-3">
+            <div className="rounded-xl border border-slate-200/80 bg-white p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <Banknote className="w-4 h-4 text-emerald-600" />
                 <span className="text-xs font-bold text-slate-800">
@@ -706,7 +706,7 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
                     : "Ảnh chụp / Bản scan hợp đồng đã ký sống (Bắt buộc) *"}
                 </label>
                 {signedContractFileUrls.length > 0 && (
-                  <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
                     {signedContractFileUrls.length} {isEn ? "uploaded" : "file đã chọn"}
                   </span>
                 )}
@@ -1119,7 +1119,7 @@ export const RenewContractModal: React.FC<RenewContractModalProps> = ({
                       setNewEndDateInput(presetVal);
                       setErrorMsg(null);
                     }}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${
+                    className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
                       newEndDateInput === presetVal
                         ? "bg-teal-50 border-teal-500 text-teal-700"
                         : "bg-slate-50 border-slate-200 text-slate-600"
@@ -2139,7 +2139,7 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
                     </button>
                   )}
                   {signedAddendumFileUrls.length > 0 && (
-                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
                       {signedAddendumFileUrls.length} {isEn ? "uploaded" : "file đã chọn"}
                     </span>
                   )}

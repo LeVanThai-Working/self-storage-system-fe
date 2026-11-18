@@ -54,7 +54,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
     <div className="space-y-6">
       {/* 1. Peak & Low Analysis Highlights */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
+        <div className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
               Nhu cầu trung bình
@@ -113,7 +113,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
       </div>
 
       {/* 2. Time Series Breakdown */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+      <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
           <div>
             <h4 className="text-base font-extrabold text-slate-900">
@@ -158,12 +158,12 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
                       <td className="py-3 px-3 font-bold text-slate-900 flex items-center gap-1.5">
                         {formatRentalTrendPeriod(item.period)}
                         {item.isPeak && (
-                          <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-black text-amber-800">
+                          <span className="rounded-md bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
                             Cao điểm
                           </span>
                         )}
                         {item.isLow && (
-                          <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-black text-blue-800">
+                          <span className="rounded-md bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
                             Thấp điểm
                           </span>
                         )}
@@ -198,7 +198,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
       {/* 3. Day of Week & Time Slot Demand */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Day of Week */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+        <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2">
               <CalendarDays className="h-5 w-5 text-indigo-600" />
@@ -207,7 +207,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
               </h4>
             </div>
             {busiestDay && (
-              <span className="rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700">
+              <span className="rounded-md bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700">
                 Đông nhất: {busiestDay.dayName}
               </span>
             )}
@@ -242,7 +242,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
         </div>
 
         {/* Time Slots */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+        <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
           <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-teal-600" />
@@ -251,7 +251,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
               </h4>
             </div>
             {mostBookedTimeSlot && (
-              <span className="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-bold text-teal-700">
+              <span className="rounded-md bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700">
                 Đặt nhiều nhất: {mostBookedTimeSlot.timeSlot}
               </span>
             )}

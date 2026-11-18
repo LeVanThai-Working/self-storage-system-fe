@@ -55,7 +55,7 @@ function ResultCard({ result }: { result: SearchResult }) {
     : `/${locale}/login?redirect=${encodeURIComponent(bookingPath)}`;
 
   return (
-    <li className="flex flex-col gap-3 rounded-2xl border border-neutral-border bg-white p-5 shadow-sm">
+    <li className="flex flex-col gap-3 rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-lg font-semibold">{unitType.name}</h3>
         <Badge variant="outline">{categoryLabel(t, unitType.category)}</Badge>
@@ -144,7 +144,7 @@ export function SearchPage({
       <div className="mt-8 grid gap-8 lg:grid-cols-[320px_1fr]">
         <form
           onSubmit={onSubmit}
-          className="h-fit space-y-4 rounded-2xl border border-neutral-border bg-white p-5"
+          className="h-fit space-y-4 rounded-xl border border-neutral-border bg-white p-5"
         >
           <Field label={t("keyword")}>
             <div className="relative">
@@ -282,11 +282,11 @@ export function SearchPage({
               ))}
             </div>
           ) : isError ? (
-            <p className="rounded-2xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
+            <p className="rounded-xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
               {t("error")}
             </p>
           ) : results.length === 0 ? (
-            <p className="rounded-2xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
+            <p className="rounded-xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
               {t("empty")}
             </p>
           ) : (

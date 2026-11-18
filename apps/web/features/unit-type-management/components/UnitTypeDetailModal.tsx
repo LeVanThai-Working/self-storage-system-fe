@@ -45,35 +45,35 @@ export const UnitTypeDetailModal = ({ unitTypeId, isOpen, onClose }: UnitTypeDet
     switch (category) {
       case UnitTypeCategoryEnum.WAREHOUSE_RACK:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200/80 whitespace-nowrap shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-cyan-50 text-cyan-700 border border-cyan-200/80 whitespace-nowrap shrink-0">
             <Warehouse className="w-3.5 h-3.5 text-cyan-600" />
             {t("categoryFilter.warehouse_rack")}
           </span>
         );
       case UnitTypeCategoryEnum.LOCKER:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80 whitespace-nowrap shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80 whitespace-nowrap shrink-0">
             <Lock className="w-3.5 h-3.5 text-indigo-600" />
             {t("categoryFilter.locker")}
           </span>
         );
       case UnitTypeCategoryEnum.SMALL:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 whitespace-nowrap shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 whitespace-nowrap shrink-0">
             <Box className="w-3.5 h-3.5 text-emerald-600" />
             {t("categoryFilter.small")}
           </span>
         );
       case UnitTypeCategoryEnum.LARGE:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200/80 whitespace-nowrap shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200/80 whitespace-nowrap shrink-0">
             <Boxes className="w-3.5 h-3.5 text-purple-600" />
             {t("categoryFilter.large")}
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap shrink-0">
             {category || "N/A"}
           </span>
         );
@@ -204,7 +204,7 @@ export const UnitTypeDetailModal = ({ unitTypeId, isOpen, onClose }: UnitTypeDet
                     {unitType.features.map((feat: string, idx: number) => (
                       <span
                         key={idx}
-                        className="px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200/60"
+                        className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200/60"
                       >
                         {feat}
                       </span>
@@ -280,7 +280,7 @@ export const UnitTypeDetailModal = ({ unitTypeId, isOpen, onClose }: UnitTypeDet
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
           >
             {t("detailModal.close")}
           </button>

@@ -134,7 +134,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
   return (
     <div className="space-y-6">
       {/* Top Header Card */}
-      <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 rounded-xl border border-neutral-border bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
             Khung giờ Làm việc & Tiếp đón Khách hàng
@@ -214,7 +214,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
       {/* Metric Cards Row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Metric 1 */}
-        <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center gap-4 rounded-xl border border-neutral-border bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400">
             <Clock className="h-5 w-5" />
           </div>
@@ -230,7 +230,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
         </div>
 
         {/* Metric 2 */}
-        <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center gap-4 rounded-xl border border-neutral-border bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-teal-50 text-teal-600 dark:bg-teal-950/60 dark:text-teal-400">
             <CheckCircle2 className="h-5 w-5" />
           </div>
@@ -246,7 +246,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
         </div>
 
         {/* Metric 3 */}
-        <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center gap-4 rounded-xl border border-neutral-border bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400">
             <Users className="h-5 w-5" />
           </div>
@@ -262,7 +262,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
         </div>
 
         {/* Metric 4 */}
-        <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center gap-4 rounded-xl border border-neutral-border bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
             <Calendar className="h-5 w-5" />
           </div>
@@ -346,7 +346,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
           <p className="text-xs text-slate-400 mt-1">Vui lòng chờ trong giây lát</p>
         </div>
       ) : !selectedFacilityId ? (
-        <div className="flex flex-col items-center justify-center py-20 rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm text-center p-6">
+        <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-neutral-border bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm text-center p-6">
           <Building2 className="h-10 w-10 text-slate-300 dark:text-slate-600 mb-2" />
           <h4 className="text-base font-bold text-slate-800 dark:text-slate-200">
             Chưa chọn cơ sở
@@ -356,7 +356,7 @@ export const FacilityTimeSlotsManager: React.FC<FacilityTimeSlotsManagerProps> =
           </p>
         </div>
       ) : slots.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 rounded-3xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm text-center p-6">
+        <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-neutral-border bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm text-center p-6">
           <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 mb-3">
             <Clock className="h-7 w-7" />
           </div>

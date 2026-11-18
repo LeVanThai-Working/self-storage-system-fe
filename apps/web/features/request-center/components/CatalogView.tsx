@@ -19,7 +19,7 @@ export const CatalogView = ({ facilityId }: CatalogViewProps) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
       {/* Unit types đang mở bán */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
         <div className="p-4 border-b border-slate-100 flex items-center gap-2 font-bold text-slate-800 text-sm">
           <Boxes className="w-4 h-4 text-emerald-600" />
           {t("unitTypesTitle")}
@@ -43,7 +43,7 @@ export const CatalogView = ({ facilityId }: CatalogViewProps) => {
       </div>
 
       {/* Amenities đang mở bán */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
         <div className="p-4 border-b border-slate-100 flex items-center gap-2 font-bold text-slate-800 text-sm">
           <Sparkles className="w-4 h-4 text-emerald-600" />
           {t("amenitiesTitle")}

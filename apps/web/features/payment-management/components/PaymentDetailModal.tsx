@@ -99,7 +99,7 @@ export const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="sm:max-w-2xl max-h-[92vh] flex flex-col p-0 rounded-2xl border-slate-200 shadow-2xl overflow-hidden bg-white">
+        <DialogContent className="sm:max-w-2xl max-h-[92vh] flex flex-col p-0 rounded-xl border-neutral-border shadow-2xl overflow-hidden bg-white">
           <DialogHeader className="p-5 pb-4 border-b border-slate-100 bg-slate-50/70 shrink-0">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">

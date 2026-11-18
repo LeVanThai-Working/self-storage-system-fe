@@ -71,7 +71,7 @@ function StatTile({
   icon: Icon,
   trend,
   colorClass = "text-slate-900",
-  bgIcon = "bg-teal-50 text-teal-600",
+  bgIcon = "bg-teal-50 text-teal-700",
 }: {
   title: string;
   value: React.ReactNode;
@@ -82,7 +82,7 @@ function StatTile({
   bgIcon?: string;
 }) {
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all hover:shadow-md">
+    <div className="flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all hover:shadow-md">
       <div className="flex items-start justify-between">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
@@ -181,7 +181,7 @@ export function FinancialAnalyticsTab({
                 : undefined
             }
             colorClass="text-emerald-700"
-            bgIcon="bg-emerald-50 text-emerald-600"
+            bgIcon="bg-emerald-50 text-emerald-700"
           />
 
           <StatTile
@@ -192,7 +192,7 @@ export function FinancialAnalyticsTab({
             )}`}
             icon={Wallet}
             colorClass="text-teal-700"
-            bgIcon="bg-teal-50 text-teal-600"
+            bgIcon="bg-teal-50 text-teal-700"
           />
 
           <StatTile
@@ -201,7 +201,7 @@ export function FinancialAnalyticsTab({
             subtext={`Bồi thường/Phạt: ${formatCurrency(financials?.forfeitedAmount ?? 0)}`}
             icon={ShieldCheck}
             colorClass="text-slate-900"
-            bgIcon="bg-blue-50 text-blue-600"
+            bgIcon="bg-blue-50 text-blue-700"
           />
 
           <StatTile
@@ -216,7 +216,7 @@ export function FinancialAnalyticsTab({
             } hợp đồng quá hạn`}
             icon={Scale}
             colorClass="text-rose-600"
-            bgIcon="bg-rose-50 text-rose-600"
+            bgIcon="bg-rose-50 text-rose-700"
           />
         </div>
       </div>
@@ -224,7 +224,7 @@ export function FinancialAnalyticsTab({
       {/* 2. Overdue Aging Buckets & SePay Reconciliation */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Overdue Aging */}
-        <div className="rounded-2xl border border-rose-200/80 bg-white p-6 shadow-xs">
+        <div className="rounded-xl border border-rose-200/80 bg-white p-6 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2">
               <Scale className="h-5 w-5 text-rose-600" />
@@ -272,7 +272,7 @@ export function FinancialAnalyticsTab({
         {/* 3. Payment Methods */}
 
         {/* Payment Methods */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+        <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
           <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-800 mb-4">
             Phân bổ kênh thanh toán
           </h4>
@@ -301,7 +301,7 @@ export function FinancialAnalyticsTab({
       </div>
 
       {/* 4. Refund Analytics */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+      <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2">
             <RotateCcw className="h-5 w-5 text-rose-600" />

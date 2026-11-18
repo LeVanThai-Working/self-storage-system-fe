@@ -61,7 +61,7 @@ export function RagMarkdownContent({ content, onCitationClick }: RagMarkdownCont
         return (
           <code
             key={idx}
-            className="px-1.5 py-0.5 bg-slate-100 text-slate-800 rounded font-mono text-xs border border-slate-200/60"
+            className="px-2.5 py-0.5 bg-slate-100 text-slate-800 rounded-md font-mono text-xs border border-slate-200/60"
           >
             {part.slice(1, -1)}
           </code>

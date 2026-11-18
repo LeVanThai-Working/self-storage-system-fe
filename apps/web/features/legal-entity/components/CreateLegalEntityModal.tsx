@@ -109,7 +109,7 @@ export const CreateLegalEntityModal: React.FC<CreateLegalEntityModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-3">
@@ -346,7 +346,7 @@ export const CreateLegalEntityModal: React.FC<CreateLegalEntityModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={createMutation.isPending}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold transition-colors"
+              className="px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 font-bold transition-colors"
             >
               {isEn ? "Cancel" : "Hủy"}
             </button>

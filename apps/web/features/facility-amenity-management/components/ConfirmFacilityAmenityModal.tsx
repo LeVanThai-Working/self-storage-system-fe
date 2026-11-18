@@ -59,7 +59,7 @@ export const ConfirmFacilityAmenityModal = ({
           <div className="flex items-center gap-3">
             <div
               className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
-                isDelete ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-emerald-600"
+                isDelete ? "bg-rose-50 text-rose-700" : "bg-emerald-50 text-emerald-700"
               }`}
             >
               {isDelete ? <AlertTriangle className="w-5 h-5" /> : <RotateCcw className="w-5 h-5" />}

@@ -92,7 +92,7 @@ export const StorageUnitMapView: React.FC<StorageUnitMapViewProps> = ({
         {Array.from({ length: 2 }).map((_, f) => (
           <div
             key={f}
-            className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm space-y-4 animate-pulse"
+            className="rounded-xl border border-neutral-border bg-white p-6 shadow-sm space-y-4 animate-pulse"
           >
             <div className="h-6 w-32 bg-slate-100 rounded-lg" />
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -108,7 +108,7 @@ export const StorageUnitMapView: React.FC<StorageUnitMapViewProps> = ({
 
   if (isError) {
     return (
-      <div className="rounded-3xl border border-slate-100 bg-white p-12 text-center shadow-sm">
+      <div className="rounded-xl border border-neutral-border bg-white p-12 text-center shadow-sm">
         <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center mx-auto mb-3 text-rose-500">
           <AlertCircle className="w-6 h-6" />
         </div>
@@ -130,7 +130,7 @@ export const StorageUnitMapView: React.FC<StorageUnitMapViewProps> = ({
 
   if (units.length === 0) {
     return (
-      <div className="rounded-3xl border border-slate-100 bg-white p-12 text-center shadow-sm">
+      <div className="rounded-xl border border-neutral-border bg-white p-12 text-center shadow-sm">
         <Boxes className="mx-auto w-12 h-12 text-slate-300 mb-3" />
         <p className="text-sm font-semibold text-slate-600">
           {hasActiveFilters
@@ -146,7 +146,7 @@ export const StorageUnitMapView: React.FC<StorageUnitMapViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Legend & Refresh */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl border border-neutral-border shadow-sm text-xs">
         <div className="flex flex-wrap items-center gap-4">
           <span className="font-bold text-slate-500 uppercase tracking-wider text-[11px]">
             Chú thích:
@@ -188,14 +188,14 @@ export const StorageUnitMapView: React.FC<StorageUnitMapViewProps> = ({
         return (
           <div
             key={floor}
-            className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm space-y-5"
+            className="rounded-xl border border-neutral-border bg-white p-6 shadow-sm space-y-5"
           >
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <Layers className="w-5 h-5 text-emerald-600" />
                 <h3 className="text-base font-extrabold text-slate-900">Tầng {floor}</h3>
               </div>
-              <span className="text-xs font-semibold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200/60">
+              <span className="text-xs font-semibold text-slate-500 bg-slate-50 px-2.5 py-0.5 rounded-md border border-slate-200/60">
                 {floorTotal} phòng kho
               </span>
             </div>

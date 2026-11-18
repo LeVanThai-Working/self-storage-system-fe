@@ -96,7 +96,7 @@ const KPIS = [
 function Pill({ className, children }: { className: string; children: React.ReactNode }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${className}`}
+      className={`inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${className}`}
     >
       {children}
     </span>
@@ -151,7 +151,7 @@ export function SupportQueueView({ portalBase }: { portalBase: FacilityPortal })
         {KPIS.map(({ status: kpiStatus, icon: Icon, tone }, index) => (
           <div
             key={kpiStatus}
-            className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+            className="flex items-center gap-3 rounded-xl border border-neutral-border bg-white p-4 shadow-sm"
           >
             <span className={`flex h-11 w-11 items-center justify-center rounded-xl ${tone}`}>
               <Icon className="h-5 w-5" />
@@ -164,7 +164,7 @@ export function SupportQueueView({ portalBase }: { portalBase: FacilityPortal })
             </div>
           </div>
         ))}
-        <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="flex items-center gap-3 rounded-xl border border-neutral-border bg-white p-4 shadow-sm">
           <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-rose-50 text-rose-700">
             <Bell className="h-5 w-5" />
           </span>

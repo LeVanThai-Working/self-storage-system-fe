@@ -17,7 +17,7 @@ export const PaymentStatusBadge: React.FC<PaymentStatusBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-colors ${config.badgeClass} ${className}`}
+      className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold border transition-colors ${config.badgeClass} ${className}`}
     >
       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${config.dotClass}`} />
       <span>{config.label}</span>

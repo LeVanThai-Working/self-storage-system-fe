@@ -52,7 +52,7 @@ export const RevokeSigningAuthorizationModal: React.FC<RevokeSigningAuthorizatio
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-md rounded-3xl p-0 border border-slate-100 shadow-2xl bg-white overflow-hidden">
+      <DialogContent className="max-w-md rounded-xl p-0 border border-neutral-border shadow-2xl bg-white overflow-hidden">
         {/* Header */}
         <div className="p-6 pb-4 border-b border-rose-100 bg-rose-50/50">
           <DialogHeader>
