@@ -115,7 +115,7 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
   return (
     <div className="min-h-screen bg-slate-50 font-sans flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-100 flex-shrink-0 flex flex-col hidden md:flex relative z-10">
+      <aside className="w-64 h-screen sticky top-0 overflow-y-auto bg-white border-r border-slate-100 flex-shrink-0 flex flex-col hidden md:flex z-10">
         <div className="p-6">
           <div className="text-2xl font-extrabold text-emerald-600 tracking-tight flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
@@ -153,7 +153,7 @@ export const SystemAdminLayout = ({ children }: SystemAdminLayoutProps) => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Navbar */}
-        <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-8 z-10">
+        <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-20">
           <div className="relative w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input

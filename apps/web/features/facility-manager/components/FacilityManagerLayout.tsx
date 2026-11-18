@@ -124,7 +124,7 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
   return (
     <div className="min-h-screen bg-slate-50/70 font-sans flex text-slate-800">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-100 flex-shrink-0 flex flex-col hidden md:flex relative z-10 shadow-sm">
+      <aside className="w-64 h-screen sticky top-0 overflow-y-auto bg-white border-r border-slate-100 flex-shrink-0 flex flex-col hidden md:flex z-10 shadow-sm">
         <div className="p-6 border-b border-slate-50">
           <Link
             href={`/${locale}/facility-manager/dashboard`}
@@ -180,7 +180,7 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Navbar */}
-        <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-8 z-10 shadow-xs">
+        <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-20 shadow-xs">
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-400 font-medium">{t("roleLabel")}:</span>
             <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg flex items-center gap-1.5">

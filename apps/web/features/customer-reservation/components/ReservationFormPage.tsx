@@ -148,7 +148,7 @@ export function ReservationFormPage({
     setRackSelection({ unitId, rackIds: next });
   };
 
-  const searchHref = `/${locale}/customer/explore/${facilityId ?? ""}`;
+  const searchHref = `/${locale}/customer/search`;
   const back = (
     <Link
       href={searchHref}

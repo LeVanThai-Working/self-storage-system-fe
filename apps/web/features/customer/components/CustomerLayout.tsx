@@ -37,7 +37,7 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-brand-pageBg text-neutral-main">
-      <aside className="relative z-10 hidden w-64 shrink-0 flex-col border-r border-neutral-border bg-white shadow-sm md:flex">
+      <aside className="sticky top-0 z-10 hidden h-screen w-64 shrink-0 flex-col overflow-y-auto border-r border-neutral-border bg-white shadow-sm md:flex">
         <div className="border-b border-neutral-border p-6">
           <Logo href={`/${locale}/customer`} />
         </div>

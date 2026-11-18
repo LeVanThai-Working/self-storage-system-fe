@@ -148,7 +148,7 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
   return (
     <div className="min-h-screen bg-slate-50/70 font-sans flex text-slate-800">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-100 flex-shrink-0 flex flex-col hidden md:flex relative z-10 shadow-sm">
+      <aside className="w-64 h-screen sticky top-0 overflow-y-auto bg-white border-r border-slate-100 flex-shrink-0 flex flex-col hidden md:flex z-10 shadow-sm">
         <div className="p-6 border-b border-slate-50">
           <Link href={`/${locale}/business-ops`} className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center shadow-md shadow-emerald-500/20">
@@ -203,7 +203,7 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Navbar */}
-        <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-8 z-10 shadow-xs">
+        <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-20 shadow-xs">
           <div className="relative w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
