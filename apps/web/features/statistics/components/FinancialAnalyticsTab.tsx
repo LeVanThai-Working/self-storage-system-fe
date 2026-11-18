@@ -269,69 +269,7 @@ export function FinancialAnalyticsTab({
           </div>
         </div>
 
-        {/* SePay Reconciliation */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-blue-600" />
-              <h4 className="text-base font-extrabold text-slate-900">
-                Đối soát giao dịch ngân hàng
-              </h4>
-            </div>
-          </div>
-
-          <div className="mt-4 space-y-2.5">
-            {sepayReconciliation.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between rounded-xl bg-slate-50 p-3 text-xs"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-white border border-slate-200 px-2 py-0.5 font-bold uppercase text-slate-700 text-[10px]">
-                    {SEPAY_RESULT_LABELS[item.result.toLowerCase()] ?? item.result}
-                  </span>
-                  <span className="font-semibold text-slate-800">{item.count} giao dịch</span>
-                </div>
-                <div className="font-black text-slate-900">
-                  {formatCurrency(item.totalTransferAmount)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Revenue Breakdown by Item Type & Payment Methods */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* By Item Type */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-          <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-800 mb-4">
-            Cơ cấu doanh thu theo khoản mục hóa đơn
-          </h4>
-
-          <div className="space-y-3">
-            {revenueByItemType.map((item, idx) => (
-              <div key={idx} className="space-y-1 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold uppercase text-slate-800">
-                    {INVOICE_ITEM_TYPE_LABELS[item.itemType.toLowerCase()] ?? item.itemType} (
-                    {item.itemCount} khoản)
-                  </span>
-                  <span className="font-extrabold text-slate-900">
-                    {formatCurrency(item.paidAmount)}{" "}
-                    <span className="text-teal-600">({item.sharePercent}%)</span>
-                  </span>
-                </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                  <div
-                    className="h-full rounded-full bg-teal-500"
-                    style={{ width: `${item.sharePercent}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* 3. Payment Methods */}
 
         {/* Payment Methods */}
         <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">

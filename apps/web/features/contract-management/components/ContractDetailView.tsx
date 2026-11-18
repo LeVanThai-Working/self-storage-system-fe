@@ -3,8 +3,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { InfoTooltip } from "@/components/ui/tooltip";
-import { useLocale } from "next-intl";
+import { ActionTooltip, InfoTooltip } from "@/components/ui/tooltip";
+import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
   AlertTriangle,
@@ -35,7 +35,21 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/features/auth/store";
-import { buildProfessionalContractHtml } from "../utils/printContract";
+import {
+  formatVietnamDateLabel,
+  isBlockedByCheckInDateValidation,
+  useCheckInDateValidation,
+} from "@/features/system-admin/checkInDateValidation";
+import {
+  CheckInDateBlockedBanner,
+  CheckInDateDemoBanner,
+  CheckInDateValidationControl,
+} from "@/features/system-admin/components/CheckInDateValidationControl";
+import {
+  buildProfessionalContractHtml,
+  openPrintableHtmlDocument,
+  openRenewalAddendumPrintDocument,
+} from "../utils/printContract";
 import {
   useContractDetail,
   useFacilityStaffs,
@@ -43,7 +57,6 @@ import {
   useToggleStorageUnitMaintenance,
 } from "../hooks";
 import {
-  BillingUnitEnum,
   ContractAddendumStatusEnum,
   ContractAddendumTypeEnum,
   ContractSourceEnum,
@@ -56,6 +69,7 @@ import {
 } from "../types";
 import {
   buildContractLifecycleSteps,
+  calculateContractFinancialSummary,
   canCheckInContract,
   formatDateOnly,
   formatDateTime,
@@ -106,6 +120,8 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
 }) => {
   const locale = useLocale() === "en" ? "en" : "vi";
   const isEn = locale === "en";
+  const tCheckInDate = useTranslations("systemAdmin.checkInDateValidation");
+  const { enabled: checkInDateValidationEnabled } = useCheckInDateValidation();
   const currentUser = useAuthStore((s) => s.currentUser);
   const isAuthLoading = useAuthStore((s) => s.isLoading);
   const currentUserId = getCurrentUserId(currentUser);
@@ -243,26 +259,29 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
     (contract.status === ContractStatusEnum.DRAFT || contract.status === ContractStatusEnum.ACTIVE);
 
   const canCheckIn = canCheckInContract(contract, userRole);
+  const isBlockedByCheckInDate = isBlockedByCheckInDateValidation(
+    contract.startDate,
+    checkInDateValidationEnabled
+  );
+  const checkInDisabledTooltip = !contract.customerSigned
+    ? isEn
+      ? "Waiting for customer to sign terms on mobile app"
+      : "Chờ khách hàng ký điều khoản trên ứng dụng"
+    : isBlockedByCheckInDate
+      ? tCheckInDate("blockedContract", {
+          date: formatVietnamDateLabel(contract.startDate),
+        })
+      : undefined;
 
   const durationDays = getContractDurationDays(contract.startDate, contract.endDate);
 
-  const recurringAmenitiesTotal = (contract.amenities || [])
-    .filter((a) => a.billingUnit !== BillingUnitEnum.ONE_TIME)
-    .reduce((sum, a) => sum + (a.totalPrice ?? a.pricePerUnit * a.quantity), 0);
-
-  const oneTimeAmenitiesTotal = (contract.amenities || [])
-    .filter((a) => a.billingUnit === BillingUnitEnum.ONE_TIME)
-    .reduce((sum, a) => sum + (a.totalPrice ?? a.pricePerUnit * a.quantity), 0);
-
-  const totalAmenitiesPrice = recurringAmenitiesTotal + oneTimeAmenitiesTotal;
-
-  const displayPeriodicPrice =
-    contract.status === ContractStatusEnum.ACTIVE
-      ? contract.totalPeriodicPrice
-      : contract.rentalPrice + recurringAmenitiesTotal;
-
-  const firstPeriodTotalAmount =
-    contract.rentalPrice + recurringAmenitiesTotal + oneTimeAmenitiesTotal;
+  const {
+    recurringAmenitiesTotal,
+    oneTimeAmenitiesTotal,
+    totalAmenitiesPrice,
+    displayPeriodicPrice,
+    firstPeriodTotalAmount,
+  } = calculateContractFinancialSummary(contract);
 
   const assignedStaffName =
     contract.assignedStaff?.name ||
@@ -300,28 +319,13 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
     try {
       // Build clean, professional ISO A4 print-ready contract HTML
       const htmlContent = buildProfessionalContractHtml(contract);
-      const printWindow = window.open("", "_blank");
-      if (printWindow) {
-        printWindow.document.open();
-        printWindow.document.write(htmlContent);
-        printWindow.document.close();
-        setTimeout(() => {
-          printWindow.focus();
-        }, 300);
-      } else {
-        const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
-        const blobUrl = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = blobUrl;
-        link.download = `Hop-dong-${contract.contractCode || contract.id}.html`;
-        link.click();
-        URL.revokeObjectURL(blobUrl);
-        toast.success(
-          isEn
-            ? "Draft contract HTML downloaded. Open and press Ctrl+P to print."
-            : "Đã tải bản in hợp đồng. Vui lòng mở file và bấm Ctrl+P để in."
-        );
-      }
+      openPrintableHtmlDocument(
+        htmlContent,
+        `Hop-dong-${contract.contractCode || contract.id}.html`,
+        isEn
+          ? "Draft contract HTML downloaded. Open and press Ctrl+P to print."
+          : "Đã tải bản in hợp đồng. Vui lòng mở file và bấm Ctrl+P để in."
+      );
     } catch (err: unknown) {
       toast.error(resolveContractErrorMessage(err, locale));
     } finally {
@@ -366,6 +370,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap self-start sm:self-center">
+          {isDraft && <CheckInDateValidationControl variant="compact" />}
           <button
             type="button"
             onClick={handleExportDraftPdf}
@@ -394,6 +399,8 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
           </button>
         </div>
       </div>
+
+      {isDraft && <CheckInDateDemoBanner />}
 
       {/* A. Contract Lifecycle Stepper */}
       <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-4">
@@ -484,11 +491,6 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   ? "Step 1 Action Panel: Deposit Verification & Dual-Party Signing (Check-in)"
                   : "Bảng Thao tác Bước 1: Kiểm tra Tiền cọc & Ký 2 chiều Bàn giao Kho"}
               </h3>
-              <p className="text-xs text-slate-500">
-                {isEn
-                  ? "Contract activates automatically once Deposit is satisfied and BOTH Customer & Staff have signed."
-                  : "Hợp đồng tự động chuyển sang ACTIVE khi đã hoàn tất Tiền cọc và CẢ 2 BÊN (Khách hàng & Nhân viên) đều đã ký xác nhận."}
-              </p>
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
@@ -526,28 +528,26 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 </span>
               ) : (
                 !contract.staffSigned && (
-                  <button
-                    type="button"
-                    disabled={!canCheckIn}
-                    onClick={() => setIsCheckInOpen(true)}
-                    title={
-                      !contract.customerSigned
-                        ? isEn
-                          ? "Waiting for customer to sign terms on mobile app"
-                          : "Chờ khách hàng ký điều khoản trên ứng dụng"
-                        : undefined
-                    }
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-500/20 disabled:opacity-40 transition-all"
+                  <ActionTooltip
+                    content={checkInDisabledTooltip}
+                    disabled={!canCheckIn || isBlockedByCheckInDate}
                   >
-                    <ClipboardCheck className="w-4 h-4" />
-                    {!contract.customerSigned
-                      ? isEn
-                        ? "Handover (Waiting for Customer Signature)"
-                        : "Bàn giao kho (Chờ khách ký trên app)"
-                      : isEn
-                        ? "Confirm Handover & Sign (Manager)"
-                        : "Xác nhận bàn giao kho & Ký (Quản lý)"}
-                  </button>
+                    <button
+                      type="button"
+                      disabled={!canCheckIn || isBlockedByCheckInDate}
+                      onClick={() => setIsCheckInOpen(true)}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      <ClipboardCheck className="w-4 h-4" />
+                      {!contract.customerSigned
+                        ? isEn
+                          ? "Handover (Waiting for Customer Signature)"
+                          : "Bàn giao kho"
+                        : isEn
+                          ? "Confirm Handover & Sign (Manager)"
+                          : "Xác nhận bàn giao kho & Ký (Quản lý)"}
+                    </button>
+                  </ActionTooltip>
                 )
               )}
 
@@ -661,7 +661,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                     : "Khách đã ký xác nhận"
                   : isEn
                     ? "Waiting for customer signature"
-                    : "Chờ khách ký trên App"}
+                    : "Chờ khách ký xác nhận"}
               </p>
               <p className="text-[11px] opacity-80">
                 {contract.customerSignedAt
@@ -730,12 +730,12 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 <p className="font-extrabold">
                   {isEn
                     ? "Awaiting Customer Signature on Mobile App (Code 414)"
-                    : "Đang chờ Khách hàng ký điều khoản trên ứng dụng Mobile (Mã 414)"}
+                    : "Đang chờ Khách hàng ký điều khoản trên ứng dụng"}
                 </p>
                 <p className="text-amber-800">
                   {isEn
                     ? "Customer must review and sign terms first on mobile app. Handover cannot proceed before customer signature."
-                    : "Theo quy trình kiểm soát (Mã 414), khách hàng bắt buộc phải ký trước trên điện thoại. Quản lý cơ sở chỉ có thể ký bàn giao sau khi khách đã ký."}
+                    : "Theo quy trình kiểm soát, khách hàng bắt buộc phải ký trước trên điện thoại. Quản lý cơ sở chỉ có thể ký bàn giao sau khi khách đã ký."}
                 </p>
               </div>
             </div>
@@ -756,6 +756,10 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               </div>
             </div>
           ) : null}
+
+          {!contract.staffSigned && isBlockedByCheckInDate && (
+            <CheckInDateBlockedBanner scheduledDate={contract.startDate} target="contract" />
+          )}
         </div>
       )}
 
@@ -1166,7 +1170,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 <span>
                   {isEn
                     ? "This storage unit has been cleaned and reopened as AVAILABLE."
-                    : "Phòng kho này đã được xác nhận vệ sinh xong và mở lại trạng thái AVAILABLE."}
+                    : "Phòng kho này đã được xác nhận vệ sinh xong và mở lại."}
                 </span>
               </div>
             )}
@@ -1412,14 +1416,14 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                     {isEn ? "Renew Lease" : "Phụ lục gia hạn"}
                   </button>
 
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => setCreateAddendumType(ContractAddendumTypeEnum.UNIT_CHANGE)}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-colors"
                   >
                     <ArrowRightLeft className="w-3.5 h-3.5" />
                     {isEn ? "Unit Transfer" : "Đổi kho sự cố"}
-                  </button>
+                  </button> */}
                 </div>
               )}
             </div>
@@ -1440,6 +1444,10 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                     addendum.status === ContractAddendumStatusEnum.PENDING_APPROVAL;
                   const isAddendumDraft = addendum.status === ContractAddendumStatusEnum.DRAFT;
                   const canCancelAddendum = isPendingApproval || isAddendumDraft;
+                  const canPrintRenewalAddendum =
+                    isRenew &&
+                    addendum.status !== ContractAddendumStatusEnum.REJECTED &&
+                    addendum.status !== ContractAddendumStatusEnum.CANCELLED;
 
                   return (
                     <div
@@ -1643,6 +1651,19 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
 
                         {/* Addendum Action Buttons */}
                         <div className="flex items-center gap-2 flex-wrap">
+                          {canPrintRenewalAddendum && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openRenewalAddendumPrintDocument(contract, addendum, locale)
+                              }
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-sm transition-colors"
+                            >
+                              <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                              {isEn ? "Renewal Addendum PDF" : "In phụ lục PDF"}
+                            </button>
+                          )}
+
                           {/* Manager Actions on PENDING_APPROVAL */}
                           {isManager && isPendingApproval && (
                             <>
@@ -1688,7 +1709,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                               {!addendum.customerSigned
                                 ? isEn
                                   ? "Sign (Waiting for Customer)"
-                                  : "Ký kích hoạt (Chờ khách ký trên app)"
+                                  : "Ký kích hoạt"
                                 : isRemove
                                   ? isEn
                                     ? "Confirm Removal & Sign"
@@ -1696,11 +1717,11 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                                   : isRenew
                                     ? isEn
                                       ? "Confirm & Activate Renewal"
-                                      : "Quản lý ký kích hoạt gia hạn"
+                                      : "Ký kích hoạt gia hạn"
                                     : isUnitChange
                                       ? isEn
                                         ? "Confirm & Activate Transfer"
-                                        : "Quản lý ký kích hoạt đổi kho"
+                                        : "Ký kích hoạt đổi kho"
                                       : isEn
                                         ? "Confirm & Sign Addendum"
                                         : "Quản lý ký xác nhận & Kích hoạt"}

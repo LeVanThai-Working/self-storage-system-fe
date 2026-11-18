@@ -26,6 +26,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useUnitTypeCategoryLabel } from "@/features/unit-type-management/hooks";
 import { useOffering } from "../hooks";
 import {
   FacilityUnitTypeOfferingStatusEnum,
@@ -50,6 +51,7 @@ export const OfferingDetailModal = ({
 }: OfferingDetailModalProps) => {
   const t = useTranslations("businessOps.offerings.detailModal");
   const tRoot = useTranslations("businessOps.offerings");
+  const categoryLabel = useUnitTypeCategoryLabel();
 
   const {
     data: offering,
@@ -152,8 +154,8 @@ export const OfferingDetailModal = ({
                 <div className="flex items-center gap-2 mt-1.5">
                   <span className="font-bold text-slate-900">{offering.unitType.name}</span>
                   {offering.unitType.category && (
-                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
-                      {offering.unitType.category}
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
+                      {categoryLabel(offering.unitType.category)}
                     </span>
                   )}
                 </div>

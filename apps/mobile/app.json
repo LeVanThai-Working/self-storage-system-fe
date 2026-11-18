@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "StorageHub",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,16 +8,20 @@
     "scheme": "mobile",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.storagehub.mobile"
     },
     "android": {
+      "package": "com.storagehub.mobile",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": ["android.permission.CAMERA"]
     },
     "web": {
       "bundler": "metro",
@@ -29,14 +33,16 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Cho phép StorageHub dùng camera để quét mã vạch hàng hóa."
+          "cameraPermission": "Cho phép StorageHub dùng camera để quét mã vạch hàng hóa.",
+          "recordAudioAndroid": false
         }
       ],
       [
         "expo-image-picker",
         {
           "photosPermission": "Cho phép StorageHub truy cập thư viện ảnh để đính kèm ảnh hàng hóa và sự cố.",
-          "cameraPermission": "Cho phép StorageHub dùng camera để chụp ảnh hàng hóa và sự cố."
+          "cameraPermission": "Cho phép StorageHub dùng camera để chụp ảnh hàng hóa và sự cố.",
+          "microphonePermission": false
         }
       ],
       [
@@ -50,6 +56,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bba1a64c-e14a-47b2-ba31-a8cf9233c365"
+      }
+    },
+    "owner": "levanthai-working"
   }
 }

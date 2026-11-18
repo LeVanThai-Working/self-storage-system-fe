@@ -10,7 +10,8 @@
     "search": "Search",
     "confirm": "Confirm",
     "back": "Back",
-    "language": "Language"
+    "language": "Language",
+    "networkError": "Unable to connect to the server. Please check your network connection."
   },
   "auth": {
     "login": "Sign In",
@@ -152,6 +153,17 @@
       "loading": "Loading...",
       "retry": "Retry",
       "demoNotice": "Demo mode: check-in is allowed outside the time window on the scheduled day, and automatic no-show marking is paused. Enable again after the demo."
+    },
+    "checkInDateValidation": {
+      "title": "Validate check-in arrival date",
+      "shortLabel": "Check-in date validation",
+      "description": "Applies to Mark Arrived / Create Contract on reservations (scheduled check-in date) and Handover & Check-in on contracts (start date). Turn off to demo early check-ins.",
+      "enabled": "Enabled",
+      "disabled": "Off · Demo",
+      "reEnable": "Re-enable validation",
+      "demoNotice": "Demo mode: check-in date validation is off — marking arrived, creating draft contracts, and contract check-in are allowed before the scheduled date. Enable again after the demo.",
+      "blockedReservation": "Scheduled check-in date ({date}) has not arrived yet. Toggle off \"Check-in date validation\" to demo early.",
+      "blockedContract": "Scheduled lease start / check-in date ({date}) has not arrived yet. Toggle off \"Check-in date validation\" to demo early."
     },
     "nav": {
       "overview": "Overview",

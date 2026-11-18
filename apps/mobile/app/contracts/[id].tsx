@@ -32,6 +32,7 @@ import {
   PaymentPurposeEnum,
   PaymentStatusEnum,
   type ContractAddendumResponse,
+  type InvoiceResponse,
   type MessageLocale,
   type PaymentResponse,
   type PublicAmenityOfferingResponse,
@@ -71,6 +72,10 @@ import {
   useCustomerSignContract,
   useCustomerSignContractAddendum,
 } from "@/features/contracts/hooks/useContracts";
+import { useMyInvoices } from "@/features/invoices/hooks/useInvoices";
+import { InvoiceCard } from "@/features/invoices/components/InvoiceCard";
+import { InvoiceDetailModal } from "@/features/invoices/components/InvoiceDetailModal";
+import { InvoicePaymentQrModal } from "@/features/invoices/components/InvoicePaymentQrModal";
 import {
   formatDateShort,
   formatDateTime,
@@ -126,6 +131,16 @@ export default function ContractDetailScreen() {
   // Payment QR Modal state
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [activePayment, setActivePayment] = useState<PaymentResponse | null>(null);
+
+  // Contract Invoices state (recurring, incidental, settlement)
+  const {
+    data: contractInvoicesData,
+    isLoading: isContractInvoicesLoading,
+    refetch: refetchContractInvoices,
+  } = useMyInvoices({ contractId, limit: 20 }, Boolean(contractId));
+  const contractInvoices = contractInvoicesData?.items ?? [];
+  const [detailInvoice, setDetailInvoice] = useState<InvoiceResponse | null>(null);
+  const [invoiceQrTarget, setInvoiceQrTarget] = useState<InvoiceResponse | null>(null);
 
   // Create Addendum Modal state (ADD / REMOVE)
   const [addendumModalType, setAddendumModalType] = useState<ContractAddendumTypeEnum | null>(null);
@@ -193,8 +208,9 @@ export default function ContractDetailScreen() {
     useCallback(() => {
       if (contractId) {
         void refetch();
+        void refetchContractInvoices();
       }
-    }, [contractId, refetch])
+    }, [contractId, refetch, refetchContractInvoices])
   );
 
   // Auto-poll payment status while modal is open and payment is pending
@@ -625,7 +641,14 @@ export default function ContractDetailScreen() {
         contentContainerClassName="p-4 pb-16 gap-4"
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#0B927E" />
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => {
+              void refetch();
+              void refetchContractInvoices();
+            }}
+            tintColor="#0B927E"
+          />
         }
       >
         {/* Cancellation Reason Alert */}
@@ -1486,6 +1509,45 @@ export default function ContractDetailScreen() {
             </View>
           </View>
         </View>
+
+        {/* 4A-bis. Contract Invoices (Recurring, Incidental, Settlement) */}
+        {(isActive || isCompletedOrSettled || contractInvoices.length > 0) && (
+          <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3">
+            <View className="flex-row items-center justify-between gap-2">
+              <View className="flex-row items-center gap-2 flex-1 min-w-0">
+                <Receipt size={18} color="#0B927E" />
+                <Text
+                  numberOfLines={1}
+                  className="text-sm font-bold text-neutral-dark dark:text-neutral-100 flex-1"
+                >
+                  {t("invoices.contractSectionTitle")} ({contractInvoices.length})
+                </Text>
+              </View>
+            </View>
+
+            {isContractInvoicesLoading ? (
+              <View className="py-4 items-center">
+                <ActivityIndicator size="small" color="#0B927E" />
+              </View>
+            ) : contractInvoices.length === 0 ? (
+              <Text variant="muted" className="text-xs">
+                {t("invoices.contractSectionEmpty")}
+              </Text>
+            ) : (
+              <View className="gap-3">
+                {contractInvoices.map((inv) => (
+                  <InvoiceCard
+                    key={inv.id}
+                    invoice={inv}
+                    hideContractMeta
+                    onPressDetail={setDetailInvoice}
+                    onPressPayQr={setInvoiceQrTarget}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
 
         {/* 4B. Contract Addendums Section (contract.addendums) */}
         <View className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-3">
@@ -2409,6 +2471,25 @@ export default function ContractDetailScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Contract Invoice Detail & VietQR Payment Modals */}
+      <InvoiceDetailModal
+        visible={Boolean(detailInvoice)}
+        invoice={detailInvoice}
+        hideContractLink
+        onClose={() => setDetailInvoice(null)}
+        onPressPayQr={setInvoiceQrTarget}
+      />
+
+      <InvoicePaymentQrModal
+        visible={Boolean(invoiceQrTarget)}
+        invoice={invoiceQrTarget}
+        onClose={() => setInvoiceQrTarget(null)}
+        onPaidSuccess={() => {
+          void refetchContractInvoices();
+          void refetch();
+        }}
+      />
     </SafeAreaView>
   );
 }

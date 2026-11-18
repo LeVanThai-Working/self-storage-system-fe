@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   extractMessageParamsFromRaw,
@@ -25,28 +26,36 @@ export function useApiErrorMessage() {
   const tCommon = useTranslations("common");
   const locale = useLocale() === "en" ? "en" : "vi";
 
-  return (error: unknown, overrides: ErrorOverrides = {}) => {
-    if (error instanceof AppApiError) {
-      // statusCode 0 = no response from the server (see axios interceptor)
-      if (error.statusCode === 0) return tCommon("networkError");
-      const code = error.messageCode;
-      if (code && overrides[code]) return overrides[code];
-      if (code && tApi.has(code)) {
-        const extracted = extractMessageParamsFromRaw(error.message, code);
-        const param0 = extracted[0] ? translateMessageSubject(extracted[0], locale) : "";
-        return tApi(code, { 0: param0 })
-          .replace(/\s{2,}/g, " ")
-          .trim();
+  return useCallback(
+    (error: unknown, overrides: ErrorOverrides = {}) => {
+      if (error instanceof AppApiError) {
+        // statusCode 0 = no response from the server (see axios interceptor)
+        if (error.statusCode === 0) {
+          if (tCommon.has("networkError")) return tCommon("networkError");
+          return locale === "en"
+            ? "Unable to connect to the server. Please check your network connection."
+            : "Không thể kết nối tới máy chủ. Vui lòng kiểm tra kết nối mạng.";
+        }
+        const code = error.messageCode;
+        if (code && overrides[code]) return overrides[code];
+        if (code && tApi.has(code)) {
+          const extracted = extractMessageParamsFromRaw(error.message, code);
+          const param0 = extracted[0] ? translateMessageSubject(extracted[0], locale) : "";
+          return tApi(code, { 0: param0 })
+            .replace(/\s{2,}/g, " ")
+            .trim();
+        }
+        if (code) {
+          const resolved = resolveMessageCode(code, {
+            locale,
+            rawMessage: error.message,
+          });
+          if (resolved) return resolved;
+        }
+        if (error.message) return error.message;
       }
-      if (code) {
-        const resolved = resolveMessageCode(code, {
-          locale,
-          rawMessage: error.message,
-        });
-        if (resolved) return resolved;
-      }
-      if (error.message) return error.message;
-    }
-    return tCommon("error");
-  };
+      return tCommon("error");
+    },
+    [tApi, tCommon, locale]
+  );
 }

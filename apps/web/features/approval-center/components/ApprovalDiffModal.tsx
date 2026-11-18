@@ -24,6 +24,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useUnitTypeCategoryLabel } from "@/features/unit-type-management/hooks";
 import { useApprovalRequestDetail } from "../hooks";
 import {
   ApprovalRequestActionEnum,
@@ -42,6 +43,7 @@ interface ApprovalDiffModalProps {
 export const ApprovalDiffModal = ({ requestId, onClose, onOpenReview }: ApprovalDiffModalProps) => {
   const t = useTranslations("businessOps.approvals.diffModal");
   const commonT = useTranslations("businessOps.approvals");
+  const categoryLabel = useUnitTypeCategoryLabel();
 
   const { data: request, isLoading, isError, refetch } = useApprovalRequestDetail(requestId);
 
@@ -62,6 +64,7 @@ export const ApprovalDiffModal = ({ requestId, onClose, onOpenReview }: Approval
       if (val === "one_time") return "Một lần";
       return String(val);
     }
+    if (key === "category") return categoryLabel(String(val));
     if (key === "dimensions" && typeof val === "object" && val !== null) {
       const dim = val as { length?: number; width?: number; height?: number };
       return `${dim.length || 0}m × ${dim.width || 0}m × ${dim.height || 0}m`;

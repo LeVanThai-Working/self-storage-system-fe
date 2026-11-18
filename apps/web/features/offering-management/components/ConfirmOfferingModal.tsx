@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AppApiError } from "@/lib/api/axios";
+import { useUnitTypeCategoryLabel } from "@/features/unit-type-management/hooks";
 import { useDeleteOffering, useRestoreOffering } from "../hooks";
 import type { FacilityUnitTypeOfferingResponse } from "../types";
 
@@ -31,6 +32,7 @@ export const ConfirmOfferingModal = ({
 }: ConfirmOfferingModalProps) => {
   const t = useTranslations("businessOps.offerings.confirmModal");
   const tOffering = useTranslations("businessOps.offerings");
+  const categoryLabel = useUnitTypeCategoryLabel();
   const deleteMutation = useDeleteOffering();
   const restoreMutation = useRestoreOffering();
   const mutation = mode === "delete" ? deleteMutation : restoreMutation;
@@ -100,8 +102,8 @@ export const ConfirmOfferingModal = ({
                   {offering.unitType.name}
                 </span>
                 {offering.unitType.category && (
-                  <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700">
-                    {offering.unitType.category}
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-50 text-teal-700">
+                    {categoryLabel(offering.unitType.category)}
                   </span>
                 )}
               </div>

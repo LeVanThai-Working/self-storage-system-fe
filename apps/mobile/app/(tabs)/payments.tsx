@@ -1,42 +1,38 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  View,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-  Modal,
-  Image,
-  RefreshControl,
-} from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { View, ScrollView, Pressable, ActivityIndicator, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Text } from "@/components/ui/text";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/stores/language.store";
-import { useToast } from "@/stores/toast.store";
 import {
-  CheckCircle2,
-  Clock,
+  AlertCircle,
   ExternalLink,
   QrCode,
   Receipt,
-  RefreshCw,
   RotateCcw,
   ShieldCheck,
-  X,
-  AlertCircle,
 } from "lucide-react-native";
 import { useCustomerRefunds } from "@/features/refunds/hooks/useRefunds";
 import { RefundCard } from "@/features/refunds/components/RefundCard";
 import { formatVnd } from "@/features/refunds/utils/refundFormat";
 import { formatDateTime } from "@/features/contracts/utils/contractFormat";
 import { useMyPayments } from "@/features/reservations/hooks/usePayments";
-import { getPaymentByIdApi } from "@/features/reservations/api/payments.api";
+import { useMyInvoices } from "@/features/invoices/hooks/useInvoices";
+import { InvoiceCard } from "@/features/invoices/components/InvoiceCard";
+import { InvoiceDetailModal } from "@/features/invoices/components/InvoiceDetailModal";
+import { InvoicePaymentQrModal } from "@/features/invoices/components/InvoicePaymentQrModal";
+import {
+  getInvoiceRemainingAmount,
+  isInvoicePayable,
+} from "@/features/invoices/utils/invoiceFormat";
 import {
   ESTIMATED_SLA_DAYS,
+  InvoiceStatusEnum,
   PaymentPurposeEnum,
   PaymentStatusEnum,
   RefundRequestStatusEnum,
+  type InvoiceResponse,
   type PaymentResponse,
 } from "@self-storage-system-fe/shared";
 
@@ -95,26 +91,35 @@ export default function PaymentsScreen() {
   const router = useRouter();
   const { t, locale } = useTranslation();
   const isEn = locale === "en";
-  const toast = useToast();
 
   const [mainTab, setMainTab] = useState<MainTabType>("invoices");
   const [filter, setFilter] = useState<FilterType>("all");
 
-  // Payment QR Modal state
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const [activePayment, setActivePayment] = useState<PaymentResponse | null>(null);
-  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  // Invoice detail & VietQR modal state
+  const [detailInvoice, setDetailInvoice] = useState<InvoiceResponse | null>(null);
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [qrInvoice, setQrInvoice] = useState<InvoiceResponse | null>(null);
+  const [qrPayment, setQrPayment] = useState<PaymentResponse | null>(null);
 
   // Refund status filter
   const [refundStatusFilter, setRefundStatusFilter] = useState<string>("ALL");
 
-  // Real customer payments query
+  // Customer invoices query (recurring, first_period, incidental, check_out_settlement)
+  const {
+    data: invoicesData,
+    isLoading: isInvoicesLoading,
+    isRefetching: isInvoicesRefetching,
+    isError: isInvoicesError,
+    refetch: refetchInvoices,
+  } = useMyInvoices({ limit: 50 });
+
+  // Customer standalone payments query (reservation_deposit, contract_deposit, etc.)
   const {
     data: paymentsData,
     isLoading: isPaymentsLoading,
     isRefetching: isPaymentsRefetching,
     refetch: refetchPayments,
-  } = useMyPayments();
+  } = useMyPayments({ limit: 50 });
 
   // Refunds query
   const {
@@ -129,97 +134,101 @@ export default function PaymentsScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      void refetchInvoices();
       void refetchPayments();
       void refetchRefunds();
-    }, [refetchPayments, refetchRefunds])
+    }, [refetchInvoices, refetchPayments, refetchRefunds])
   );
 
-  // Auto-poll payment status while modal is open and payment is pending
-  useEffect(() => {
-    if (
-      !paymentModalOpen ||
-      !activePayment?.id ||
-      activePayment.status !== PaymentStatusEnum.PENDING
-    ) {
-      return;
-    }
+  const invoiceItems = useMemo(() => invoicesData?.items ?? [], [invoicesData?.items]);
+  const paymentItems = useMemo(() => paymentsData?.items ?? [], [paymentsData?.items]);
 
-    let isSubscribed = true;
-    const interval = setInterval(async () => {
-      try {
-        const latest = await getPaymentByIdApi(activePayment.id);
-        if (!isSubscribed) return;
-        if (latest.status === PaymentStatusEnum.PAID) {
-          setActivePayment(latest);
-          toast.success(
-            isEn
-              ? "Payment confirmed successfully! Updating records..."
-              : "Đã xác nhận thanh toán thành công! Đang cập nhật dữ liệu..."
-          );
-          await refetchPayments();
-          setPaymentModalOpen(false);
-        } else if (
-          latest.status === PaymentStatusEnum.CANCELLED ||
-          latest.status === PaymentStatusEnum.EXPIRED
-        ) {
-          setActivePayment(latest);
+  // Avoid double-counting payments that are already represented by an Invoice record
+  const standalonePayments = useMemo(() => {
+    const invoicePaymentIds = new Set(
+      invoiceItems.map((inv) => inv.paymentId).filter((id): id is string => Boolean(id))
+    );
+    return paymentItems.filter((p) => !invoicePaymentIds.has(p.id));
+  }, [invoiceItems, paymentItems]);
+
+  const unpaidInvoices = useMemo(
+    () =>
+      invoiceItems
+        .filter(isInvoicePayable)
+        .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()),
+    [invoiceItems]
+  );
+
+  const overdueInvoicesCount = useMemo(
+    () =>
+      unpaidInvoices.filter((inv) => String(inv.status).toLowerCase() === InvoiceStatusEnum.OVERDUE)
+        .length,
+    [unpaidInvoices]
+  );
+
+  const pendingPayments = useMemo(
+    () => standalonePayments.filter((p) => p.status === PaymentStatusEnum.PENDING),
+    [standalonePayments]
+  );
+
+  const currentTotalDue = useMemo(() => {
+    const invoicesDue = unpaidInvoices.reduce(
+      (sum, inv) => sum + getInvoiceRemainingAmount(inv),
+      0
+    );
+    const paymentsDue = pendingPayments.reduce(
+      (sum, p) => sum + Math.max(0, p.amount - (p.paidAmount ?? 0)),
+      0
+    );
+    return invoicesDue + paymentsDue;
+  }, [unpaidInvoices, pendingPayments]);
+
+  const pendingItemsCount = unpaidInvoices.length + pendingPayments.length;
+
+  const filteredInvoices = useMemo(
+    () =>
+      invoiceItems.filter((inv) => {
+        if (filter === "unpaid") return isInvoicePayable(inv);
+        if (filter === "paid") {
+          return String(inv.status).toLowerCase() === InvoiceStatusEnum.PAID;
         }
-      } catch {
-        // Silently swallow polling tick error
-      }
-    }, 2500);
-
-    return () => {
-      isSubscribed = false;
-      clearInterval(interval);
-    };
-  }, [paymentModalOpen, activePayment?.id, activePayment?.status, isEn, refetchPayments, toast]);
-
-  const paymentItems = paymentsData?.items ?? [];
-  const pendingPayments = paymentItems.filter((p) => p.status === PaymentStatusEnum.PENDING);
-  const currentTotalDue = pendingPayments.reduce(
-    (sum, p) => sum + Math.max(0, p.amount - (p.paidAmount ?? 0)),
-    0
+        return true;
+      }),
+    [invoiceItems, filter]
   );
 
-  const filteredPayments = paymentItems.filter((item) => {
-    if (filter === "unpaid") return item.status === PaymentStatusEnum.PENDING;
-    if (filter === "paid") return item.status === PaymentStatusEnum.PAID;
-    return true;
-  });
+  const filteredPayments = useMemo(
+    () =>
+      standalonePayments.filter((item) => {
+        if (filter === "unpaid") return item.status === PaymentStatusEnum.PENDING;
+        if (filter === "paid") return item.status === PaymentStatusEnum.PAID;
+        return true;
+      }),
+    [standalonePayments, filter]
+  );
 
-  const handleOpenPaymentQr = (payment: PaymentResponse) => {
-    setActivePayment(payment);
-    setPaymentModalOpen(true);
+  const totalFilteredCount = filteredInvoices.length + filteredPayments.length;
+  const isBillingLoading = isInvoicesLoading || isPaymentsLoading;
+
+  const handleOpenInvoiceQr = (invoice: InvoiceResponse) => {
+    setQrPayment(null);
+    setQrInvoice(invoice);
+    setQrModalOpen(true);
   };
 
-  const handleCheckPaymentStatus = async () => {
-    if (!activePayment?.id) return;
-    setIsCheckingPayment(true);
-    try {
-      const latest = await getPaymentByIdApi(activePayment.id);
-      setActivePayment(latest);
-      if (latest.status === PaymentStatusEnum.PAID) {
-        toast.success(
-          isEn ? "Payment confirmed successfully!" : "Đã xác nhận thanh toán thành công!"
-        );
-        await refetchPayments();
-        setPaymentModalOpen(false);
-      } else {
-        toast.info(
-          isEn
-            ? "Waiting for bank transfer confirmation..."
-            : "Hệ thống đang chờ nhận giao dịch chuyển khoản..."
-        );
-      }
-    } catch {
-      toast.error(
-        isEn
-          ? "Unable to verify payment status right now."
-          : "Không thể kiểm tra trạng thái thanh toán lúc này."
-      );
-    } finally {
-      setIsCheckingPayment(false);
+  const handleOpenPaymentQr = (payment: PaymentResponse) => {
+    setQrInvoice(null);
+    setQrPayment(payment);
+    setQrModalOpen(true);
+  };
+
+  const handlePayEarliestDue = () => {
+    if (unpaidInvoices.length > 0) {
+      handleOpenInvoiceQr(unpaidInvoices[0]);
+      return;
+    }
+    if (pendingPayments.length > 0) {
+      handleOpenPaymentQr(pendingPayments[0]);
     }
   };
 
@@ -237,9 +246,9 @@ export default function PaymentsScreen() {
     { key: RefundRequestStatusEnum.CANCELLED, label: isEn ? "Cancelled" : "Đã hủy" },
   ];
 
-  const isRefreshing = isPaymentsRefetching || isRefundsRefetching;
+  const isRefreshing = isInvoicesRefetching || isPaymentsRefetching || isRefundsRefetching;
   const onRefresh = async () => {
-    await Promise.all([refetchPayments(), refetchRefunds()]);
+    await Promise.all([refetchInvoices(), refetchPayments(), refetchRefunds()]);
   };
 
   return (
@@ -334,16 +343,20 @@ export default function PaymentsScreen() {
               <Text variant="muted" className="text-xs mb-4">
                 {currentTotalDue > 0
                   ? isEn
-                    ? `You have ${pendingPayments.length} pending payment(s) to settle.`
-                    : `Bạn có ${pendingPayments.length} khoản cần thanh toán.`
+                    ? `You have ${pendingItemsCount} pending bill(s) to settle${
+                        overdueInvoicesCount > 0 ? ` (${overdueInvoicesCount} overdue)` : ""
+                      }.`
+                    : `Bạn có ${pendingItemsCount} hóa đơn / khoản cần thanh toán${
+                        overdueInvoicesCount > 0 ? ` (${overdueInvoicesCount} quá hạn)` : ""
+                      }.`
                   : isEn
                     ? "All payments are up to date. No pending due balances."
                     : "Tất cả các khoản phí đã được thanh toán đầy đủ."}
               </Text>
 
-              {currentTotalDue > 0 && pendingPayments.length > 0 && (
+              {currentTotalDue > 0 && pendingItemsCount > 0 && (
                 <Pressable
-                  onPress={() => handleOpenPaymentQr(pendingPayments[0])}
+                  onPress={handlePayEarliestDue}
                   className="flex-row items-center justify-center gap-2 rounded-xl bg-cta py-3.5 shadow-sm active:opacity-90"
                 >
                   <QrCode size={18} color="#ffffff" />
@@ -356,20 +369,20 @@ export default function PaymentsScreen() {
 
             {/* Invoices History Header & Filter */}
             <View className="gap-3 mb-6">
-              <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center justify-between gap-2">
                 <Text
                   variant="heading3"
-                  className="text-neutral-dark dark:text-neutral-100 font-bold"
+                  className="flex-1 min-w-0 text-neutral-dark dark:text-neutral-100 font-bold"
                 >
                   {t("payments.historyTitle")}
                 </Text>
-                <Text variant="muted" className="text-xs">
-                  {filteredPayments.length} {t("payments.itemsCount")}
+                <Text variant="muted" className="text-xs shrink-0">
+                  {totalFilteredCount} {t("payments.itemsCount")}
                 </Text>
               </View>
 
               {/* Filter Pills */}
-              <View className="flex-row gap-2">
+              <View className="flex-row flex-wrap gap-2">
                 <Pressable
                   onPress={() => setFilter("all")}
                   className={`rounded-full px-3.5 py-1.5 border ${
@@ -420,15 +433,24 @@ export default function PaymentsScreen() {
                 </Pressable>
               </View>
 
+              {isInvoicesError ? (
+                <View className="flex-row items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/40 p-3.5">
+                  <AlertCircle size={16} color="#D97706" className="mt-0.5 shrink-0" />
+                  <Text className="flex-1 text-xs text-amber-800 dark:text-amber-300">
+                    {t("invoices.loadErrorNotice")}
+                  </Text>
+                </View>
+              ) : null}
+
               {/* Loading State */}
-              {isPaymentsLoading ? (
+              {isBillingLoading ? (
                 <View className="py-12 items-center justify-center">
                   <ActivityIndicator size="large" color="#0B927E" />
                   <Text className="text-xs text-muted-foreground mt-2">
                     {isEn ? "Loading payments..." : "Đang tải danh sách thanh toán..."}
                   </Text>
                 </View>
-              ) : filteredPayments.length === 0 ? (
+              ) : totalFilteredCount === 0 ? (
                 <View className="py-14 items-center justify-center bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-border dark:border-neutral-800 p-6 text-center">
                   <Receipt size={36} color="#94A3B8" />
                   <Text className="font-bold text-foreground mt-3 text-sm">
@@ -436,109 +458,121 @@ export default function PaymentsScreen() {
                   </Text>
                   <Text className="text-xs text-muted-foreground mt-1 text-center">
                     {isEn
-                      ? "Your payments for reservations, deposits, and rentals will be listed here."
-                      : "Các khoản phí đặt chỗ, tiền cọc và tiền thuê kỳ đầu sẽ xuất hiện tại đây."}
+                      ? "Your recurring invoices, incidental fees, deposits, and rental payments will be listed here."
+                      : "Các hóa đơn định kỳ, phụ phí, tiền đặt cọc và tiền thuê sẽ xuất hiện tại đây."}
                   </Text>
                 </View>
               ) : (
-                /* Payments List */
-                filteredPayments.map((payment) => {
-                  const statusMeta = getPaymentStatusMeta(payment.status, isEn);
-                  const purposeTitle = getPaymentPurposeLabel(payment.purpose, isEn);
-                  const isPending = payment.status === PaymentStatusEnum.PENDING;
+                <View className="gap-3">
+                  {/* 1. Invoices (recurring, first_period, incidental, check_out_settlement) */}
+                  {filteredInvoices.map((invoice) => (
+                    <InvoiceCard
+                      key={`invoice-${invoice.id}`}
+                      invoice={invoice}
+                      onPressDetail={setDetailInvoice}
+                      onPressPayQr={handleOpenInvoiceQr}
+                    />
+                  ))}
 
-                  return (
-                    <View
-                      key={payment.id}
-                      className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-2.5"
-                    >
-                      <View className="flex-row items-center justify-between gap-2">
-                        <View className="flex-row items-center gap-1.5 flex-1 min-w-0 pr-2">
-                          <Receipt size={16} color="#0B927E" className="shrink-0" />
-                          <Text
-                            className="text-xs font-extrabold text-neutral-dark dark:text-neutral-100 flex-1"
-                            numberOfLines={1}
-                          >
-                            #{payment.paymentCode}
-                          </Text>
-                        </View>
-                        <Badge variant="outline" className={`${statusMeta.badgeClass} shrink-0`}>
-                          <Text
-                            numberOfLines={1}
-                            className={`text-xs font-semibold ${statusMeta.textClass}`}
-                          >
-                            {statusMeta.label}
-                          </Text>
-                        </Badge>
-                      </View>
+                  {/* 2. Standalone Payments (reservation_deposit, contract_deposit, etc.) */}
+                  {filteredPayments.map((payment) => {
+                    const statusMeta = getPaymentStatusMeta(payment.status, isEn);
+                    const purposeTitle = getPaymentPurposeLabel(payment.purpose, isEn);
+                    const isPending = payment.status === PaymentStatusEnum.PENDING;
 
-                      <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
-                        {purposeTitle}
-                      </Text>
-
-                      <View className="flex-row items-center justify-between border-t border-neutral-border/60 dark:border-neutral-800/80 pt-2.5">
-                        <View>
-                          <Text className="text-base font-extrabold text-brand">
-                            {formatVnd(payment.amount)}
-                          </Text>
-                          <Text variant="muted" className="text-[11px]">
-                            {payment.paidAt
-                              ? `${isEn ? "Paid at:" : "Thanh toán lúc:"} ${formatDateTime(payment.paidAt)}`
-                              : payment.createdAt
-                                ? `${isEn ? "Created at:" : "Tạo lúc:"} ${formatDateTime(payment.createdAt)}`
-                                : ""}
-                          </Text>
-                        </View>
-
-                        {/* If pending, show prominent QR scan button */}
-                        {isPending ? (
-                          <Pressable
-                            onPress={() => handleOpenPaymentQr(payment)}
-                            className="flex-row items-center gap-1.5 rounded-xl bg-cta px-3.5 py-2 active:opacity-90"
-                          >
-                            <QrCode size={14} color="#FFFFFF" />
-                            <Text className="text-xs font-bold text-white">
-                              {isEn ? "Pay with QR" : "Quét mã QR"}
+                    return (
+                      <View
+                        key={`payment-${payment.id}`}
+                        className="rounded-3xl border border-neutral-border dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-sm gap-2.5"
+                      >
+                        <View className="flex-row items-center justify-between gap-2">
+                          <View className="flex-row items-center gap-1.5 flex-1 min-w-0 pr-2">
+                            <Receipt size={16} color="#0B927E" className="shrink-0" />
+                            <Text
+                              className="text-xs font-extrabold text-neutral-dark dark:text-neutral-100 flex-1"
+                              numberOfLines={1}
+                            >
+                              #{payment.paymentCode}
                             </Text>
+                          </View>
+                          <Badge variant="outline" className={`${statusMeta.badgeClass} shrink-0`}>
+                            <Text
+                              numberOfLines={1}
+                              className={`text-xs font-semibold ${statusMeta.textClass}`}
+                            >
+                              {statusMeta.label}
+                            </Text>
+                          </Badge>
+                        </View>
+
+                        <Text className="text-sm font-bold text-neutral-dark dark:text-neutral-100">
+                          {purposeTitle}
+                        </Text>
+
+                        <View className="flex-row items-center justify-between border-t border-neutral-border/60 dark:border-neutral-800/80 pt-2.5">
+                          <View>
+                            <Text className="text-base font-extrabold text-brand">
+                              {formatVnd(payment.amount)}
+                            </Text>
+                            <Text variant="muted" className="text-[11px]">
+                              {payment.paidAt
+                                ? `${isEn ? "Paid at:" : "Thanh toán lúc:"} ${formatDateTime(payment.paidAt)}`
+                                : payment.createdAt
+                                  ? `${isEn ? "Created at:" : "Tạo lúc:"} ${formatDateTime(payment.createdAt)}`
+                                  : ""}
+                            </Text>
+                          </View>
+
+                          {/* If pending, show prominent QR scan button */}
+                          {isPending ? (
+                            <Pressable
+                              onPress={() => handleOpenPaymentQr(payment)}
+                              className="flex-row items-center gap-1.5 rounded-xl bg-cta px-3.5 py-2 active:opacity-90"
+                            >
+                              <QrCode size={14} color="#FFFFFF" />
+                              <Text className="text-xs font-bold text-white">
+                                {isEn ? "Pay with QR" : "Quét mã QR"}
+                              </Text>
+                            </Pressable>
+                          ) : null}
+                        </View>
+
+                        {/* Navigation helper pills to Contract / Reservation */}
+                        {payment.contractId ? (
+                          <Pressable
+                            onPress={() =>
+                              router.push({
+                                pathname: "/contracts/[id]" as any,
+                                params: { id: payment.contractId },
+                              })
+                            }
+                            className="flex-row items-center justify-end gap-1 pt-1"
+                          >
+                            <Text className="text-[11px] font-semibold text-brand">
+                              {isEn ? "View Contract Details" : "Xem chi tiết Hợp đồng"}
+                            </Text>
+                            <ExternalLink size={12} color="#0B927E" />
+                          </Pressable>
+                        ) : payment.reservationId ? (
+                          <Pressable
+                            onPress={() =>
+                              router.push({
+                                pathname: "/reservations/[id]" as any,
+                                params: { id: payment.reservationId },
+                              })
+                            }
+                            className="flex-row items-center justify-end gap-1 pt-1"
+                          >
+                            <Text className="text-[11px] font-semibold text-brand">
+                              {isEn ? "View Reservation Details" : "Xem chi tiết Đặt chỗ"}
+                            </Text>
+                            <ExternalLink size={12} color="#0B927E" />
                           </Pressable>
                         ) : null}
                       </View>
-
-                      {/* Navigation helper pills to Contract / Reservation */}
-                      {payment.contractId ? (
-                        <Pressable
-                          onPress={() =>
-                            router.push({
-                              pathname: "/contracts/[id]" as any,
-                              params: { id: payment.contractId },
-                            })
-                          }
-                          className="flex-row items-center justify-end gap-1 pt-1"
-                        >
-                          <Text className="text-[11px] font-semibold text-brand">
-                            {isEn ? "View Contract Details" : "Xem chi tiết Hợp đồng"}
-                          </Text>
-                          <ExternalLink size={12} color="#0B927E" />
-                        </Pressable>
-                      ) : payment.reservationId ? (
-                        <Pressable
-                          onPress={() =>
-                            router.push({
-                              pathname: "/reservations/[id]" as any,
-                              params: { id: payment.reservationId },
-                            })
-                          }
-                          className="flex-row items-center justify-end gap-1 pt-1"
-                        >
-                          <Text className="text-[11px] font-semibold text-brand">
-                            {isEn ? "View Reservation Details" : "Xem chi tiết Đặt chỗ"}
-                          </Text>
-                          <ExternalLink size={12} color="#0B927E" />
-                        </Pressable>
-                      ) : null}
-                    </View>
-                  );
-                })
+                    );
+                  })}
+                </View>
               )}
             </View>
           </>
@@ -638,95 +672,30 @@ export default function PaymentsScreen() {
         )}
       </ScrollView>
 
-      {/* VietQR Payment Modal */}
-      <Modal
-        visible={paymentModalOpen}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setPaymentModalOpen(false)}
-      >
-        <View className="flex-1 justify-end bg-black/50">
-          <View className="rounded-t-3xl bg-white dark:bg-neutral-900 p-5 gap-4 max-h-[88%]">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-base font-extrabold text-neutral-dark dark:text-neutral-100 flex-1 pr-2">
-                {activePayment
-                  ? getPaymentPurposeLabel(activePayment.purpose, isEn)
-                  : isEn
-                    ? "VietQR Payment"
-                    : "Thanh toán VietQR"}
-              </Text>
-              <Pressable onPress={() => setPaymentModalOpen(false)} hitSlop={10}>
-                <X size={20} color="#647B80" />
-              </Pressable>
-            </View>
+      {/* Invoice Detail Modal */}
+      <InvoiceDetailModal
+        visible={Boolean(detailInvoice)}
+        invoice={detailInvoice}
+        onClose={() => setDetailInvoice(null)}
+        onPressPayQr={handleOpenInvoiceQr}
+      />
 
-            {activePayment ? (
-              <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="gap-3.5">
-                {activePayment.qrUrl ? (
-                  <View className="items-center rounded-2xl border border-neutral-border dark:border-neutral-800 bg-white p-4">
-                    <Image
-                      source={{ uri: activePayment.qrUrl }}
-                      style={{ width: 220, height: 220 }}
-                      resizeMode="contain"
-                    />
-                  </View>
-                ) : null}
-
-                <View className="rounded-2xl bg-neutral-50 dark:bg-neutral-800 p-3.5 gap-1.5">
-                  <View className="flex-row justify-between">
-                    <Text variant="muted" className="text-xs">
-                      {isEn ? "Amount:" : "Số tiền cần chuyển:"}
-                    </Text>
-                    <Text className="text-sm font-extrabold text-brand">
-                      {formatVnd(
-                        Math.max(0, activePayment.amount - (activePayment.paidAmount ?? 0))
-                      )}
-                    </Text>
-                  </View>
-
-                  {activePayment.bankInfo ? (
-                    <>
-                      <View className="flex-row justify-between">
-                        <Text variant="muted" className="text-xs">
-                          {isEn ? "Bank:" : "Ngân hàng:"}
-                        </Text>
-                        <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                          {activePayment.bankInfo.bankCode}
-                        </Text>
-                      </View>
-                      <View className="flex-row justify-between">
-                        <Text variant="muted" className="text-xs">
-                          {isEn ? "Account No:" : "Số tài khoản:"}
-                        </Text>
-                        <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                          {activePayment.bankInfo.accountNumber}
-                        </Text>
-                      </View>
-                      <View className="flex-row justify-between">
-                        <Text variant="muted" className="text-xs">
-                          {isEn ? "Account Holder:" : "Chủ tài khoản:"}
-                        </Text>
-                        <Text className="text-xs font-bold text-neutral-dark dark:text-neutral-100">
-                          {activePayment.bankInfo.accountName}
-                        </Text>
-                      </View>
-                    </>
-                  ) : null}
-
-                  <View className="flex-row justify-between">
-                    <Text variant="muted" className="text-xs">
-                      {isEn ? "Payment Code:" : "Nội dung CK (Mã TT):"}
-                    </Text>
-                    <Text className="text-xs font-extrabold text-brand">
-                      {activePayment.paymentCode}
-                    </Text>
-                  </View>
-                </View>
-              </ScrollView>
-            ) : null}
-          </View>
-        </View>
-      </Modal>
+      {/* VietQR Payment Modal (supports both InvoiceResponse and standalone PaymentResponse) */}
+      <InvoicePaymentQrModal
+        visible={qrModalOpen}
+        invoice={qrInvoice}
+        payment={qrPayment}
+        title={qrPayment ? getPaymentPurposeLabel(qrPayment.purpose, isEn) : undefined}
+        onClose={() => {
+          setQrModalOpen(false);
+          setQrInvoice(null);
+          setQrPayment(null);
+        }}
+        onPaidSuccess={() => {
+          void refetchInvoices();
+          void refetchPayments();
+        }}
+      />
     </SafeAreaView>
   );
 }

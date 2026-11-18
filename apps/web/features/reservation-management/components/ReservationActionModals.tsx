@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
@@ -31,6 +31,12 @@ import {
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useAuthStore } from "@/features/auth/store";
 import { useFacilityStaffs } from "@/features/contract-management/hooks";
+import {
+  formatVietnamDateLabel,
+  isBlockedByCheckInDateValidation,
+  useCheckInDateValidation,
+} from "@/features/system-admin/checkInDateValidation";
+import { CheckInDateBlockedBanner } from "@/features/system-admin/components/CheckInDateValidationControl";
 import {
   useAssignReservationStaff,
   useAvailableStorageUnitsForAssignment,
@@ -299,6 +305,8 @@ export const MarkCustomerArrivedModal: React.FC<MarkCustomerArrivedModalProps> =
   onClose,
   reservation,
 }) => {
+  const tCheckInDate = useTranslations("systemAdmin.checkInDateValidation");
+  const { enabled: checkInDateValidationEnabled } = useCheckInDateValidation();
   const markArrivedMutation = useMarkCustomerArrived();
   const getErrorMessage = useApiErrorMessage();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -306,9 +314,24 @@ export const MarkCustomerArrivedModal: React.FC<MarkCustomerArrivedModalProps> =
 
   if (!reservation) return null;
 
+  const isBlockedByCheckInDate = isBlockedByCheckInDateValidation(
+    reservation.checkInDate,
+    checkInDateValidationEnabled
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+
+    if (isBlockedByCheckInDate) {
+      setErrorMsg(
+        tCheckInDate("blockedReservation", {
+          date: formatVietnamDateLabel(reservation.checkInDate),
+        })
+      );
+      return;
+    }
+
     try {
       await markArrivedMutation.mutateAsync({
         id: reservation.id,
@@ -344,6 +367,13 @@ export const MarkCustomerArrivedModal: React.FC<MarkCustomerArrivedModalProps> =
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {isBlockedByCheckInDate && (
+            <CheckInDateBlockedBanner
+              scheduledDate={reservation.checkInDate}
+              target="reservation"
+            />
+          )}
+
           <div className="rounded-2xl bg-amber-50 border border-amber-200/80 p-3.5 text-xs text-amber-800 space-y-1">
             <p className="font-bold flex items-center gap-1.5 text-amber-900">
               <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -381,8 +411,8 @@ export const MarkCustomerArrivedModal: React.FC<MarkCustomerArrivedModalProps> =
             </button>
             <button
               type="submit"
-              disabled={markArrivedMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm disabled:opacity-50"
+              disabled={markArrivedMutation.isPending || isBlockedByCheckInDate}
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {markArrivedMutation.isPending ? "Đang ghi nhận..." : "Xác nhận Khách đã đến"}
             </button>
@@ -1472,8 +1502,12 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
 }) => {
   const t = useTranslations("facilityManager.reservations.manualPaymentModal");
   const getErrorMessage = useApiErrorMessage();
-  const getDepositPaymentMutation = useCreateOrGetReservationDepositPayment();
+  const { mutate: fetchDepositPayment } = useCreateOrGetReservationDepositPayment();
   const confirmManualMutation = useConfirmManualPayment();
+  const getErrorMessageRef = useRef(getErrorMessage);
+  useEffect(() => {
+    getErrorMessageRef.current = getErrorMessage;
+  }, [getErrorMessage]);
 
   const [paymentSession, setPaymentSession] = useState<PaymentResponse | null>(null);
   const [isLoadingSession, setIsLoadingSession] = useState(false);
@@ -1501,28 +1535,30 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
     }
   }
 
+  const reservationId = reservation?.id;
+
   useEffect(() => {
     let active = true;
-    if (isOpen && reservation?.id) {
-      getDepositPaymentMutation
-        .mutateAsync(reservation.id)
-        .then((res) => {
+    if (isOpen && reservationId) {
+      fetchDepositPayment(reservationId, {
+        onSuccess: (res) => {
           if (active) {
             setPaymentSession(res);
             setIsLoadingSession(false);
           }
-        })
-        .catch((err) => {
+        },
+        onError: (err) => {
           if (active) {
             setIsLoadingSession(false);
-            setErrorMsg(getErrorMessage(err));
+            setErrorMsg(getErrorMessageRef.current(err));
           }
-        });
+        },
+      });
     }
     return () => {
       active = false;
     };
-  }, [isOpen, reservation?.id, getDepositPaymentMutation, getErrorMessage]);
+  }, [isOpen, reservationId, fetchDepositPayment]);
 
   if (!reservation) return null;
 

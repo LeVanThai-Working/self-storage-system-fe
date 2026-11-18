@@ -5,6 +5,11 @@ export enum StatisticsGranularityEnum {
   QUARTER = "quarter",
 }
 
+export enum RentalTrendsGranularityEnum {
+  MONTH = "month",
+  QUARTER = "quarter",
+}
+
 export enum FacilityKpiTierEnum {
   EXCELLENT = "excellent",
   GOOD = "good",
