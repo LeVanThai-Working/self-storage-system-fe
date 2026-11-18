@@ -166,16 +166,23 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
     e.preventDefault();
     setErrorMsg(null);
 
+    // BE requires a proof image for every manual payment, cash included (MESSAGE_CODE_509).
+    if (!proofImageUrl.trim()) {
+      setErrorMsg(
+        isEn
+          ? "Please attach a photo of the receipt or transfer slip."
+          : "Vui lòng đính kèm ảnh phiếu thu hoặc biên lai chuyển khoản."
+      );
+      return;
+    }
+
     const parsed = confirmManualPaymentSchema.safeParse({
       method,
       referenceCode: referenceCode.trim() ? referenceCode.trim() : undefined,
       note:
         note.trim() ||
         (isEn ? "Collected contract deposit at counter" : "Đã thu tiền cọc hợp đồng tại quầy"),
-      proofImageUrl:
-        method === PaymentMethodEnum.BANK_TRANSFER && proofImageUrl.trim()
-          ? proofImageUrl.trim()
-          : undefined,
+      proofImageUrl: proofImageUrl.trim(),
     });
 
     if (!parsed.success) {
@@ -408,27 +415,24 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
                 />
               </div>
 
-              {method === PaymentMethodEnum.BANK_TRANSFER && (
-                <CloudinaryUploader
-                  label={
-                    isEn
-                      ? "Bank Transfer Receipt / Slip (Optional)"
-                      : "Ảnh ủy nhiệm chi / Biên lai chuyển khoản (Tùy chọn)"
-                  }
-                  description={
-                    isEn
-                      ? "Upload transfer confirmation screenshot or bank slip"
-                      : "Tải lên ảnh chụp màn hình chuyển khoản hoặc sao kê ngân hàng"
-                  }
-                  folder={CloudinaryFolderEnum.CONTRACTS}
-                  value={proofImageUrl ? [proofImageUrl] : []}
-                  onChange={(urls) => setProofImageUrl(urls[0] || "")}
-                  multiple={false}
-                  maxFiles={1}
-                  accept="image/*,application/pdf"
-                  disabled={confirmManualMutation.isPending || createDepositMutation.isPending}
-                />
-              )}
+              <CloudinaryUploader
+                label={
+                  method === PaymentMethodEnum.BANK_TRANSFER
+                    ? isEn
+                      ? "Transfer slip / receipt *"
+                      : "Ảnh biên lai chuyển khoản *"
+                    : isEn
+                      ? "Cash receipt photo *"
+                      : "Ảnh phiếu thu tiền mặt *"
+                }
+                folder={CloudinaryFolderEnum.CONTRACTS}
+                value={proofImageUrl ? [proofImageUrl] : []}
+                onChange={(urls) => setProofImageUrl(urls[0] || "")}
+                multiple={false}
+                maxFiles={1}
+                accept="image/*,application/pdf"
+                disabled={confirmManualMutation.isPending || createDepositMutation.isPending}
+              />
             </div>
 
             {errorMsg && (
