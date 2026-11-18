@@ -29,12 +29,12 @@ const ACTION_COLORS: Record<string, string> = {
   logout: "bg-slate-50 text-slate-700 border-slate-200",
   register: "bg-teal-50 text-teal-700 border-teal-200",
   create: "bg-teal-50 text-teal-700 border-teal-200",
-  update: "bg-orange-50 text-orange-600 border-orange-200",
+  update: "bg-orange-50 text-orange-700 border-orange-200",
   delete: "bg-rose-50 text-rose-700 border-rose-200",
   restore: "bg-teal-50 text-teal-700 border-teal-200",
   approve: "bg-teal-50 text-teal-700 border-teal-200",
   reject: "bg-red-50 text-red-700 border-red-200",
-  cancel: "bg-red-50 text-red-600 border-red-200",
+  cancel: "bg-red-50 text-red-700 border-red-200",
   assign_manager: "bg-purple-50 text-purple-700 border-purple-200",
 };
 
@@ -74,7 +74,7 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
               </DialogTitle>
               <DialogDescription className="mt-1 text-xs text-slate-500 flex items-center gap-2">
                 <span>{t("modal.logId")}:</span>
-                <span className="font-mono text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-xs select-all">
+                <span className="font-mono text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md text-xs select-all border border-slate-200">
                   {id}
                 </span>
               </DialogDescription>
@@ -82,7 +82,7 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
             {log && (
               <div className="flex items-center gap-2">
                 <span
-                  className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border ${
+                  className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold uppercase tracking-wider border ${
                     log.status === "success"
                       ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                       : "bg-rose-50 text-rose-700 border-rose-200"
@@ -112,7 +112,7 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
         ) : (
           <div className="space-y-6 mt-2">
             {/* ─── THÔNG TIN TỔNG QUAN ─── */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
               <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-200 flex items-center gap-2">
                 <Activity className="w-5 h-5 text-teal-600" />
                 <h3 className="text-base font-semibold text-slate-800">{t("modal.overview")}</h3>
@@ -138,7 +138,7 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
                               {log.actorEmail}
                             </div>
                             {log.actorRole && (
-                              <div className="inline-flex items-center whitespace-nowrap shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 mt-1.5 truncate max-w-full">
+                              <div className="inline-flex items-center whitespace-nowrap shrink-0 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-600 mt-1.5 truncate max-w-full">
                                 {tRole.has(log.actorRole) ? tRole(log.actorRole) : log.actorRole}
                               </div>
                             )}
@@ -162,7 +162,7 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
                       <dd className="flex flex-col items-start gap-2 mt-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap min-w-0">
                           <span
-                            className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide border truncate ${ACTION_COLORS[log.action] || "bg-slate-50 text-slate-700 border-slate-200"}`}
+                            className={`px-2.5 py-0.5 rounded-md text-xs font-semibold uppercase tracking-wide border truncate ${ACTION_COLORS[log.action] || "bg-slate-50 text-slate-700 border-slate-200"}`}
                           >
                             {t.has(`actions.${log.action}` as Parameters<typeof t>[0])
                               ? t(`actions.${log.action}` as Parameters<typeof t>[0])
@@ -171,7 +171,7 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
                           <span className="text-slate-400 text-xs italic shrink-0">
                             {t("modal.on")}
                           </span>
-                          <span className="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wide bg-teal-50 text-teal-700 border border-teal-100 truncate max-w-full">
+                          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold uppercase tracking-wide bg-teal-50 text-teal-700 border border-teal-200 truncate max-w-full">
                             {t.has(`resources.${log.resourceType}` as Parameters<typeof t>[0])
                               ? t(`resources.${log.resourceType}` as Parameters<typeof t>[0])
                               : log.resourceType}
@@ -243,12 +243,12 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
                               <span
                                 className={`shrink-0 px-2.5 py-1 rounded-md text-xs font-bold tracking-wider ${
                                   log.method === "GET"
-                                    ? "bg-blue-100 text-blue-700"
+                                    ? "bg-blue-50 text-blue-700"
                                     : log.method === "POST"
-                                      ? "bg-teal-100 text-teal-700"
+                                      ? "bg-teal-50 text-teal-700"
                                       : log.method === "PUT" || log.method === "PATCH"
-                                        ? "bg-orange-100 text-orange-700"
-                                        : "bg-red-100 text-red-700"
+                                        ? "bg-orange-50 text-orange-700"
+                                        : "bg-red-50 text-red-700"
                                 }`}
                               >
                                 {log.method}
@@ -290,7 +290,7 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
 
             {/* ─── DỮ LIỆU THAY ĐỔI (DIFF) ─── */}
             {(log.changes?.before || log.changes?.after) && (
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-8">
+              <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden mt-8">
                 <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-200 flex items-center gap-2">
                   <Shield className="w-5 h-5 text-teal-600" />
                   <h3 className="text-base font-semibold text-slate-800">{t("modal.dataDiff")}</h3>
@@ -333,7 +333,7 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
 
             {/* Metadata (if any) */}
             {log.metadata && Object.keys(log.metadata).length > 0 && (
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-8">
+              <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden mt-8">
                 <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-200 flex items-center gap-2">
                   <Server className="w-5 h-5 text-teal-600" />
                   <h3 className="text-base font-semibold text-slate-800">{t("modal.metadata")}</h3>

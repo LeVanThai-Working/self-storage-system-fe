@@ -135,7 +135,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ className })
                 {locale === "vi" ? "Thông báo" : "Notifications"}
               </h4>
               {unreadCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 text-[11px] font-semibold">
+                <span className="px-2.5 py-0.5 rounded-md bg-orange-50 text-orange-700 text-xs font-semibold border border-orange-200">
                   {unreadCount} {locale === "vi" ? "mới" : "new"}
                 </span>
               )}

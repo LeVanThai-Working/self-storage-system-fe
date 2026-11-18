@@ -153,7 +153,7 @@ export const FacilityAmenityLookupModal = ({
                         {t("foundOffering")}
                       </span>
                     </div>
-                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                       {lookupQuery.data.status}
                     </span>
                   </div>

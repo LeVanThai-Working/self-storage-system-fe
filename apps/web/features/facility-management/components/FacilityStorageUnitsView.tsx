@@ -282,28 +282,28 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
       value: stats.total,
       icon: Boxes,
       valueClass: "text-slate-900",
-      iconBox: "bg-teal-50 text-teal-600",
+      iconBox: "bg-teal-50 text-teal-700",
     },
     {
       label: t("stats.available"),
       value: stats.available,
       icon: CheckCircle2,
       valueClass: "text-emerald-600",
-      iconBox: "bg-emerald-50 text-emerald-600",
+      iconBox: "bg-emerald-50 text-emerald-700",
     },
     {
       label: t("stats.inUse"),
       value: stats.inUse,
       icon: Lock,
       valueClass: "text-rose-600",
-      iconBox: "bg-rose-50 text-rose-600",
+      iconBox: "bg-rose-50 text-rose-700",
     },
     {
       label: t("stats.maintenance"),
       value: stats.maintenance,
       icon: Wrench,
       valueClass: "text-orange-600",
-      iconBox: "bg-orange-50 text-orange-600",
+      iconBox: "bg-orange-50 text-orange-700",
     },
   ];
 
@@ -311,7 +311,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
     return (
       <div className="space-y-6 animate-pulse p-4 sm:p-6">
         <div className="h-6 bg-slate-200 rounded-lg w-48 mb-4" />
-        <div className="h-28 bg-white rounded-3xl border border-slate-100 p-6" />
+        <div className="h-28 bg-white rounded-xl border border-neutral-border p-6" />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="h-24 bg-white rounded-2xl border border-slate-100" />
@@ -324,7 +324,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
 
   if (facilityQuery.isError || !facility) {
     return (
-      <div className="p-8 bg-white rounded-3xl border border-slate-100 text-center space-y-4">
+      <div className="p-8 bg-white rounded-xl border border-neutral-border text-center space-y-4">
         <div className="w-16 h-16 rounded-3xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto">
           <AlertCircle className="w-8 h-8" />
         </div>
@@ -367,13 +367,13 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
           {facility.name}
         </span>
         <span className="text-slate-300">/</span>
-        <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-lg border border-teal-200/60">
+        <span className="text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200/60">
           {locale === "vi" ? "Danh sách ô kho theo loại" : "Storage Units by Unit Type"}
         </span>
       </div>
 
       {/* Facility Header Card */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="bg-white rounded-xl border border-neutral-border p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex items-start gap-4">
           {facility.images && facility.images[0] ? (
             <div className="relative w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-slate-200/80 shadow-xs bg-slate-100">
@@ -394,14 +394,14 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               {facility.code && (
-                <span className="px-2 py-0.5 rounded-md bg-teal-50 border border-teal-200 font-mono text-xs font-bold text-teal-800">
+                <span className="px-2.5 py-0.5 rounded-md bg-teal-50 border border-teal-200 font-mono text-xs font-semibold text-teal-700">
                   {facility.code}
                 </span>
               )}
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
                 {facility.name}
               </h1>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 whitespace-nowrap shrink-0">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 whitespace-nowrap shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5" />
                 {facility.status === "active"
                   ? locale === "vi"
@@ -485,7 +485,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
           return (
             <div
               key={idx}
-              className="bg-white rounded-2xl border border-slate-100 p-4 shadow-xs flex items-center justify-between"
+              className="bg-white rounded-xl border border-neutral-border p-4 shadow-xs flex items-center justify-between"
             >
               <div>
                 <p className="text-xs text-slate-400 font-medium">{card.label}</p>
@@ -502,7 +502,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
       </div>
 
       {/* Filters & Search Toolbar */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-5 shadow-xs space-y-4">
+      <div className="bg-white rounded-xl border border-neutral-border p-5 shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
           {/* Search box */}
           <div className="relative flex-1">
@@ -673,11 +673,11 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
       ) : mapLayoutQuery.isLoading ? (
         <div className="space-y-6 animate-pulse">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-64 bg-white rounded-3xl border border-slate-100 p-6" />
+            <div key={i} className="h-64 bg-white rounded-xl border border-neutral-border p-6" />
           ))}
         </div>
       ) : groupedUnits.length === 0 ? (
-        <div className="bg-white rounded-3xl border border-slate-100 p-12 text-center space-y-3 shadow-xs">
+        <div className="bg-white rounded-xl border border-neutral-border p-12 text-center space-y-3 shadow-xs">
           <div className="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center mx-auto text-slate-300">
             <Boxes className="w-8 h-8" />
           </div>
@@ -719,7 +719,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
             return (
               <div
                 key={ut.id}
-                className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden transition-all duration-200"
+                className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden transition-all duration-200"
               >
                 {/* Unit Type Section Header */}
                 <div
@@ -740,12 +740,12 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                           {ut.name}
                         </h2>
                         {ut.category && (
-                          <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700">
+                          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                             {categoryLabel(ut.category)}
                           </span>
                         )}
                         {group.offeringPrice !== undefined && (
-                          <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+                          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
                             {formatCurrency(group.offeringPrice)}{" "}
                             <span className="text-[10px] text-emerald-600 font-normal">
                               /{" "}
@@ -944,7 +944,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
       {/* Storage Unit Detail Modal */}
       {inspectUnit && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full border border-slate-100 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white rounded-xl max-w-lg w-full border border-neutral-border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Modal Header */}
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -1030,7 +1030,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
 
               {/* Specs & Location Details */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-3.5 rounded-xl border border-slate-100 bg-white space-y-1">
+                <div className="p-3.5 rounded-xl border border-neutral-border bg-white space-y-1">
                   <span className="text-[11px] font-bold text-slate-400 uppercase">
                     {locale === "vi" ? "Vị trí trong cơ sở" : "Location"}
                   </span>
@@ -1045,7 +1045,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl border border-slate-100 bg-white space-y-1">
+                <div className="p-3.5 rounded-xl border border-neutral-border bg-white space-y-1">
                   <span className="text-[11px] font-bold text-slate-400 uppercase">
                     {locale === "vi" ? "Kích thước & Thể tích" : "Dimensions"}
                   </span>
@@ -1090,7 +1090,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
       {/* Warehouse Rack Structure Modal */}
       {selectedRackUnit && (
         <div className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-5xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150 my-auto">
+          <div className="bg-white rounded-xl max-w-5xl w-full border border-neutral-border shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150 my-auto">
             {/* Modal Header */}
             <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-teal-50/80 via-white to-white shrink-0">
               <div className="flex items-center gap-3.5">
@@ -1104,7 +1104,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                         ? `Sơ đồ kệ kho: ${selectedRackUnit.unitNumber}`
                         : `Rack Map: ${selectedRackUnit.unitNumber}`}
                     </h3>
-                    <span className="px-2 py-0.5 rounded-md text-[11px] font-bold bg-teal-100 text-teal-800 uppercase">
+                    <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-teal-50 text-teal-700 uppercase border border-teal-200">
                       {selectedRackUnit.unitType?.name ?? "Warehouse Rack"}
                     </span>
                   </div>

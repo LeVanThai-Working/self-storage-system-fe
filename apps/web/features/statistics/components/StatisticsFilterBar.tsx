@@ -82,7 +82,7 @@ export function StatisticsFilterBar({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs">
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs">
       <div className="flex flex-wrap items-center gap-3">
         {/* Preset date buttons */}
         <div className="inline-flex items-center rounded-xl border border-slate-200 bg-slate-50 p-1 text-xs font-semibold text-slate-600">

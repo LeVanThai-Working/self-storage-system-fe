@@ -103,7 +103,7 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
 
   return (
     <div
-      className={`bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-5 ${className}`}
+      className={`bg-white rounded-xl border border-neutral-border p-6 shadow-sm space-y-5 ${className}`}
     >
       {/* Top Header: Total Documents */}
       <div className="flex items-center justify-between gap-2 flex-wrap pb-1 border-b border-slate-100">
@@ -120,7 +120,7 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
             }
           />
         </div>
-        <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+        <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-md">
           {totalFiles} {isEn ? "files" : "tài liệu"}
         </span>
       </div>
@@ -133,7 +133,7 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
               <FileText className="w-3.5 h-3.5 text-emerald-600" />
               {isEn ? "Main contract (signed at check-in)" : "Hợp đồng chính"}
             </h4>
-            <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">
               {signedContractUrls.length} {isEn ? "pages" : "trang"}
             </span>
           </div>
@@ -166,7 +166,7 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
               <FileSignature className="w-3.5 h-3.5 text-teal-600" />
               {isEn ? "Signed addendums" : "Phụ lục đã ký"}
             </h4>
-            <span className="text-[11px] font-bold text-teal-700 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200 px-2.5 py-0.5 rounded-md">
               {totalAddendumFiles} {isEn ? "files" : "bản scan"}
             </span>
           </div>
@@ -182,11 +182,11 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
                     <span className="text-xs font-extrabold text-slate-900">
                       #{addendum.addendumCode}
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-100 text-teal-800">
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200">
                       {getAddendumTypeLabel(addendum.type, isEn)}
                     </span>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
                     {files.length} {isEn ? "scans" : "tài liệu"}
                   </span>
                 </div>

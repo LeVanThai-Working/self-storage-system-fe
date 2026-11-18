@@ -15,7 +15,7 @@ import { formatCountdown, isAwaitingDeposit, secondsUntil } from "../utils";
 
 function Panel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto min-w-0 max-w-xl rounded-2xl border border-neutral-border bg-white p-6 text-center [overflow-wrap:anywhere]">
+    <div className="mx-auto min-w-0 max-w-xl rounded-xl border border-neutral-border bg-white p-6 text-center [overflow-wrap:anywhere]">
       {children}
     </div>
   );
@@ -136,7 +136,7 @@ export function ReservationPaymentPage({ id }: { id: string }) {
           "flex items-center justify-between rounded-2xl border p-4",
           secondsLeft <= 60
             ? "border-rose-200 bg-rose-50 text-rose-700"
-            : "border-amber-200 bg-amber-50 text-amber-800"
+            : "border-amber-200 bg-amber-50 text-amber-700"
         )}
       >
         <span className="flex items-center gap-2 text-sm font-medium">
@@ -145,7 +145,7 @@ export function ReservationPaymentPage({ id }: { id: string }) {
         <span className="text-2xl font-bold tabular-nums">{formatCountdown(secondsLeft)}</span>
       </div>
 
-      <div className="rounded-2xl border border-neutral-border bg-white p-6">
+      <div className="rounded-xl border border-neutral-border bg-white p-6">
         {paymentLoading && !payment ? (
           <Skeleton className="mx-auto size-64 rounded-xl" />
         ) : error || !payment ? (

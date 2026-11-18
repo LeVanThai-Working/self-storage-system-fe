@@ -227,7 +227,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
 
   if (facilityQuery.isError || !facility) {
     return (
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm py-16 px-6 text-center">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-sm py-16 px-6 text-center">
         <div className="w-16 h-16 rounded-3xl bg-slate-50 flex items-center justify-center mx-auto mb-4 text-slate-300">
           <Boxes className="w-8 h-8" />
         </div>
@@ -239,7 +239,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
         <button
           type="button"
           onClick={() => facilityQuery.refetch()}
-          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
         >
           <RotateCw className="w-3.5 h-3.5" />
           {t("retry")}
@@ -254,28 +254,28 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
       value: stats.total,
       icon: Boxes,
       valueClass: "text-slate-900",
-      iconBox: "bg-teal-50 text-teal-600",
+      iconBox: "bg-teal-50 text-teal-700",
     },
     {
       label: t("stats.available"),
       value: stats.available,
       icon: CheckCircle2,
       valueClass: "text-emerald-600",
-      iconBox: "bg-emerald-50 text-emerald-600",
+      iconBox: "bg-emerald-50 text-emerald-700",
     },
     {
       label: t("stats.inUse"),
       value: stats.inUse,
       icon: Lock,
       valueClass: "text-rose-600",
-      iconBox: "bg-rose-50 text-rose-600",
+      iconBox: "bg-rose-50 text-rose-700",
     },
     {
       label: t("stats.maintenance"),
       value: stats.maintenance,
       icon: Wrench,
       valueClass: "text-orange-600",
-      iconBox: "bg-orange-50 text-orange-600",
+      iconBox: "bg-orange-50 text-orange-700",
     },
   ];
 
@@ -341,7 +341,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
           return (
             <div
               key={card.label}
-              className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between"
+              className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between"
             >
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -362,7 +362,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3">
+      <div className="bg-white rounded-xl p-4 border border-neutral-border shadow-sm flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3">
         {/* Search Input */}
         <div className="flex-1 relative min-w-[240px] max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -484,7 +484,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
 
       {/* Storage Units Data Table */}
       {viewMode === "table" && (
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[980px]">
               <thead>
@@ -535,7 +535,7 @@ export const StorageUnitTable = ({ mode = "manager" }: StorageUnitTableProps) =>
                       <button
                         type="button"
                         onClick={() => refetch()}
-                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+                        className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
                       >
                         <RotateCw className="w-3.5 h-3.5" />
                         {t("retry")}

@@ -187,7 +187,7 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
       )}
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
+      <div className="bg-white p-4 rounded-xl border border-neutral-border shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
         {/* Search */}
         <div className="relative w-full md:w-96">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -254,7 +254,7 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
       </div>
 
       {/* Table Card */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs min-w-[1050px]">
             <thead>
@@ -355,13 +355,13 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
                           {facilities.slice(0, 2).map((fac, idx) => (
                             <span
                               key={fac._id || idx}
-                              className="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 text-[11px] font-medium"
+                              className="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200"
                             >
                               {fac.name}
                             </span>
                           ))}
                           {facilities.length > 2 && (
-                            <span className="px-1.5 py-0.5 rounded-lg bg-teal-50 text-teal-700 text-[10px] font-bold">
+                            <span className="px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 text-xs font-semibold border border-teal-200">
                               +{facilities.length - 2}
                             </span>
                           )}

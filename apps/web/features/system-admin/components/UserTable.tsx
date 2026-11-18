@@ -34,37 +34,37 @@ const getRoleBadge = (
   switch (normalized) {
     case "system_admin":
       return (
-        <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium">
+        <span className="px-2.5 py-0.5 bg-purple-50 text-purple-700 rounded-md text-xs font-semibold border border-purple-200">
           {t("userTable.roles.systemAdmin")}
         </span>
       );
     case "business_ops_manager":
       return (
-        <span className="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-medium">
+        <span className="px-2.5 py-0.5 bg-amber-50 text-amber-700 rounded-md text-xs font-semibold border border-amber-200">
           {t("userTable.roles.businessOpsManager")}
         </span>
       );
     case "facility_manager":
       return (
-        <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+        <span className="px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-md text-xs font-semibold border border-blue-200">
           {t("userTable.roles.facilityManager")}
         </span>
       );
     case "facility_staff":
       return (
-        <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium">
+        <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 rounded-md text-xs font-semibold border border-emerald-200">
           {t("userTable.roles.facilityStaff")}
         </span>
       );
     case "customer":
       return (
-        <span className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-medium">
+        <span className="px-2.5 py-0.5 bg-orange-50 text-orange-700 rounded-md text-xs font-semibold border border-orange-200">
           {t("userTable.roles.customer")}
         </span>
       );
     default:
       return (
-        <span className="px-3 py-1 bg-gray-50 text-gray-700 rounded-full text-xs font-medium">
+        <span className="px-2.5 py-0.5 bg-gray-50 text-gray-700 rounded-md text-xs font-semibold border border-gray-200">
           {role}
         </span>
       );
@@ -447,7 +447,7 @@ export const UserTable = () => {
       </Dialog>
 
       {/* Table Container */}
-      <div className="bg-white rounded-2xl shadow-sm border-none overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border-none overflow-hidden">
         {/* Toolbar / Search & Role Filter */}
         <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <div className="relative max-w-sm w-full">

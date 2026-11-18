@@ -47,7 +47,7 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
   return (
     <div className="space-y-6">
       {/* 1. Booking Funnel */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+      <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
           <h4 className="text-base font-extrabold text-slate-900">Phễu chuyển đổi đặt chỗ</h4>
           <div className="text-right">
@@ -138,7 +138,7 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
       </div>
 
       {/* 2. Unit Types Performance */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+      <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-800 mb-4">
           Hiệu suất danh mục loại kho
         </h4>
@@ -188,7 +188,7 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
       {/* 3. Rack Zones & Amenities */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Rack Zones */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+        <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
           <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-800 mb-4">
             Hiệu quả phân khu kệ cho thuê
           </h4>
@@ -217,7 +217,7 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
         </div>
 
         {/* Amenity Performance */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+        <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
             <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-800">
               Hiệu suất tiện ích & dịch vụ cộng thêm
@@ -260,7 +260,7 @@ export function ProductOperationsTab({ data, isLoading }: ProductOperationsTabPr
       </div>
 
       {/* 4. Warehouse Traffic */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+      <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-800 mb-4">
           Lưu lượng khách & Biến động hàng hóa tại kho
         </h4>

@@ -38,7 +38,7 @@ export function WhyStorageHubSection() {
             {STATISTIC_ITEMS.map(({ id, icon: Icon }) => (
               <div
                 key={id}
-                className="flex flex-col justify-between rounded-2xl border border-neutral-border bg-white p-4 text-left shadow-soft transition-all hover:-translate-y-0.5 hover:border-brand/40 min-[375px]:p-5 sm:p-6 lg:p-5 xl:p-6"
+                className="flex flex-col justify-between rounded-xl border border-neutral-border bg-white p-4 text-left shadow-soft transition-all hover:-translate-y-0.5 hover:border-brand/40 min-[375px]:p-5 sm:p-6 lg:p-5 xl:p-6"
               >
                 <div className="mb-4 flex size-10 items-center justify-center rounded-xl bg-brand-light">
                   <Icon className="size-5 text-brand" />

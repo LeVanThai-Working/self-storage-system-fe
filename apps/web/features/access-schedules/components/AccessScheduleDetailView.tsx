@@ -160,7 +160,7 @@ export function AccessScheduleDetailView({
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
           <p className="mb-2 text-sm font-bold text-slate-800">{t("detail.visit")}</p>
           <dl>
             <Row label={t("detail.customer")} value={schedule.customerName} />
@@ -190,7 +190,7 @@ export function AccessScheduleDetailView({
         </section>
 
         <div className="space-y-5">
-          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
             <p className="mb-2 text-sm font-bold text-slate-800">{t("detail.gate")}</p>
             <dl>
               <Row
@@ -219,7 +219,7 @@ export function AccessScheduleDetailView({
             </dl>
           </section>
 
-          <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
             <p className="mb-2 text-sm font-bold text-slate-800">{t("detail.racks")}</p>
             {racks.length === 0 ? (
               <p className="text-sm text-slate-500">—</p>
@@ -228,7 +228,7 @@ export function AccessScheduleDetailView({
                 {racks.map((rack) => (
                   <li
                     key={rack.rackId}
-                    className="rounded-lg border border-teal-200 bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-800"
+                    className="rounded-md border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700"
                   >
                     {rack.rackCode}
                     {rack.aisle ? ` · ${t("detail.aisle", { aisle: rack.aisle })}` : ""}

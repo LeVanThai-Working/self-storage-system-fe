@@ -24,7 +24,7 @@ function StatCard({
   loading: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
       <p className="text-sm font-medium text-slate-500">{label}</p>
       {loading ? (
         <Skeleton className="mt-2 h-9 w-20" />
@@ -59,7 +59,7 @@ export function FacilityDashboardView() {
 
   if (isError) {
     return (
-      <p className="rounded-2xl border border-slate-100 bg-white p-8 text-center text-slate-500">
+      <p className="rounded-xl border border-neutral-border bg-white p-8 text-center text-slate-500">
         {t("noFacility")}
       </p>
     );
@@ -147,7 +147,7 @@ export function FacilityDashboardView() {
           </section>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <section className="rounded-xl border border-neutral-border bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-lg font-bold text-slate-900">{t("amenities.title")}</h2>
               {amenities.isLoading ? (
                 <Skeleton className="h-40 rounded-xl" />
@@ -192,7 +192,7 @@ export function FacilityDashboardView() {
               )}
             </section>
 
-            <section className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+            <section className="rounded-xl border border-neutral-border bg-white p-6 shadow-sm">
               <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900">
                 <Users className="size-5" aria-hidden /> {t("staff.title")}
                 {!staffs.isLoading && <span className="text-slate-400">({staffItems.length})</span>}

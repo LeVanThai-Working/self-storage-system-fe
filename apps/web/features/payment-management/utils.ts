@@ -87,7 +87,7 @@ export function getPaymentStatusConfig(status: PaymentStatusEnum | string, local
       return {
         label: isEn ? "Partially Paid (Legacy)" : "Thanh toán một phần (Cũ)",
         variant: "amber" as const,
-        badgeClass: "bg-amber-50 text-amber-800 border-amber-300",
+        badgeClass: "bg-amber-50 text-amber-700 border-amber-200",
         dotClass: "bg-amber-600",
       };
     default:
@@ -120,6 +120,11 @@ export function getPaymentPurposeConfig(
       return {
         label: isEn ? "1st Period Rent" : "Tiền thuê kỳ đầu",
         badgeClass: "bg-teal-50 text-teal-700 border-teal-200",
+      };
+    case "invoice_payment":
+      return {
+        label: isEn ? "Invoice Payment" : "Thanh toán hóa đơn",
+        badgeClass: "bg-orange-50 text-orange-700 border-orange-200",
       };
     default:
       return {

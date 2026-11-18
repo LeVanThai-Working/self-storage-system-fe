@@ -156,7 +156,7 @@ export const WeeklyScheduleView: React.FC<WeeklyScheduleViewProps> = ({
                       {day.name}
                     </span>
                     {day.isWeekend && (
-                      <span className="rounded-full px-2 py-0.5 text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200 dark:bg-amber-900/60 dark:text-amber-300 dark:border-amber-800">
+                      <span className="rounded-md px-2.5 py-0.5 text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/60 dark:text-amber-300 dark:border-amber-800">
                         Cuối tuần
                       </span>
                     )}

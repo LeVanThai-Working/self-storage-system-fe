@@ -171,7 +171,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                 nowMs={nowMs}
               />
               {reservation.arrivedAt && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800">
+                <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200">
                   <UserCheck className="w-3 h-3" /> Đã có mặt
                 </span>
               )}
@@ -313,7 +313,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                                   : "5. Ký hợp đồng check-in & Bàn giao kho"}
                         </p>
                         {isCancelled && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-rose-100 text-rose-700 shrink-0">
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-rose-50 text-rose-700 shrink-0 border border-rose-200">
                             <XCircle className="w-2.5 h-2.5" />
                             {status === ReservationStatusEnum.EXPIRED ? "Hết hạn" : "Đã hủy"}
                           </span>

@@ -255,7 +255,7 @@ export const FacilityAmenityTable = () => {
           <button
             type="button"
             onClick={() => setIsLookupOpen(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold border border-slate-200/90 shadow-2xs transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold border border-slate-200/90 shadow-2xs transition-all cursor-pointer"
           >
             <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
             {t("quickLookup")}
@@ -279,7 +279,7 @@ export const FacilityAmenityTable = () => {
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Offerings */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm flex items-center gap-4">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
             <Sparkles className="w-6 h-6" />
           </div>
@@ -292,7 +292,7 @@ export const FacilityAmenityTable = () => {
         </div>
 
         {/* Active Offerings */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm flex items-center gap-4">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-6 h-6" />
           </div>
@@ -305,7 +305,7 @@ export const FacilityAmenityTable = () => {
         </div>
 
         {/* Inactive Offerings */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm flex items-center gap-4">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
             <Layers className="w-6 h-6" />
           </div>
@@ -318,7 +318,7 @@ export const FacilityAmenityTable = () => {
         </div>
 
         {/* Total Facilities */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-100 shadow-sm flex items-center gap-4">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
             <Building2 className="w-6 h-6" />
           </div>
@@ -332,7 +332,7 @@ export const FacilityAmenityTable = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
+      <div className="bg-white rounded-xl p-4 border border-neutral-border shadow-sm space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Search Form with Search and Clear buttons */}
           <form
@@ -525,7 +525,7 @@ export const FacilityAmenityTable = () => {
       </div>
 
       {/* Offerings Table */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>
@@ -604,7 +604,7 @@ export const FacilityAmenityTable = () => {
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-slate-900">{offering.amenity.name}</span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
+                          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
                             {tType.has(offering.amenity.type)
                               ? tType(offering.amenity.type)
                               : offering.amenity.type}
@@ -674,17 +674,17 @@ export const FacilityAmenityTable = () => {
                             {/* Stock Tag */}
                             <div className="mt-1.5">
                               {available === 0 ? (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border border-rose-200">
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border border-rose-200">
                                   <AlertCircle className="w-2.5 h-2.5 shrink-0" />
                                   {t("stock.outOfStock")}
                                 </span>
                               ) : available <= 2 ? (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200">
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200">
                                   <AlertTriangle className="w-2.5 h-2.5 shrink-0" />
                                   {t("stock.lowStock")}
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200">
                                   <CheckCircle2 className="w-2.5 h-2.5 shrink-0" />
                                   {t("stock.inStock")}
                                 </span>

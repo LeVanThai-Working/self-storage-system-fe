@@ -31,7 +31,7 @@ export function CheckInTimeValidationControl() {
   const error = update.error ?? query.error;
 
   return (
-    <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="mb-6 rounded-xl border border-neutral-border bg-white p-5 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
           <h2 className="flex items-center gap-2 font-bold text-slate-900">

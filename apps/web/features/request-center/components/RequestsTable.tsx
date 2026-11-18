@@ -55,7 +55,7 @@ export const RequestsTable = () => {
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
       {cancelError && (
         <div className="p-3 m-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm">
           {cancelError}
@@ -113,7 +113,7 @@ export const RequestsTable = () => {
                     </td>
                     <td className="py-4 px-6">
                       <span
-                        className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${badge.className}`}
+                        className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold border ${badge.className}`}
                       >
                         <BadgeIcon className="w-3.5 h-3.5" />
                         {t(`status.${req.status}`)}

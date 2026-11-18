@@ -150,7 +150,7 @@ export const RefundDetailModal: React.FC<RefundDetailModalProps> = ({
             {isOverThreshold && (
               <Badge
                 variant="outline"
-                className="bg-purple-50 text-purple-700 border-purple-200 py-1 px-3 text-xs flex items-center gap-1.5 self-start md:self-center"
+                className="bg-purple-50 text-purple-700 border-purple-200 py-0.5 px-2.5 text-xs flex items-center gap-1.5 self-start md:self-center border rounded-md"
               >
                 <ShieldAlert className="w-4 h-4 text-purple-600" />
                 <span>Cần Quản lý vận hành (Ops) phê duyệt (&gt; 10M VND)</span>
@@ -174,7 +174,7 @@ export const RefundDetailModal: React.FC<RefundDetailModalProps> = ({
           <div className="space-y-4 text-sm text-slate-700">
             {/* 1. Customer & Facility & References */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-3.5 border border-slate-100 rounded-lg bg-white shadow-xs space-y-2">
+              <div className="p-3.5 border border-neutral-border rounded-xl bg-white shadow-xs space-y-2">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                   <User className="w-3.5 h-3.5 text-slate-500" /> Khách hàng
                 </p>
@@ -186,7 +186,7 @@ export const RefundDetailModal: React.FC<RefundDetailModalProps> = ({
                 </div>
               </div>
 
-              <div className="p-3.5 border border-slate-100 rounded-lg bg-white shadow-xs space-y-2">
+              <div className="p-3.5 border border-neutral-border rounded-xl bg-white shadow-xs space-y-2">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                   <Building2 className="w-3.5 h-3.5 text-slate-500" /> Cơ sở lưu kho
                 </p>
@@ -224,7 +224,7 @@ export const RefundDetailModal: React.FC<RefundDetailModalProps> = ({
             </div>
 
             {/* 2. Bank Information (Secured & Masked) */}
-            <div className="p-3.5 border border-slate-200 rounded-lg bg-white space-y-2">
+            <div className="p-3.5 border border-neutral-border rounded-xl bg-white space-y-2">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                 <CreditCard className="w-3.5 h-3.5 text-slate-500" /> Thông tin tài khoản thụ hưởng
               </p>

@@ -190,7 +190,7 @@ function TimelineCard({ incident }: { incident: IncidentResponse }) {
             <p className="font-semibold text-slate-800">{event.title}</p>
             {event.meta ? <p className="text-slate-500">{event.meta}</p> : null}
             {"relocation" in event && event.relocation ? (
-              <span className="mt-1 inline-block rounded-full bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-700">
+              <span className="mt-1 inline-block rounded-md bg-orange-50 px-2.5 py-0.5 text-xs font-semibold text-orange-700 border border-orange-200">
                 {t("needsRelocation")}
               </span>
             ) : null}

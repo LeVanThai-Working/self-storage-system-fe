@@ -342,7 +342,7 @@ export const FacilityAmenityFormModal = ({
                   <div className="p-3 rounded-2xl bg-slate-50/80 border border-slate-200/60 flex items-center justify-between text-xs text-slate-600">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-slate-800">{selectedAmenity.name}</span>
-                      <span className="px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 font-bold uppercase text-[10px]">
+                      <span className="px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 font-semibold uppercase text-xs border border-teal-200">
                         {selectedAmenity.type}
                       </span>
                     </div>

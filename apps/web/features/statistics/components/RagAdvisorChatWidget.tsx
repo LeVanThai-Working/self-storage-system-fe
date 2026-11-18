@@ -451,7 +451,7 @@ export function RagAdvisorChatWidget({
                     className={`max-w-[95%] rounded-2xl rounded-tl-xs p-3.5 text-xs shadow-xs border ${
                       msg.errorCode === "MESSAGE_CODE_821"
                         ? "border-rose-400 bg-rose-50 text-rose-900 ring-2 ring-rose-300"
-                        : "border-amber-300 bg-amber-50 text-amber-900"
+                        : "border-amber-200 bg-amber-50 text-amber-900"
                     }`}
                   >
                     <div className="flex items-center gap-2 font-bold mb-1">
@@ -476,7 +476,7 @@ export function RagAdvisorChatWidget({
 
                 {/* AI Successful Response Bubble */}
                 {msg.sender === "ai" && msg.response && (
-                  <div className="w-full max-w-[98%] rounded-2xl rounded-tl-xs border border-slate-200 bg-white p-3.5 text-xs shadow-xs space-y-3">
+                  <div className="w-full max-w-[98%] rounded-xl rounded-tl-xs border border-neutral-border bg-white p-3.5 text-xs shadow-xs space-y-3">
                     {/* Edge-case Status Alerts */}
                     {msg.response.queryInfo.groundingStatus ===
                       RagGroundingStatusEnum.OUT_OF_SCOPE_REJECTED && (

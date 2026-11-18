@@ -157,7 +157,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
       </div>
 
       {/* Filter Toolbar */}
-      <div className="rounded-2xl bg-white border border-slate-200/80 p-4 shadow-sm space-y-3">
+      <div className="rounded-xl bg-white border border-slate-200/80 p-4 shadow-sm space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           {/* Search by Code */}
           <div className="relative">
@@ -266,7 +266,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
       </div>
 
       {/* Payments Table */}
-      <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+      <div className="rounded-xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-600 min-w-[1050px]">
             <thead className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold text-slate-500 uppercase tracking-wider">

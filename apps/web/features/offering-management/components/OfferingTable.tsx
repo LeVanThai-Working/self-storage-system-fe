@@ -229,7 +229,7 @@ export const OfferingTable = () => {
           <button
             type="button"
             onClick={() => setIsLookupOpen(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold border border-slate-200/90 shadow-2xs transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold border border-slate-200/90 shadow-2xs transition-all cursor-pointer"
           >
             <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
             {t("quickLookup")}
@@ -253,7 +253,7 @@ export const OfferingTable = () => {
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Offerings */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.total")}
@@ -266,7 +266,7 @@ export const OfferingTable = () => {
         </div>
 
         {/* Active Offerings */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.active")}
@@ -279,7 +279,7 @@ export const OfferingTable = () => {
         </div>
 
         {/* Inactive Offerings */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.inactive")}
@@ -292,7 +292,7 @@ export const OfferingTable = () => {
         </div>
 
         {/* Participating Facilities */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.facilities")}
@@ -306,7 +306,7 @@ export const OfferingTable = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
+      <div className="bg-white rounded-xl p-4 border border-neutral-border shadow-sm space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Search Form with Search and Clear buttons */}
           <form
@@ -479,7 +479,7 @@ export const OfferingTable = () => {
       </div>
 
       {/* Offerings Table */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>
@@ -554,7 +554,7 @@ export const OfferingTable = () => {
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-slate-900">{offering.unitType.name}</span>
                           {offering.unitType.category && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
+                            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200/60">
                               {categoryLabel(offering.unitType.category)}
                             </span>
                           )}
@@ -588,7 +588,7 @@ export const OfferingTable = () => {
 
                       {/* Deposit Column */}
                       <td className="py-4 px-6 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-bold whitespace-nowrap shrink-0 bg-amber-50 text-amber-800 border border-amber-200/60">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200/60">
                           {offering.depositMultiplier}x
                         </span>
                         {depositAmount > 0 && (
@@ -600,7 +600,7 @@ export const OfferingTable = () => {
 
                       {/* Min Rental Days Column */}
                       <td className="py-4 px-6 whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1 text-slate-700 font-semibold text-xs bg-slate-50 px-2.5 py-1 rounded-xl border border-slate-200/80 whitespace-nowrap shrink-0">
+                        <div className="inline-flex items-center gap-1 text-slate-700 font-semibold text-xs bg-slate-50 px-2.5 py-0.5 rounded-md border border-slate-200/80 whitespace-nowrap shrink-0">
                           <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           <span>{offering.minRentalDays} ngày</span>
                         </div>

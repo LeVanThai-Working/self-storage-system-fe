@@ -99,7 +99,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onCl
       open={isOpen}
       onOpenChange={(open) => !open && !updateProfileMutation.isPending && onClose()}
     >
-      <DialogContent className="sm:max-w-lg p-0 rounded-3xl border-slate-100 shadow-2xl overflow-hidden bg-white">
+      <DialogContent className="sm:max-w-lg p-0 rounded-xl border-neutral-border shadow-2xl overflow-hidden bg-white">
         {/* Header */}
         <DialogHeader className="p-6 pb-4 border-b border-slate-100 bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-orange-500/10">
           <div className="flex items-center gap-3">

@@ -26,7 +26,7 @@ export const DeleteTimeSlotModal: React.FC<DeleteTimeSlotModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div
-        className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 overflow-hidden transform transition-all"
+        className="w-full max-w-md rounded-xl bg-white shadow-2xl border border-neutral-border dark:border-slate-800 dark:bg-slate-900 overflow-hidden transform transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

@@ -89,7 +89,7 @@ export const AmenityTable = () => {
   const renderTypeBadge = (type: string) => {
     if (type === AmenityTypeEnum.PHYSICAL) {
       return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs">
           <Wrench className="w-3.5 h-3.5 text-blue-600 shrink-0" />
           {t("type.physical")}
         </span>
@@ -97,14 +97,14 @@ export const AmenityTable = () => {
     }
     if (type === AmenityTypeEnum.SERVICE) {
       return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-purple-50 text-purple-700 border border-purple-200/80 shadow-2xs">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-purple-50 text-purple-700 border border-purple-200/80 shadow-2xs">
           <ShieldCheck className="w-3.5 h-3.5 text-purple-600 shrink-0" />
           {t("type.service")}
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap shrink-0 bg-slate-100 text-slate-700 border border-slate-200">
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-700 border border-slate-200">
         {type}
       </span>
     );
@@ -158,7 +158,7 @@ export const AmenityTable = () => {
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Amenities */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.total")}
@@ -171,7 +171,7 @@ export const AmenityTable = () => {
         </div>
 
         {/* Physical Equipment (Blue) */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.physical")}
@@ -186,7 +186,7 @@ export const AmenityTable = () => {
         </div>
 
         {/* Support Services (Purple) */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.service")}
@@ -201,7 +201,7 @@ export const AmenityTable = () => {
         </div>
 
         {/* Active Amenities (Emerald) */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.active")}
@@ -217,7 +217,7 @@ export const AmenityTable = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-white rounded-xl p-4 border border-neutral-border shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Search Input */}
         <div className="flex-1 relative max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -293,7 +293,7 @@ export const AmenityTable = () => {
       </div>
 
       {/* Amenities Data Table */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[980px]">
             <thead>
@@ -389,14 +389,14 @@ export const AmenityTable = () => {
                           {amenity.tags.slice(0, 3).map((tag, idx) => (
                             <span
                               key={idx}
-                              className="inline-flex items-center gap-1 text-[11px] font-medium whitespace-nowrap shrink-0 bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md"
+                              className="inline-flex items-center gap-1 text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-md border border-slate-200"
                             >
                               <Tag className="w-2.5 h-2.5 text-slate-400 shrink-0" />
                               {tag}
                             </span>
                           ))}
                           {amenity.tags.length > 3 && (
-                            <span className="text-[11px] font-semibold whitespace-nowrap shrink-0 text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-md">
+                            <span className="text-xs font-semibold whitespace-nowrap shrink-0 text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
                               +{amenity.tags.length - 3}
                             </span>
                           )}

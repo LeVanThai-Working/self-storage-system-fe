@@ -282,7 +282,7 @@ export const CreateAmenityModal = ({ isOpen, onClose }: CreateAmenityModalProps)
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-bold text-slate-900">{t("typePhysical")}</span>
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-100 text-blue-700 border border-blue-200">
+                    <span className="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-blue-50 text-blue-700 border border-blue-200">
                       Blue
                     </span>
                   </div>
@@ -314,7 +314,7 @@ export const CreateAmenityModal = ({ isOpen, onClose }: CreateAmenityModalProps)
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-bold text-slate-900">{t("typeService")}</span>
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-100 text-purple-700 border border-purple-200">
+                    <span className="px-2.5 py-0.5 text-xs font-semibold rounded-md bg-purple-50 text-purple-700 border border-purple-200">
                       Purple
                     </span>
                   </div>
@@ -405,7 +405,7 @@ export const CreateAmenityModal = ({ isOpen, onClose }: CreateAmenityModalProps)
                 {tags.map((tagItem) => (
                   <span
                     key={tagItem}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200"
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200"
                   >
                     #{tagItem}
                     <button

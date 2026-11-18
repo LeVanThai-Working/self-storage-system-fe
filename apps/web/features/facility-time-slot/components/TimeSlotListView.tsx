@@ -43,7 +43,7 @@ export const TimeSlotListView: React.FC<TimeSlotListViewProps> = ({
   return (
     <div className="space-y-4">
       {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-slate-200 dark:bg-slate-900 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-neutral-border dark:bg-slate-900 dark:border-slate-800">
         <div className="relative w-full sm:w-80">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
             <Search className="h-4 w-4" />
@@ -95,7 +95,7 @@ export const TimeSlotListView: React.FC<TimeSlotListViewProps> = ({
       </div>
 
       {/* Table with overflow container & min-width */}
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="overflow-hidden rounded-xl border border-neutral-border bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs min-w-[850px]">
             <thead>
@@ -143,7 +143,7 @@ export const TimeSlotListView: React.FC<TimeSlotListViewProps> = ({
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold border whitespace-nowrap ${
+                        className={`inline-flex items-center gap-1 rounded-md px-2.5 py-0.5 text-xs font-semibold border whitespace-nowrap ${
                           slot.isActive
                             ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800"
                             : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"

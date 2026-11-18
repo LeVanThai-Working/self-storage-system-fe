@@ -97,7 +97,7 @@ export function FacilityDetailPage({ id }: { id: string }) {
     return (
       <>
         {back}
-        <div className="rounded-2xl border border-neutral-border bg-white p-8 text-center">
+        <div className="rounded-xl border border-neutral-border bg-white p-8 text-center">
           <p className="text-neutral-muted">{t("detail.error")}</p>
           <Button className="mt-4" onClick={() => refetch()}>
             {t("retry")}
@@ -115,7 +115,7 @@ export function FacilityDetailPage({ id }: { id: string }) {
   return (
     <>
       {back}
-      <div className="overflow-hidden rounded-2xl border border-neutral-border bg-white">
+      <div className="overflow-hidden rounded-xl border border-neutral-border bg-white">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={facility.images?.[0] || FALLBACK_IMAGE}

@@ -119,35 +119,35 @@ export const UnitTypeTable = () => {
     switch (category) {
       case UnitTypeCategoryEnum.WAREHOUSE_RACK:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-cyan-50 text-cyan-700 border border-cyan-200/70">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-cyan-50 text-cyan-700 border border-cyan-200/70">
             <Warehouse className="w-3 h-3 text-cyan-600 shrink-0" />
             {t("categoryFilter.warehouse_rack")}
           </span>
         );
       case UnitTypeCategoryEnum.LOCKER:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-indigo-50 text-indigo-700 border border-indigo-200/70">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-indigo-50 text-indigo-700 border border-indigo-200/70">
             <Lock className="w-3 h-3 text-indigo-600 shrink-0" />
             {t("categoryFilter.locker")}
           </span>
         );
       case UnitTypeCategoryEnum.SMALL:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200/70">
             <Box className="w-3 h-3 text-emerald-600 shrink-0" />
             {t("categoryFilter.small")}
           </span>
         );
       case UnitTypeCategoryEnum.LARGE:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-purple-50 text-purple-700 border border-purple-200/70">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-purple-50 text-purple-700 border border-purple-200/70">
             <Boxes className="w-3 h-3 text-purple-600 shrink-0" />
             {t("categoryFilter.large")}
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap shrink-0 bg-slate-100 text-slate-700 border border-slate-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-700 border border-slate-200">
             {category}
           </span>
         );
@@ -202,7 +202,7 @@ export const UnitTypeTable = () => {
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Unit Types */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.total")}
@@ -215,7 +215,7 @@ export const UnitTypeTable = () => {
         </div>
 
         {/* Active Unit Types */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.active")}
@@ -230,7 +230,7 @@ export const UnitTypeTable = () => {
         </div>
 
         {/* Inactive Unit Types */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.inactive")}
@@ -248,7 +248,7 @@ export const UnitTypeTable = () => {
         </div>
 
         {/* Categories Count */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="bg-white rounded-xl p-5 border border-neutral-border shadow-sm flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {t("stats.categories")}
@@ -264,7 +264,7 @@ export const UnitTypeTable = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-white rounded-xl p-4 border border-neutral-border shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Search Input */}
         <div className="flex-1 relative max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -343,7 +343,7 @@ export const UnitTypeTable = () => {
       </div>
 
       {/* Unit Types Data Table */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>
@@ -474,13 +474,13 @@ export const UnitTypeTable = () => {
                           {unitType.features.slice(0, 2).map((feat, idx) => (
                             <span
                               key={idx}
-                              className="text-[11px] font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md"
+                              className="text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-md border border-slate-200"
                             >
                               {feat}
                             </span>
                           ))}
                           {unitType.features.length > 2 && (
-                            <span className="text-[11px] font-semibold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-md">
+                            <span className="text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
                               +{unitType.features.length - 2}
                             </span>
                           )}

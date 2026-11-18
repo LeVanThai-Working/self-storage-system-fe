@@ -40,7 +40,7 @@ export const TimeSlotCard: React.FC<TimeSlotCardProps> = ({
         </div>
 
         {!slot.isActive && (
-          <span className="shrink-0 whitespace-nowrap inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold border bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700">
+          <span className="shrink-0 whitespace-nowrap inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold border bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700">
             Tạm dừng
           </span>
         )}

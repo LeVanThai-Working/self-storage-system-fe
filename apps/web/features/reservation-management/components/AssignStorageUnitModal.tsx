@@ -240,7 +240,7 @@ export const AssignStorageUnitModal: React.FC<AssignStorageUnitModalProps> = ({
                   <DialogTitle className="text-xl font-extrabold text-slate-900 tracking-tight">
                     {t("title")}
                   </DialogTitle>
-                  <span className="font-mono text-xs font-extrabold px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                  <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                     {reservation.reservationCode}
                   </span>
                   <ReservationStatusBadge status={reservation.status} />
@@ -281,7 +281,7 @@ export const AssignStorageUnitModal: React.FC<AssignStorageUnitModalProps> = ({
                 <span className="text-sm font-extrabold text-slate-900">
                   {matchedOffering?.unitType.name ?? t("requestedUnitType")}
                 </span>
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-200/70">
+                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200/70">
                   {t("depositLabel")}: {formatVnd(reservation.depositAmount)}
                 </span>
               </div>

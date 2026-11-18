@@ -118,7 +118,7 @@ export const ApprovalDiffModal = ({ requestId, onClose, onOpenReview }: Approval
                 <span>{t("title")}</span>
                 {request && (
                   <span
-                    className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md border ${
+                    className={`text-xs uppercase font-semibold tracking-wider px-2.5 py-0.5 rounded-md border ${
                       request.action === ApprovalRequestActionEnum.CREATE
                         ? "bg-teal-50 text-teal-700 border-teal-200"
                         : "bg-amber-50 text-amber-700 border-amber-200"

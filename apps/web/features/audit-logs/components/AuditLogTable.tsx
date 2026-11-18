@@ -16,16 +16,16 @@ const ACTION_COLORS: Record<string, string> = {
   register: "bg-green-50 text-green-700",
   login_google: "bg-blue-50 text-blue-700",
   create: "bg-emerald-50 text-emerald-700",
-  update: "bg-blue-50 text-blue-600",
+  update: "bg-blue-50 text-blue-700",
   delete: "bg-red-50 text-red-700",
-  restore: "bg-teal-50 text-teal-600",
+  restore: "bg-teal-50 text-teal-700",
   change_password: "bg-amber-50 text-amber-700",
-  forgot_password: "bg-amber-50 text-amber-600",
+  forgot_password: "bg-amber-50 text-amber-700",
   reset_password: "bg-amber-50 text-amber-700",
   send_otp: "bg-slate-100 text-slate-500",
   toggle_maintenance: "bg-orange-50 text-orange-700",
   approve: "bg-green-50 text-green-700",
-  reject: "bg-red-50 text-red-600",
+  reject: "bg-red-50 text-red-700",
   cancel: "bg-red-50 text-red-500",
   assign_manager: "bg-purple-50 text-purple-700",
   check_in: "bg-teal-50 text-teal-700",
@@ -35,19 +35,19 @@ const ACTION_COLORS: Record<string, string> = {
   add_amenity: "bg-emerald-50 text-emerald-700",
   remove_amenity: "bg-red-50 text-red-500",
   sign_contract: "bg-indigo-50 text-indigo-700",
-  create_addendum: "bg-indigo-50 text-indigo-600",
+  create_addendum: "bg-indigo-50 text-indigo-700",
   approve_addendum: "bg-green-50 text-green-700",
-  reject_addendum: "bg-red-50 text-red-600",
+  reject_addendum: "bg-red-50 text-red-700",
   sign_addendum: "bg-indigo-50 text-indigo-700",
   cancel_addendum: "bg-red-50 text-red-500",
   confirm_payment: "bg-emerald-50 text-emerald-700",
-  receive_payment: "bg-emerald-50 text-emerald-600",
-  refund: "bg-red-50 text-red-600",
+  receive_payment: "bg-emerald-50 text-emerald-700",
+  refund: "bg-red-50 text-red-700",
   inventory_in: "bg-sky-50 text-sky-700",
   inventory_out: "bg-cyan-50 text-cyan-700",
-  inventory_move: "bg-sky-50 text-sky-600",
+  inventory_move: "bg-sky-50 text-sky-700",
   inventory_adjust: "bg-amber-50 text-amber-700",
-  reassign_unit: "bg-purple-50 text-purple-600",
+  reassign_unit: "bg-purple-50 text-purple-700",
   expire: "bg-slate-100 text-slate-600",
   mark_overdue: "bg-orange-50 text-orange-700",
 };
@@ -146,7 +146,7 @@ export const AuditLogTable = () => {
         </div>
         <button
           onClick={() => refetch()}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-neutral-border rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
         >
           <RefreshCw className="w-4 h-4" />
           {t("refresh")}
@@ -154,7 +154,7 @@ export const AuditLogTable = () => {
       </div>
 
       {/* ── Filter bar ── */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-border p-4">
         <div className="flex flex-wrap gap-3 items-center">
           {/* Search */}
           <div className="relative flex-1 min-w-[220px]">
@@ -233,7 +233,7 @@ export const AuditLogTable = () => {
       </div>
 
       {/* ── Table ── */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
@@ -325,7 +325,7 @@ export const AuditLogTable = () => {
                               {log.actorEmail}
                             </div>
                             {log.actorRole && (
-                              <div className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 mt-1">
+                              <div className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-600 mt-1 border border-slate-200">
                                 {tRole.has(log.actorRole) ? tRole(log.actorRole) : log.actorRole}
                               </div>
                             )}
@@ -359,7 +359,7 @@ export const AuditLogTable = () => {
                       {/* Resource type */}
                       <td className="px-5 py-2">
                         <div>
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-600 font-medium">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs bg-slate-100 text-slate-600 font-semibold border border-slate-200">
                             {resourceLabel}
                           </span>
                           {log.resourceId && (

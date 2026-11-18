@@ -32,7 +32,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="min-w-0 rounded-2xl border border-neutral-border bg-white p-5 [overflow-wrap:anywhere]">
+    <section className="min-w-0 rounded-xl border border-neutral-border bg-white p-5 [overflow-wrap:anywhere]">
       <h2 className="mb-2 text-lg font-semibold">{title}</h2>
       <dl className="divide-y divide-neutral-border">{children}</dl>
     </section>
@@ -75,7 +75,7 @@ export function ReservationDetailPage({ id }: { id: string }) {
     return (
       <>
         {back}
-        <div className="rounded-2xl border border-neutral-border bg-white p-8 text-center">
+        <div className="rounded-xl border border-neutral-border bg-white p-8 text-center">
           <p className="text-neutral-muted">{t("error")}</p>
           <Button className="mt-4" onClick={() => refetch()}>
             {t("retry")}
@@ -127,8 +127,8 @@ export function ReservationDetailPage({ id }: { id: string }) {
         <div
           className={`mt-4 flex items-center gap-2.5 rounded-2xl border p-4 text-sm font-medium ${
             feedback.type === "success"
-              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-              : "border-rose-200 bg-rose-50 text-rose-800"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-rose-200 bg-rose-50 text-rose-700"
           }`}
         >
           {feedback.type === "success" ? (
@@ -226,7 +226,7 @@ export function ReservationDetailPage({ id }: { id: string }) {
           <Row label={t("checkInDate")} value={formatDate(r.checkInDate)} />
           <Row label={t("checkInSlot")} value={r.checkInTimeSlot} />
           <Row label={t("startDate")} value={formatDate(r.startDate)} />
-          <Row label={t("duration")} value={`${r.rentalDuration} ${tBilling(r.billingUnit)}`} />
+          <Row label={t("duration")} value={`${r.rentalDuration} ${tBilling("day")}`} />
         </Card>
 
         <Card title={t("sections.payment")}>
@@ -267,7 +267,7 @@ export function ReservationDetailPage({ id }: { id: string }) {
       </div>
 
       {r.amenities.length > 0 && (
-        <section className="mt-6 rounded-2xl border border-neutral-border bg-white p-5">
+        <section className="mt-6 rounded-xl border border-neutral-border bg-white p-5">
           <h2 className="mb-1 text-lg font-semibold">{t("sections.amenities")}</h2>
           <p className="mb-3 text-sm text-neutral-muted">{t("amenitiesNote")}</p>
           <ul className="divide-y divide-neutral-border text-sm">

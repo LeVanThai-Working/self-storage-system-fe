@@ -57,7 +57,7 @@ export function RagCitationsAccordion({
                 {/* Meta header */}
                 <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
                   <div className="flex items-center gap-1.5">
-                    <span className="rounded-full bg-teal-50 border border-teal-200 font-semibold text-[10px] text-teal-800 px-2 py-0.5 shrink-0">
+                    <span className="rounded-md bg-teal-50 border border-teal-200 font-semibold text-xs text-teal-700 px-2.5 py-0.5 shrink-0">
                       Nguồn {idx + 1}
                     </span>
                     <span className="font-semibold text-slate-800 text-[11px]">

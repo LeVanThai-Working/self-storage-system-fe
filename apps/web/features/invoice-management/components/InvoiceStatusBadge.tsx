@@ -49,7 +49,7 @@ export function getInvoiceStatusTone(status: InvoiceStatusEnum | string) {
     case "issued":
       return {
         bg: "bg-amber-50",
-        text: "text-amber-800",
+        text: "text-amber-700",
         border: "border-amber-200",
         dot: "bg-amber-500",
       };
@@ -57,7 +57,7 @@ export function getInvoiceStatusTone(status: InvoiceStatusEnum | string) {
     case "paid":
       return {
         bg: "bg-emerald-50",
-        text: "text-emerald-800",
+        text: "text-emerald-700",
         border: "border-emerald-200",
         dot: "bg-emerald-500",
       };
@@ -65,7 +65,7 @@ export function getInvoiceStatusTone(status: InvoiceStatusEnum | string) {
     case "overdue":
       return {
         bg: "bg-rose-50",
-        text: "text-rose-800",
+        text: "text-rose-700",
         border: "border-rose-200",
         dot: "bg-rose-500",
       };
@@ -80,9 +80,9 @@ export function getInvoiceStatusTone(status: InvoiceStatusEnum | string) {
     case InvoiceStatusEnum.VOID:
     case "void":
       return {
-        bg: "bg-zinc-100",
-        text: "text-zinc-600",
-        border: "border-zinc-300",
+        bg: "bg-zinc-50",
+        text: "text-zinc-700",
+        border: "border-zinc-200",
         dot: "bg-zinc-400",
       };
     default:
@@ -105,7 +105,7 @@ export const InvoiceStatusBadge: React.FC<InvoiceStatusBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${tone.bg} ${tone.text} ${tone.border} ${className}`}
+      className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold border ${tone.bg} ${tone.text} ${tone.border} ${className}`}
     >
       <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
       {label}

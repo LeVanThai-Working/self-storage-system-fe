@@ -141,7 +141,7 @@ export function UnitSeatMapWeb({
           <span className="text-[11px] font-bold tracking-wider text-slate-500 uppercase">
             {t("entrance")}
           </span>
-          <span className="ml-auto rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 ring-1 ring-teal-200">
+          <span className="ml-auto rounded-md bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700 ring-1 ring-teal-200 border border-teal-200">
             {t("freeCount", { free: freeCount, total: units.length })}
           </span>
         </div>
@@ -160,7 +160,7 @@ export function UnitSeatMapWeb({
                   className="space-y-2.5 rounded-xl border border-slate-200/80 bg-white/90 p-3"
                 >
                   {zone.zone ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-50 px-2 py-1 text-xs font-semibold text-teal-700">
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700 border border-teal-200">
                       <span className="size-1.5 rounded-full bg-teal-500" />
                       {zone.zone}
                     </span>

@@ -169,7 +169,7 @@ export const AssignManagerModal = ({ facility, isOpen, onClose }: AssignManagerM
               type="button"
               onClick={handleClose}
               disabled={assignMutation.isPending}
-              className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors cursor-pointer disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-slate-700 text-sm font-bold transition-colors cursor-pointer disabled:opacity-50"
             >
               {t("cancel")}
             </button>

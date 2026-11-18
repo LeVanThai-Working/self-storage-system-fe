@@ -310,7 +310,7 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
       </div>
 
       {/* Filter Toolbar */}
-      <div className="p-4 rounded-3xl bg-white border border-slate-200/80 shadow-sm space-y-3">
+      <div className="p-4 rounded-xl bg-white border border-slate-200/80 shadow-sm space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           {/* Search */}
           <div className="relative">
@@ -389,7 +389,7 @@ export const InvoicesListView: React.FC<InvoicesListViewProps> = ({
       </div>
 
       {/* Main Table */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="p-16 text-center text-xs text-slate-400">
             <RefreshCw className="w-6 h-6 animate-spin mx-auto text-teal-600 mb-2" />

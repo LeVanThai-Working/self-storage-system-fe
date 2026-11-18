@@ -100,7 +100,7 @@ export const LegalEntityListView: React.FC = () => {
             type="button"
             onClick={() => refetch()}
             disabled={isFetching}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-sm transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-sm transition-colors"
           >
             <RefreshCw className={`w-4 h-4 text-emerald-600 ${isFetching ? "animate-spin" : ""}`} />
             {isEn ? "Refresh" : "Làm mới"}
@@ -119,7 +119,7 @@ export const LegalEntityListView: React.FC = () => {
 
       {/* Quick Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="p-4 rounded-2xl border border-slate-200/80 bg-white shadow-sm flex items-center justify-between">
+        <div className="p-4 rounded-xl border border-slate-200/80 bg-white shadow-sm flex items-center justify-between">
           <div>
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
               {isEn ? "Total Entities" : "Tổng số pháp nhân"}
@@ -159,7 +159,7 @@ export const LegalEntityListView: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-4 shadow-sm flex flex-wrap items-center gap-3">
+      <div className="bg-white rounded-xl border border-neutral-border p-4 shadow-sm flex flex-wrap items-center gap-3">
         {/* Search Input */}
         <div className="relative flex-1 min-w-[220px]">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -222,7 +222,7 @@ export const LegalEntityListView: React.FC = () => {
       </div>
 
       {/* Table Section */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="p-12 text-center text-sm text-slate-500">
             <RefreshCw className="w-5 h-5 animate-spin text-emerald-600 mx-auto mb-2" />
@@ -288,7 +288,7 @@ export const LegalEntityListView: React.FC = () => {
                         {item.companyName}
                       </div>
                       <div className="mt-1 flex items-center gap-2">
-                        <span className="font-mono text-[11px] font-extrabold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                        <span className="font-mono text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
                           MST: {item.taxCode}
                         </span>
                       </div>
@@ -353,12 +353,12 @@ export const LegalEntityListView: React.FC = () => {
                     {/* Status */}
                     <td className="py-4 px-4 whitespace-nowrap">
                       {item.status === "active" ? (
-                        <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           <CheckCircle2 className="w-3 h-3" />
                           {isEn ? "Active" : "Hoạt động"}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                        <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
                           <XCircle className="w-3 h-3" />
                           {isEn ? "Inactive" : "Tạm ngưng"}
                         </span>
@@ -444,7 +444,7 @@ export const LegalEntityListView: React.FC = () => {
       {/* Delete Confirmation Modal */}
       {deletingEntity && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl w-full max-w-md p-6 space-y-4">
+          <div className="bg-white rounded-xl border border-neutral-border shadow-2xl w-full max-w-md p-6 space-y-4">
             <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
               <Trash2 className="w-6 h-6" />
             </div>

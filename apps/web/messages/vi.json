@@ -2577,7 +2577,7 @@
         "checkInDate": "Vui lòng chọn ngày đến nhận kho.",
         "slot": "Vui lòng chọn một khung giờ còn chỗ.",
         "startDate": "Ngày bắt đầu thuê phải từ ngày đến nhận kho trở đi.",
-        "duration": "Thời hạn thuê tối thiểu là {min}.",
+        "duration": "Thời hạn thuê tối thiểu là {min} ngày.",
         "racks": "Vui lòng chọn ít nhất một kệ trên sơ đồ.",
         "rackTaken": "Một kệ bạn chọn vừa có người giữ. Sơ đồ đã được tải lại, vui lòng chọn lại.",
         "terms": "Vui lòng đồng ý Điều khoản & Chính sách đặt chỗ"

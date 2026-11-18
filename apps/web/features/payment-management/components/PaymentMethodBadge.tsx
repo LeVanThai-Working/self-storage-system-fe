@@ -20,11 +20,11 @@ export const PaymentMethodBadge: React.FC<PaymentMethodBadgeProps> = ({
     switch (method) {
       case PaymentMethodEnum.SEPAY_QR:
       case PaymentMethodEnum.QR_CODE:
-        return <QrCode className="w-3 h-3 text-sky-600" />;
+        return <QrCode className="w-3 h-3 text-sky-700" />;
       case PaymentMethodEnum.CASH:
-        return <Banknote className="w-3 h-3 text-emerald-600" />;
+        return <Banknote className="w-3 h-3 text-emerald-700" />;
       case PaymentMethodEnum.BANK_TRANSFER:
-        return <CreditCard className="w-3 h-3 text-indigo-600" />;
+        return <CreditCard className="w-3 h-3 text-indigo-700" />;
       default:
         return null;
     }
@@ -32,7 +32,7 @@ export const PaymentMethodBadge: React.FC<PaymentMethodBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2 py-0.5 rounded-lg text-[11px] font-medium border ${config.badgeClass} ${className}`}
+      className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold border ${config.badgeClass} ${className}`}
     >
       {getIcon()}
       <span>{config.label}</span>

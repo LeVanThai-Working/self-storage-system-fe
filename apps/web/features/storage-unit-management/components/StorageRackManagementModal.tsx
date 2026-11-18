@@ -553,7 +553,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                 return (
                   <div
                     key={rack.id}
-                    className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden transition shadow-xs"
+                    className="rounded-xl border border-slate-200/80 bg-white overflow-hidden transition shadow-xs"
                   >
                     {/* Rack Header Row */}
                     <div className="p-3.5 flex items-center justify-between gap-3 bg-slate-50/50 hover:bg-slate-50">
@@ -577,13 +577,13 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                             </span>
                             {rack.zone && (
                               <span
-                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${zoneStyle}`}
+                                className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${zoneStyle}`}
                               >
                                 {rack.zone}
                               </span>
                             )}
                             <span
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${statusStyle}`}
+                              className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${statusStyle}`}
                             >
                               {rack.status}
                             </span>
@@ -671,7 +671,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
                                   {tier.tierCode} (T{tier.tierNumber})
                                 </span>
                                 <span
-                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                                  className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${
                                     tier.status === "available"
                                       ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                                       : tier.status === "occupied"
@@ -722,7 +722,7 @@ export const StorageRackManagementModal: React.FC<StorageRackManagementModalProp
           {/* Edit Tier Modal */}
           {editingTier && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-              <div className="bg-white rounded-3xl p-5 max-w-sm w-full space-y-4 shadow-2xl border border-slate-100 text-xs">
+              <div className="bg-white rounded-xl p-5 max-w-sm w-full space-y-4 shadow-2xl border border-neutral-border text-xs">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                   <span className="font-bold text-sm text-slate-800">
                     Chỉnh sửa Tầng {editingTier.tierCode}

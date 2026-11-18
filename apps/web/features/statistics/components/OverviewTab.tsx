@@ -62,7 +62,7 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
       {/* 1. Occupancy Metrics & Capacity Breakdown */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Storage Units */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+        <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2.5">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
@@ -114,7 +114,7 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
         </div>
 
         {/* Storage Racks */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+        <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div className="flex items-center gap-2.5">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
@@ -165,7 +165,7 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
       </div>
 
       {/* 3. Contracts & Bookings Lifecycle */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+      <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-700 mb-4">
           Hợp đồng & Đơn đặt chỗ phát sinh trong kỳ
         </h4>

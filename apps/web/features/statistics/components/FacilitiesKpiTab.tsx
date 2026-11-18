@@ -25,22 +25,22 @@ const TIER_BADGES: Record<
   [FacilityKpiTierEnum.EXCELLENT]: {
     label: "Xuất sắc",
     range: "Từ 85 điểm trở lên",
-    className: "bg-emerald-100 text-emerald-800",
+    className: "bg-emerald-50 text-emerald-700",
   },
   [FacilityKpiTierEnum.GOOD]: {
     label: "Tốt",
     range: "Từ 70 đến 84 điểm",
-    className: "bg-blue-100 text-blue-800",
+    className: "bg-blue-50 text-blue-700",
   },
   [FacilityKpiTierEnum.AVERAGE]: {
     label: "Trung bình",
     range: "Từ 50 đến 69 điểm",
-    className: "bg-amber-100 text-amber-800",
+    className: "bg-amber-50 text-amber-700",
   },
   [FacilityKpiTierEnum.NEEDS_IMPROVEMENT]: {
     label: "Cần cải thiện",
     range: "Dưới 50 điểm",
-    className: "bg-rose-100 text-rose-800",
+    className: "bg-rose-50 text-rose-700",
   },
 };
 
@@ -111,7 +111,7 @@ export function FacilitiesKpiTab({
     <div className="space-y-6">
       {/* 1. Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
+        <div className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs">
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             Điểm KPI Trung bình
           </span>
@@ -159,7 +159,7 @@ export function FacilitiesKpiTab({
 
       {/* 2. Top Performers & Underperformers */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-emerald-200/80 bg-white p-5 shadow-xs">
+        <div className="rounded-xl border border-emerald-200/80 bg-white p-5 shadow-xs">
           <div className="flex items-center gap-2 mb-3">
             <Trophy className="h-5 w-5 text-amber-500" />
             <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-800">
@@ -184,7 +184,7 @@ export function FacilitiesKpiTab({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-rose-200/80 bg-white p-5 shadow-xs">
+        <div className="rounded-xl border border-rose-200/80 bg-white p-5 shadow-xs">
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="h-5 w-5 text-rose-500" />
             <h4 className="text-sm font-extrabold uppercase tracking-wider text-slate-800">
@@ -211,7 +211,7 @@ export function FacilitiesKpiTab({
       </div>
 
       {/* 3. Filter Controls & Sorting */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-neutral-border bg-white p-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-slate-500 mr-1 flex items-center gap-1">
             <Filter className="h-3.5 w-3.5" /> Lọc phân hạng:
@@ -298,7 +298,7 @@ export function FacilitiesKpiTab({
       </div>
 
       {/* 4. Full KPI Leaderboard Table */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs overflow-x-auto">
+      <div className="rounded-xl border border-slate-200/80 bg-white p-6 shadow-xs overflow-x-auto">
         <table className="w-full text-left text-xs">
           <thead className="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider">
             <tr>
@@ -352,7 +352,7 @@ export function FacilitiesKpiTab({
                         return (
                           <ActionTooltip key={i} content={detail}>
                             <span
-                              className={`rounded bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 ${detail ? "cursor-help" : ""}`}
+                              className={`rounded-md bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700 border border-rose-200 ${detail ? "cursor-help" : ""}`}
                             >
                               {text}
                             </span>

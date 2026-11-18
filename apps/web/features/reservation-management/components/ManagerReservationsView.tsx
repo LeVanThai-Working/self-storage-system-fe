@@ -374,7 +374,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
 
   if (isManager && !isLoadingFacility && !facilityId) {
     return (
-      <div className="bg-white rounded-3xl border border-amber-200 p-10 text-center space-y-3">
+      <div className="bg-white rounded-xl border border-amber-200 p-10 text-center space-y-3">
         <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
         <h3 className="text-lg font-extrabold text-slate-900">{t("noFacility.title")}</h3>
         <p className="text-sm text-slate-500 max-w-md mx-auto">{t("noFacility.description")}</p>
@@ -483,7 +483,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
               void listQuery.refetch();
             }}
             disabled={listQuery.isFetching}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-slate-200/80 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200/80 text-xs font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition-all disabled:opacity-50"
           >
             <RefreshCw
               className={`w-3.5 h-3.5 ${listQuery.isFetching ? "animate-spin text-teal-600" : ""}`}
@@ -500,8 +500,8 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
         <div
           className={`flex items-center gap-3 p-4 rounded-2xl border text-xs font-bold shadow-sm transition-all ${
             feedback.type === "success"
-              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-              : "bg-rose-50 border-rose-200 text-rose-800"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+              : "bg-rose-50 border-rose-200 text-rose-700"
           }`}
         >
           {feedback.type === "success" ? (
@@ -555,7 +555,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
       </div>
 
       {/* Detailed Filter Bar */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 p-4 shadow-sm space-y-3">
+      <div className="bg-white rounded-xl border border-slate-200/80 p-4 shadow-sm space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
           {/* 1. Code Search */}
           <div className="relative">
@@ -686,7 +686,7 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
       </div>
 
       {/* Main Table */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
         {listQuery.isLoading ? (
           <div className="p-16 text-center text-xs text-slate-400">
             <RefreshCw className="w-6 h-6 animate-spin mx-auto text-teal-600 mb-2" />
@@ -803,17 +803,17 @@ export const ManagerReservationsView: React.FC<ManagerReservationsViewProps> = (
                             nowMs={nowMs}
                           />
                           {r.arrivedAt && (
-                            <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200">
+                            <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200">
                               <UserCheck className="w-2.5 h-2.5" /> Đã có mặt
                             </span>
                           )}
                           {r.pendingUnitChange && (
-                            <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                            <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200">
                               <AlertTriangle className="w-2.5 h-2.5" /> Chờ duyệt đổi kho
                             </span>
                           )}
                           {r.refundStatus === "pending" && (
-                            <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 border border-rose-200">
+                            <span className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200">
                               <Banknote className="w-2.5 h-2.5" /> Chờ hoàn cọc
                             </span>
                           )}

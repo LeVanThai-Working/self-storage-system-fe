@@ -57,7 +57,7 @@ export function FacilityListPage() {
             ))}
           </div>
         ) : isError ? (
-          <div className="rounded-2xl border border-neutral-border bg-white p-8 text-center">
+          <div className="rounded-xl border border-neutral-border bg-white p-8 text-center">
             <p className="text-neutral-muted">{t("list.error")}</p>
             <Button className="mt-4" onClick={() => refetch()}>
               {t("retry")}
@@ -74,7 +74,7 @@ export function FacilityListPage() {
             ))}
           </div>
         ) : (
-          <p className="rounded-2xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
+          <p className="rounded-xl border border-neutral-border bg-white p-8 text-center text-neutral-muted">
             {t("list.empty")}
           </p>
         )}

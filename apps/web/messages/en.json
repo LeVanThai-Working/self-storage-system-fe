@@ -2577,7 +2577,7 @@
         "checkInDate": "Please choose a check-in date.",
         "slot": "Please choose a time slot that still has room.",
         "startDate": "The rental must start on or after the check-in date.",
-        "duration": "The minimum rental period is {min}.",
+        "duration": "The minimum rental period is {min} days.",
         "racks": "Please pick at least one rack on the map.",
         "rackTaken": "One of the racks you picked was just taken. The map has been reloaded, please pick again.",
         "terms": "Please accept the booking terms & policy"

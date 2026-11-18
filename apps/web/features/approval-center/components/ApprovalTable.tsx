@@ -127,7 +127,7 @@ export const ApprovalTable = () => {
     switch (st) {
       case ApprovalRequestStatusEnum.PENDING:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
             <Clock className="w-3 h-3 text-amber-600" />
             {t(`status.${st}`)}
@@ -135,7 +135,7 @@ export const ApprovalTable = () => {
         );
       case ApprovalRequestStatusEnum.APPROVED:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
             <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
             {t(`status.${st}`)}
@@ -143,7 +143,7 @@ export const ApprovalTable = () => {
         );
       case ApprovalRequestStatusEnum.REJECTED:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
             <XCircle className="w-3 h-3 text-rose-600 shrink-0" />
             {t(`status.${st}`)}
@@ -152,7 +152,7 @@ export const ApprovalTable = () => {
       case ApprovalRequestStatusEnum.CANCELLED:
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-600 border border-slate-200">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-600 border border-slate-200">
             <Ban className="w-3 h-3 text-slate-400 shrink-0" />
             {t(`status.${st}`)}
           </span>
@@ -177,7 +177,7 @@ export const ApprovalTable = () => {
 
     return (
       <span
-        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold whitespace-nowrap shrink-0 border ${colorClass}`}
+        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 border ${colorClass}`}
       >
         {icon}
         {t(`targetType.${type}`)}
@@ -208,7 +208,7 @@ export const ApprovalTable = () => {
             setStatus(ApprovalRequestStatusEnum.PENDING);
             setPage(1);
           }}
-          className={`bg-white rounded-3xl p-5 border shadow-sm flex items-center gap-4 cursor-pointer transition-all hover:shadow-md ${
+          className={`bg-white rounded-xl p-5 border shadow-sm flex items-center gap-4 cursor-pointer transition-all hover:shadow-md ${
             status === ApprovalRequestStatusEnum.PENDING
               ? "border-amber-400 ring-2 ring-amber-400/20"
               : "border-slate-100"
@@ -231,7 +231,7 @@ export const ApprovalTable = () => {
             setStatus(ApprovalRequestStatusEnum.APPROVED);
             setPage(1);
           }}
-          className={`bg-white rounded-3xl p-5 border shadow-sm flex items-center gap-4 cursor-pointer transition-all hover:shadow-md ${
+          className={`bg-white rounded-xl p-5 border shadow-sm flex items-center gap-4 cursor-pointer transition-all hover:shadow-md ${
             status === ApprovalRequestStatusEnum.APPROVED
               ? "border-emerald-400 ring-2 ring-emerald-400/20"
               : "border-slate-100"
@@ -254,7 +254,7 @@ export const ApprovalTable = () => {
             setStatus(ApprovalRequestStatusEnum.REJECTED);
             setPage(1);
           }}
-          className={`bg-white rounded-3xl p-5 border shadow-sm flex items-center gap-4 cursor-pointer transition-all hover:shadow-md ${
+          className={`bg-white rounded-xl p-5 border shadow-sm flex items-center gap-4 cursor-pointer transition-all hover:shadow-md ${
             status === ApprovalRequestStatusEnum.REJECTED
               ? "border-rose-400 ring-2 ring-rose-400/20"
               : "border-slate-100"
@@ -277,7 +277,7 @@ export const ApprovalTable = () => {
             setStatus("ALL");
             setPage(1);
           }}
-          className={`bg-white rounded-3xl p-5 border shadow-sm flex items-center gap-4 cursor-pointer transition-all hover:shadow-md ${
+          className={`bg-white rounded-xl p-5 border shadow-sm flex items-center gap-4 cursor-pointer transition-all hover:shadow-md ${
             status === "ALL" ? "border-teal-400 ring-2 ring-teal-400/20" : "border-slate-100"
           }`}
         >
@@ -294,7 +294,7 @@ export const ApprovalTable = () => {
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-sm space-y-3">
+      <div className="bg-white rounded-xl p-4 sm:p-5 border border-neutral-border shadow-sm space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Search Input */}
           <form
@@ -460,7 +460,7 @@ export const ApprovalTable = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl border border-neutral-border shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[1050px]">
             <thead>

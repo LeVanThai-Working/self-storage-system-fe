@@ -82,7 +82,7 @@ export const ReconcileStorageUnitsButton: React.FC<{ className?: string }> = ({
             <button
               type="button"
               onClick={() => setIsConfirmOpen(false)}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-semibold"
+              className="px-4 py-2.5 rounded-xl border border-neutral-border bg-white text-slate-700 text-xs font-semibold"
             >
               Hủy
             </button>
