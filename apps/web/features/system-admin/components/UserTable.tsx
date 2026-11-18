@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  Plus,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
@@ -190,14 +191,14 @@ const EditUserModal = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                className="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
               >
                 {t("userTable.editModal.cancel")}
               </button>
               <button
                 type="submit"
                 disabled={updateUser.isPending}
-                className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-white rounded-md text-sm font-medium transition-colors disabled:opacity-50 bg-brand hover:bg-brand-hover"
               >
                 {updateUser.isPending
                   ? t("userTable.editModal.saving")
@@ -299,7 +300,8 @@ export const UserTable = () => {
         <h1 className="text-2xl font-bold text-slate-800 font-sans">{t("userTable.title")}</h1>
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogTrigger className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-full font-medium transition-colors shadow-sm flex items-center gap-2">
+          <DialogTrigger className="bg-brand hover:bg-brand-hover text-white px-5 py-2.5 rounded-md text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer">
+            <Plus className="w-4 h-4" />
             <span>{t("userTable.createAccount")}</span>
           </DialogTrigger>
           <DialogContent>
@@ -394,7 +396,7 @@ export const UserTable = () => {
                 <button
                   type="submit"
                   disabled={createUser.isPending}
-                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="px-4 py-2 text-white rounded-md text-sm font-medium transition-colors disabled:opacity-50 bg-brand hover:bg-brand-hover"
                 >
                   {createUser.isPending
                     ? t("userTable.createModal.saving")
@@ -428,7 +430,7 @@ export const UserTable = () => {
             <button
               type="button"
               onClick={() => setDeletingUser(null)}
-              className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              className="px-4 py-2 border border-slate-300 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
             >
               {t("userTable.deleteModal.cancel")}
             </button>
@@ -436,7 +438,7 @@ export const UserTable = () => {
               type="button"
               onClick={handleDeleteUser}
               disabled={deleteUser.isPending}
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium transition-colors disabled:opacity-50"
             >
               {deleteUser.isPending
                 ? t("userTable.deleteModal.deleting")
@@ -572,7 +574,7 @@ export const UserTable = () => {
                         <IconActionTooltip label={t("userTable.edit")}>
                           <button
                             onClick={() => setEditingUserId(user.id)}
-                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
                             title={t("userTable.edit")}
                           >
                             <Edit2 className="w-4 h-4" />
@@ -605,7 +607,7 @@ export const UserTable = () => {
                         <IconActionTooltip label={t("userTable.deleteAccount")}>
                           <button
                             onClick={() => setDeletingUser({ id: user.id, name: user.name })}
-                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                             title={t("userTable.deleteAccount")}
                           >
                             <Trash2 className="w-4 h-4" />
@@ -651,7 +653,7 @@ export const UserTable = () => {
                   type="button"
                   disabled={!pagination.hasPrevPage || page <= 1}
                   onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
                   {t("userTable.pagination.prev")}
@@ -665,7 +667,7 @@ export const UserTable = () => {
                   type="button"
                   disabled={!pagination.hasNextPage || page >= pagination.totalPages}
                   onClick={() => setPage((prev) => prev + 1)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
                 >
                   {t("userTable.pagination.next")}
                   <ChevronRight className="w-3.5 h-3.5" />

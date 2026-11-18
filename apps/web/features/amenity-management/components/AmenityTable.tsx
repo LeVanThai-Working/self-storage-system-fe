@@ -16,7 +16,6 @@ import {
   ChevronRight,
   Wrench,
   ShieldCheck,
-  Tag,
   Eye,
   Plus,
   X,
@@ -90,7 +89,6 @@ export const AmenityTable = () => {
     if (type === AmenityTypeEnum.PHYSICAL) {
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs">
-          <Wrench className="w-3.5 h-3.5 text-blue-600 shrink-0" />
           {t("type.physical")}
         </span>
       );
@@ -98,7 +96,6 @@ export const AmenityTable = () => {
     if (type === AmenityTypeEnum.SERVICE) {
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-purple-50 text-purple-700 border border-purple-200/80 shadow-2xs">
-          <ShieldCheck className="w-3.5 h-3.5 text-purple-600 shrink-0" />
           {t("type.service")}
         </span>
       );
@@ -115,7 +112,7 @@ export const AmenityTable = () => {
     const isActive = status === AmenityStatusEnum.ACTIVE;
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 ${
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 ${
           isActive
             ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
             : "bg-slate-100 text-slate-600 border border-slate-200"
@@ -148,7 +145,7 @@ export const AmenityTable = () => {
         <button
           type="button"
           onClick={() => setIsCreateModalOpen(true)}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-bold shadow-md shadow-emerald-600/20 transition-all transform active:scale-95 cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-md text-white text-sm font-bold transition-all transform active:scale-95 cursor-pointer bg-brand hover:bg-brand-hover"
         >
           <Plus className="w-4 h-4" />
           {t("addAmenity")}
@@ -284,7 +281,7 @@ export const AmenityTable = () => {
               type="button"
               onClick={() => refetch()}
               title={t("refresh")}
-              className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
+              className="p-2.5 rounded-md bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200/80 transition-colors cursor-pointer"
             >
               <RotateCw className={`w-4 h-4 ${isFetching ? "animate-spin text-teal-600" : ""}`} />
             </button>
@@ -391,7 +388,6 @@ export const AmenityTable = () => {
                               key={idx}
                               className="inline-flex items-center gap-1 text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-md border border-slate-200"
                             >
-                              <Tag className="w-2.5 h-2.5 text-slate-400 shrink-0" />
                               {tag}
                             </span>
                           ))}
@@ -425,7 +421,7 @@ export const AmenityTable = () => {
                             type="button"
                             onClick={() => setDetailAmenity(amenity)}
                             title={t("actions.viewDetails")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-md text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -437,7 +433,7 @@ export const AmenityTable = () => {
                             type="button"
                             onClick={() => setEditingAmenityId(amenity.id)}
                             title={t("actions.edit")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-md text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors cursor-pointer"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
@@ -450,7 +446,7 @@ export const AmenityTable = () => {
                               type="button"
                               onClick={() => setRestoringAmenity(amenity)}
                               title={t("actions.restore")}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-md text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
                             >
                               <RotateCcw className="w-4 h-4" />
                             </button>
@@ -463,7 +459,7 @@ export const AmenityTable = () => {
                             type="button"
                             onClick={() => setDeletingAmenity(amenity)}
                             title={t("actions.delete")}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -499,7 +495,7 @@ export const AmenityTable = () => {
                 type="button"
                 disabled={!pagination.hasPrevPage || isFetching}
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 {t("pagination.prev")}
@@ -513,7 +509,7 @@ export const AmenityTable = () => {
                 type="button"
                 disabled={!pagination.hasNextPage || isFetching}
                 onClick={() => setPage((prev) => prev + 1)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-slate-200/80 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-xs cursor-pointer"
               >
                 {t("pagination.next")}
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -552,7 +548,7 @@ export const AmenityTable = () => {
                   href={previewImage.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2 rounded-xl bg-black/60 hover:bg-black/80 text-white transition-colors"
+                  className="p-2 rounded-md bg-black/60 hover:bg-black/80 text-white transition-colors"
                   title="Mở trong tab mới"
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -561,7 +557,7 @@ export const AmenityTable = () => {
                   <button
                     type="button"
                     onClick={() => setPreviewImage(null)}
-                    className="p-2 rounded-xl bg-black/60 hover:bg-black/80 text-white transition-colors cursor-pointer"
+                    className="p-2 rounded-md bg-black/60 hover:bg-black/80 text-white transition-colors cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>

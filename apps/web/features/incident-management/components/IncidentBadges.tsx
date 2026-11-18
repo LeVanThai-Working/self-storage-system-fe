@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import {
-  Bell,
   Building2,
   CircleHelp,
   Droplets,
@@ -44,7 +43,7 @@ export const CATEGORY_ICON: Record<IncidentCategoryEnum, LucideIcon> = {
 };
 
 const pill =
-  "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap";
+  "inline-flex items-center gap-1 rounded-md border px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap";
 
 export const IncidentStatusBadge = ({ status }: { status: IncidentStatusEnum }) => {
   const t = useTranslations("incidentDesk.status");
@@ -53,12 +52,7 @@ export const IncidentStatusBadge = ({ status }: { status: IncidentStatusEnum }) 
 
 export const IncidentSeverityBadge = ({ severity }: { severity: IncidentSeverityEnum }) => {
   const t = useTranslations("incidentDesk.severity");
-  return (
-    <span className={`${pill} ${SEVERITY_STYLE[severity]}`}>
-      {severity === IncidentSeverityEnum.CRITICAL ? <Bell className="h-3 w-3" /> : null}
-      {t(severity)}
-    </span>
-  );
+  return <span className={`${pill} ${SEVERITY_STYLE[severity]}`}>{t(severity)}</span>;
 };
 
 export const IncidentCategoryLabel = ({ category }: { category: IncidentCategoryEnum }) => {

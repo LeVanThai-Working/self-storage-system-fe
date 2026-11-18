@@ -215,7 +215,7 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
                   setStatusFilter(tab.key);
                   setPage(1);
                 }}
-                className={`px-3 py-1.5 rounded-xl transition-all ${
+                className={`px-3 py-1.5 rounded-md transition-all ${
                   statusFilter === tab.key
                     ? "bg-white text-slate-900 shadow-2xs"
                     : "text-slate-500 hover:text-slate-800"
@@ -403,7 +403,7 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
                             <button
                               type="button"
                               onClick={() => setDetailItem(item)}
-                              className="p-1.5 rounded-xl text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+                              className="p-1.5 rounded-md text-slate-500 hover:text-teal-600 hover:bg-teal-50 transition-colors"
                               title={t("modals.detailTitle")}
                             >
                               <Eye className="w-4 h-4" />
@@ -416,7 +416,7 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
                               <button
                                 type="button"
                                 onClick={() => setEditItem(item)}
-                                className="p-1.5 rounded-xl text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                                className="p-1.5 rounded-md text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
                                 title={t("modals.editTitle")}
                               >
                                 <Edit2 className="w-4 h-4" />
@@ -430,7 +430,7 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
                               <button
                                 type="button"
                                 onClick={() => setRevokeItem(item)}
-                                className="p-1.5 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                                className="p-1.5 rounded-md text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                                 title={t("modals.revokeTitle")}
                               >
                                 <Ban className="w-4 h-4" />

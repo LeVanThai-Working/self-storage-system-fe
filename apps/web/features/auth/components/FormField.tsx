@@ -79,7 +79,7 @@ export function PasswordField({ showLabel, hideLabel, ...props }: PasswordFieldP
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="hover:text-neutral-main flex cursor-pointer items-center rounded p-1 focus-visible:outline-2"
+          className="hover:text-neutral-main flex cursor-pointer items-center rounded-md p-1 focus-visible:outline-2"
           aria-label={visible ? hideLabel : showLabel}
         >
           {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}

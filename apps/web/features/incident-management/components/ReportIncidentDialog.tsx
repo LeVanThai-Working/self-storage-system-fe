@@ -111,7 +111,7 @@ export function ReportIncidentDialog({ onClose }: { onClose: () => void }) {
                     key={value}
                     type="button"
                     onClick={() => setCategory(value)}
-                    className={`flex flex-col items-center gap-1 rounded-lg border px-2 py-2.5 text-xs font-semibold ${
+                    className={`flex flex-col items-center gap-1 rounded-md border px-2 py-2.5 text-xs font-semibold ${
                       category === value
                         ? "border-teal-600 bg-teal-50 text-teal-700"
                         : "border-slate-200 text-slate-600"
@@ -132,7 +132,7 @@ export function ReportIncidentDialog({ onClose }: { onClose: () => void }) {
                   key={value}
                   type="button"
                   onClick={() => setSeverity(value)}
-                  className={`flex-1 rounded-lg border px-2 py-2 text-xs font-semibold ${
+                  className={`flex-1 rounded-md border px-2 py-2 text-xs font-semibold ${
                     severity === value
                       ? value === IncidentSeverityEnum.CRITICAL
                         ? "border-rose-500 bg-rose-50 text-rose-700"

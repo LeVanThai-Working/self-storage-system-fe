@@ -85,7 +85,7 @@ export const WeeklyScheduleView: React.FC<WeeklyScheduleViewProps> = ({
           <button
             type="button"
             onClick={() => setActiveDayFilter("ALL")}
-            className={`inline-flex items-center gap-1.5 shrink-0 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
+            className={`inline-flex items-center gap-1.5 shrink-0 rounded-md px-3.5 py-1.5 text-xs font-bold transition-all ${
               activeDayFilter === "ALL"
                 ? "bg-emerald-600 text-white shadow-2xs"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800"
@@ -106,7 +106,7 @@ export const WeeklyScheduleView: React.FC<WeeklyScheduleViewProps> = ({
                 key={d.key}
                 type="button"
                 onClick={() => setActiveDayFilter(d.key)}
-                className={`inline-flex items-center gap-1.5 shrink-0 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
+                className={`inline-flex items-center gap-1.5 shrink-0 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
                   isSelected
                     ? "bg-emerald-600 text-white shadow-2xs font-bold"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-100 dark:hover:bg-slate-800"
@@ -168,7 +168,7 @@ export const WeeklyScheduleView: React.FC<WeeklyScheduleViewProps> = ({
                   <button
                     type="button"
                     onClick={() => onAddSlot(day.key)}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 transition-all"
+                    className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold text-white shadow-2xs transition-all bg-brand hover:bg-brand-hover"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     Thêm ca

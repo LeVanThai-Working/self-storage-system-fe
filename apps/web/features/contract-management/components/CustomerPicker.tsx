@@ -52,7 +52,7 @@ export function CustomerPicker({ value, onChange, isEn }: CustomerPickerProps) {
           type="button"
           onClick={() => onChange(null)}
           aria-label={isEn ? "Change customer" : "Đổi khách hàng"}
-          className="p-1 rounded-lg text-emerald-700 hover:bg-emerald-100"
+          className="p-1 rounded-md text-emerald-700 hover:bg-emerald-100"
         >
           <X className="w-3.5 h-3.5" />
         </button>

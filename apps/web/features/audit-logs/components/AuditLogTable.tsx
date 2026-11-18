@@ -146,7 +146,7 @@ export const AuditLogTable = () => {
         </div>
         <button
           onClick={() => refetch()}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-neutral-border rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-neutral-border rounded-md hover:bg-slate-50 transition-colors shadow-sm"
         >
           <RefreshCw className="w-4 h-4" />
           {t("refresh")}
@@ -408,7 +408,7 @@ export const AuditLogTable = () => {
                               setSelectedLogId(log.id);
                               setIsDetailModalOpen(true);
                             }}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+                            className="p-1.5 rounded-md text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
                             title={t("viewDetails")}
                           >
                             <Eye className="w-4 h-4" />
@@ -435,7 +435,7 @@ export const AuditLogTable = () => {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={!pagination.hasPrevPage || isLoading}
-                className="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 rounded-md text-sm font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 aria-label={t("prevPage")}
               >
                 {t("prevPage")}
@@ -449,7 +449,7 @@ export const AuditLogTable = () => {
               <button
                 onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
                 disabled={!pagination.hasNextPage || isLoading}
-                className="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 rounded-md text-sm font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 aria-label={t("nextPage")}
               >
                 {t("nextPage")}

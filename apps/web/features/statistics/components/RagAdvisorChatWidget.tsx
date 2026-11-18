@@ -245,7 +245,7 @@ export function RagAdvisorChatWidget({
             type="button"
             onClick={() => setIsOpen(true)}
             aria-label="Mở Trợ lý AI RAG Advisor"
-            className="group relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-teal-600 via-emerald-600 to-indigo-600 text-white shadow-xl shadow-teal-500/30 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-teal-500/40 cursor-pointer"
+            className="group relative flex h-14 w-14 items-center justify-center rounded-2xl text-white transition-all duration-300 hover:scale-105 cursor-pointer bg-brand hover:bg-brand-hover"
           >
             {/* Ambient Pulsing Aura */}
             <span className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-teal-500 to-indigo-500 opacity-60 blur-sm group-hover:opacity-100 transition duration-300 animate-pulse" />
@@ -298,7 +298,7 @@ export function RagAdvisorChatWidget({
                     type="button"
                     onClick={() => setIsEvalOpen(true)}
                     title="Chạy bộ kiểm chuẩn RAG (Eval Suite)"
-                    className="rounded-lg p-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                    className="rounded-md p-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
                   >
                     <Sparkles className="h-4 w-4 text-amber-300" />
                   </button>
@@ -309,7 +309,7 @@ export function RagAdvisorChatWidget({
                   type="button"
                   onClick={handleClearHistory}
                   title="Xóa lịch sử hội thoại"
-                  className="rounded-lg p-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                  className="rounded-md p-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
                 >
                   <RotateCcw className="h-4 w-4" />
                 </button>
@@ -319,7 +319,7 @@ export function RagAdvisorChatWidget({
                   type="button"
                   onClick={() => setIsExpanded(!isExpanded)}
                   title={isExpanded ? "Thu nhỏ lại" : "Mở rộng cửa sổ"}
-                  className="rounded-lg p-1.5 hover:bg-white/10 hover:text-white transition-colors hidden sm:block cursor-pointer"
+                  className="rounded-md p-1.5 hover:bg-white/10 hover:text-white transition-colors hidden sm:block cursor-pointer"
                 >
                   {isExpanded ? (
                     <Minimize2 className="h-4 w-4" />
@@ -333,7 +333,7 @@ export function RagAdvisorChatWidget({
                   type="button"
                   onClick={() => setIsOpen(false)}
                   title="Đóng cửa sổ chat"
-                  className="rounded-lg p-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                  className="rounded-md p-1.5 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -352,7 +352,7 @@ export function RagAdvisorChatWidget({
                     setFocusArea(val);
                     storeFilters.setFocusArea(val);
                   }}
-                  className="rounded-lg bg-white/10 border border-white/20 px-2 py-0.5 text-[11px] font-semibold text-white outline-none hover:bg-white/15 cursor-pointer"
+                  className="rounded-md bg-white/10 border border-white/20 px-2 py-0.5 text-[11px] font-semibold text-white outline-none hover:bg-white/15 cursor-pointer"
                 >
                   <option value={AiInsightFocusAreaEnum.ALL} className="text-slate-900">
                     Toàn diện
@@ -414,7 +414,7 @@ export function RagAdvisorChatWidget({
                           setFocusArea(prompt.focusArea);
                           handleSendMessage(prompt.question);
                         }}
-                        className="group flex flex-col items-start rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-left transition-all hover:border-teal-500 hover:bg-teal-50/40 hover:shadow-2xs cursor-pointer"
+                        className="group flex flex-col items-start rounded-md border border-slate-200 bg-slate-50/70 p-2.5 text-left transition-all hover:border-teal-500 hover:bg-teal-50/40 hover:shadow-2xs cursor-pointer"
                       >
                         <span className="text-[11px] font-bold text-teal-800 group-hover:text-teal-900">
                           📌 {prompt.title}
@@ -598,7 +598,7 @@ export function RagAdvisorChatWidget({
                   type="button"
                   onClick={() => handleSendMessage()}
                   disabled={!inputQuestion.trim() || advisorMutation.isPending}
-                  className="absolute bottom-3 right-2.5 flex h-7 w-7 items-center justify-center rounded-lg bg-teal-600 text-white shadow-xs transition-all hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                  className="absolute bottom-3 right-2.5 flex h-7 w-7 items-center justify-center rounded-lg text-white shadow-xs transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer bg-brand hover:bg-brand-hover"
                   title="Gửi câu hỏi"
                 >
                   <Send className="h-3.5 w-3.5" />

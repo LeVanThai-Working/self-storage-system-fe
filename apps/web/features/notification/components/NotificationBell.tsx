@@ -115,7 +115,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ className })
         type="button"
         aria-label="Notifications"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="relative p-2.5 text-slate-500 hover:text-emerald-600 transition-colors rounded-full hover:bg-slate-50 cursor-pointer"
+        className="relative p-2.5 text-slate-500 hover:text-emerald-600 transition-colors rounded-md hover:bg-slate-50 cursor-pointer"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (

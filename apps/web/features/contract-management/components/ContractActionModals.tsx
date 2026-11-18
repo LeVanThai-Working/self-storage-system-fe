@@ -120,6 +120,8 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
   const [proofImageUrl, setProofImageUrl] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  // While confirming cash/transfer at the counter, the pending payment created for it must not surface as a QR session.
+  const [isManualSubmitting, setIsManualSubmitting] = useState(false);
 
   if (!contract) return null;
 
@@ -166,16 +168,23 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
     e.preventDefault();
     setErrorMsg(null);
 
+    // BE requires a proof image for every manual payment, cash included (MESSAGE_CODE_509).
+    if (!proofImageUrl.trim()) {
+      setErrorMsg(
+        isEn
+          ? "Please attach a photo of the receipt or transfer slip."
+          : "Vui lòng đính kèm ảnh phiếu thu hoặc biên lai chuyển khoản."
+      );
+      return;
+    }
+
     const parsed = confirmManualPaymentSchema.safeParse({
       method,
       referenceCode: referenceCode.trim() ? referenceCode.trim() : undefined,
       note:
         note.trim() ||
         (isEn ? "Collected contract deposit at counter" : "Đã thu tiền cọc hợp đồng tại quầy"),
-      proofImageUrl:
-        method === PaymentMethodEnum.BANK_TRANSFER && proofImageUrl.trim()
-          ? proofImageUrl.trim()
-          : undefined,
+      proofImageUrl: proofImageUrl.trim(),
     });
 
     if (!parsed.success) {
@@ -188,6 +197,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
       return;
     }
 
+    setIsManualSubmitting(true);
     try {
       let paymentId = existingPendingPayment?.id;
       if (!paymentId) {
@@ -196,7 +206,6 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
           method,
           purpose,
         });
-        setCreatedSession(created);
         paymentId = created.id;
       }
 
@@ -211,8 +220,12 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
           : "Xác nhận thu tiền cọc hợp đồng thành công!"
       );
       onSuccess?.();
-      setTimeout(onClose, 700);
+      setTimeout(() => {
+        setIsManualSubmitting(false);
+        onClose();
+      }, 700);
     } catch (err: unknown) {
+      setIsManualSubmitting(false);
       setErrorMsg(resolveContractErrorMessage(err, locale));
     }
   };
@@ -225,6 +238,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
           setErrorMsg(null);
           setSuccessMsg(null);
           setCreatedSession(null);
+          setIsManualSubmitting(false);
           onClose();
         }
       }}
@@ -280,7 +294,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
                   type="button"
                   onClick={() => handleGenerateQrOrPayment(PaymentMethodEnum.BANK_TRANSFER)}
                   disabled={createDepositMutation.isPending}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-white disabled:opacity-50 bg-brand hover:bg-brand-hover"
                 >
                   <QrCode className="w-3.5 h-3.5" />
                   {existingPendingPayment?.qrUrl
@@ -293,7 +307,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
                 </button>
               </div>
 
-              {existingPendingPayment?.qrUrl && (
+              {existingPendingPayment?.qrUrl && !isManualSubmitting && (
                 <div className="flex flex-col sm:flex-row items-center gap-4 pt-2 border-t border-slate-200/70">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -348,7 +362,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
                 <button
                   type="button"
                   onClick={() => setMethod(PaymentMethodEnum.CASH)}
-                  className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
+                  className={`py-2.5 px-3 rounded-md text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
                     method === PaymentMethodEnum.CASH
                       ? "bg-emerald-50 border-emerald-500 text-emerald-700"
                       : "bg-slate-50 border-slate-200 text-slate-600"
@@ -360,7 +374,7 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
                 <button
                   type="button"
                   onClick={() => setMethod(PaymentMethodEnum.BANK_TRANSFER)}
-                  className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
+                  className={`py-2.5 px-3 rounded-md text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
                     method === PaymentMethodEnum.BANK_TRANSFER
                       ? "bg-emerald-50 border-emerald-500 text-emerald-700"
                       : "bg-slate-50 border-slate-200 text-slate-600"
@@ -408,27 +422,24 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
                 />
               </div>
 
-              {method === PaymentMethodEnum.BANK_TRANSFER && (
-                <CloudinaryUploader
-                  label={
-                    isEn
-                      ? "Bank Transfer Receipt / Slip (Optional)"
-                      : "Ảnh ủy nhiệm chi / Biên lai chuyển khoản (Tùy chọn)"
-                  }
-                  description={
-                    isEn
-                      ? "Upload transfer confirmation screenshot or bank slip"
-                      : "Tải lên ảnh chụp màn hình chuyển khoản hoặc sao kê ngân hàng"
-                  }
-                  folder={CloudinaryFolderEnum.CONTRACTS}
-                  value={proofImageUrl ? [proofImageUrl] : []}
-                  onChange={(urls) => setProofImageUrl(urls[0] || "")}
-                  multiple={false}
-                  maxFiles={1}
-                  accept="image/*,application/pdf"
-                  disabled={confirmManualMutation.isPending || createDepositMutation.isPending}
-                />
-              )}
+              <CloudinaryUploader
+                label={
+                  method === PaymentMethodEnum.BANK_TRANSFER
+                    ? isEn
+                      ? "Transfer slip / receipt *"
+                      : "Ảnh biên lai chuyển khoản *"
+                    : isEn
+                      ? "Cash receipt photo *"
+                      : "Ảnh phiếu thu tiền mặt *"
+                }
+                folder={CloudinaryFolderEnum.CONTRACTS}
+                value={proofImageUrl ? [proofImageUrl] : []}
+                onChange={(urls) => setProofImageUrl(urls[0] || "")}
+                multiple={false}
+                maxFiles={1}
+                accept="image/*,application/pdf"
+                disabled={confirmManualMutation.isPending || createDepositMutation.isPending}
+              />
             </div>
 
             {errorMsg && (
@@ -450,14 +461,14 @@ export const CollectWalkInDepositModal: React.FC<CollectWalkInDepositModalProps>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Close" : "Đóng"}
             </button>
             <button
               type="submit"
               disabled={confirmManualMutation.isPending || createDepositMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {confirmManualMutation.isPending
                 ? isEn
@@ -811,7 +822,7 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={checkInMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Hủy"}
             </button>
@@ -825,7 +836,7 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
                 !verifiedContractPaperSigned ||
                 signedContractFileUrls.length === 0
               }
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-40 disabled:cursor-not-allowed bg-brand hover:bg-brand-hover"
             >
               {checkInMutation.isPending
                 ? isEn
@@ -968,14 +979,14 @@ export const CancelDraftContractModal: React.FC<CancelDraftContractModalProps> =
               type="button"
               onClick={onClose}
               disabled={cancelMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Back" : "Quay lại"}
             </button>
             <button
               type="submit"
               disabled={cancelMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
             >
               {cancelMutation.isPending
                 ? isEn
@@ -1158,14 +1169,14 @@ export const RenewContractModal: React.FC<RenewContractModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={createAddendumMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Đóng"}
             </button>
             <button
               type="submit"
               disabled={createAddendumMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {createAddendumMutation.isPending
                 ? isEn
@@ -1365,7 +1376,7 @@ export const CreateContractAddendumModal: React.FC<CreateContractAddendumModalPr
                   setQuantity(1);
                   setErrorMsg(null);
                 }}
-                className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
+                className={`py-2.5 px-3 rounded-md text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
                   isAdd
                     ? "bg-emerald-50 border-emerald-500 text-emerald-700"
                     : "bg-slate-50 border-slate-200 text-slate-600"
@@ -1383,7 +1394,7 @@ export const CreateContractAddendumModal: React.FC<CreateContractAddendumModalPr
                   setQuantity(1);
                   setErrorMsg(null);
                 }}
-                className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 disabled:opacity-40 ${
+                className={`py-2.5 px-3 rounded-md text-xs font-bold border transition-all flex items-center justify-center gap-1.5 disabled:opacity-40 ${
                   !isAdd
                     ? "bg-orange-50 border-orange-500 text-orange-700"
                     : "bg-slate-50 border-slate-200 text-slate-600"
@@ -1550,7 +1561,7 @@ export const CreateContractAddendumModal: React.FC<CreateContractAddendumModalPr
               type="button"
               onClick={onClose}
               disabled={createAddendumMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Hủy"}
             </button>
@@ -1559,7 +1570,7 @@ export const CreateContractAddendumModal: React.FC<CreateContractAddendumModalPr
               disabled={
                 createAddendumMutation.isPending || (isAdd ? !activeAddOffering : !activeRemoveItem)
               }
-              className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-sm disabled:opacity-50 ${
+              className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 ${
                 isAdd ? "bg-emerald-600 hover:bg-emerald-700" : "bg-orange-600 hover:bg-orange-700"
               }`}
             >
@@ -1730,14 +1741,14 @@ export const ApproveContractAddendumModal: React.FC<ApproveContractAddendumModal
               type="button"
               onClick={onClose}
               disabled={approveMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Hủy"}
             </button>
             <button
               type="submit"
               disabled={approveMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {approveMutation.isPending
                 ? isEn
@@ -1867,14 +1878,14 @@ export const RejectContractAddendumModal: React.FC<RejectContractAddendumModalPr
               type="button"
               onClick={onClose}
               disabled={rejectMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Back" : "Quay lại"}
             </button>
             <button
               type="submit"
               disabled={rejectMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
             >
               {rejectMutation.isPending
                 ? isEn
@@ -2132,7 +2143,7 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
                       onClick={() =>
                         openRenewalAddendumPrintDocument(contract, addendum, locale, setErrorMsg)
                       }
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-[11px] font-bold text-slate-700 transition-colors"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-100 text-[11px] font-bold text-slate-700 transition-colors"
                     >
                       <FileText className="w-3.5 h-3.5 text-emerald-600" />
                       {isEn ? "Print Addendum PDF" : "In phụ lục PDF"}
@@ -2278,7 +2289,7 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
               type="button"
               onClick={onClose}
               disabled={staffSignMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Đóng"}
             </button>
@@ -2290,7 +2301,7 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
                 !isCustomerSigned ||
                 signedAddendumFileUrls.length === 0
               }
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-sm disabled:opacity-50 ${
+              className={`px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 ${
                 isRemove
                   ? "bg-orange-600 hover:bg-orange-700"
                   : "bg-emerald-600 hover:bg-emerald-700"
@@ -2439,14 +2450,14 @@ export const CancelContractAddendumModal: React.FC<CancelContractAddendumModalPr
               type="button"
               onClick={onClose}
               disabled={cancelAddendumMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Back" : "Quay lại"}
             </button>
             <button
               type="submit"
               disabled={cancelAddendumMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
             >
               {cancelAddendumMutation.isPending
                 ? isEn
@@ -2668,14 +2679,14 @@ export const CheckOutContractModal: React.FC<CheckOutContractModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={checkOutMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Đóng"}
             </button>
             <button
               type="submit"
               disabled={checkOutMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {checkOutMutation.isPending
                 ? isEn
@@ -2806,14 +2817,14 @@ export const TerminateContractModal: React.FC<TerminateContractModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={terminateMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Hủy bỏ"}
             </button>
             <button
               type="submit"
               disabled={terminateMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
             >
               {terminateMutation.isPending
                 ? isEn

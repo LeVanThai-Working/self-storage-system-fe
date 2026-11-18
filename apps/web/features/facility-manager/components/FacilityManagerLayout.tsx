@@ -111,7 +111,7 @@ export const FacilityManagerLayout = ({ children }: FacilityManagerLayoutProps) 
       navSectionLabel={t("nav.sectionFacility")}
       navItems={navItems}
       headerStart={
-        <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand-bg px-2.5 py-1 text-xs font-bold text-neutral-main">
+        <span className="inline-flex items-center gap-1.5 rounded-md bg-brand-bg px-2.5 py-1 text-xs font-bold text-neutral-main">
           <Building2 className="size-3.5 text-brand" />
           {facility?.name || "Chi nhánh"}
         </span>

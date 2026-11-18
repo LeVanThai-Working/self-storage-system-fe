@@ -329,14 +329,14 @@ export const CreateContractFromReservationModal: React.FC<
               type="button"
               onClick={onClose}
               disabled={createContractMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Đóng"}
             </button>
             <button
               type="submit"
               disabled={createContractMutation.isPending || isBlockedByCheckInDate}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-40 disabled:cursor-not-allowed bg-brand hover:bg-brand-hover"
             >
               {createContractMutation.isPending
                 ? isEn

@@ -126,7 +126,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
               type="button"
               onClick={handleProcessExpired}
               disabled={processExpiredMutation.isPending}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-sm transition-all disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-md text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-sm transition-all disabled:opacity-50"
               title={
                 isEn
                   ? "Scan and close pending orders that have exceeded the expiration deadline"
@@ -146,7 +146,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
             type="button"
             onClick={() => paymentsQuery.refetch()}
             disabled={paymentsQuery.isFetching}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 shadow-sm transition-all"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 shadow-sm transition-all"
           >
             <RefreshCw
               className={`w-3.5 h-3.5 ${paymentsQuery.isFetching ? "animate-spin text-teal-600" : ""}`}
@@ -408,7 +408,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                           <button
                             type="button"
                             onClick={() => setSelectedPaymentId(payment.id)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+                            className="p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
                             title={isEn ? "View Details" : "Xem chi tiết"}
                           >
                             <Eye className="w-4 h-4" />
@@ -420,7 +420,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                             <button
                               type="button"
                               onClick={() => setConfirmManualPayment(payment)}
-                              className="px-2.5 py-1 rounded-lg text-[11px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-colors"
+                              className="px-2.5 py-1 rounded-md text-[11px] font-bold text-white shadow-sm transition-colors bg-brand hover:bg-brand-hover"
                               title={isEn ? "Confirm at counter" : "Thu tiền tại quầy"}
                             >
                               {isEn ? "Collect" : "Thu tiền"}
@@ -428,7 +428,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                             <button
                               type="button"
                               onClick={() => setCancelTargetPayment(payment)}
-                              className="px-2 py-1 rounded-lg text-[11px] font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors"
+                              className="px-2 py-1 rounded-md text-[11px] font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors"
                               title={isEn ? "Cancel order" : "Hủy đơn"}
                             >
                               {isEn ? "Cancel" : "Hủy"}
@@ -459,7 +459,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                   type="button"
                   disabled={!pagination.hasPrevPage}
                   onClick={() => setFilters((p) => ({ ...p, page: p.page - 1 }))}
-                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                  className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -469,7 +469,7 @@ export const PaymentsListView: React.FC<PaymentsListViewProps> = ({
                   type="button"
                   disabled={!pagination.hasNextPage}
                   onClick={() => setFilters((p) => ({ ...p, page: p.page + 1 }))}
-                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                  className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>

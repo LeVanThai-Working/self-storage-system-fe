@@ -121,9 +121,7 @@ export function ActionRequiredSection({ actionRequired, role }: ActionRequiredSe
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/80 shadow-2xs">
                   <item.icon className="h-4 w-4" />
                 </div>
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-black ${item.badgeColor}`}
-                >
+                <span className={`rounded-md px-2.5 py-0.5 text-xs font-black ${item.badgeColor}`}>
                   {item.count}
                 </span>
               </div>

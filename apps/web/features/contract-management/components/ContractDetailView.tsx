@@ -9,7 +9,6 @@ import {
   AlertCircle,
   AlertTriangle,
   ArrowLeft,
-  ArrowRightLeft,
   Boxes,
   Calendar,
   Check,
@@ -18,7 +17,6 @@ import {
   Clock,
   CreditCard,
   ExternalLink,
-  FileCheck,
   FileSignature,
   FileText,
   History,
@@ -191,14 +189,14 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
         <div className="flex items-center justify-center gap-3">
           <Link
             href={`/${locale}/${portalBase}/contracts`}
-            className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
+            className="px-4 py-2 rounded-md border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
           >
             {isEn ? "Back to Contracts" : "Quay lại danh sách"}
           </Link>
           <button
             type="button"
             onClick={() => contractQuery.refetch()}
-            className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700"
+            className="px-4 py-2 rounded-md text-white text-xs font-bold bg-brand hover:bg-brand-hover"
           >
             {isEn ? "Retry" : "Thử lại"}
           </button>
@@ -224,7 +222,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
         <div className="flex items-center justify-center gap-3">
           <Link
             href={`/${locale}/${portalBase}/contracts`}
-            className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700"
+            className="px-4 py-2 rounded-md text-white text-xs font-bold bg-brand hover:bg-brand-hover"
           >
             {isEn ? "Back to My Assigned Contracts" : "Quay lại danh sách hợp đồng của tôi"}
           </Link>
@@ -375,7 +373,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
             type="button"
             onClick={handleExportDraftPdf}
             disabled={isExportingPdf}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-sm transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-sm transition-colors"
           >
             <FileText
               className={`w-4 h-4 text-emerald-600 ${isExportingPdf ? "animate-spin" : ""}`}
@@ -390,7 +388,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               unitDetailQuery.refetch();
             }}
             disabled={contractQuery.isFetching}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-border bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-sm transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md border border-neutral-border bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 shadow-sm transition-colors"
           >
             <RefreshCw
               className={`w-4 h-4 text-emerald-600 ${contractQuery.isFetching ? "animate-spin" : ""}`}
@@ -499,7 +497,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setCollectPaymentPurpose(PaymentPurposeEnum.CONTRACT_DEPOSIT)}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-white text-xs font-bold shadow-sm transition-colors bg-brand hover:bg-brand-hover"
                 >
                   <CreditCard className="w-4 h-4" />
                   {isEn ? "Collect Deposit at Counter" : "Thu tiền cọc tại quầy"}
@@ -511,7 +509,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setCollectPaymentPurpose(PaymentPurposeEnum.RENT_FIRST_PERIOD)}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-white text-xs font-bold shadow-sm transition-colors bg-brand hover:bg-brand-hover"
                 >
                   <CreditCard className="w-4 h-4" />
                   {isEn ? "Collect 1st Period Rent at Counter" : "Thu tiền thuê kỳ đầu tại quầy"}
@@ -536,7 +534,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                       type="button"
                       disabled={!canCheckIn || isBlockedByCheckInDate}
                       onClick={() => setIsCheckInOpen(true)}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-500/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-white text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-all bg-brand hover:bg-brand-hover"
                     >
                       <ClipboardCheck className="w-4 h-4" />
                       {!contract.customerSigned
@@ -554,7 +552,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIsCancelDraftOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-md border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors"
               >
                 <XCircle className="w-4 h-4" />
                 {isEn ? "Cancel Draft Contract" : "Huỷ hợp đồng nháp"}
@@ -630,7 +628,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setCollectPaymentPurpose(PaymentPurposeEnum.RENT_FIRST_PERIOD)}
-                    className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2 py-0.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold"
+                    className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-2 py-0.5 rounded-md text-white text-[11px] font-bold bg-brand hover:bg-brand-hover"
                   >
                     {isEn ? "Collect" : "Thu ngay"}
                   </button>
@@ -785,7 +783,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIsRenewOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-md text-white text-xs font-bold shadow-sm transition-colors bg-brand hover:bg-brand-hover"
               >
                 <RefreshCw className="w-4 h-4" />
                 {isEn ? "Renew Contract" : "Gia hạn hợp đồng"}
@@ -794,7 +792,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIsCheckOutOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-md text-white text-xs font-bold shadow-sm transition-colors bg-brand hover:bg-brand-hover"
               >
                 <LogOut className="w-4 h-4" />
                 {isEn ? "Check-out" : "Làm thủ tục trả kho"}
@@ -805,7 +803,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsTerminateOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-md border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-colors"
                 >
                   <ShieldAlert className="w-4 h-4" />
                   {isEn ? "Terminate Contract" : "Chấm dứt hợp đồng"}
@@ -909,7 +907,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                         href={f.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-300 text-xs text-slate-700 hover:text-emerald-700 transition-colors"
+                        className="flex items-center justify-between p-2 rounded-md bg-white border border-slate-200 hover:border-emerald-300 text-xs text-slate-700 hover:text-emerald-700 transition-colors"
                       >
                         <span className="truncate max-w-[200px] font-mono text-[11px]">
                           {isEn ? `Report File #${i + 1}` : `Biên bản vi phạm #${i + 1}`}
@@ -940,7 +938,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                         href={f.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="group relative rounded-xl overflow-hidden border border-slate-200 aspect-square bg-slate-100 block"
+                        className="group relative rounded-md overflow-hidden border border-slate-200 aspect-square bg-slate-100 block"
                       >
                         <img
                           src={f.url}
@@ -1069,7 +1067,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                       href={photoUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="group relative rounded-xl overflow-hidden border border-slate-200 aspect-square bg-slate-100 block"
+                      className="group relative rounded-md overflow-hidden border border-slate-200 aspect-square bg-slate-100 block"
                     >
                       <img
                         src={photoUrl}
@@ -1153,7 +1151,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                 type="button"
                 onClick={handleReopenStorageUnit}
                 disabled={maintenanceMutation.isPending}
-                className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3 px-4 rounded-md text-white text-xs font-extrabold flex items-center justify-center gap-2 disabled:opacity-50 bg-brand hover:bg-brand-hover"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 {maintenanceMutation.isPending
@@ -1410,7 +1408,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsRenewOpen(true)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold shadow-sm transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-white text-xs font-bold shadow-sm transition-colors bg-brand hover:bg-brand-hover"
                   >
                     <Calendar className="w-3.5 h-3.5" />
                     {isEn ? "Renew Lease" : "Phụ lục gia hạn"}
@@ -1419,7 +1417,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   {/* <button
                     type="button"
                     onClick={() => setCreateAddendumType(ContractAddendumTypeEnum.UNIT_CHANGE)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-white text-xs font-bold shadow-sm transition-colors bg-brand hover:bg-brand-hover"
                   >
                     <ArrowRightLeft className="w-3.5 h-3.5" />
                     {isEn ? "Unit Transfer" : "Đổi kho sự cố"}
@@ -1657,7 +1655,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                               onClick={() =>
                                 openRenewalAddendumPrintDocument(contract, addendum, locale)
                               }
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-sm transition-colors"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-sm transition-colors"
                             >
                               <FileText className="w-3.5 h-3.5 text-emerald-600" />
                               {isEn ? "Renewal Addendum PDF" : "In phụ lục PDF"}
@@ -1670,7 +1668,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                               <button
                                 type="button"
                                 onClick={() => setApproveAddendumTarget(addendum)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-white font-bold text-xs shadow-sm bg-brand hover:bg-brand-hover"
                               >
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 {isEn ? "Approve & Assign Staff" : "Duyệt & Giao nhân viên"}
@@ -1678,7 +1676,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                               <button
                                 type="button"
                                 onClick={() => setRejectAddendumTarget(addendum)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs"
                               >
                                 <XCircle className="w-3.5 h-3.5" />
                                 {isEn ? "Reject" : "Từ chối"}
@@ -1733,7 +1731,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                             <button
                               type="button"
                               onClick={() => setCancelAddendumTarget(addendum)}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 text-slate-600 font-bold text-xs transition-colors"
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200 text-slate-600 font-bold text-xs transition-colors"
                             >
                               <XCircle className="w-3.5 h-3.5" />
                               {isEn ? "Cancel Addendum" : "Hủy phụ lục"}
@@ -1937,7 +1935,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
               </div>
               <div className="flex items-center justify-between pt-1 gap-2 flex-wrap">
                 <span
-                  className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                  className={`inline-flex items-center whitespace-nowrap shrink-0 gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold ${
                     isFirstPeriodPaid
                       ? "bg-emerald-50 text-emerald-700"
                       : "bg-amber-50 text-amber-700"
@@ -1962,7 +1960,7 @@ export const ContractDetailView: React.FC<ContractDetailViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setCollectPaymentPurpose(PaymentPurposeEnum.RENT_FIRST_PERIOD)}
-                    className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-3 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-colors"
+                    className="inline-flex items-center whitespace-nowrap shrink-0 gap-1 px-3 py-1 rounded-md text-white text-xs font-bold transition-colors bg-brand hover:bg-brand-hover"
                   >
                     <CreditCard className="w-3.5 h-3.5" />
                     {isEn ? "Collect at Counter" : "Thu tại quầy"}

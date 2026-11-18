@@ -78,7 +78,7 @@ export const TimeSlotCard: React.FC<TimeSlotCardProps> = ({
               onEdit(slot);
             }}
             title="Sửa khung giờ"
-            className="rounded-lg p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400 transition-colors"
+            className="rounded-md p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400 transition-colors"
           >
             <Edit3 className="h-3.5 w-3.5" />
           </button>
@@ -89,7 +89,7 @@ export const TimeSlotCard: React.FC<TimeSlotCardProps> = ({
               onDelete(slot);
             }}
             title="Xóa khung giờ"
-            className="rounded-lg p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 dark:hover:text-red-400 transition-colors"
+            className="rounded-md p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 dark:hover:text-red-400 transition-colors"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>

@@ -172,7 +172,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
               />
               {reservation.arrivedAt && (
                 <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200">
-                  <UserCheck className="w-3 h-3" /> Đã có mặt
+                  Đã có mặt
                 </span>
               )}
             </div>
@@ -185,7 +185,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             type="button"
             onClick={() => void detailQuery.refetch()}
             disabled={detailQuery.isFetching}
-            className="p-2 rounded-xl border border-slate-200 hover:bg-white text-slate-600 transition-colors disabled:opacity-40"
+            className="p-2 rounded-md border border-slate-200 hover:bg-white text-slate-600 transition-colors disabled:opacity-40"
             title={t("refresh")}
           >
             <RefreshCw
@@ -314,7 +314,6 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                         </p>
                         {isCancelled && (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-rose-50 text-rose-700 shrink-0 border border-rose-200">
-                            <XCircle className="w-2.5 h-2.5" />
                             {status === ReservationStatusEnum.EXPIRED ? "Hết hạn" : "Đã hủy"}
                           </span>
                         )}
@@ -476,7 +475,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             <button
               type="button"
               onClick={() => onOpenManualPayment(reservation)}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-sm"
+              className="px-4 py-2 rounded-md text-xs font-bold text-white shadow-sm bg-brand hover:bg-brand-hover"
             >
               Thu cọc tại quầy
             </button>
@@ -486,7 +485,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             <button
               type="button"
               onClick={() => onOpenConfirm(reservation)}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
+              className="px-4 py-2 rounded-md text-xs font-bold text-white shadow-sm bg-brand hover:bg-brand-hover"
             >
               Xác nhận đơn
             </button>
@@ -498,7 +497,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                 type="button"
                 disabled={isBlockedByCheckInDate}
                 onClick={() => onOpenMarkArrived(reservation)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm flex items-center gap-1.5"
+                className="px-4 py-2 rounded-md text-xs font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed shadow-sm flex items-center gap-1.5 bg-brand hover:bg-brand-hover"
               >
                 <UserCheck className="w-3.5 h-3.5" />
                 Khách đã đến
@@ -512,7 +511,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
                 type="button"
                 onClick={() => onOpenCreateContract(reservation)}
                 disabled={isCreatingContract || isBlockedByCheckInDate}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm flex items-center gap-1.5"
+                className="px-4 py-2 rounded-md text-xs font-bold text-white disabled:opacity-40 disabled:cursor-not-allowed shadow-sm flex items-center gap-1.5 bg-brand hover:bg-brand-hover"
               >
                 {isCreatingContract ? (
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -528,7 +527,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             <button
               type="button"
               onClick={() => onOpenAssignStaff(reservation)}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50"
+              className="px-3.5 py-2 rounded-md text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50"
             >
               Đổi NV tiếp đón
             </button>
@@ -538,7 +537,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             <button
               type="button"
               onClick={() => onOpenReassignUnit(reservation)}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 hover:bg-sky-100"
+              className="px-3.5 py-2 rounded-md text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 hover:bg-sky-100"
             >
               Đổi kho sự cố
             </button>
@@ -548,7 +547,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             <button
               type="button"
               onClick={() => onOpenExtendGrace(reservation)}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 hover:bg-amber-100"
+              className="px-3.5 py-2 rounded-md text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 hover:bg-amber-100"
             >
               Gia hạn ân hạn
             </button>
@@ -558,7 +557,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             <button
               type="button"
               onClick={() => onOpenForceCancel(reservation)}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 flex items-center gap-1"
+              className="px-3.5 py-2 rounded-md text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100 flex items-center gap-1"
             >
               <Flame className="w-3 h-3" />
               Hủy khẩn cấp
@@ -568,7 +567,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
           {canConfirmRefund && (
             <Link
               href={`/${locale}/facility-manager/refunds`}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm flex items-center gap-1.5"
+              className="px-4 py-2 rounded-md text-xs font-bold text-white shadow-sm flex items-center gap-1.5 bg-brand hover:bg-brand-hover"
             >
               <Banknote className="w-3.5 h-3.5" />
               {locale === "en" ? "Go to Refund Management" : "Đến Quản lý hoàn tiền"}
@@ -579,7 +578,7 @@ export const ReservationDetailSheet: React.FC<ReservationDetailSheetProps> = ({
             <button
               type="button"
               onClick={() => onOpenCancel(reservation)}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-rose-600"
+              className="px-3.5 py-2 rounded-md text-xs font-bold text-slate-600 hover:text-rose-600"
             >
               Hủy đơn
             </button>

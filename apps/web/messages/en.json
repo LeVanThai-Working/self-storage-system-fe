@@ -179,7 +179,7 @@
     "search": "Search...",
     "userTable": {
       "title": "User Management",
-      "createAccount": "+ Create New Account",
+      "createAccount": "Create New Account",
       "searchPlaceholder": "Search users...",
       "columns": {
         "user": "User",
@@ -890,7 +890,7 @@
     "facilities": {
       "title": "Facility & Branch Network",
       "subtitle": "Monitor all storage facilities across the StorageHub network, operational statuses, and contact details.",
-      "addFacility": "+ Add New Facility",
+      "addFacility": "Add New Facility",
       "searchPlaceholder": "Search by facility name or address...",
       "cityLabel": "City",
       "statusLabel": "Status",
@@ -1039,7 +1039,7 @@
     "unitTypes": {
       "title": "Unit Types Directory",
       "subtitle": "Manage standardized unit classifications, dimensions, area, and volume across the network.",
-      "addUnitType": "+ Add Unit Type",
+      "addUnitType": "Add Unit Type",
       "searchPlaceholder": "Search by unit type name...",
       "categoryLabel": "Category",
       "statusLabel": "Status",
@@ -1186,7 +1186,7 @@
     "amenities": {
       "title": "Standard Amenities & Services",
       "subtitle": "Manage standardized physical equipment and service offerings available across all storage facilities.",
-      "addAmenity": "+ Add New Amenity",
+      "addAmenity": "Add New Amenity",
       "searchPlaceholder": "Search by amenity or service name...",
       "typeLabel": "Classification",
       "statusLabel": "Status",
@@ -1337,7 +1337,7 @@
     "offerings": {
       "title": "Facility Unit Type Offerings",
       "subtitle": "Configure which unit types are sold at each facility, with pricing, deposit multiplier and minimum rental days.",
-      "addOffering": "+ Add Offering",
+      "addOffering": "Add Offering",
       "quickLookup": "Quick Lookup",
       "refresh": "Refresh",
       "searchPlaceholder": "Search by facility or unit type...",
@@ -1500,7 +1500,7 @@
         "edit": "Edit",
         "notFoundTitle": "Not offered at this facility yet",
         "notFoundDescription": "This facility does not currently have a pricing configuration for the selected unit type.",
-        "createNow": "+ Offer This Unit Type Now",
+        "createNow": "Offer This Unit Type Now",
         "close": "Close"
       },
       "confirmModal": {
@@ -1517,7 +1517,7 @@
     "facilityAmenities": {
       "title": "Facility Amenity Offerings",
       "subtitle": "Manage amenity inventory allocation and pricing for each storage facility.",
-      "addOffering": "+ Add Amenity Offering",
+      "addOffering": "Add Amenity Offering",
       "quickLookup": "Quick Lookup",
       "refresh": "Refresh",
       "searchPlaceholder": "Search by facility, amenity, description...",
@@ -1706,7 +1706,7 @@
         "editOffering": "Edit",
         "notConfiguredTitle": "Not Yet Allocated",
         "notConfiguredDescription": "This amenity has not been allocated to the selected facility yet. You can allocate it below.",
-        "createWithPreset": "+ Allocate this amenity now",
+        "createWithPreset": "Allocate this amenity now",
         "availableListTitle": "Available Amenities at this Facility",
         "loadingAvailable": "Loading available amenities...",
         "noAvailableAmenities": "No amenities with available stock at this facility.",
@@ -1903,7 +1903,7 @@
     "storageUnits": {
       "title": "Storage units",
       "subtitle": "Storage units at your facility: location, unit type and status.",
-      "addUnit": "+ Add storage unit",
+      "addUnit": "Add storage unit",
       "searchPlaceholder": "Search by unit number...",
       "floorPlaceholder": "Floor",
       "zonePlaceholder": "Zone",

@@ -222,7 +222,7 @@ export const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
                     e.stopPropagation();
                     handleRemove(url);
                   }}
-                  className="absolute top-1 right-1 bg-slate-900/70 hover:bg-rose-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-sm"
+                  className="absolute top-1 right-1 bg-slate-900/70 hover:bg-rose-600 text-white rounded-md p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-sm"
                   title="Xóa file"
                 >
                   <X className="w-3 h-3" />

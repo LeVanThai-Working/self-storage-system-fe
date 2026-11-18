@@ -242,7 +242,7 @@ export const CreateManualInvoiceModal: React.FC<CreateManualInvoiceModalProps> =
               <button
                 type="button"
                 onClick={handleAddItem}
-                className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 hover:text-amber-800 px-2 py-1 rounded-lg bg-amber-50 hover:bg-amber-100"
+                className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 hover:text-amber-800 px-2 py-1 rounded-md bg-amber-50 hover:bg-amber-100"
               >
                 <Plus className="w-3.5 h-3.5" /> Thêm khoản mục
               </button>
@@ -295,7 +295,7 @@ export const CreateManualInvoiceModal: React.FC<CreateManualInvoiceModalProps> =
                         <button
                           type="button"
                           onClick={() => handleRemoveItem(idx)}
-                          className="mt-4 p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg"
+                          className="mt-4 p-1.5 text-rose-500 hover:bg-rose-50 rounded-md"
                           title="Xóa dòng"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -422,14 +422,14 @@ export const CreateManualInvoiceModal: React.FC<CreateManualInvoiceModalProps> =
               type="button"
               onClick={onClose}
               disabled={createMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-semibold text-slate-600 hover:bg-slate-100"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={createMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {createMutation.isPending ? "Đang tạo hóa đơn..." : "Tạo hóa đơn phụ phí"}
             </button>

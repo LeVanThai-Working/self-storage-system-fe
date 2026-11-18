@@ -65,7 +65,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
           type="button"
           onClick={() => transactionsQuery.refetch()}
           disabled={transactionsQuery.isFetching}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 shadow-sm transition-all"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md text-xs font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 shadow-sm transition-all"
         >
           <RefreshCw
             className={`w-3.5 h-3.5 ${
@@ -298,7 +298,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setTargetTransaction(tx)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm transition-colors whitespace-nowrap shrink-0"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold text-white shadow-sm transition-colors whitespace-nowrap shrink-0 bg-brand hover:bg-brand-hover"
                           >
                             <Link2 className="w-3.5 h-3.5" />
                             <span>{isEn ? "Assign Payment" : "Gán đơn"}</span>
@@ -332,7 +332,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
                   type="button"
                   disabled={!pagination.hasPrevPage}
                   onClick={() => setFilters((p) => ({ ...p, page: p.page - 1 }))}
-                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                  className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -342,7 +342,7 @@ export const UnmatchedTransactionsView: React.FC = () => {
                   type="button"
                   disabled={!pagination.hasNextPage}
                   onClick={() => setFilters((p) => ({ ...p, page: p.page + 1 }))}
-                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                  className="p-1.5 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>

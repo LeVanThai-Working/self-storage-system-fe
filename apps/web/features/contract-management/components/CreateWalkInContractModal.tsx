@@ -492,7 +492,7 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
                           type="button"
                           onClick={() => updateAmenityQty(item.id, 1, maxQty)}
                           disabled={qty >= maxQty}
-                          className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center disabled:opacity-40"
+                          className="w-7 h-7 rounded-lg text-white flex items-center justify-center disabled:opacity-40 bg-brand hover:bg-brand-hover"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
@@ -553,14 +553,14 @@ export const CreateWalkInContractModal: React.FC<CreateWalkInContractModalProps>
               type="button"
               onClick={onClose}
               disabled={createContractMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {isEn ? "Cancel" : "Hủy bỏ"}
             </button>
             <button
               type="submit"
               disabled={createContractMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {createContractMutation.isPending
                 ? isEn

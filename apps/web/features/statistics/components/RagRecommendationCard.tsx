@@ -81,7 +81,7 @@ export function RagRecommendationCard({ item, onCitationClick }: RagRecommendati
             key={idx}
             type="button"
             onClick={() => onCitationClick?.(chunkId)}
-            className="inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded bg-teal-100/70 border border-teal-300 text-teal-900 text-[10px] font-bold hover:bg-teal-200 transition-colors align-middle cursor-pointer"
+            className="inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded-md bg-teal-100/70 border border-teal-300 text-teal-900 text-[10px] font-bold hover:bg-teal-200 transition-colors align-middle cursor-pointer"
           >
             <FileText className="w-2.5 h-2.5" />
             <span>{chunkId}</span>
@@ -118,7 +118,7 @@ export function RagRecommendationCard({ item, onCitationClick }: RagRecommendati
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+          className="rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
           title={isExpanded ? "Thu gọn" : "Mở rộng"}
         >
           {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}

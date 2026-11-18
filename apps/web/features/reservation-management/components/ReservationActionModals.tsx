@@ -273,14 +273,14 @@ export const ConfirmReservationModal: React.FC<ConfirmReservationModalProps> = (
               type="button"
               onClick={onClose}
               disabled={confirmMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {t("cancel")}
             </button>
             <button
               type="submit"
               disabled={confirmMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {confirmMutation.isPending ? t("submitting") : t("confirmBtn")}
             </button>
@@ -405,14 +405,14 @@ export const MarkCustomerArrivedModal: React.FC<MarkCustomerArrivedModalProps> =
               type="button"
               onClick={onClose}
               disabled={markArrivedMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               Hủy bỏ
             </button>
             <button
               type="submit"
               disabled={markArrivedMutation.isPending || isBlockedByCheckInDate}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-40 disabled:cursor-not-allowed bg-brand hover:bg-brand-hover"
             >
               {markArrivedMutation.isPending ? "Đang ghi nhận..." : "Xác nhận Khách đã đến"}
             </button>
@@ -539,14 +539,14 @@ export const ExtendGracePeriodModal: React.FC<ExtendGracePeriodModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={extendMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               Hủy bỏ
             </button>
             <button
               type="submit"
               disabled={extendMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {extendMutation.isPending ? "Đang lưu..." : "Xác nhận gia hạn"}
             </button>
@@ -749,14 +749,14 @@ export const ReassignStorageUnitModal: React.FC<ReassignStorageUnitModalProps> =
               type="button"
               onClick={onClose}
               disabled={reassignMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               Hủy bỏ
             </button>
             <button
               type="submit"
               disabled={reassignMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {reassignMutation.isPending ? "Đang gửi..." : "Xác nhận đổi kho"}
             </button>
@@ -988,14 +988,14 @@ export const ForceCancelReservationModal: React.FC<ForceCancelReservationModalPr
               type="button"
               onClick={onClose}
               disabled={forceCancelMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               Đóng
             </button>
             <button
               type="submit"
               disabled={forceCancelMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
             >
               {forceCancelMutation.isPending ? "Đang xử lý..." : "Xác nhận hủy khẩn cấp"}
             </button>
@@ -1136,14 +1136,14 @@ export const ConfirmRefundModal: React.FC<ConfirmRefundModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={confirmRefundMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               Đóng
             </button>
             <button
               type="submit"
               disabled={confirmRefundMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {confirmRefundMutation.isPending ? "Đang xử lý..." : "Xác nhận đã giải ngân"}
             </button>
@@ -1279,14 +1279,14 @@ export const AssignReservationStaffModal: React.FC<AssignReservationStaffModalPr
               type="button"
               onClick={onClose}
               disabled={assignMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {t("cancel")}
             </button>
             <button
               type="submit"
               disabled={assignMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {assignMutation.isPending ? t("submitting") : t("confirmBtn")}
             </button>
@@ -1468,14 +1468,14 @@ export const CancelReservationModal: React.FC<CancelReservationModalProps> = ({
               type="button"
               onClick={onClose}
               disabled={cancelMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {t("back")}
             </button>
             <button
               type="submit"
               disabled={cancelMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm disabled:opacity-50"
             >
               {cancelMutation.isPending ? t("submitting") : t("confirmBtn")}
             </button>
@@ -1744,14 +1744,14 @@ export const ManualPaymentConfirmModal: React.FC<ManualPaymentConfirmModalProps>
               type="button"
               onClick={onClose}
               disabled={confirmManualMutation.isPending}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-md text-xs font-bold text-slate-600 hover:bg-slate-100"
             >
               {t("close")}
             </button>
             <button
               type="submit"
               disabled={confirmManualMutation.isPending || isLoadingSession}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 shadow-sm disabled:opacity-50"
+              className="px-5 py-2.5 rounded-md text-xs font-bold text-white shadow-sm disabled:opacity-50 bg-brand hover:bg-brand-hover"
             >
               {confirmManualMutation.isPending ? t("submitting") : t("confirmBtn")}
             </button>
