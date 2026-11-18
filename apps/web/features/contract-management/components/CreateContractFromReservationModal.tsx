@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
@@ -21,6 +21,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useAuthStore } from "@/features/auth/store";
+import {
+  formatVietnamDateLabel,
+  isBlockedByCheckInDateValidation,
+  useCheckInDateValidation,
+} from "@/features/system-admin/checkInDateValidation";
+import { CheckInDateBlockedBanner } from "@/features/system-admin/components/CheckInDateValidationControl";
 import { useCreateContract, useFacilityStaffs } from "../hooks";
 import { ContractSourceEnum, RoleEnum, UserStatusEnum, type ReservationResponse } from "../types";
 import { formatDateOnly, formatVnd, getCurrentUserId, resolveContractErrorMessage } from "../utils";
@@ -37,6 +43,8 @@ export const CreateContractFromReservationModal: React.FC<
 > = ({ isOpen, onClose, reservation, portalBase }) => {
   const locale = useLocale() === "en" ? "en" : "vi";
   const isEn = locale === "en";
+  const tCheckInDate = useTranslations("systemAdmin.checkInDateValidation");
+  const { enabled: checkInDateValidationEnabled } = useCheckInDateValidation();
   const router = useRouter();
   const currentUser = useAuthStore((s) => s.currentUser);
   const currentUserId = getCurrentUserId(currentUser);
@@ -60,6 +68,11 @@ export const CreateContractFromReservationModal: React.FC<
 
   if (!reservation) return null;
 
+  const isBlockedByCheckInDate = isBlockedByCheckInDateValidation(
+    reservation.checkInDate,
+    checkInDateValidationEnabled
+  );
+
   const estimatedEndDateIso = (() => {
     const start = new Date(reservation.startDate);
     if (Number.isNaN(start.getTime())) return reservation.startDate;
@@ -74,6 +87,15 @@ export const CreateContractFromReservationModal: React.FC<
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+
+    if (isBlockedByCheckInDate) {
+      setErrorMsg(
+        tCheckInDate("blockedReservation", {
+          date: formatVietnamDateLabel(reservation.checkInDate),
+        })
+      );
+      return;
+    }
 
     if (!reservation.storageUnitId) {
       setErrorMsg(
@@ -131,6 +153,13 @@ export const CreateContractFromReservationModal: React.FC<
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {isBlockedByCheckInDate && (
+            <CheckInDateBlockedBanner
+              scheduledDate={reservation.checkInDate}
+              target="reservation"
+            />
+          )}
+
           {/* Reservation Summary Card */}
           <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 space-y-2.5 text-xs">
             <div className="flex items-center justify-between border-b border-slate-200/70 pb-2">
@@ -306,8 +335,8 @@ export const CreateContractFromReservationModal: React.FC<
             </button>
             <button
               type="submit"
-              disabled={createContractMutation.isPending}
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-50"
+              disabled={createContractMutation.isPending || isBlockedByCheckInDate}
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {createContractMutation.isPending
                 ? isEn

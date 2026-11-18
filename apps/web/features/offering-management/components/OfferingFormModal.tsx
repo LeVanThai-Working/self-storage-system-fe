@@ -25,7 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useFacilities } from "@/features/facility-management/hooks";
 import { FacilityStatusEnum } from "@/features/facility-management/types";
-import { useUnitTypes } from "@/features/unit-type-management/hooks";
+import { useUnitTypeCategoryLabel, useUnitTypes } from "@/features/unit-type-management/hooks";
 import { UnitTypeStatusEnum } from "@/features/unit-type-management/types";
 import { AppApiError } from "@/lib/api/axios";
 import { useCreateOffering, useUpdateOffering, useCheckOffering, useOffering } from "../hooks";
@@ -59,6 +59,7 @@ export const OfferingFormModal = ({
   presetUnitTypeId,
 }: OfferingFormModalProps) => {
   const t = useTranslations("businessOps.offerings.formModal");
+  const categoryLabel = useUnitTypeCategoryLabel();
   const isEdit = Boolean(offeringId);
 
   const createMutation = useCreateOffering();
@@ -357,8 +358,8 @@ export const OfferingFormModal = ({
                   <div className="p-3 rounded-2xl bg-slate-50/80 border border-slate-200/60 flex items-center justify-between text-xs text-slate-600">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-slate-800">{selectedUnitType.name}</span>
-                      <span className="px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 font-bold uppercase text-[10px]">
-                        {selectedUnitType.category}
+                      <span className="px-2 py-0.5 rounded-md bg-teal-50 text-teal-700 font-bold text-[10px]">
+                        {categoryLabel(selectedUnitType.category)}
                       </span>
                     </div>
                     <div className="text-slate-500">

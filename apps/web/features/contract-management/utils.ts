@@ -14,6 +14,7 @@ import {
   RoleEnum,
   ViolationCategoryEnum,
   type ContractAddendumResponse,
+  type ContractAmenityItemResponse,
   type ContractResponse,
 } from "./types";
 
@@ -125,6 +126,65 @@ export function getBillingUnitLabel(
     case RentalUnitEnum.MONTH:
     default:
       return isEn ? "month" : "tháng";
+  }
+}
+
+/**
+ * Nhãn hình thức tính phí của tiện ích (trả 1 lần hay định kỳ theo chu kỳ)
+ */
+export function getAmenityBillingModeLabel(
+  unit?: RentalUnitEnum | BillingUnitEnum | string | null,
+  locale: "vi" | "en" = "vi"
+): string {
+  const isEn = locale === "en";
+  if (String(unit ?? "").toLowerCase() === BillingUnitEnum.ONE_TIME) {
+    return isEn ? "One-time (Period 1)" : "Trả 1 lần (kỳ đầu)";
+  }
+  const unitLabel = getBillingUnitLabel(unit, locale);
+  return isEn ? `Recurring per ${unitLabel}` : `Định kỳ theo ${unitLabel}`;
+}
+
+/**
+ * Nhãn trạng thái hợp đồng thuần tiếng Việt dùng cho mẫu in A4
+ */
+export function getContractStatusLabelVi(status?: ContractStatusEnum | string | null): string {
+  switch (String(status ?? "").toLowerCase()) {
+    case ContractStatusEnum.DRAFT:
+      return "Chờ ký & nhận kho";
+    case ContractStatusEnum.ACTIVE:
+      return "Đang hiệu lực";
+    case ContractStatusEnum.OVERDUE:
+      return "Quá hạn";
+    case ContractStatusEnum.COMPLETED:
+      return "Đã hoàn tất";
+    case ContractStatusEnum.CANCELLED:
+      return "Đã hủy bản nháp";
+    case ContractStatusEnum.TERMINATED:
+      return "Chấm dứt trước hạn";
+    default:
+      return "Đang cập nhật";
+  }
+}
+
+/**
+ * Nhãn trạng thái phụ lục hợp đồng thuần tiếng Việt dùng cho mẫu in A4
+ */
+export function getContractAddendumStatusLabelVi(
+  status?: ContractAddendumStatusEnum | string | null
+): string {
+  switch (String(status ?? "").toLowerCase()) {
+    case ContractAddendumStatusEnum.PENDING_APPROVAL:
+      return "Chờ Quản lý duyệt";
+    case ContractAddendumStatusEnum.DRAFT:
+      return "Bản nháp (Chờ ký hai bên)";
+    case ContractAddendumStatusEnum.ACTIVE:
+      return "Đã kích hoạt";
+    case ContractAddendumStatusEnum.REJECTED:
+      return "Đã từ chối";
+    case ContractAddendumStatusEnum.CANCELLED:
+      return "Đã hủy";
+    default:
+      return "Đang cập nhật";
   }
 }
 
@@ -312,6 +372,80 @@ export function isContractDepositSatisfied(contract: ContractResponse): boolean 
  */
 export function isContractFirstPeriodPaid(contract: ContractResponse): boolean {
   return Boolean(contract.firstPeriodPaidAt || contract.firstCyclePaidAt);
+}
+
+/**
+ * Kiểm tra tiện ích thuộc loại thanh toán 1 lần (`one_time`) hay trả định kỳ
+ */
+export function isOneTimeAmenity(
+  amenity: Pick<ContractAmenityItemResponse, "billingUnit">
+): boolean {
+  return String(amenity.billingUnit ?? "").toLowerCase() === BillingUnitEnum.ONE_TIME;
+}
+
+/**
+ * Tính thành tiền của một dòng tiện ích trên hợp đồng
+ */
+export function getAmenityItemSubtotal(
+  amenity: Pick<ContractAmenityItemResponse, "totalPrice" | "pricePerUnit" | "quantity">
+): number {
+  const unitPrice = typeof amenity.pricePerUnit === "number" ? amenity.pricePerUnit : 0;
+  const qty = typeof amenity.quantity === "number" ? amenity.quantity : 0;
+  return typeof amenity.totalPrice === "number" ? amenity.totalPrice : unitPrice * qty;
+}
+
+export interface ContractFinancialSummary {
+  recurringAmenities: ContractAmenityItemResponse[];
+  oneTimeAmenities: ContractAmenityItemResponse[];
+  recurringAmenitiesTotal: number;
+  oneTimeAmenitiesTotal: number;
+  totalAmenitiesPrice: number;
+  displayPeriodicPrice: number;
+  firstPeriodTotalAmount: number;
+}
+
+/**
+ * Tổng hợp các khoản tiền thuê kho, tiện ích định kỳ (theo tháng/chu kỳ) và tiện ích trả 1 lần
+ */
+export function calculateContractFinancialSummary(
+  contract: ContractResponse
+): ContractFinancialSummary {
+  const amenities = contract.amenities ?? [];
+  const recurringAmenities = amenities.filter((a) => !isOneTimeAmenity(a));
+  const oneTimeAmenities = amenities.filter((a) => isOneTimeAmenity(a));
+
+  const recurringAmenitiesTotal = recurringAmenities.reduce(
+    (sum, item) => sum + getAmenityItemSubtotal(item),
+    0
+  );
+  const oneTimeAmenitiesTotal = oneTimeAmenities.reduce(
+    (sum, item) => sum + getAmenityItemSubtotal(item),
+    0
+  );
+  const totalAmenitiesPrice = recurringAmenitiesTotal + oneTimeAmenitiesTotal;
+
+  const baseRentalPrice = typeof contract.rentalPrice === "number" ? contract.rentalPrice : 0;
+  const isActivatedLifecycle =
+    contract.status === ContractStatusEnum.ACTIVE ||
+    contract.status === ContractStatusEnum.OVERDUE ||
+    contract.status === ContractStatusEnum.COMPLETED;
+
+  const displayPeriodicPrice =
+    isActivatedLifecycle && typeof contract.totalPeriodicPrice === "number"
+      ? contract.totalPeriodicPrice
+      : baseRentalPrice + recurringAmenitiesTotal;
+
+  const firstPeriodTotalAmount = baseRentalPrice + recurringAmenitiesTotal + oneTimeAmenitiesTotal;
+
+  return {
+    recurringAmenities,
+    oneTimeAmenities,
+    recurringAmenitiesTotal,
+    oneTimeAmenitiesTotal,
+    totalAmenitiesPrice,
+    displayPeriodicPrice,
+    firstPeriodTotalAmount,
+  };
 }
 
 /**

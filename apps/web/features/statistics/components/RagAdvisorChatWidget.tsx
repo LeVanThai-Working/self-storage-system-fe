@@ -281,9 +281,7 @@ export function RagAdvisorChatWidget({
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h3 className="text-xs sm:text-sm font-extrabold tracking-tight">
-                      Trợ lý AI Tối ưu Lợi nhuận
-                    </h3>
+                    <h3 className="text-xs sm:text-sm font-extrabold tracking-tight">Trợ lý AI</h3>
                     <span className="flex h-2 w-2 relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />

@@ -30,6 +30,49 @@ const getAddendumTypeLabel = (type: ContractAddendumTypeEnum, isEn: boolean) => 
   }
 };
 
+interface SignedDocumentTileProps {
+  url: string;
+  alt: string;
+  label: string;
+  isEn: boolean;
+}
+
+const isPdfUrl = (url: string) => url.split("?")[0].toLowerCase().endsWith(".pdf");
+
+/**
+ * Shared tile used by both main contract scans and signed addendum scans
+ * so document previews stay visually consistent across sections.
+ */
+const SignedDocumentTile: React.FC<SignedDocumentTileProps> = ({ url, alt, label, isEn }) => (
+  <a
+    href={url}
+    target="_blank"
+    rel="noreferrer"
+    className="group relative rounded-2xl overflow-hidden border border-slate-200 aspect-[3/4] bg-slate-50 flex flex-col items-center justify-center p-2 text-center hover:border-emerald-500 hover:shadow-md transition-all block"
+  >
+    {isPdfUrl(url) ? (
+      <div className="flex flex-col items-center justify-center h-full">
+        <FileText className="w-10 h-10 text-emerald-600 mb-2" />
+        <span className="text-[11px] font-bold text-slate-700 truncate max-w-[100px]">
+          {isEn ? "PDF file" : "Tệp PDF"}
+        </span>
+      </div>
+    ) : (
+      <img
+        src={url}
+        alt={alt}
+        className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform"
+      />
+    )}
+    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-2xl">
+      <ExternalLink className="w-5 h-5 text-white" />
+    </div>
+    <span className="absolute bottom-2 inset-x-2 bg-black/70 text-[10px] font-bold text-white py-0.5 rounded-lg truncate px-1.5 text-center">
+      {label}
+    </span>
+  </a>
+);
+
 export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardProps> = ({
   signedContractUrls,
   contract,
@@ -88,7 +131,7 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-extrabold text-slate-700 flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5 text-emerald-600" />
-              {isEn ? "Main contract (signed at check-in)" : "Hợp đồng chính, ký lúc check-in"}
+              {isEn ? "Main contract (signed at check-in)" : "Hợp đồng chính"}
             </h4>
             <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
               {signedContractUrls.length} {isEn ? "pages" : "trang"}
@@ -97,34 +140,13 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {signedContractUrls.map((url, idx) => (
-              <a
+              <SignedDocumentTile
                 key={`contract-${url}-${idx}`}
-                href={url}
-                target="_blank"
-                rel="noreferrer"
-                className="group relative rounded-2xl overflow-hidden border border-slate-200 aspect-[3/4] bg-slate-50 flex flex-col items-center justify-center p-2 text-center hover:border-emerald-500 hover:shadow-md transition-all block"
-              >
-                {url.toLowerCase().endsWith(".pdf") ? (
-                  <div className="flex flex-col items-center justify-center h-full">
-                    <FileText className="w-10 h-10 text-emerald-600 mb-2" />
-                    <span className="text-[11px] font-bold text-slate-700 truncate max-w-[100px]">
-                      {isEn ? "PDF file" : "Tệp PDF"}
-                    </span>
-                  </div>
-                ) : (
-                  <img
-                    src={url}
-                    alt={`Signed contract scan page ${idx + 1}`}
-                    className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform"
-                  />
-                )}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-2xl">
-                  <ExternalLink className="w-5 h-5 text-white" />
-                </div>
-                <span className="absolute bottom-2 inset-x-2 bg-black/70 text-[10px] font-bold text-white py-0.5 rounded-lg truncate px-1.5 text-center">
-                  {isEn ? `Page ${idx + 1}` : `Trang ${idx + 1}`}
-                </span>
-              </a>
+                url={url}
+                alt={`Signed contract scan page ${idx + 1}`}
+                label={isEn ? `Page ${idx + 1}` : `Trang ${idx + 1}`}
+                isEn={isEn}
+              />
             ))}
           </div>
         </div>
@@ -132,7 +154,13 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
 
       {/* 2. Signed Addendum Scans (Separated from Addendum Requests) */}
       {addendumDocuments.length > 0 && (
-        <div className="space-y-3 pt-2 border-t border-slate-100">
+        <div
+          className={`space-y-3 ${
+            signedContractUrls && signedContractUrls.length > 0
+              ? "pt-4 border-t border-slate-100"
+              : ""
+          }`}
+        >
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-extrabold text-slate-700 flex items-center gap-1.5">
               <FileSignature className="w-3.5 h-3.5 text-teal-600" />
@@ -143,11 +171,11 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
             </span>
           </div>
 
-          <div className="space-y-3">
-            {addendumDocuments.map(({ addendum, files }) => (
+          <div className="space-y-4">
+            {addendumDocuments.map(({ addendum, files }, addendumIdx) => (
               <div
                 key={addendum.id}
-                className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3.5 space-y-2.5"
+                className={`space-y-3 ${addendumIdx > 0 ? "pt-4 border-t border-slate-100" : ""}`}
               >
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-2">
@@ -163,36 +191,15 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {files.map((url, fIdx) => (
-                    <a
+                    <SignedDocumentTile
                       key={`addendum-${addendum.id}-${url}-${fIdx}`}
-                      href={url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="group relative rounded-xl overflow-hidden border border-slate-200 aspect-[3/4] bg-white flex flex-col items-center justify-center p-2 text-center hover:border-teal-500 hover:shadow-sm transition-all block"
-                    >
-                      {url.toLowerCase().endsWith(".pdf") ? (
-                        <div className="flex flex-col items-center justify-center h-full">
-                          <FileText className="w-8 h-8 text-teal-600 mb-1" />
-                          <span className="text-[10px] font-bold text-slate-700 truncate max-w-[80px]">
-                            PDF
-                          </span>
-                        </div>
-                      ) : (
-                        <img
-                          src={url}
-                          alt={`Addendum scan page ${fIdx + 1}`}
-                          className="w-full h-full object-cover rounded-lg group-hover:scale-105 transition-transform"
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-xl">
-                        <ExternalLink className="w-4 h-4 text-white" />
-                      </div>
-                      <span className="absolute bottom-1.5 inset-x-1.5 bg-black/70 text-[9px] font-bold text-white py-0.5 rounded truncate px-1 text-center">
-                        {isEn ? `Scan ${fIdx + 1}` : `Bản scan ${fIdx + 1}`}
-                      </span>
-                    </a>
+                      url={url}
+                      alt={`Addendum scan page ${fIdx + 1}`}
+                      label={isEn ? `Scan ${fIdx + 1}` : `Bản scan ${fIdx + 1}`}
+                      isEn={isEn}
+                    />
                   ))}
                 </div>
               </div>

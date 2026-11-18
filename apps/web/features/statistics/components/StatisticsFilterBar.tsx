@@ -2,25 +2,59 @@
 
 import React from "react";
 import { Building2, Calendar, RefreshCw } from "lucide-react";
-import { StatisticsGranularityEnum } from "../types";
+import {
+  DEFAULT_RANGE_DAYS,
+  DEFAULT_RENTAL_TRENDS_RANGE_DAYS,
+  RentalTrendsGranularityEnum,
+  StatisticsGranularityEnum,
+} from "../types";
+import { getStatisticsDateRange } from "../utils/rentalTrends";
 import { useFacilities } from "@/features/facility-management/hooks";
 import { Button } from "@/components/ui/button";
 
+export type StatisticsFilterGranularity = StatisticsGranularityEnum | RentalTrendsGranularityEnum;
+
+const STANDARD_PRESETS = [
+  { label: "7 ngày", days: 7 },
+  { label: "30 ngày", days: DEFAULT_RANGE_DAYS },
+  { label: "90 ngày", days: 90 },
+] as const;
+
+const TRENDS_PRESETS = [
+  { label: "3 tháng", days: 90 },
+  { label: "6 tháng", days: 180 },
+  { label: "1 năm", days: DEFAULT_RENTAL_TRENDS_RANGE_DAYS },
+] as const;
+
+const STANDARD_GRANULARITY_OPTIONS = [
+  { value: StatisticsGranularityEnum.DAY, label: "Theo Ngày" },
+  { value: StatisticsGranularityEnum.WEEK, label: "Theo Tuần" },
+  { value: StatisticsGranularityEnum.MONTH, label: "Theo Tháng" },
+  { value: StatisticsGranularityEnum.QUARTER, label: "Theo Quý" },
+] as const;
+
+const TRENDS_GRANULARITY_OPTIONS = [
+  { value: RentalTrendsGranularityEnum.MONTH, label: "Theo Tháng" },
+  { value: RentalTrendsGranularityEnum.QUARTER, label: "Theo Quý" },
+] as const;
+
 interface StatisticsFilterBarProps {
+  mode?: "standard" | "trends";
   fromDate?: string;
   toDate?: string;
-  granularity: StatisticsGranularityEnum;
+  granularity: StatisticsFilterGranularity;
   facilityId?: string;
   showFacilityFilter: boolean;
   isFetching?: boolean;
   onFromDateChange: (val?: string) => void;
   onToDateChange: (val?: string) => void;
-  onGranularityChange: (val: StatisticsGranularityEnum) => void;
+  onGranularityChange: (val: StatisticsFilterGranularity) => void;
   onFacilityChange: (val?: string) => void;
   onRefresh: () => void;
 }
 
 export function StatisticsFilterBar({
+  mode = "standard",
   fromDate,
   toDate,
   granularity,
@@ -37,13 +71,14 @@ export function StatisticsFilterBar({
     limit: 100,
   });
 
-  const setPreset = (days: number) => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - days);
+  const presets = mode === "trends" ? TRENDS_PRESETS : STANDARD_PRESETS;
+  const granularityOptions =
+    mode === "trends" ? TRENDS_GRANULARITY_OPTIONS : STANDARD_GRANULARITY_OPTIONS;
 
-    onFromDateChange(start.toISOString().split("T")[0]);
-    onToDateChange(end.toISOString().split("T")[0]);
+  const setPreset = (days: number) => {
+    const range = getStatisticsDateRange(days);
+    onFromDateChange(range.fromDate);
+    onToDateChange(range.toDate);
   };
 
   return (
@@ -51,27 +86,24 @@ export function StatisticsFilterBar({
       <div className="flex flex-wrap items-center gap-3">
         {/* Preset date buttons */}
         <div className="inline-flex items-center rounded-xl border border-slate-200 bg-slate-50 p-1 text-xs font-semibold text-slate-600">
-          <button
-            type="button"
-            onClick={() => setPreset(7)}
-            className="cursor-pointer rounded-lg px-2.5 py-1.5 transition-all hover:bg-white hover:text-slate-900"
-          >
-            7 ngày
-          </button>
-          <button
-            type="button"
-            onClick={() => setPreset(30)}
-            className="cursor-pointer rounded-lg px-2.5 py-1.5 transition-all hover:bg-white hover:text-slate-900"
-          >
-            30 ngày
-          </button>
-          <button
-            type="button"
-            onClick={() => setPreset(90)}
-            className="cursor-pointer rounded-lg px-2.5 py-1.5 transition-all hover:bg-white hover:text-slate-900"
-          >
-            90 ngày
-          </button>
+          {presets.map((preset) => {
+            const expected = getStatisticsDateRange(preset.days);
+            const isActive = fromDate === expected.fromDate && toDate === expected.toDate;
+            return (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => setPreset(preset.days)}
+                className={`cursor-pointer rounded-lg px-2.5 py-1.5 transition-all ${
+                  isActive
+                    ? "bg-white text-teal-700 shadow-2xs"
+                    : "hover:bg-white hover:text-slate-900"
+                }`}
+              >
+                {preset.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Custom date range */}
@@ -104,13 +136,14 @@ export function StatisticsFilterBar({
           <span className="text-xs text-slate-500 font-medium">Chu kỳ:</span>
           <select
             value={granularity}
-            onChange={(e) => onGranularityChange(e.target.value as StatisticsGranularityEnum)}
+            onChange={(e) => onGranularityChange(e.target.value as StatisticsFilterGranularity)}
             className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs outline-none focus:border-teal-500"
           >
-            <option value={StatisticsGranularityEnum.DAY}>Theo Ngày</option>
-            <option value={StatisticsGranularityEnum.WEEK}>Theo Tuần</option>
-            <option value={StatisticsGranularityEnum.MONTH}>Theo Tháng</option>
-            <option value={StatisticsGranularityEnum.QUARTER}>Theo Quý</option>
+            {granularityOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
 

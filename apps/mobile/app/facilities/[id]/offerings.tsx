@@ -33,6 +33,7 @@ const CATEGORIES: (UnitTypeCategoryEnum | "ALL")[] = [
   UnitTypeCategoryEnum.MEDIUM,
   UnitTypeCategoryEnum.LARGE,
   UnitTypeCategoryEnum.CLIMATE_CONTROLLED,
+  UnitTypeCategoryEnum.WAREHOUSE_RACK,
 ];
 
 export default function FacilityAvailableOfferingsScreen() {

@@ -30,7 +30,8 @@ const selectClass =
 
 /** The BE owns the category list, so an unknown value shows as-is instead of breaking the page. */
 function categoryLabel(t: ReturnType<typeof useTranslations>, category: string) {
-  return t.has(`category.${category}`) ? t(`category.${category}`) : category;
+  const key = category.toLowerCase();
+  return t.has(`category.${key}`) ? t(`category.${key}`) : category;
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {

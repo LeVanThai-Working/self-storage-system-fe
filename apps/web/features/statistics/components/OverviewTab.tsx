@@ -80,9 +80,6 @@ export function OverviewTab({ data, isLoading }: OverviewTabProps) {
               <div className="text-2xl font-black text-teal-600">
                 {occupancy.storageUnits.occupancyRate}%
               </div>
-              <span className="text-[11px] font-semibold text-slate-400">
-                Lấp đầy diện tích: {occupancy.storageUnits.areaOccupancyRate}%
-              </span>
             </div>
           </div>
 
