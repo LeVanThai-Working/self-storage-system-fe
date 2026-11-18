@@ -74,7 +74,7 @@ export const AuditLogDetailModal = ({ id, isOpen, onClose }: AuditLogDetailModal
               </DialogTitle>
               <DialogDescription className="mt-1 text-xs text-slate-500 flex items-center gap-2">
                 <span>{t("modal.logId")}:</span>
-                <span className="font-mono text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md text-xs select-all">
+                <span className="font-mono text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md text-xs select-all border border-slate-200">
                   {id}
                 </span>
               </DialogDescription>

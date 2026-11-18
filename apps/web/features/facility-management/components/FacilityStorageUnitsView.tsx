@@ -740,7 +740,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                           {ut.name}
                         </h2>
                         {ut.category && (
-                          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-700">
+                          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                             {categoryLabel(ut.category)}
                           </span>
                         )}
@@ -1104,7 +1104,7 @@ export const FacilityStorageUnitsView: React.FC<FacilityStorageUnitsViewProps> =
                         ? `Sơ đồ kệ kho: ${selectedRackUnit.unitNumber}`
                         : `Rack Map: ${selectedRackUnit.unitNumber}`}
                     </h3>
-                    <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-teal-50 text-teal-700 uppercase">
+                    <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-teal-50 text-teal-700 uppercase border border-teal-200">
                       {selectedRackUnit.unitType?.name ?? "Warehouse Rack"}
                     </span>
                   </div>

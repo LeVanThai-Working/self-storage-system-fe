@@ -355,13 +355,13 @@ export const SigningAuthorizationListView: React.FC<SigningAuthorizationListView
                           {facilities.slice(0, 2).map((fac, idx) => (
                             <span
                               key={fac._id || idx}
-                              className="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-xs font-semibold"
+                              className="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200"
                             >
                               {fac.name}
                             </span>
                           ))}
                           {facilities.length > 2 && (
-                            <span className="px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 text-xs font-semibold">
+                            <span className="px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 text-xs font-semibold border border-teal-200">
                               +{facilities.length - 2}
                             </span>
                           )}

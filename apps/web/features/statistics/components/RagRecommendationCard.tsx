@@ -105,7 +105,7 @@ export function RagRecommendationCard({ item, onCitationClick }: RagRecommendati
             >
               {style.label}
             </span>
-            <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
+            <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700 border border-slate-200">
               {getCategoryLabel(item.category)}
             </span>
           </div>

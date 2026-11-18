@@ -102,7 +102,7 @@ export const ConfirmOfferingModal = ({
                   {offering.unitType.name}
                 </span>
                 {offering.unitType.category && (
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700">
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200">
                     {categoryLabel(offering.unitType.category)}
                   </span>
                 )}

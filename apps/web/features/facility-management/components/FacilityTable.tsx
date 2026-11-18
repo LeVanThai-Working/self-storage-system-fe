@@ -131,7 +131,7 @@ export const FacilityTable = () => {
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-700">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-700 border border-slate-200">
             {status}
           </span>
         );
@@ -460,7 +460,7 @@ export const FacilityTable = () => {
 
                       {/* City Badge */}
                       <td className="py-4 px-6 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-700">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-700 border border-slate-200">
                           {facility.city}
                         </span>
                       </td>

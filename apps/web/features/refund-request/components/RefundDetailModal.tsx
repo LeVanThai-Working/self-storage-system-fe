@@ -150,7 +150,7 @@ export const RefundDetailModal: React.FC<RefundDetailModalProps> = ({
             {isOverThreshold && (
               <Badge
                 variant="outline"
-                className="bg-purple-50 text-purple-700 border-purple-200 py-0.5 px-2.5 text-xs flex items-center gap-1.5 self-start md:self-center"
+                className="bg-purple-50 text-purple-700 border-purple-200 py-0.5 px-2.5 text-xs flex items-center gap-1.5 self-start md:self-center border rounded-md"
               >
                 <ShieldAlert className="w-4 h-4 text-purple-600" />
                 <span>Cần Quản lý vận hành (Ops) phê duyệt (&gt; 10M VND)</span>

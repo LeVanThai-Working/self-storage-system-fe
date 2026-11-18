@@ -325,7 +325,7 @@ export const AuditLogTable = () => {
                               {log.actorEmail}
                             </div>
                             {log.actorRole && (
-                              <div className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-600 mt-1">
+                              <div className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 text-slate-600 mt-1 border border-slate-200">
                                 {tRole.has(log.actorRole) ? tRole(log.actorRole) : log.actorRole}
                               </div>
                             )}
@@ -359,7 +359,7 @@ export const AuditLogTable = () => {
                       {/* Resource type */}
                       <td className="px-5 py-2">
                         <div>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs bg-slate-100 text-slate-600 font-semibold">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs bg-slate-100 text-slate-600 font-semibold border border-slate-200">
                             {resourceLabel}
                           </span>
                           {log.resourceId && (

@@ -158,12 +158,12 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
                       <td className="py-3 px-3 font-bold text-slate-900 flex items-center gap-1.5">
                         {formatRentalTrendPeriod(item.period)}
                         {item.isPeak && (
-                          <span className="rounded-md bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                          <span className="rounded-md bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 border border-amber-200">
                             Cao điểm
                           </span>
                         )}
                         {item.isLow && (
-                          <span className="rounded-md bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700">
+                          <span className="rounded-md bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 border border-blue-200">
                             Thấp điểm
                           </span>
                         )}
@@ -207,7 +207,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
               </h4>
             </div>
             {busiestDay && (
-              <span className="rounded-md bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700">
+              <span className="rounded-md bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700 border border-indigo-200">
                 Đông nhất: {busiestDay.dayName}
               </span>
             )}
@@ -251,7 +251,7 @@ export function RentalTrendsTab({ data, isLoading }: RentalTrendsTabProps) {
               </h4>
             </div>
             {mostBookedTimeSlot && (
-              <span className="rounded-md bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700">
+              <span className="rounded-md bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700 border border-teal-200">
                 Đặt nhiều nhất: {mostBookedTimeSlot.timeSlot}
               </span>
             )}

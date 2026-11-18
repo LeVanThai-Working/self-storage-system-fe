@@ -706,7 +706,7 @@ export const CheckInContractModal: React.FC<CheckInContractModalProps> = ({
                     : "Ảnh chụp / Bản scan hợp đồng đã ký sống (Bắt buộc) *"}
                 </label>
                 {signedContractFileUrls.length > 0 && (
-                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
+                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
                     {signedContractFileUrls.length} {isEn ? "uploaded" : "file đã chọn"}
                   </span>
                 )}
@@ -2139,7 +2139,7 @@ export const StaffSignContractAddendumModal: React.FC<StaffSignContractAddendumM
                     </button>
                   )}
                   {signedAddendumFileUrls.length > 0 && (
-                    <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
+                    <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
                       {signedAddendumFileUrls.length} {isEn ? "uploaded" : "file đã chọn"}
                     </span>
                   )}

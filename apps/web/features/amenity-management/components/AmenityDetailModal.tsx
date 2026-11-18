@@ -157,7 +157,7 @@ export const AmenityDetailModal = ({ amenity, isOpen, onClose }: AmenityDetailMo
               <div className="flex items-center gap-2">
                 <Layers className="w-4 h-4 text-slate-400" />
                 <span>Mã định danh:</span>
-                <code className="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-xs">
+                <code className="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-xs border border-slate-200">
                   {amenity.id}
                 </code>
               </div>

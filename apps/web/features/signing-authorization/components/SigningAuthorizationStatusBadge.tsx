@@ -49,7 +49,7 @@ export const SigningAuthorizationStatusBadge: React.FC<SigningAuthorizationStatu
       return (
         <Badge
           variant="outline"
-          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-50 text-slate-600 border-slate-200"
+          className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-50 text-slate-600 border-slate-200 border"
         >
           {status}
         </Badge>

@@ -352,7 +352,7 @@ export function FacilitiesKpiTab({
                         return (
                           <ActionTooltip key={i} content={detail}>
                             <span
-                              className={`rounded-md bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700 ${detail ? "cursor-help" : ""}`}
+                              className={`rounded-md bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700 border border-rose-200 ${detail ? "cursor-help" : ""}`}
                             >
                               {text}
                             </span>

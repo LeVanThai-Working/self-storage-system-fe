@@ -203,7 +203,7 @@ export function RagEvalModal({ open, onOpenChange, trigger }: RagEvalModalProps)
                         <span className="font-mono text-[10px] font-bold text-slate-500 mr-2">
                           {testCase.caseId}
                         </span>
-                        <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
+                        <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700 border border-slate-200">
                           {testCase.category}
                         </span>
                       </div>

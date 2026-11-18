@@ -133,7 +133,7 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
               <FileText className="w-3.5 h-3.5 text-emerald-600" />
               {isEn ? "Main contract (signed at check-in)" : "Hợp đồng chính"}
             </h4>
-            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-md">
+            <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">
               {signedContractUrls.length} {isEn ? "pages" : "trang"}
             </span>
           </div>
@@ -182,11 +182,11 @@ export const ContractSignedDocumentsCard: React.FC<ContractSignedDocumentsCardPr
                     <span className="text-xs font-extrabold text-slate-900">
                       #{addendum.addendumCode}
                     </span>
-                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700">
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-teal-50 text-teal-700 border border-teal-200">
                       {getAddendumTypeLabel(addendum.type, isEn)}
                     </span>
                   </div>
-                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
+                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
                     {files.length} {isEn ? "scans" : "tài liệu"}
                   </span>
                 </div>

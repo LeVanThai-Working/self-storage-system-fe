@@ -389,14 +389,14 @@ export const AmenityTable = () => {
                           {amenity.tags.slice(0, 3).map((tag, idx) => (
                             <span
                               key={idx}
-                              className="inline-flex items-center gap-1 text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-md"
+                              className="inline-flex items-center gap-1 text-xs font-semibold whitespace-nowrap shrink-0 bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-md border border-slate-200"
                             >
                               <Tag className="w-2.5 h-2.5 text-slate-400 shrink-0" />
                               {tag}
                             </span>
                           ))}
                           {amenity.tags.length > 3 && (
-                            <span className="text-xs font-semibold whitespace-nowrap shrink-0 text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-md">
+                            <span className="text-xs font-semibold whitespace-nowrap shrink-0 text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
                               +{amenity.tags.length - 3}
                             </span>
                           )}

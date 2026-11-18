@@ -474,13 +474,13 @@ export const UnitTypeTable = () => {
                           {unitType.features.slice(0, 2).map((feat, idx) => (
                             <span
                               key={idx}
-                              className="text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-md"
+                              className="text-xs font-semibold bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-md border border-slate-200"
                             >
                               {feat}
                             </span>
                           ))}
                           {unitType.features.length > 2 && (
-                            <span className="text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-md">
+                            <span className="text-xs font-semibold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-md border border-teal-200">
                               +{unitType.features.length - 2}
                             </span>
                           )}
