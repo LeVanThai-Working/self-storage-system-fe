@@ -29,6 +29,13 @@
 - Facility compensation is preserved in `damageFee`, rather than being overwritten with zero.
 - Customer notifications open incident detail and invalidate cached incident data. Returning to detail refreshes the authoritative status.
 
+## Returning evacuated goods to a rack
+
+- Customer acknowledgment alone does not release holding goods. The incident must be closed with its signed handover document and customer acknowledgment. Damaged/disputed stock and a SKU shared with another open evacuation stay blocked.
+- Closing a repair-in-place case reopens its maintenance rack as rented only while the same live contract still rents it and no other open case affects that rack. Relocation, reassigned racks and inactive racks are not reopened.
+- Mobile shows the parent rack's maintenance/inactive state even if its tiers are available. Holding detail offers **Return to rack** per eligible SKU; the move form accepts a healthy rented destination, available quantity and reason. Ordinary moves cannot target holding.
+- Old closed cases receive holding permissions without changing their stock. Legacy rack maintenance is not silently reset by reads. On the deployed BE, inspect with `npx tsx scripts/repair-closed-incident-racks.ts --contract-code=SEED-M5-Q2-08`; add `--apply` after reviewing the report. The script requires the intended `MONGODB_URI`, limits changes to that contract, records an audit and skips open cases, relocation or changes made after closure. It does not reset tier maintenance.
+
 ## Manual scenarios for a local test environment
 
 Use customer, assigned staff and manager accounts from the same facility. Use a separate customer/facility for negative cases. Do not use production records for these checks.

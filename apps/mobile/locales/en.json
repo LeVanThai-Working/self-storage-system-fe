@@ -496,7 +496,12 @@
       "empty": "Nothing in the holding area",
       "summary": "Holding area (%{qty} items)",
       "skuCount": "%{count} SKUs",
-      "holdingHint": "Holding-area stock is frozen after a rack incident. Staff unlock it once you confirm the hand-back."
+      "holdingHint": "These goods are not ready to return to a rack. A signed document, your acknowledgment and manager closure are required; damaged or disputed goods remain locked.",
+      "returnToRack": "Return to rack",
+      "readyHint": "These goods can now return to a rack. Choose an item, destination tier and quantity to move.",
+      "partialHint": "Some goods can now return to a rack. Locked items still require incident handling to be completed.",
+      "noDestination": "No eligible rack tier can receive these goods. Please contact the facility manager.",
+      "destinationUnavailable": "This tier cannot receive these goods right now. Please choose another tier."
     },
     "position": {
       "tierOfRack": "Tier %{tier} · Rack %{rack}",
@@ -505,6 +510,9 @@
     "noRacks": "This unit has no rack system",
     "readOnlyBanner": "This contract is no longer active, stock is view only",
     "lockedTier": "This tier is locked and view-only",
+    "lockedRack": "This rack is under maintenance or inactive and is view-only. Please contact the manager if its incident is already closed.",
+    "rackMaintenance": "Under maintenance",
+    "rackInactive": "Inactive",
     "forbidden": "You do not have access to this unit",
     "loadError": "Could not load the rack map",
     "retry": "Retry",

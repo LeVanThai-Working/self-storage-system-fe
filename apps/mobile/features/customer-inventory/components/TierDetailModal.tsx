@@ -38,6 +38,7 @@ import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { SkuThumb } from "./SkuThumb";
 import { TierStatusBadge } from "./TierStatusBadge";
 import { ItemStatusBadge } from "./ItemStatusBadge";
+import { canReturnToRack, effectiveTierStatus, isRackLocked } from "../utils/stockMovePolicy";
 
 type ItemActionType = Exclude<StockActionType, "in">;
 
@@ -79,8 +80,11 @@ export function TierDetailModal({
   const found = findTierInTree(tree, tierId);
   const tier = found?.tier ?? null;
   const items = getPositionItems(tree, tierId);
-  const status = tier ? getTierDisplayStatus(tier.status, tier.items.length) : null;
-  const locked = tier ? isTierLocked(tier.status) : false;
+  const status = found
+    ? getTierDisplayStatus(effectiveTierStatus(found.rack, found.tier), found.tier.items.length)
+    : null;
+  const rackLocked = found ? isRackLocked(found.rack) : false;
+  const locked = rackLocked || (tier ? isTierLocked(tier.status) : false);
   const readOnly = !rights.canIn && !rights.canOut && !rights.canMove && !rights.canAdjust;
   const canAct = !readOnly && !locked;
   const isRightGranted = (type: ItemActionType) =>
@@ -169,7 +173,9 @@ export function TierDetailModal({
         <View className="flex-row items-start gap-2 rounded-2xl border border-sky-200 bg-sky-50/80 p-3 dark:border-sky-900 dark:bg-sky-950/30">
           <Info size={14} color="#0284C7" />
           <Text className="flex-1 text-[11px] leading-4 text-sky-800 dark:text-sky-300">
-            {readOnly ? t("rackMap.readOnlyBanner") : t("rackMap.lockedTier")}
+            {readOnly
+              ? t("rackMap.readOnlyBanner")
+              : t(rackLocked ? "rackMap.lockedRack" : "rackMap.lockedTier")}
           </Text>
         </View>
       ) : null}
@@ -211,7 +217,7 @@ export function TierDetailModal({
                       {`  ${item.sku.uom}`}
                     </Text>
                   </View>
-                  {canAct && canOperateItem(item) ? (
+                  {canAct && !isFloor && canOperateItem(item) ? (
                     <Pressable
                       onPress={() => setMenuItemId(menuOpen ? null : item.inventoryId)}
                       hitSlop={8}
@@ -226,7 +232,20 @@ export function TierDetailModal({
                   ) : null}
                 </View>
 
-                {menuOpen ? (
+                {isFloor && canAct && rights.canMove && canReturnToRack(item) ? (
+                  <Pressable
+                    onPress={() => onAction("move", item)}
+                    accessibilityRole="button"
+                    className="h-11 flex-row items-center justify-center gap-2 rounded-xl bg-brand active:opacity-80"
+                  >
+                    <Move size={16} color="#FFFFFF" />
+                    <Text className="text-sm font-bold text-white">
+                      {t("rackMap.unracked.returnToRack")}
+                    </Text>
+                  </Pressable>
+                ) : null}
+
+                {menuOpen && !isFloor ? (
                   <View className="flex-row gap-2">
                     {ITEM_ACTIONS.map((action) => {
                       const enabled = isRightGranted(action.type) && canOperateItem(item);
@@ -291,7 +310,13 @@ export function TierDetailModal({
         <View className="flex-row items-start gap-2 rounded-2xl border border-cta/30 bg-cta-light/60 p-3 dark:bg-cta/10">
           <Info size={14} color="#D34D0F" />
           <Text className="flex-1 text-[11px] leading-4 text-cta-dark">
-            {t("rackMap.unracked.holdingHint")}
+            {t(
+              items.every((item) => rights.canMove && canReturnToRack(item))
+                ? "rackMap.unracked.readyHint"
+                : items.some((item) => rights.canMove && canReturnToRack(item))
+                  ? "rackMap.unracked.partialHint"
+                  : "rackMap.unracked.holdingHint"
+            )}
           </Text>
         </View>
       ) : null}

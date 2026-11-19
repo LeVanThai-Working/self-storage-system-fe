@@ -153,6 +153,8 @@ export interface TreeTierItemSku {
 
 export interface TreeTierItem {
   inventoryId: string;
+  /** Authoritative permission from BE; missing on older servers means locked. */
+  canReturnToRack?: boolean;
   quantity: number;
   pendingOutboundQuantity?: number;
   availableQuantity?: number;
