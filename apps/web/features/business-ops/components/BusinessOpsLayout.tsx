@@ -18,6 +18,7 @@ import {
   FileSignature,
   Landmark,
   Clock,
+  TriangleAlert,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -47,6 +48,12 @@ export const BusinessOpsLayout = ({ children }: BusinessOpsLayoutProps) => {
   const currentUser = useAuthStore((state) => state.currentUser);
 
   const navItems = [
+    {
+      href: `/${locale}/business-ops/incidents`,
+      exact: false,
+      label: t("nav.incidents"),
+      icon: TriangleAlert,
+    },
     {
       href: `/${locale}/business-ops`,
       exact: true,

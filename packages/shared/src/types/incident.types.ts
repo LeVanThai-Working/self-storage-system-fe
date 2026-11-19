@@ -68,6 +68,8 @@ export interface IncidentResponse {
   /** INC-YYYYMMDD-0001 */
   incidentCode: string;
   facility: TicketFacilityRef | string;
+  locationType?: "storage_unit" | "storage_rack" | "common_area";
+  commonAreaLocation?: string | null;
   storageUnit?: IncidentStorageUnitRef | null;
   storageRack?: IncidentStorageRackRef | null;
   rackTier?: IncidentRackTierRef | null;
@@ -85,9 +87,39 @@ export interface IncidentResponse {
   requiresRelocation: boolean;
   investigationNotes?: string | null;
   resolution?: IncidentResolutionResponse | null;
+  preEvacuationManifest?: PreEvacuationManifestResponse | null;
+  restorationManifestDocUrl?: string | null;
+  restorationUploadedAt?: string | null;
+  restorationUploadedBy?: TicketUserRef | string | null;
+  customerAcknowledgedAt?: string | null;
+  customerAcknowledgedBy?: TicketUserRef | string | null;
+  customerAcknowledgeNotes?: string | null;
+  readyAt?: string | null;
   closedAt?: string | null;
   cancelledAt?: string | null;
   cancellationReason?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PreEvacuationItem {
+  skuId: string;
+  skuCode?: string;
+  skuName?: string;
+  systemQuantity: number;
+  actualQuantity: number;
+  discrepancy: number;
+  condition?: string;
+  notes?: string;
+}
+
+export interface PreEvacuationManifestResponse {
+  evacuatedAt: string;
+  evacuatedBy: TicketUserRef | string;
+  evidenceImages: string[];
+  items: PreEvacuationItem[];
+  totalSystemQuantity: number;
+  totalActualQuantity: number;
+  totalDiscrepancy: number;
+  notes?: string;
 }

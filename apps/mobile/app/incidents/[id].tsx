@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Image,
   Linking,
@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import {
   ArrowLeft,
   Box,
@@ -23,6 +23,8 @@ import {
 import {
   IncidentLiablePartyEnum,
   IncidentStatusEnum,
+  getIncidentActions,
+  canCustomerCancelIncident,
   formatCurrency,
   formatDate,
   type MessageLocale,
@@ -49,12 +51,18 @@ import {
   getIncidentStepIndex,
 } from "@/features/incidents/utils/incidentFormat";
 import { resolveRequestError } from "@/lib/apiError";
+import { useAuthStore } from "@/features/auth/stores/auth.store";
+
+import { IncidentAcceptance } from "@/features/incidents/components/IncidentAcceptance";
 
 const CANCEL_MIN = 5;
 
 /** I2 — incident detail: stepper, assignee, investigation notes, resolution report, accept/cancel. */
 export default function IncidentDetailScreen() {
   const router = useRouter();
+  const customerId = useAuthStore(
+    (s) => s.user?.id ?? (typeof s.user?._id === "string" ? s.user._id : undefined)
+  );
   const { t, locale } = useTranslation();
   const currentLocale: MessageLocale = locale === "en" ? "en" : "vi";
   const { id = "" } = useLocalSearchParams<{ id?: string }>();
@@ -65,6 +73,12 @@ export default function IncidentDetailScreen() {
   const [reason, setReason] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  const { refetch } = incidentQuery;
+  useFocusEffect(
+    useCallback(() => {
+      void refetch();
+    }, [refetch])
+  );
   const incident = incidentQuery.data;
 
   if (incidentQuery.isLoading) {
@@ -93,18 +107,21 @@ export default function IncidentDetailScreen() {
 
   const CategoryIcon = INCIDENT_CATEGORY_ICON[incident.category];
   const stepIndex = getIncidentStepIndex(incident.status);
-  const location = [
-    incident.storageUnit?.unitNumber &&
-      t("incident.form.unit", { unit: incident.storageUnit.unitNumber }),
-    incident.storageRack?.rackCode &&
-      t("incident.form.rack", { rack: incident.storageRack.rackCode }),
-    incident.rackTier?.tierNumber && `T${String(incident.rackTier.tierNumber).padStart(2, "0")}`,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const location =
+    [
+      incident.storageUnit?.unitNumber &&
+        t("incident.form.unit", { unit: incident.storageUnit.unitNumber }),
+      incident.storageRack?.rackCode &&
+        t("incident.form.rack", { rack: incident.storageRack.rackCode }),
+      incident.rackTier?.tierNumber && `T${String(incident.rackTier.tierNumber).padStart(2, "0")}`,
+    ]
+      .filter(Boolean)
+      .join(" · ") ||
+    incident.commonAreaLocation ||
+    t("incident.detail.locationMissing");
   const resolution = incident.resolution;
-  const canClose = incident.status === IncidentStatusEnum.RESOLVED;
-  const canCancel = incident.status === IncidentStatusEnum.REPORTED;
+  const canClose = getIncidentActions(incident).canCustomerClose;
+  const canCancel = canCustomerCancelIncident(incident, customerId);
   const resolvedBy =
     resolution && typeof resolution.resolvedBy === "object"
       ? resolution.resolvedBy.name
@@ -290,7 +307,8 @@ export default function IncidentDetailScreen() {
             <Text className="text-xs leading-5 text-neutral-700 dark:text-neutral-200">
               {incident.investigationNotes}
             </Text>
-            {incident.requiresRelocation && incident.contract?.id ? (
+            {(incident.requiresRelocation || incident.preEvacuationManifest) &&
+            incident.contract?.id ? (
               <Pressable
                 onPress={() =>
                   router.push({
@@ -358,7 +376,10 @@ export default function IncidentDetailScreen() {
           </View>
         ) : null}
 
-        {!canClose &&
+        <IncidentAcceptance key={incident.id} incident={incident} />
+
+        {!incident.preEvacuationManifest &&
+        !canClose &&
         !canCancel &&
         incident.status !== IncidentStatusEnum.CLOSED &&
         incident.status !== IncidentStatusEnum.CANCELLED ? (

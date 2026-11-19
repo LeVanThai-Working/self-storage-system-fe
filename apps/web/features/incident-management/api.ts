@@ -11,7 +11,35 @@ import {
   type PaginatedData,
   type ReportIncidentRequest,
   type ResolveIncidentRequest,
+  type EvacuateIncidentRackRequest,
+  type UploadRestorationManifestRequest,
+  RoleEnum,
+  UserStatusEnum,
+  type FacilityStaffItem,
 } from "@self-storage-system-fe/shared";
+
+/** Ops selects staff from the incident's facility, across every result page. */
+export async function fetchIncidentStaffs(facilityId: string): Promise<FacilityStaffItem[]> {
+  const items: FacilityStaffItem[] = [];
+  let page = 1;
+  let totalPages = 1;
+  do {
+    const { data } = await api.get<Envelope<PaginatedData<FacilityStaffItem>>>("/users", {
+      params: {
+        assignedFacilityId: facilityId,
+        role: RoleEnum.FACILITY_STAFF,
+        page,
+        limit: 100,
+        sortBy: "name",
+        sortOrder: "asc",
+      },
+    });
+    items.push(...data.data.items.filter((staff) => staff.status === UserStatusEnum.ACTIVE));
+    totalPages = data.data.pagination.totalPages;
+    page += 1;
+  } while (page <= totalPages);
+  return items;
+}
 
 /** GET /incidents — BE scopes staff/FM to their facility. */
 export const fetchIncidents = async (
@@ -55,3 +83,6 @@ export const resolveIncident = action<ResolveIncidentRequest>("resolve");
 export const closeIncident = action<CloseIncidentRequest>("close");
 /** POST /incidents/{id}/cancel (FM while reported / assigned) */
 export const cancelIncident = action<CancelIncidentRequest>("cancel");
+export const evacuateIncidentRack = action<EvacuateIncidentRackRequest>("evacuate-rack");
+export const uploadRestorationManifest =
+  action<UploadRestorationManifestRequest>("restoration-manifest");

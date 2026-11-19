@@ -4,3 +4,4 @@ export * from "./message.util";
 export * from "./seatMap.util";
 export * from "./taskDispatch.util";
 export * from "./accessSchedule.util";
+export * from "./incident.util";

@@ -2,7 +2,12 @@ import { useEffect } from "react";
 import { AppState } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
 import { io } from "socket.io-client";
-import { API_BASE_URL, getAccessScheduleNotificationId } from "@self-storage-system-fe/shared";
+import {
+  API_BASE_URL,
+  getAccessScheduleNotificationId,
+  NotificationTypeEnum,
+} from "@self-storage-system-fe/shared";
+import { incidentKeys } from "@/features/incidents/hooks/useIncidents";
 import { useAuthStore } from "@/features/auth/stores/auth.store";
 import { getMeApi } from "@/features/auth/api/auth.api";
 import { tokenStorage } from "@/lib/storage/tokenStorage";
@@ -35,6 +40,7 @@ export function useNotificationRealtime() {
     const refresh = () => {
       void client.invalidateQueries({ queryKey: notificationKeys.all });
       void client.invalidateQueries({ queryKey: accessScheduleKeys.all });
+      void client.invalidateQueries({ queryKey: incidentKeys.all });
     };
     socket.on("connect", () => {
       authRetried = false;
@@ -42,6 +48,9 @@ export function useNotificationRealtime() {
     });
     socket.on("notification:new", (notification: NotificationResponse) => {
       void client.invalidateQueries({ queryKey: notificationKeys.all });
+      if (notification.type === NotificationTypeEnum.INCIDENT) {
+        void client.invalidateQueries({ queryKey: incidentKeys.all });
+      }
       if (getAccessScheduleNotificationId(notification)) {
         // Notification text can describe an older assignment; reload the authoritative detail.
         void client.invalidateQueries({ queryKey: accessScheduleKeys.all });
@@ -81,6 +90,7 @@ export function useNotificationRealtime() {
       socket.removeAllListeners();
       socket.disconnect();
       client.removeQueries({ queryKey: accessScheduleKeys.all });
+      client.removeQueries({ queryKey: incidentKeys.all });
       client.removeQueries({ queryKey: notificationKeys.all });
     };
   }, [userId, client]);

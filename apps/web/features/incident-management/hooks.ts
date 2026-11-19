@@ -7,6 +7,8 @@ import type {
   InvestigateIncidentRequest,
   ReportIncidentRequest,
   ResolveIncidentRequest,
+  EvacuateIncidentRackRequest,
+  UploadRestorationManifestRequest,
 } from "@self-storage-system-fe/shared";
 import {
   assignIncident,
@@ -17,6 +19,8 @@ import {
   investigateIncident,
   reportIncident,
   resolveIncident,
+  evacuateIncidentRack,
+  uploadRestorationManifest,
 } from "./api";
 
 export const incidentKeys = {
@@ -37,13 +41,22 @@ export const useIncident = (id?: string) =>
     queryKey: incidentKeys.detail(id),
     queryFn: () => fetchIncident(id!),
     enabled: Boolean(id),
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    refetchInterval: (query) =>
+      ["closed", "cancelled"].includes(query.state.data?.status ?? "") ? false : 30000,
   });
 
 function useIncidentMutation<T, R>(fn: (payload: T) => Promise<R>) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: fn,
-    onSuccess: () => qc.invalidateQueries({ queryKey: incidentKeys.all }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: incidentKeys.all });
+      void qc.invalidateQueries({ queryKey: ["inventory-ops"] });
+      void qc.invalidateQueries({ queryKey: ["storage-racks"] });
+      void qc.invalidateQueries({ queryKey: ["storage-units"] });
+    },
   });
 }
 
@@ -59,3 +72,9 @@ export const useCloseIncident = (id: string) =>
   useIncidentMutation((payload: CloseIncidentRequest) => closeIncident(id, payload));
 export const useCancelIncident = (id: string) =>
   useIncidentMutation((payload: CancelIncidentRequest) => cancelIncident(id, payload));
+export const useEvacuateIncidentRack = (id: string) =>
+  useIncidentMutation((payload: EvacuateIncidentRackRequest) => evacuateIncidentRack(id, payload));
+export const useUploadRestorationManifest = (id: string) =>
+  useIncidentMutation((payload: UploadRestorationManifestRequest) =>
+    uploadRestorationManifest(id, payload)
+  );

@@ -3,6 +3,7 @@ import type {
   IncidentQuery,
   IncidentResponse,
   ReportIncidentRequest,
+  CustomerAcknowledgeIncidentRequest,
 } from "@self-storage-system-fe/shared";
 import {
   cancelIncidentApi,
@@ -10,6 +11,7 @@ import {
   getIncidentApi,
   getIncidentsApi,
   reportIncidentApi,
+  acknowledgeIncidentApi,
 } from "../api/incident.api";
 
 const INCIDENT_PAGE_SIZE = 15;
@@ -45,6 +47,8 @@ export function useIncident(id?: string) {
     queryKey: incidentKeys.detail(id),
     queryFn: () => getIncidentApi(id!),
     enabled: Boolean(id),
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -73,6 +77,15 @@ export function useCancelIncident(id: string) {
   const onSuccess = useOnIncidentChanged();
   return useMutation({
     mutationFn: (reason: string) => cancelIncidentApi(id, reason),
+    onSuccess,
+  });
+}
+
+export function useAcknowledgeIncident(id: string) {
+  const onSuccess = useOnIncidentChanged();
+  return useMutation({
+    mutationFn: (payload: CustomerAcknowledgeIncidentRequest) =>
+      acknowledgeIncidentApi(id, payload),
     onSuccess,
   });
 }
