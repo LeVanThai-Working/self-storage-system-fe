@@ -4,12 +4,18 @@ import { ChevronRight, ChevronUp, Layers, PackageOpen } from "lucide-react-nativ
 import type { StorageUnitInventoryTreeResponse } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
-import { findTierInTree, getPositionLabel, getTierDisplayStatus } from "../utils/rackMapFormat";
+import {
+  buildFloorLabel,
+  findTierInTree,
+  getPositionLabel,
+  getTierDisplayStatus,
+} from "../utils/rackMapFormat";
+import { effectiveTierStatus } from "../utils/stockMovePolicy";
 import { TierStatusBadge } from "./TierStatusBadge";
 
 interface PositionCardProps {
   tree: StorageUnitInventoryTreeResponse;
-  /** Tier id, `null` for floor items, `undefined` when nothing is chosen yet. */
+  /** Tier id, `null` for holding items, `undefined` when nothing is chosen yet. */
   tierId: string | null | undefined;
   /** Text shown while `tierId` is undefined. */
   placeholder?: string;
@@ -24,14 +30,18 @@ export function PositionCard({ tree, tierId, placeholder, onPress, expanded }: P
   const found = findTierInTree(tree, tierId);
 
   const title = selected
-    ? getPositionLabel(tree, tierId, t("rackMap.form.floor"))
+    ? tierId === null
+      ? buildFloorLabel(tree.facility?.code, tree.storageUnit.unitNumber)
+      : getPositionLabel(tree, tierId, t("rackMap.unracked.title"))
     : (placeholder ?? "");
   const subtitle = found
     ? t("rackMap.position.tierOfRack", { tier: found.tier.tierNumber, rack: found.rack.rackCode })
     : tierId === null
-      ? t("rackMap.position.floorHint")
+      ? t("rackMap.unracked.title")
       : null;
-  const status = found ? getTierDisplayStatus(found.tier.status, found.tier.items.length) : null;
+  const status = found
+    ? getTierDisplayStatus(effectiveTierStatus(found.rack, found.tier), found.tier.items.length)
+    : null;
 
   const content = (
     <>

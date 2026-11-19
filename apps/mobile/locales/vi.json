@@ -496,7 +496,12 @@
       "empty": "Không có hàng ở khu lưu tạm",
       "summary": "Khu lưu tạm (%{qty} món)",
       "skuCount": "%{count} mã hàng",
-      "holdingHint": "Hàng ở khu lưu tạm đang tạm khóa do sự cố kệ. Nhân viên sẽ mở lại sau khi bạn xác nhận nghiệm thu."
+      "holdingHint": "Hàng chưa đủ điều kiện đưa lên kệ. Cần có biên bản, xác nhận nghiệm thu của bạn và quản lý đóng sự cố; hàng hỏng hoặc tranh chấp vẫn bị khóa.",
+      "returnToRack": "Đưa lên kệ",
+      "readyHint": "Hàng đã đủ điều kiện đưa lên kệ. Chọn món hàng, tầng đích và số lượng để chuyển.",
+      "partialHint": "Một số hàng đã đủ điều kiện đưa lên kệ. Những món còn bị khóa cần hoàn tất xử lý sự cố.",
+      "noDestination": "Chưa có tầng kệ hợp lệ để nhận hàng. Vui lòng liên hệ quản lý kho.",
+      "destinationUnavailable": "Tầng đích hiện không thể nhận hàng. Vui lòng chọn tầng khác."
     },
     "position": {
       "tierOfRack": "Tầng %{tier} · Kệ %{rack}",
@@ -505,6 +510,9 @@
     "noRacks": "Phòng kho này không có hệ thống kệ",
     "readOnlyBanner": "Hợp đồng không còn hiệu lực, chỉ có thể xem hàng hóa",
     "lockedTier": "Tầng này đang tạm khóa, chỉ có thể xem",
+    "lockedRack": "Kệ này đang bảo trì hoặc ngừng hoạt động, chỉ có thể xem. Vui lòng liên hệ quản lý nếu sự cố đã đóng.",
+    "rackMaintenance": "Đang bảo trì",
+    "rackInactive": "Ngừng hoạt động",
     "forbidden": "Bạn không có quyền xem kho này",
     "loadError": "Không tải được sơ đồ kệ hàng",
     "retry": "Thử lại",

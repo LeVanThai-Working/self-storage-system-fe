@@ -20,6 +20,7 @@ import {
   getPositionLabel,
   getRoomSkuOptions,
   getWeightLevel,
+  isTierLocked,
   resolveInventoryError,
   sumItemsWeight,
 } from "../utils/rackMapFormat";
@@ -28,6 +29,7 @@ import { FieldError, FieldLabel, InventoryFormSheet } from "./InventoryFormSheet
 import { PositionCard } from "./PositionCard";
 import { QuantityStepper } from "./QuantityStepper";
 import { SkuSelectList, type SkuOption } from "./SkuSelect";
+import { effectiveTierStatus, isRackLocked } from "../utils/stockMovePolicy";
 
 export function StockInModal({
   visible,
@@ -77,7 +79,12 @@ export function StockInModal({
   const [quantityError, setQuantityError] = useState<string | null>(null);
 
   const locationLabel = getPositionLabel(tree, target.tierId, t("rackMap.form.floor"));
-  const tier = findTierInTree(tree, target.tierId)?.tier ?? null;
+  const position = findTierInTree(tree, target.tierId);
+  const tier = position?.tier ?? null;
+  const rackLocked = position ? isRackLocked(position.rack) : false;
+  const positionLocked = position
+    ? isTierLocked(effectiveTierStatus(position.rack, position.tier))
+    : true;
   const selectedSku = skuOptions.find((option) => option.sku.id === skuId)?.sku ?? null;
 
   const projectedWeight = useMemo(() => {
@@ -102,6 +109,7 @@ export function StockInModal({
   };
 
   const handleConfirm = async () => {
+    if (positionLocked || stockInMutation.isPending) return;
     let valid = true;
     if (!skuId) {
       setSkuError(t("rackMap.form.skuRequired"));
@@ -154,10 +162,14 @@ export function StockInModal({
       visible={visible}
       title={t("rackMap.form.stockInTitle")}
       isPending={stockInMutation.isPending}
+      confirmDisabled={positionLocked}
       onClose={onClose}
       onConfirm={handleConfirm}
     >
       <PositionCard tree={tree} tierId={target.tierId} />
+      {positionLocked ? (
+        <FieldError message={t(rackLocked ? "rackMap.lockedRack" : "rackMap.lockedTier")} />
+      ) : null}
 
       <View className="gap-2">
         <FieldLabel>{t("rackMap.form.chooseSku")}</FieldLabel>

@@ -6,6 +6,8 @@ import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
 import { formatTierShort, sortTiersTopDown } from "../utils/rackMapFormat";
 import { TierCell } from "./TierCell";
+import { effectiveTierStatus, isRackLocked } from "../utils/stockMovePolicy";
+import { RackStatusEnum } from "@self-storage-system-fe/shared";
 
 interface RackCardProps {
   rack: TreeRack;
@@ -34,6 +36,7 @@ export function RackCard({
   const { t } = useTranslation();
   const occupied = rack.tiers.filter((tier) => tier.items.length > 0).length;
   const tiers = sortTiersTopDown(rack.tiers);
+  const rackLocked = isRackLocked(rack);
 
   return (
     <View
@@ -74,6 +77,18 @@ export function RackCard({
                 </Text>
               </View>
             )}
+
+            {rackLocked ? (
+              <View className="rounded-full border border-cta/30 bg-cta-light px-2 py-0.5 dark:bg-cta/15">
+                <Text className="text-[10px] font-bold text-cta-dark">
+                  {t(
+                    rack.status === RackStatusEnum.MAINTENANCE
+                      ? "rackMap.rackMaintenance"
+                      : "rackMap.rackInactive"
+                  )}
+                </Text>
+              </View>
+            ) : null}
 
             {rack.name ? (
               <Text numberOfLines={1} variant="muted" className="flex-1 text-xs">
@@ -132,7 +147,7 @@ export function RackCard({
               return (
                 <View key={tier.id} className="h-14 justify-end">
                   <TierCell
-                    tier={tier}
+                    tier={{ ...tier, status: effectiveTierStatus(rack, tier) }}
                     highlighted={highlighted}
                     dimmed={highlightActive && !highlighted}
                     onPress={onTierPress}

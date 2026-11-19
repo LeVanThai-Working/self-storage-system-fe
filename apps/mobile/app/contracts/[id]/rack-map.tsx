@@ -120,8 +120,9 @@ export default function ContractRackMapScreen() {
     useCallback(() => {
       if (contractId) {
         refetchContract();
+        if (storageUnitId) refetchTree();
       }
-    }, [contractId, refetchContract])
+    }, [contractId, storageUnitId, refetchContract, refetchTree])
   );
 
   const treeError = useMemo(

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Pressable, TextInput } from "react-native";
-import { Lock, PackageOpen } from "lucide-react-native";
+import { Lock } from "lucide-react-native";
 import { stockMoveRequestSchema, type MessageLocale } from "@self-storage-system-fe/shared";
 import { Text } from "@/components/ui/text";
 import { useTranslation } from "@/stores/language.store";
@@ -12,18 +12,22 @@ import {
   formatTierShort,
   getPositionItems,
   getPositionLabel,
-  isTierLocked,
+  canOperateItem,
   resolveInventoryError,
 } from "../utils/rackMapFormat";
 import { FieldError, FieldLabel, InventoryFormSheet } from "./InventoryFormSheet";
 import { PositionCard } from "./PositionCard";
 import { QuantityStepper } from "./QuantityStepper";
 import { SkuSelectField } from "./SkuSelect";
+import {
+  canReturnToRack,
+  canSelectMoveDestination,
+  movableQuantity,
+} from "../utils/stockMovePolicy";
 
 const REASON_MIN_LENGTH = 5;
 
-/** `undefined` = no destination chosen yet, `null` = floor. */
-type Destination = string | null | undefined;
+type Destination = string | undefined;
 
 export function StockMoveModal({
   visible,
@@ -39,15 +43,27 @@ export function StockMoveModal({
   const toast = useToast();
   const stockMoveMutation = useStockMove(storageUnitId);
 
-  const items = getPositionItems(tree, target.tierId);
-  const options = items.map((entry) => ({ sku: entry.sku, quantity: entry.quantity }));
+  const isHolding = target.tierId === null;
+  const items = getPositionItems(tree, target.tierId).filter((entry) =>
+    isHolding ? canReturnToRack(entry) : canOperateItem(entry) && movableQuantity(entry) > 0
+  );
+  const options = items.map((entry) => ({ sku: entry.sku, quantity: movableQuantity(entry) }));
   const [skuId, setSkuId] = useState<string | null>(
     target.item?.sku.id ?? (items.length === 1 ? items[0].sku.id : null)
   );
   const item = items.find((entry) => entry.sku.id === skuId) ?? null;
-  const maxQuantity = item?.quantity ?? 0;
-
+  const maxQuantity = item ? movableQuantity(item) : 0;
+  const destinationAllowed = (
+    rack: (typeof tree.racks)[number],
+    tier: (typeof rack.tiers)[number]
+  ) => canSelectMoveDestination(tree, rack, tier, target.tierId, skuId);
+  const hasDestination = tree.racks.some((rack) =>
+    rack.tiers.some((tier) => destinationAllowed(rack, tier))
+  );
   const [destination, setDestination] = useState<Destination>(undefined);
+  const selectedDestinationAllowed = tree.racks.some((rack) =>
+    rack.tiers.some((tier) => tier.id === destination && destinationAllowed(rack, tier))
+  );
   const [pickingDestination, setPickingDestination] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [reason, setReason] = useState("");
@@ -56,22 +72,26 @@ export function StockMoveModal({
   const [quantityError, setQuantityError] = useState<string | null>(null);
   const [reasonError, setReasonError] = useState<string | null>(null);
 
-  const floorLabel = t("rackMap.form.floor");
+  const floorLabel = t("rackMap.unracked.title");
   const sourceLabel = getPositionLabel(tree, target.tierId, floorLabel);
 
-  const chooseDestination = (value: string | null) => {
+  const chooseDestination = (value: string) => {
     setDestination(value);
     setDestinationError(null);
     setPickingDestination(false);
   };
 
   const handleConfirm = async () => {
+    if (stockMoveMutation.isPending) return;
     let valid = true;
     if (destination === undefined) {
       setDestinationError(t("rackMap.form.destinationRequired"));
       valid = false;
     } else if (destination === target.tierId) {
       setDestinationError(t("rackMap.form.samePosition"));
+      valid = false;
+    } else if (!selectedDestinationAllowed) {
+      setDestinationError(t("rackMap.unracked.destinationUnavailable"));
       valid = false;
     }
     if (!item) {
@@ -141,7 +161,7 @@ export function StockMoveModal({
     }
   };
 
-  const renderOption = (key: string, label: string, value: string | null, locked: boolean) => {
+  const renderOption = (key: string, label: string, value: string, locked: boolean) => {
     const selected = destination === value;
     return (
       <Pressable
@@ -171,8 +191,9 @@ export function StockMoveModal({
   return (
     <InventoryFormSheet
       visible={visible}
-      title={t("rackMap.form.moveTitle")}
+      title={t(isHolding ? "rackMap.unracked.returnToRack" : "rackMap.form.moveTitle")}
       isPending={stockMoveMutation.isPending}
+      confirmDisabled={!item || !hasDestination}
       onClose={onClose}
       onConfirm={handleConfirm}
     >
@@ -208,35 +229,17 @@ export function StockMoveModal({
                         tier.id,
                         formatTierShort(tier.tierNumber),
                         tier.id,
-                        isTierLocked(tier.status)
+                        !destinationAllowed(rack, tier)
                       )
                     )}
                   </View>
                 </View>
               );
             })}
-            {target.tierId !== null ? (
-              <Pressable
-                onPress={() => chooseDestination(null)}
-                className={`flex-row items-center gap-2 rounded-xl border px-3 py-2.5 ${
-                  destination === null
-                    ? "border-brand bg-brand"
-                    : "border-neutral-border bg-white dark:border-neutral-700 dark:bg-neutral-900"
-                }`}
-              >
-                <PackageOpen size={14} color={destination === null ? "#FFFFFF" : "#0B927E"} />
-                <Text
-                  className={`text-xs font-bold ${
-                    destination === null ? "text-white" : "text-neutral-700 dark:text-neutral-200"
-                  }`}
-                >
-                  {floorLabel}
-                </Text>
-              </Pressable>
-            ) : null}
           </View>
         ) : null}
         <FieldError message={destinationError} />
+        {!hasDestination ? <FieldError message={t("rackMap.unracked.noDestination")} /> : null}
       </View>
 
       <View className="gap-2">
@@ -250,6 +253,8 @@ export function StockMoveModal({
             setQuantity(1);
             setSkuError(null);
             setQuantityError(null);
+            setDestination(undefined);
+            setDestinationError(null);
           }}
         />
         <FieldError message={skuError} />
