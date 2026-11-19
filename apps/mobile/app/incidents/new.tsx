@@ -86,6 +86,7 @@ export default function ReportIncidentScreen() {
     }
     const parsed = reportIncidentSchema.safeParse({
       facilityId: contract.facilityId,
+      locationType: rackId ? "storage_rack" : "storage_unit",
       contractId: contract.id,
       storageUnitId: contract.storageUnitId,
       storageRackId: rackId || undefined,

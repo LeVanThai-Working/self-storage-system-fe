@@ -21,9 +21,11 @@ import {
 import {
   NotificationTypeEnum,
   getAccessScheduleNotificationId,
+  getIncidentNotificationId,
 } from "@self-storage-system-fe/shared";
 import { useRouter } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { incidentKeys } from "@/features/incidents/hooks/useIncidents";
 import { accessScheduleKeys } from "@/features/access-schedules/hooks/useAccessSchedules";
 import { INVOICE_QUERY_KEYS } from "@/features/invoices/hooks/useInvoices";
 import { Text } from "@/components/ui/text";
@@ -107,6 +109,13 @@ export function NotificationModal({ visible, onClose }: NotificationModalProps) 
   const handleItemPress = (item: NotificationResponse) => {
     if (!item.isRead) {
       markAsReadMutation.mutate(item.id);
+    }
+    const incidentId = getIncidentNotificationId(item);
+    if (incidentId) {
+      void client.invalidateQueries({ queryKey: incidentKeys.detail(incidentId) });
+      onClose();
+      router.push({ pathname: "/incidents/[id]", params: { id: incidentId } });
+      return;
     }
     const scheduleId = getAccessScheduleNotificationId(item);
     if (scheduleId) {

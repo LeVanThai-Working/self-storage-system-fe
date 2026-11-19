@@ -6,6 +6,7 @@ import {
   type IncidentResponse,
   type PaginatedData,
   type ReportIncidentRequest,
+  type CustomerAcknowledgeIncidentRequest,
 } from "@self-storage-system-fe/shared";
 
 /** GET /incidents — BE returns only the incidents the customer reported. */
@@ -35,6 +36,17 @@ export async function closeIncidentApi(id: string, notes?: string): Promise<Inci
   const response = await api.post<ApiResponse<IncidentResponse>>(`/incidents/${id}/close`, {
     notes,
   });
+  return response.data.data;
+}
+
+export async function acknowledgeIncidentApi(
+  id: string,
+  payload: CustomerAcknowledgeIncidentRequest
+): Promise<IncidentResponse> {
+  const response = await api.post<ApiResponse<IncidentResponse>>(
+    `/incidents/${id}/customer-acknowledge`,
+    payload
+  );
   return response.data.data;
 }
 

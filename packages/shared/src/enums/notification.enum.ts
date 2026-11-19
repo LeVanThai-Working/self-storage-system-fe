@@ -7,6 +7,7 @@ export enum NotificationTypeEnum {
   CONTRACT = "contract",
   PAYMENT = "payment",
   ACCESS_SCHEDULE = "access_schedule",
+  INCIDENT = "incident",
 }
 
 export enum NotificationPriorityEnum {

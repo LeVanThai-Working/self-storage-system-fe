@@ -22,21 +22,28 @@ import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useFacilityMapLayout, useMyFacility } from "@/features/storage-unit-management/hooks";
 import { useReportIncident } from "../hooks";
+import { useUnitRacks } from "@/features/inventory-operations/hooks";
 import { CATEGORY_ICON } from "./IncidentBadges";
 
 const LABEL = "mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700";
 const INPUT =
   "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-teal-400";
 
-/** Staff / FM report an incident inside their own facility (unit optional, ≥1 photo). */
+/** Select a room with optional rack/tier detail, or a described common area. */
 export function ReportIncidentDialog({ onClose }: { onClose: () => void }) {
   const t = useTranslations("incidentDesk");
   const getErrorMessage = useApiErrorMessage();
   const { data: facility } = useMyFacility();
   const unitsQuery = useFacilityMapLayout(facility?.id);
   const reportMutation = useReportIncident();
+  const [locationType, setLocationType] = useState<"storage_unit" | "common_area" | "">("");
+  const [commonAreaLocation, setCommonAreaLocation] = useState("");
 
   const [unitId, setUnitId] = useState("");
+  const [rackId, setRackId] = useState("");
+  const [tierId, setTierId] = useState("");
+  const racksQuery = useUnitRacks(unitId || undefined);
+  const rack = racksQuery.data?.find((item) => item.id === rackId);
   const [category, setCategory] = useState<IncidentCategoryEnum>(IncidentCategoryEnum.STRUCTURAL);
   const [severity, setSeverity] = useState<IncidentSeverityEnum>(IncidentSeverityEnum.MEDIUM);
   const [title, setTitle] = useState("");
@@ -47,9 +54,21 @@ export function ReportIncidentDialog({ onClose }: { onClose: () => void }) {
   const handleSubmit = async () => {
     setError(null);
     if (!facility?.id) return;
+    if (!locationType) return setError(t("form.locationRequired"));
+    if (locationType !== "common_area" && !unitsQuery.data?.some((unit) => unit.id === unitId))
+      return setError(t("form.unitRequired"));
+    if (rackId && !rack) return setError(t("form.rackRequired"));
+    if (tierId && !rack?.tiers?.some((tier) => tier.id === tierId))
+      return setError(t("form.locationInvalid"));
     const payload = {
       facilityId: facility.id,
+      locationType:
+        locationType === "common_area" ? "common_area" : rackId ? "storage_rack" : "storage_unit",
+      commonAreaLocation: locationType === "common_area" ? commonAreaLocation : undefined,
       storageUnitId: unitId || undefined,
+      storageRackId: rackId || undefined,
+      rackTierId: tierId || undefined,
+      contractId: rack?.currentContractId || undefined,
       category,
       severity,
       title: title.trim(),
@@ -64,9 +83,17 @@ export function ReportIncidentDialog({ onClose }: { onClose: () => void }) {
       setError(
         field === "images"
           ? t("form.imagesRequired")
-          : field === "title"
-            ? t("form.titleInvalid")
-            : t("form.descriptionInvalid")
+          : [
+                "storageUnitId",
+                "storageRackId",
+                "rackTierId",
+                "commonAreaLocation",
+                "locationType",
+              ].includes(String(field))
+            ? t("form.locationInvalid")
+            : field === "title"
+              ? t("form.titleInvalid")
+              : t("form.descriptionInvalid")
       );
       return;
     }
@@ -87,20 +114,110 @@ export function ReportIncidentDialog({ onClose }: { onClose: () => void }) {
         </DialogHeader>
         <div className="max-h-[65vh] space-y-4 overflow-y-auto pr-1">
           <div>
-            <label className={LABEL}>{t("form.unit")}</label>
+            <label className={LABEL}>{t("form.locationType")} *</label>
             <select
-              value={unitId}
-              onChange={(event) => setUnitId(event.target.value)}
+              value={locationType}
+              onChange={(event) => {
+                setLocationType(event.target.value as typeof locationType);
+                setUnitId("");
+                setRackId("");
+                setTierId("");
+                setCommonAreaLocation("");
+              }}
               className={INPUT}
             >
-              <option value="">{t("form.commonArea")}</option>
-              {(unitsQuery.data ?? []).map((unit) => (
-                <option key={unit.id} value={unit.id}>
-                  {unit.unitNumber} · {t("form.floor", { floor: unit.floor })}
-                </option>
-              ))}
+              <option value="">{t("form.selectLocationType")}</option>
+              <option value="storage_unit">{t("form.roomLocation")}</option>
+              <option value="common_area">{t("form.commonArea")}</option>
             </select>
           </div>
+          {locationType === "common_area" ? (
+            <div>
+              <label className={LABEL}>{t("form.commonAreaLocation")} *</label>
+              <input
+                value={commonAreaLocation}
+                onChange={(event) => setCommonAreaLocation(event.target.value)}
+                maxLength={300}
+                placeholder={t("form.commonAreaPlaceholder")}
+                className={INPUT}
+              />
+              <p className="mt-1 text-xs text-slate-500">{t("form.commonAreaHint")}</p>
+            </div>
+          ) : null}
+          {locationType === "storage_unit" && (
+            <div>
+              <label className={LABEL}>{t("form.unit")} *</label>
+              <select
+                value={unitId}
+                onChange={(event) => {
+                  setUnitId(event.target.value);
+                  setRackId("");
+                  setTierId("");
+                }}
+                className={INPUT}
+              >
+                <option value="">{t("form.selectUnit")}</option>
+                {(unitsQuery.data ?? []).map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.unitNumber} · {t("form.floor", { floor: unit.floor })}
+                  </option>
+                ))}
+              </select>
+              {unitsQuery.isError ? (
+                <button
+                  type="button"
+                  onClick={() => void unitsQuery.refetch()}
+                  className="mt-2 text-sm text-red-600"
+                >
+                  {t("form.retryUnits")}
+                </button>
+              ) : null}
+            </div>
+          )}
+          {locationType === "storage_unit" &&
+            unitId &&
+            (racksQuery.isLoading || racksQuery.isError || Boolean(racksQuery.data?.length)) && (
+              <div>
+                <label className={LABEL}>{t("form.rackOptional")}</label>
+                <select
+                  className={INPUT}
+                  value={rackId}
+                  onChange={(e) => {
+                    setRackId(e.target.value);
+                    setTierId("");
+                  }}
+                >
+                  <option value="">{t("form.wholeUnit")}</option>
+                  {(racksQuery.data ?? []).map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.rackCode}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-slate-500">{t("form.rackHint")}</p>
+                {racksQuery.isError && (
+                  <button type="button" onClick={() => void racksQuery.refetch()}>
+                    {t("form.retryRacks")}
+                  </button>
+                )}
+              </div>
+            )}
+          {rack && (
+            <div>
+              <label className={LABEL}>{t("form.tier")}</label>
+              <select className={INPUT} value={tierId} onChange={(e) => setTierId(e.target.value)}>
+                <option value="">{t("form.wholeRack")}</option>
+                {(rack.tiers ?? []).map((tier) => (
+                  <option key={tier.id} value={tier.id}>
+                    T{tier.tierNumber}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-500">
+                {t(rack.currentContractId ? "form.linkedContract" : "form.noLinkedContract")}
+              </p>
+            </div>
+          )}
           <div>
             <label className={LABEL}>{t("form.category")} *</label>
             <div className="grid grid-cols-3 gap-2">
@@ -185,7 +302,13 @@ export function ReportIncidentDialog({ onClose }: { onClose: () => void }) {
           </Button>
           <Button
             onClick={() => void handleSubmit()}
-            disabled={reportMutation.isPending}
+            disabled={
+              reportMutation.isPending ||
+              !facility?.id ||
+              !locationType ||
+              (locationType !== "common_area" && (unitsQuery.isLoading || unitsQuery.isError)) ||
+              (Boolean(rackId) && (racksQuery.isLoading || racksQuery.isError))
+            }
             className="bg-orange-500 text-white hover:bg-orange-600"
           >
             {reportMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}

@@ -18,10 +18,12 @@ import {
   IncidentCategoryEnum,
   IncidentSeverityEnum,
   IncidentStatusEnum,
+  getIncidentActions,
+  type IncidentResponse,
 } from "@self-storage-system-fe/shared";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { FacilityPortal } from "@/features/inventory-operations/types";
+import type { IncidentPortal } from "../types";
 import { formatDateTime, refName } from "@/features/support-desk/utils";
 import { fetchIncidents } from "../api";
 import { incidentKeys, useIncidents } from "../hooks";
@@ -31,6 +33,14 @@ import {
   IncidentStatusBadge,
 } from "./IncidentBadges";
 import { ReportIncidentDialog } from "./ReportIncidentDialog";
+import { IncidentAssignment } from "./IncidentAssignment";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { IconActionTooltip, TruncatedText } from "@/components/ui/tooltip";
 
 const PAGE_SIZE = 10;
@@ -70,6 +80,7 @@ const KPIS = [
 ] as const;
 
 const location = (incident: {
+  commonAreaLocation?: string | null;
   storageUnit?: { unitNumber?: string } | null;
   storageRack?: { rackCode?: string } | null;
   rackTier?: { tierNumber?: number } | null;
@@ -82,10 +93,12 @@ const location = (incident: {
       : null,
   ]
     .filter(Boolean)
-    .join(" · ") || "—";
+    .join(" · ") ||
+  incident.commonAreaLocation ||
+  "—";
 
 /** W1 — facility incidents: KPIs, filters, table and a "report incident" dialog. */
-export function IncidentListView({ portalBase }: { portalBase: FacilityPortal }) {
+export function IncidentListView({ portalBase }: { portalBase: IncidentPortal }) {
   const t = useTranslations("incidentDesk");
   const locale = useLocale();
   const [status, setStatus] = useState<IncidentStatusEnum | "">("");
@@ -94,6 +107,7 @@ export function IncidentListView({ portalBase }: { portalBase: FacilityPortal })
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [reportOpen, setReportOpen] = useState(false);
+  const [assignmentIncident, setAssignmentIncident] = useState<IncidentResponse | null>(null);
 
   const listQuery = useIncidents({
     status: status || undefined,
@@ -123,13 +137,15 @@ export function IncidentListView({ portalBase }: { portalBase: FacilityPortal })
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">{t("title")}</h1>
           <p className="mt-1 text-sm text-slate-500">{t("subtitle")}</p>
         </div>
-        <Button
-          onClick={() => setReportOpen(true)}
-          className="bg-orange-500 text-white hover:bg-orange-600"
-        >
-          <Plus className="h-4 w-4" />
-          {t("report")}
-        </Button>
+        {portalBase !== "business-ops" ? (
+          <Button
+            onClick={() => setReportOpen(true)}
+            className="bg-orange-500 text-white hover:bg-orange-600"
+          >
+            <Plus className="h-4 w-4" />
+            {t("report")}
+          </Button>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
@@ -249,7 +265,14 @@ export function IncidentListView({ portalBase }: { portalBase: FacilityPortal })
               </tr>
             ) : (
               items.map((incident) => {
-                const needsAssign = incident.status === IncidentStatusEnum.REPORTED;
+                const needsAssign =
+                  !incident.assignedStaff &&
+                  [
+                    IncidentStatusEnum.REPORTED,
+                    IncidentStatusEnum.ASSIGNED,
+                    IncidentStatusEnum.INVESTIGATING,
+                    IncidentStatusEnum.IN_PROGRESS,
+                  ].includes(incident.status);
                 return (
                   <tr key={incident.id} className="border-t border-slate-100 hover:bg-slate-50/60">
                     <td className="px-4 py-3 font-mono text-xs font-bold text-slate-800">
@@ -264,12 +287,25 @@ export function IncidentListView({ portalBase }: { portalBase: FacilityPortal })
                     <td className="px-4 py-3 font-semibold text-slate-800">
                       <TruncatedText text={incident.title} className="max-w-[240px]" />
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{location(incident)}</td>
+                    <td className="px-4 py-3 text-slate-600">
+                      {portalBase === "business-ops" ? (
+                        <p className="font-semibold">
+                          {typeof incident.facility === "string"
+                            ? incident.facility
+                            : (incident.facility.name ??
+                              incident.facility.code ??
+                              incident.facility.id)}
+                        </p>
+                      ) : null}
+                      {location(incident)}
+                    </td>
                     <td className="px-4 py-3 text-slate-600">
                       {refName(incident.reporter) ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-slate-600">
-                      {incident.assignedStaff?.name ?? "—"}
+                      {incident.assignedStaff?.name ??
+                        incident.assignedStaff?.id ??
+                        t("action.unassigned")}
                     </td>
                     <td className="px-4 py-3 text-slate-500">
                       {formatDateTime(incident.createdAt)}
@@ -278,23 +314,26 @@ export function IncidentListView({ portalBase }: { portalBase: FacilityPortal })
                       <IncidentStatusBadge status={incident.status} />
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Link href={`/${locale}/${portalBase}/incidents/${incident.id}`}>
-                        <Button
-                          size="sm"
-                          variant={
-                            needsAssign && portalBase === "facility-manager" ? "default" : "outline"
-                          }
-                          className={
-                            needsAssign && portalBase === "facility-manager"
-                              ? "bg-orange-500 text-white hover:bg-orange-600"
-                              : ""
-                          }
-                        >
-                          {needsAssign && portalBase === "facility-manager"
-                            ? t("action.assign")
-                            : t("action.view")}
-                        </Button>
-                      </Link>
+                      <div className="flex justify-end gap-2">
+                        {portalBase !== "facility-staff" &&
+                        getIncidentActions(incident).canAssign ? (
+                          <Button
+                            size="sm"
+                            variant={needsAssign ? "default" : "outline"}
+                            onClick={() => setAssignmentIncident(incident)}
+                            className={
+                              needsAssign ? "bg-orange-500 text-white hover:bg-orange-600" : ""
+                            }
+                          >
+                            {incident.assignedStaff ? t("action.reassign") : t("action.assign")}
+                          </Button>
+                        ) : null}
+                        <Link href={`/${locale}/${portalBase}/incidents/${incident.id}`}>
+                          <Button size="sm" variant="outline">
+                            {t("action.view")}
+                          </Button>
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -338,6 +377,29 @@ export function IncidentListView({ portalBase }: { portalBase: FacilityPortal })
       </div>
 
       {reportOpen ? <ReportIncidentDialog onClose={() => setReportOpen(false)} /> : null}
+      <Dialog
+        open={Boolean(assignmentIncident)}
+        onOpenChange={(open) => {
+          if (!open) setAssignmentIncident(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("action.assignLabel")}</DialogTitle>
+            <DialogDescription>
+              {assignmentIncident?.incidentCode} · {assignmentIncident?.title}
+            </DialogDescription>
+          </DialogHeader>
+          {assignmentIncident ? (
+            <IncidentAssignment
+              key={assignmentIncident.id}
+              incident={assignmentIncident}
+              portalBase={portalBase}
+              onAssigned={() => setAssignmentIncident(null)}
+            />
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

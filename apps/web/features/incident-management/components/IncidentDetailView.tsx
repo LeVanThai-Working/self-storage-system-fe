@@ -13,6 +13,7 @@ import {
   RoleEnum,
   investigateIncidentSchema,
   resolveIncidentSchema,
+  getIncidentActions,
   type IncidentResponse,
 } from "@self-storage-system-fe/shared";
 import { Button } from "@/components/ui/button";
@@ -20,12 +21,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CloudinaryUploader } from "@/components/common/CloudinaryUploader";
 import { useApiErrorMessage } from "@/features/auth/error-message";
 import { useAuthStore } from "@/features/auth/store";
-import { useFacilityStaffs } from "@/features/contract-management/hooks";
 import { getCurrentUserId } from "@/features/contract-management/utils";
 import type { FacilityPortal } from "@/features/inventory-operations/types";
 import { formatDateTime, refName } from "@/features/support-desk/utils";
 import {
-  useAssignIncident,
   useCancelIncident,
   useCloseIncident,
   useIncident,
@@ -37,6 +36,10 @@ import {
   IncidentSeverityBadge,
   IncidentStatusBadge,
 } from "./IncidentBadges";
+
+import { IncidentWorkflowPanel } from "./IncidentWorkflowPanel";
+import type { IncidentPortal } from "../types";
+import { IncidentAssignment } from "./IncidentAssignment";
 
 const CARD = "rounded-xl border border-slate-200 bg-white p-5 shadow-sm";
 const LABEL = "mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700";
@@ -54,9 +57,10 @@ const OPEN_STATUSES = new Set([
 const formatVnd = (value: number) => `${value.toLocaleString("vi-VN")} ₫`;
 
 /** W2 — incident detail with the action panel for the current step (assign → investigate → resolve → close). */
-export function IncidentDetailView({ id, portalBase }: { id: string; portalBase: FacilityPortal }) {
+export function IncidentDetailView({ id, portalBase }: { id: string; portalBase: IncidentPortal }) {
   const t = useTranslations("incidentDesk");
   const locale = useLocale();
+  const currentUser = useAuthStore((state) => state.currentUser);
   const incidentQuery = useIncident(id);
   const incident = incidentQuery.data;
 
@@ -88,15 +92,37 @@ export function IncidentDetailView({ id, portalBase }: { id: string; portalBase:
           <IncidentStatusBadge status={incident.status} />
           <IncidentCategoryLabel category={incident.category} />
         </div>
+        <p className="mt-3 text-sm font-semibold text-slate-700">
+          {t("action.assignedTo", {
+            name:
+              incident.assignedStaff?.name ?? incident.assignedStaff?.id ?? t("action.unassigned"),
+          })}
+        </p>
+        {portalBase === "facility-staff" &&
+        incident.assignedStaff &&
+        incident.assignedStaff.id !== getCurrentUserId(currentUser) &&
+        OPEN_STATUSES.has(incident.status) ? (
+          <p className="mt-1 text-sm text-slate-500">{t("action.assigneeOnly")}</p>
+        ) : null}
+        {!incident.assignedStaff && OPEN_STATUSES.has(incident.status) ? (
+          <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+            {incident.preEvacuationManifest
+              ? t("action.evacuatedUnassigned")
+              : t("action.assignmentNeeded")}
+          </p>
+        ) : null}
       </div>
 
       <div className="grid gap-5 lg:has-[>aside]:grid-cols-[1.5fr_1fr]">
         <div className="space-y-5">
           <ReportCard incident={incident} />
           <TimelineCard incident={incident} />
-          <WarehouseCard incident={incident} portalBase={portalBase} />
+          <IncidentWorkflowPanel key={incident.id} incident={incident} portalBase={portalBase} />
+          {portalBase !== "business-ops" ? (
+            <WarehouseCard incident={incident} portalBase={portalBase} />
+          ) : null}
         </div>
-        <ActionPanel incident={incident} portalBase={portalBase} />
+        <ActionPanel key={incident.id} incident={incident} portalBase={portalBase} />
       </div>
     </div>
   );
@@ -125,7 +151,12 @@ function ReportCard({ incident }: { incident: IncidentResponse }) {
         </div>
         <div className="rounded-lg bg-slate-50 p-3 text-sm">
           <p className="text-xs text-slate-500">{t("location")}</p>
-          <p className="font-semibold">{location || t("commonArea")}</p>
+          <p className="font-semibold">
+            {location ||
+              (incident.locationType === "common_area"
+                ? `${t("commonArea")} · ${incident.commonAreaLocation ?? t("locationMissing")}`
+                : t("locationMissing"))}
+          </p>
           {incident.contract?.contractCode ? (
             <p className="text-slate-500">
               {t("contract")}:{" "}
@@ -246,7 +277,7 @@ function ActionPanel({
   portalBase,
 }: {
   incident: IncidentResponse;
-  portalBase: FacilityPortal;
+  portalBase: IncidentPortal;
 }) {
   const t = useTranslations("incidentDesk.action");
   const getErrorMessage = useApiErrorMessage();
@@ -254,17 +285,18 @@ function ActionPanel({
   const isManager =
     portalBase === "facility-manager" &&
     String(currentUser?.role ?? "").toLowerCase() === RoleEnum.FACILITY_MANAGER;
-  const isAssignee = incident.assignedStaff?.id === getCurrentUserId(currentUser);
-  const canWork = isManager || isAssignee;
+  const isOps =
+    portalBase === "business-ops" && currentUser?.role === RoleEnum.BUSINESS_OPS_MANAGER;
+  const canManage = isManager || isOps;
+  const currentUserId = getCurrentUserId(currentUser);
+  const isAssignee = Boolean(currentUserId && incident.assignedStaff?.id === currentUserId);
+  const canWork = canManage || isAssignee;
 
-  const staffQuery = useFacilityStaffs(undefined, isManager);
-  const assignMutation = useAssignIncident(incident.id);
   const investigateMutation = useInvestigateIncident(incident.id);
   const resolveMutation = useResolveIncident(incident.id);
   const closeMutation = useCloseIncident(incident.id);
   const cancelMutation = useCancelIncident(incident.id);
 
-  const [staffId, setStaffId] = useState(incident.assignedStaff?.id ?? "");
   const [notes, setNotes] = useState(incident.investigationNotes ?? "");
   const [maintenance, setMaintenance] = useState(incident.putUnitUnderMaintenance);
   const [relocation, setRelocation] = useState(incident.requiresRelocation);
@@ -288,17 +320,17 @@ function ActionPanel({
   };
 
   const status = incident.status;
-  const canAssign =
-    isManager && (status === IncidentStatusEnum.REPORTED || status === IncidentStatusEnum.ASSIGNED);
+  const canAssign = canManage && getIncidentActions(incident).canAssign;
   const canInvestigate =
     canWork &&
     (status === IncidentStatusEnum.ASSIGNED || status === IncidentStatusEnum.INVESTIGATING);
   const canResolve =
     canWork &&
     (status === IncidentStatusEnum.INVESTIGATING || status === IncidentStatusEnum.IN_PROGRESS);
-  const canClose = isManager && status === IncidentStatusEnum.RESOLVED;
+  const actions = getIncidentActions(incident);
+  const canClose = canManage && actions.closureStatus;
   const canCancel =
-    isManager && (status === IncidentStatusEnum.REPORTED || status === IncidentStatusEnum.ASSIGNED);
+    canManage && (status === IncidentStatusEnum.REPORTED || status === IncidentStatusEnum.ASSIGNED);
 
   if (
     !canAssign &&
@@ -328,7 +360,7 @@ function ActionPanel({
       staffEvidenceImages: evidence,
       repairCost,
       liableParty: liable,
-      damageFee: liable === IncidentLiablePartyEnum.CUSTOMER ? damageFee : 0,
+      damageFee,
     };
     const parsed = resolveIncidentSchema.safeParse(payload);
     if (!parsed.success) {
@@ -346,33 +378,7 @@ function ActionPanel({
       <p className="text-base font-extrabold text-slate-900">{t("title")}</p>
 
       {canAssign ? (
-        <div className="space-y-2">
-          <label className={LABEL}>{t("assignLabel")}</label>
-          <select
-            value={staffId}
-            onChange={(event) => setStaffId(event.target.value)}
-            className={INPUT}
-          >
-            <option value="">{t("assignPlaceholder")}</option>
-            {(staffQuery.data?.items ?? []).map((staff) => (
-              <option key={staff.id} value={staff.id}>
-                {staff.name}
-              </option>
-            ))}
-          </select>
-          <Button
-            onClick={() =>
-              void run(
-                () => assignMutation.mutateAsync({ assignedStaffId: staffId }),
-                t("assigned")
-              )
-            }
-            disabled={!staffId || assignMutation.isPending}
-            className="w-full bg-teal-600 text-white hover:bg-teal-700"
-          >
-            {t("assign")}
-          </Button>
-        </div>
+        <IncidentAssignment incident={incident} portalBase={portalBase} />
       ) : incident.assignedStaff ? (
         <p className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-teal-700">
           <Check className="mr-1 inline h-4 w-4" />
@@ -473,8 +479,7 @@ function ActionPanel({
               <input
                 type="number"
                 min={0}
-                disabled={liable !== IncidentLiablePartyEnum.CUSTOMER}
-                value={liable === IncidentLiablePartyEnum.CUSTOMER ? damageFee : 0}
+                value={damageFee}
                 onChange={(event) =>
                   setDamageFee(Math.max(0, Math.floor(Number(event.target.value) || 0)))
                 }
@@ -526,7 +531,7 @@ function ActionPanel({
                 t("closed")
               )
             }
-            disabled={closeMutation.isPending}
+            disabled={closeMutation.isPending || !actions.canClose}
             className="w-full bg-orange-500 text-white hover:bg-orange-600"
           >
             {t("close")}

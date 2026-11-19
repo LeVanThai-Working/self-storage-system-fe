@@ -2,6 +2,9 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useLocale } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+import { incidentKeys } from "@/features/incident-management/hooks";
 import {
   Bell,
   CheckCheck,
@@ -14,7 +17,7 @@ import {
   FileCheck2,
   Loader2,
 } from "lucide-react";
-import { NotificationTypeEnum } from "@self-storage-system-fe/shared";
+import { NotificationTypeEnum, getIncidentNotificationId } from "@self-storage-system-fe/shared";
 import { useNotifications, useUnreadCount, useMarkAsRead, useMarkAllAsRead } from "../hooks";
 import type { NotificationResponse } from "../types";
 
@@ -72,6 +75,9 @@ interface NotificationBellProps {
 
 export const NotificationBell: React.FC<NotificationBellProps> = ({ className }) => {
   const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
+  const client = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -101,6 +107,19 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ className })
   const handleItemClick = (notif: NotificationResponse) => {
     if (!notif.isRead) {
       markAsReadMutation.mutate(notif.id);
+    }
+    const incidentId = getIncidentNotificationId(notif);
+    const portal = pathname.includes("/facility-manager")
+      ? "facility-manager"
+      : pathname.includes("/facility-staff")
+        ? "facility-staff"
+        : pathname.includes("/business-ops")
+          ? "business-ops"
+          : null;
+    if (incidentId && portal) {
+      void client.invalidateQueries({ queryKey: incidentKeys.detail(incidentId) });
+      setIsOpen(false);
+      router.push(`/${locale}/${portal}/incidents/${incidentId}`);
     }
   };
 

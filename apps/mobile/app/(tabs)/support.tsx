@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import {
   ChevronRight,
+  CircleAlert,
   Inbox,
   MessageCircleMore,
   Plus,
@@ -21,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { StatusPill } from "@/components/ui/status-pill";
 import { FilterChips, type FilterChipOption } from "@/components/ui/filter-chips";
 import { cn } from "@/lib/utils";
+import { resolveRequestError } from "@/lib/apiError";
 import { useTranslation } from "@/stores/language.store";
 import { formatTime } from "@/features/customer-inventory/components/MovementRow";
 import { useSupportTicketList } from "@/features/support-tickets/hooks/useSupportTickets";
@@ -45,7 +47,7 @@ const formatWhen = (iso: string) => {
 /** H1 — Support tab: support requests and incident reports of the customer, with quick create. */
 export default function SupportScreen() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [segment, setSegment] = useState<Segment>("tickets");
   const [ticketFilter, setTicketFilter] = useState<TicketFilter>("all");
   const [incidentFilter, setIncidentFilter] = useState<IncidentFilter>("all");
@@ -190,6 +192,19 @@ export default function SupportScreen() {
         <Skeleton className="h-28 w-full rounded-3xl" />
         <Skeleton className="h-28 w-full rounded-3xl" />
       </View>
+    ) : activeQuery.isError ? (
+      <View className="items-center gap-3 rounded-3xl border border-red-200 bg-white p-6 dark:border-red-900 dark:bg-neutral-900">
+        <CircleAlert size={28} color="#EF4444" />
+        <Text className="text-center text-sm text-red-600">
+          {resolveRequestError(activeQuery.error, locale === "en" ? "en" : "vi").message}
+        </Text>
+        <Pressable
+          onPress={() => void activeQuery.refetch()}
+          className="rounded-xl bg-brand px-5 py-2.5"
+        >
+          <Text className="font-bold text-white">{t("common.retry")}</Text>
+        </Pressable>
+      </View>
     ) : (
       <View className="items-center rounded-3xl border border-neutral-border bg-white p-8 dark:border-neutral-800 dark:bg-neutral-900">
         <Inbox size={28} color="#647B80" />
@@ -244,13 +259,15 @@ export default function SupportScreen() {
       </View>
 
       <View className="flex-row rounded-2xl bg-neutral-100 p-1 dark:bg-neutral-800">
+        {/* Keep background styles present on both segments. Adding shadow only after
+            selection makes NativeWind upgrade this subtree during navigation. */}
         {(["tickets", "incidents"] as const).map((key) => (
           <Pressable
             key={key}
             onPress={() => setSegment(key)}
             className={cn(
-              "flex-1 items-center rounded-xl py-2.5",
-              segment === key && "bg-white shadow-sm dark:bg-neutral-900"
+              "flex-1 items-center rounded-xl bg-neutral-100 py-2.5 dark:bg-neutral-800",
+              segment === key && "bg-white dark:bg-neutral-900"
             )}
           >
             <Text
@@ -288,6 +305,7 @@ export default function SupportScreen() {
     <SafeAreaView edges={["bottom"]} className="flex-1 bg-neutral-bg dark:bg-neutral-950">
       {segment === "tickets" ? (
         <FlatList
+          key="tickets"
           data={tickets}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => renderTicket(item)}
@@ -309,6 +327,7 @@ export default function SupportScreen() {
         />
       ) : (
         <FlatList
+          key="incidents"
           data={incidents}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => renderIncident(item)}

@@ -18,6 +18,7 @@ interface CloudinaryUploaderProps {
   label?: string;
   description?: string;
   disabled?: boolean;
+  onUploadingChange?: (uploading: boolean) => void;
 }
 
 export const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
@@ -31,6 +32,7 @@ export const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
   label,
   description,
   disabled = false,
+  onUploadingChange,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -63,6 +65,7 @@ export const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
     }
 
     setIsUploading(true);
+    onUploadingChange?.(true);
     setUploadProgress(0);
 
     const newUrls: string[] = [];
@@ -91,6 +94,7 @@ export const CloudinaryUploader: React.FC<CloudinaryUploaderProps> = ({
       toast.error(msg);
     } finally {
       setIsUploading(false);
+      onUploadingChange?.(false);
       setUploadProgress(0);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
